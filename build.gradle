@@ -44,7 +44,7 @@ dependencies {
 
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 
-	modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}")
+	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
 }
 
 processResources {
