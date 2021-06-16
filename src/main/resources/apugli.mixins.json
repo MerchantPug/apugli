@@ -6,9 +6,17 @@
   "mixins": [
     "AbstractFurnaceBlockEntityAccess",
     "BrewingStandBlockEntityAccess",
-    "CooldownPowerAccess"
+    "CooldownPowerAccess",
+    "DamageEnchantmentMixin",
+    "ExplosionMixin",
+    "LivingEntityAccess",
+    "LivingEntityMixin",
+    "ServerPlayerEntityAccessor"
   ],
   "client": [
+    "EntityModelsMixin",
+    "PlayerEntityClientMixin",
+    "PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

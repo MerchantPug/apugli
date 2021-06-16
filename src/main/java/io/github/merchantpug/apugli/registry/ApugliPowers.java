@@ -13,6 +13,7 @@ import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -39,6 +40,14 @@ public class ApugliPowers {
             data ->
                     (type, entity) ->
                             new ExtraSoulSpeedPower(type, entity, data.getInt("modifier")))
+            .allowCondition());
+    public static final PowerFactory<Power> ENERGY_SWIRL_OVERLAY = create(new PowerFactory<>(Apugli.identifier("energy_swirl_overlay"),
+            new SerializableData()
+                    .add("texture_location", ApoliDataTypes.APOLI_IDENTIFIER)
+                    .add("speed", SerializableDataTypes.FLOAT, 0.01F),
+            data ->
+                    (type, entity) ->
+                            new EnergySwirlOverlayPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
             .allowCondition());
     public static final PowerFactory<Power> UNENCHANTED_SOUL_SPEED = create(new PowerFactory<>(Apugli.identifier("unenchanted_soul_speed"),
             new SerializableData().add("modifier", SerializableDataTypes.INT),
@@ -92,6 +101,32 @@ public class ApugliPowers {
                         return power;
                     })
             .allowCondition());
+
+    public static final PowerFactory<Power> EAT_GRASS = create(new PowerFactory<>(Apugli.identifier("eat_grass"),
+            new SerializableData()
+                    .add("cooldown", SerializableDataTypes.INT)
+                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
+                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
+            data ->
+                    (type, player) -> {
+                        EatGrassPower power = new EatGrassPower(type, player, data.getInt("cooldown"), (HudRender)data.get("hud_render"));
+                        power.setKey((Active.Key)data.get("key"));
+                        return power;
+                    }).allowCondition());
+
+    public static final PowerFactory<Power> DETONATE = create(new PowerFactory<>(Apugli.identifier("detonate"),
+            new SerializableData()
+                    .add("explosion_radius", SerializableDataTypes.FLOAT, 3.0F)
+                    .add("spawns_effect_cloud", SerializableDataTypes.BOOLEAN, false)
+                    .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE, DamageSource.GENERIC)
+                    .add("self_damage_source", SerializableDataTypes.DAMAGE_SOURCE, DamageSource.OUT_OF_WORLD)
+                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
+            data ->
+                    (type, player) -> {
+                        DetonatePower power = new DetonatePower(type, player, data.getFloat("explosion_radius"), data.getBoolean("spawns_effect_cloud"), (DamageSource)data.get("damage_source"), (DamageSource)data.get("self_damage_source"));
+                        power.setKey((Active.Key)data.get("key"));
+                        return power;
+                    }));
 
     private static <T extends Power> PowerFactory<T> create(PowerFactory<T> factory) {
         POWER_FACTORIES.put(factory, factory.getSerializerId());

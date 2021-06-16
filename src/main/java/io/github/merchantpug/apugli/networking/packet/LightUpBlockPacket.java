@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -26,7 +27,7 @@ import net.minecraft.util.registry.Registry;
 import static net.minecraft.state.property.Properties.LIT;
 
 public class LightUpBlockPacket {
-    public static final Identifier ID = new Identifier(Apugli.MODID, "light_up_block");
+    public static final Identifier ID = Apugli.identifier("light_up_block");
 
     public static void send(BlockPos pos, ParticleType particle, int particleCount, int burnTime, int brewTime, SoundEvent soundEvent) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
@@ -56,7 +57,7 @@ public class LightUpBlockPacket {
                 player.world.setBlockState(pos, state.with(LIT, true).with(LIT, true), 2);
                 ((ServerWorld)player.world).spawnParticles(particleEffect, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, particleCount, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
                 player.swingHand(Hand.MAIN_HAND, true);
-                player.world.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundCategory.NEUTRAL, 0.5F, (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F + 1.0F);
+                playSound(player, soundEvent);
                 player.world.syncWorldEvent(1590, pos, 0);
             }
             if (entity instanceof AbstractFurnaceBlockEntity) {
@@ -69,10 +70,19 @@ public class LightUpBlockPacket {
             if (entity instanceof BrewingStandBlockEntity) {
                 if (((BrewingStandBlockEntityAccess)entity).getFuel() < brewTime) {
                     ((BrewingStandBlockEntityAccess)entity).setFuel(brewTime);
+                    ((ServerWorld)player.world).spawnParticles(particleEffect, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, particleCount, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
+                    player.swingHand(Hand.MAIN_HAND, true);
+                    playSound(player, soundEvent);
                     player.world.syncWorldEvent(1592, pos, 0);
                 }
             }
         });
+    }
+
+    private static void playSound(LivingEntity player, SoundEvent soundEvent) {
+        if (soundEvent != null) {
+            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundCategory.NEUTRAL, 0.5F, (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F + 1.0F);
+        }
     }
 
     private static <T extends ParticleEffect> T readParticleParameters(PacketByteBuf buf, ParticleType<T> type) {

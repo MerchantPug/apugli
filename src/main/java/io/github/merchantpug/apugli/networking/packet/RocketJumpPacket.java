@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.explosion.Explosion;
 
 public class RocketJumpPacket {
-    public static final Identifier ID = new Identifier(Apugli.MODID, "rocket_jump");
+    public static final Identifier ID = Apugli.identifier("rocket_jump");
 
     public static void send(Vec3d pos, DamageSource damageSource, float damageAmount, boolean shouldUseCharged, double speed) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());

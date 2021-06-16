@@ -6,6 +6,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.merchantpug.apugli.networking.packet.LightUpBlockPacket;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -38,7 +39,7 @@ public class LightUpBlockPower extends ActiveCooldownPower {
                 if (client.crosshairTarget != null && client.crosshairTarget.getType() == HitResult.Type.BLOCK) {
                     BlockPos pos = ((BlockHitResult) client.crosshairTarget).getBlockPos();
                     BlockState state = client.world.getBlockState(pos);
-                    if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock() instanceof CampfireBlock) {
+                    if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock() instanceof CampfireBlock || state.getBlock() instanceof BrewingStandBlock) {
                         LightUpBlockPacket.send(pos, particle, particleCount, burnTime, brewTime, soundEvent);
                         this.use();
                     }

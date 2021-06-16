@@ -9,8 +9,6 @@ import io.github.merchantpug.apugli.power.UnenchantedSoulSpeedPower;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;

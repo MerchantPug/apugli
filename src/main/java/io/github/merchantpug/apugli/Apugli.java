@@ -1,11 +1,11 @@
 package io.github.merchantpug.apugli;
 
+import io.github.merchantpug.apugli.networking.packet.EatGrassPacket;
 import io.github.merchantpug.apugli.networking.packet.LightUpBlockPacket;
 import io.github.merchantpug.apugli.networking.packet.RocketJumpPacket;
 import io.github.merchantpug.apugli.registry.ApugliEntityActions;
 import io.github.merchantpug.apugli.registry.ApugliEntityConditions;
 import io.github.merchantpug.apugli.registry.ApugliPowers;
-import io.github.merchantpug.apugli.util.ApugliNamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
@@ -22,9 +22,7 @@ public class Apugli implements ModInitializer {
 		ApugliEntityConditions.register();
 		ApugliPowers.init();
 
-		ApugliNamespaceAlias.addAlias("toomanyorigins");
-		ApugliNamespaceAlias.addAlias("cursedorigins");
-
+		ServerPlayNetworking.registerGlobalReceiver(EatGrassPacket.ID, EatGrassPacket::handle);
 		ServerPlayNetworking.registerGlobalReceiver(LightUpBlockPacket.ID, LightUpBlockPacket::handle);
 		ServerPlayNetworking.registerGlobalReceiver(RocketJumpPacket.ID, RocketJumpPacket::handle);
 	}
