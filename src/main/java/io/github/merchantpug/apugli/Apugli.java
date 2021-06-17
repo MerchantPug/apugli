@@ -3,6 +3,7 @@ package io.github.merchantpug.apugli;
 import io.github.merchantpug.apugli.networking.packet.EatGrassPacket;
 import io.github.merchantpug.apugli.networking.packet.LightUpBlockPacket;
 import io.github.merchantpug.apugli.networking.packet.RocketJumpPacket;
+import io.github.merchantpug.apugli.registry.ApugliDamageConditions;
 import io.github.merchantpug.apugli.registry.ApugliEntityActions;
 import io.github.merchantpug.apugli.registry.ApugliEntityConditions;
 import io.github.merchantpug.apugli.registry.ApugliPowers;
@@ -18,6 +19,7 @@ public class Apugli implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ApugliDamageConditions.register();
 		ApugliEntityActions.register();
 		ApugliEntityConditions.register();
 		ApugliPowers.init();
