@@ -45,8 +45,6 @@ public class ApugliEntityConditions {
                     int compareTo = data.getInt("compare_to");
                     return comparison.compare(amount, compareTo);
                 }));
-        register(new ConditionFactory<>(Apugli.identifier("dead"), new SerializableData(),
-                (data, entity) -> entity.isDead()));
         register(new ConditionFactory<>(Apugli.identifier("entity_group"), new SerializableData()
                 .add("group", ApugliDataTypes.APUGLI_ENTITY_GROUP),
                 (data, entity) ->
