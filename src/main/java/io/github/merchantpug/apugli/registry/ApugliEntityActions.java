@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldEvents;
 
 public class ApugliEntityActions {
     public static void register() {
@@ -30,10 +31,9 @@ public class ApugliEntityActions {
                         zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
                         zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
                         zombieVillagerEntity.setXp(villagerEntity.getExperience());
-                        zombieVillagerEntity.world.playSound(zombieVillagerEntity.getX(), zombieVillagerEntity.getY(), zombieVillagerEntity.getZ(), SoundEvents.ENTITY_ZOMBIE_INFECT, SoundCategory.HOSTILE, 2.0F,(zombieVillagerEntity.getRandom().nextFloat() - zombieVillagerEntity.getRandom().nextFloat()) * 0.2F + 1.0F, false);
                     }
                     villagerEntity.damage(ApugliDamageSources.zombification(((VillagerEntity)entity).getAttacker()), Float.MAX_VALUE);
-                    entity.world.syncWorldEvent(null, 1527, entity.getBlockPos(), 0);
+                    entity.world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, entity.getBlockPos(), 0);
                 }
             }));
     }
