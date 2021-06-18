@@ -13,9 +13,7 @@ import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -41,7 +39,7 @@ public class ApugliPowers {
                     (type, entity) ->
                             new ExtraSoulSpeedPower(type, entity, data.getInt("modifier")))
             .allowCondition());
-    public static final PowerFactory<Power> ENERGY_SWIRL_OVERLAY = create(new PowerFactory<>(Apugli.identifier("energy_swirl_overlay"),
+    public static final PowerFactory<Power> ENERGY_SWIRL = create(new PowerFactory<>(Apugli.identifier("energy_swirl"),
             new SerializableData()
                     .add("texture_location", ApoliDataTypes.APOLI_IDENTIFIER)
                     .add("speed", SerializableDataTypes.FLOAT, 0.01F),
@@ -59,8 +57,8 @@ public class ApugliPowers {
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
                     .add("burn_time", SerializableDataTypes.INT, 1600)
-                    .add("brew_time", SerializableDataTypes.INT)
-                    .add("particle", SerializableDataTypes.PARTICLE_TYPE, ParticleTypes.FLAME)
+                    .add("brew_time", SerializableDataTypes.INT, 20)
+                    .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
                     .add("particle_count", SerializableDataTypes.INT, 15)
                     .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
