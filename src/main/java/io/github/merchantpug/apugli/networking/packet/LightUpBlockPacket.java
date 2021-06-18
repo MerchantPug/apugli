@@ -55,7 +55,7 @@ public class LightUpBlockPacket {
             BlockEntity entity = player.world.getBlockEntity(pos);
             if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock() instanceof CampfireBlock) {
                 player.world.setBlockState(pos, state.with(LIT, true).with(LIT, true), 2);
-                ((ServerWorld)player.world).spawnParticles(particleEffect, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, particleCount, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
+                spawnParticles(particleEffect, pos, particleCount, player);
                 player.swingHand(Hand.MAIN_HAND, true);
                 playSound(player, soundEvent);
                 player.world.syncWorldEvent(1590, pos, 0);
@@ -70,7 +70,7 @@ public class LightUpBlockPacket {
             if (entity instanceof BrewingStandBlockEntity) {
                 if (((BrewingStandBlockEntityAccess)entity).getFuel() < brewTime) {
                     ((BrewingStandBlockEntityAccess)entity).setFuel(brewTime);
-                    ((ServerWorld)player.world).spawnParticles(particleEffect, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, particleCount, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
+                    spawnParticles(particleEffect, pos, particleCount, player);
                     player.swingHand(Hand.MAIN_HAND, true);
                     playSound(player, soundEvent);
                     player.world.syncWorldEvent(1592, pos, 0);
@@ -82,6 +82,12 @@ public class LightUpBlockPacket {
     private static void playSound(LivingEntity player, SoundEvent soundEvent) {
         if (soundEvent != null) {
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundCategory.NEUTRAL, 0.5F, (player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.2F + 1.0F);
+        }
+    }
+
+    private static void spawnParticles(ParticleEffect particleEffect, BlockPos pos, int particleCount, LivingEntity player) {
+        if (particleEffect != null && particleCount > 0) {
+            ((ServerWorld)player.world).spawnParticles(particleEffect, pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, particleCount, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, player.getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
         }
     }
 
