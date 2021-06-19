@@ -69,12 +69,12 @@ public class LightUpBlockPacket {
             }
             if (entity instanceof BrewingStandBlockEntity) {
                 if (((BrewingStandBlockEntityAccess)entity).getFuel() < brewTime) {
-                    ((BrewingStandBlockEntityAccess)entity).setFuel(brewTime);
-                    spawnParticles(particleEffect, pos, particleCount, player);
-                    player.swingHand(Hand.MAIN_HAND, true);
-                    playSound(player, soundEvent);
-                    player.world.syncWorldEvent(1592, pos, 0);
+                    ((BrewingStandBlockEntityAccess) entity).setFuel(brewTime);
                 }
+                spawnParticles(particleEffect, pos, particleCount, player);
+                player.swingHand(Hand.MAIN_HAND, true);
+                playSound(player, soundEvent);
+                player.world.syncWorldEvent(1592, pos, 0);
             }
         });
     }
