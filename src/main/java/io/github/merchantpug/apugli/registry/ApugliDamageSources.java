@@ -5,16 +5,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.world.explosion.Explosion;
 
 public class ApugliDamageSources {
 
     public static DamageSource zombification(Entity attacker) {
         return ((DamageSourceAccessor)((DamageSourceAccessor)new EntityDamageSource("indirectZombification", attacker)).callSetBypassesArmor()).callSetUnblockable();
-    }
-
-    public static DamageSource jumpExplosion(Explosion jumpExplosion) {
-        return jumpExplosion(jumpExplosion != null ? jumpExplosion.getCausingEntity() : null);
     }
 
     public static DamageSource jumpExplosion(LivingEntity attacker) {
