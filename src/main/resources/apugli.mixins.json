@@ -10,8 +10,7 @@
     "DamageEnchantmentMixin",
     "ExplosionMixin",
     "LivingEntityAccess",
-    "LivingEntityMixin",
-    "ServerPlayerEntityAccessor"
+    "LivingEntityMixin"
   ],
   "client": [
     "EntityModelsMixin",
