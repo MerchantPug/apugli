@@ -24,7 +24,6 @@ import java.util.List;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
-    @Unique private int soulSpeedEnchantmentValue;
 
     @Shadow public abstract EntityGroup getGroup();
 
@@ -42,7 +41,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
     private int replaceLevelOfSouLSpeed(int i) {
-        this.soulSpeedEnchantmentValue = i;
         return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, i);
     }
 
