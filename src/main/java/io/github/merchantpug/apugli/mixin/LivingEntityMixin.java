@@ -36,7 +36,6 @@ public abstract class LivingEntityMixin extends Entity {
     private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            Apugli.LOGGER.info(soulSpeedValue);
             cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && ((LivingEntityAccess)this).invokeIsOnSoulSpeedBlock());
         }
     }
