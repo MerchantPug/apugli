@@ -3,16 +3,16 @@ package io.github.merchantpug.apugli.mixin;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.SetEntityGroupPower;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.power.ExtraSoulSpeedPower;
+import io.github.merchantpug.apugli.power.ModifySoulSpeedPower;
 import io.github.merchantpug.apugli.power.SetApugliEntityGroupPower;
-import io.github.merchantpug.apugli.power.UnenchantedSoulSpeedPower;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -24,6 +24,7 @@ import java.util.List;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+    @Unique private int soulSpeedEnchantmentValue;
 
     @Shadow public abstract EntityGroup getGroup();
 
@@ -33,41 +34,46 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "shouldDisplaySoulSpeedEffects", at = @At("HEAD"), cancellable = true)
     private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && (EnchantmentHelper.hasSoulSpeed((LivingEntity) (Object) this) || PowerHolderComponent.hasPower(this, UnenchantedSoulSpeedPower.class) || PowerHolderComponent.hasPower(this, ExtraSoulSpeedPower.class)) && ((LivingEntityAccess)this).invokeIsOnSoulSpeedBlock());
+        if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
+            int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
+            Apugli.LOGGER.info(soulSpeedValue);
+            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && ((LivingEntityAccess)this).invokeIsOnSoulSpeedBlock());
+        }
     }
 
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
     private int replaceLevelOfSouLSpeed(int i) {
-        if (PowerHolderComponent.hasPower(this, UnenchantedSoulSpeedPower.class) && i <= PowerHolderComponent.getPowers(this, UnenchantedSoulSpeedPower.class).get(0).getModifier()) {
-            return i = (PowerHolderComponent.getPowers(this, UnenchantedSoulSpeedPower.class).get(0).getModifier());
+        this.soulSpeedEnchantmentValue = i;
+        return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, i);
+    }
+
+    @Inject(method = "getVelocityMultiplier", at = @At("HEAD"), cancellable = true)
+    private void getVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
+        if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
+            int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
+            if (soulSpeedValue <= 0) {
+                cir.setReturnValue(super.getVelocityMultiplier());
+            }
         }
-        if (PowerHolderComponent.hasPower(this, ExtraSoulSpeedPower.class)) {
-            return i += (PowerHolderComponent.getPowers(this, ExtraSoulSpeedPower.class).get(0).getModifier());
-        }
-        return i;
     }
 
     @Inject(method = "addSoulSpeedBoostIfNeeded", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
     private void itemStack(CallbackInfo ci, int i) {
-        if (PowerHolderComponent.hasPower(this, UnenchantedSoulSpeedPower.class) && i <= (PowerHolderComponent.getPowers(this, UnenchantedSoulSpeedPower.class).get(0).getModifier())) {
-            ci.cancel();
-        }
-        if (PowerHolderComponent.hasPower(this, ExtraSoulSpeedPower.class) && i == (PowerHolderComponent.getPowers(this, ExtraSoulSpeedPower.class).get(0).getModifier())) {
+        int baseValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, 0);
+        if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class) && i == baseValue) {
             ci.cancel();
         }
     }
 
     @Inject(method = "getGroup", at = @At("HEAD"), cancellable = true)
     public void getGroup(CallbackInfoReturnable<EntityGroup> cir) {
-        if((Object)this instanceof PlayerEntity) {
-            List<SetEntityGroupPower> originsGroups = PowerHolderComponent.getPowers(this, SetEntityGroupPower.class);
-            List<SetApugliEntityGroupPower> tmoGroups = PowerHolderComponent.getPowers(this, SetApugliEntityGroupPower.class);
-            if(tmoGroups.size() > 0) {
-                if(tmoGroups.size() > 1 || tmoGroups.size() > 0 && originsGroups.size() > 0) {
-                    Apugli.LOGGER.warn("Player " + this.getDisplayName().toString() + " has two instances of SetEntityGroupPower/SetTMOEntityGroupPower.");
-                }
-                cir.setReturnValue(tmoGroups.get(0).group);
+        List<SetEntityGroupPower> originsGroups = PowerHolderComponent.getPowers(this, SetEntityGroupPower.class);
+        List<SetApugliEntityGroupPower> tmoGroups = PowerHolderComponent.getPowers(this, SetApugliEntityGroupPower.class);
+        if(tmoGroups.size() > 0) {
+            if(tmoGroups.size() > 1 || originsGroups.size() > 0) {
+                Apugli.LOGGER.warn("Player " + this.getDisplayName().toString() + " has two instances of SetEntityGroupPower/SetTMOEntityGroupPower.");
             }
+            cir.setReturnValue(tmoGroups.get(0).group);
         }
     }
 

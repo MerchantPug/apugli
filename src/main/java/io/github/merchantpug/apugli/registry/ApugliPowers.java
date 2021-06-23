@@ -12,6 +12,7 @@ import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.SoundEvent;
@@ -19,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ApugliPowers {
@@ -32,12 +34,21 @@ public class ApugliPowers {
                             new SetApugliEntityGroupPower(type, entity, (EntityGroup)data.get("group")))
             .allowCondition());
 
-    public static final PowerFactory<Power> EXTRA_SOUL_SPEED = create(new PowerFactory<>(Apugli.identifier("extra_soul_speed"),
+    public static final PowerFactory<Power> MODIFY_SOUL_SPEED = create(new PowerFactory<>(Apugli.identifier("modify_soul_speed"),
             new SerializableData()
-                    .add("modifier", SerializableDataTypes.INT),
+                    .add("modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                    .add("modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null),
             data ->
-                    (type, entity) ->
-                            new ExtraSoulSpeedPower(type, entity, data.getInt("modifier")))
+                    (type, entity) -> {
+                        ModifySoulSpeedPower power = new ModifySoulSpeedPower(type, entity);
+                        if(data.isPresent("modifier")) {
+                            power.addModifier(data.getModifier("modifier"));
+                        }
+                        if(data.isPresent("modifiers")) {
+                            ((List<EntityAttributeModifier>)data.get("modifiers")).forEach(power::addModifier);
+                        }
+                        return power;
+                    })
             .allowCondition());
     public static final PowerFactory<Power> ENERGY_SWIRL = create(new PowerFactory<>(Apugli.identifier("energy_swirl"),
             new SerializableData()
@@ -47,11 +58,6 @@ public class ApugliPowers {
                     (type, entity) ->
                             new EnergySwirlOverlayPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
             .allowCondition());
-    public static final PowerFactory<Power> UNENCHANTED_SOUL_SPEED = create(new PowerFactory<>(Apugli.identifier("unenchanted_soul_speed"),
-            new SerializableData().add("modifier", SerializableDataTypes.INT),
-            data ->
-                    (type, entity) ->
-                            new UnenchantedSoulSpeedPower(type, entity, data.getInt("modifier"))));
 
     public static final PowerFactory<Power> LIGHT_UP_BLOCK = create(new PowerFactory<>(Apugli.identifier("light_up_block"),
             new SerializableData()
@@ -74,15 +80,15 @@ public class ApugliPowers {
     public static final PowerFactory<Power> ROCKET_JUMP = create(new PowerFactory<>(Apugli.identifier("rocket_jump"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
-                    .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE, DamageSource.GENERIC)
-                    .add("damage_amount", SerializableDataTypes.FLOAT, 3.0F)
+                    .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                    .add("amount", SerializableDataTypes.FLOAT, 0.0F)
                     .add("speed", SerializableDataTypes.DOUBLE, 1.0)
-                    .add("should_use_charged", SerializableDataTypes.BOOLEAN, false)
+                    .add("use_charged", SerializableDataTypes.BOOLEAN, false)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
                     .add("key", ApoliDataTypes.KEY, new Active.Key()),
             data ->
                     (type, entity) -> {
-                        RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("damage_source"), data.getBoolean("should_use_charged"), data.getFloat("damage_amount"), data.getDouble("speed"));
+                        RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("source"), data.getBoolean("use_charged"), data.getFloat("amount"), data.getDouble("speed"));
                         power.setKey((Active.Key)data.get("key"));
                         return power;
                     })
@@ -111,20 +117,6 @@ public class ApugliPowers {
                         power.setKey((Active.Key)data.get("key"));
                         return power;
                     }).allowCondition());
-
-    public static final PowerFactory<Power> DETONATE = create(new PowerFactory<>(Apugli.identifier("detonate"),
-            new SerializableData()
-                    .add("explosion_radius", SerializableDataTypes.FLOAT, 3.0F)
-                    .add("spawns_effect_cloud", SerializableDataTypes.BOOLEAN, false)
-                    .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE, DamageSource.GENERIC)
-                    .add("self_damage_source", SerializableDataTypes.DAMAGE_SOURCE, DamageSource.OUT_OF_WORLD)
-                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
-            data ->
-                    (type, player) -> {
-                        DetonatePower power = new DetonatePower(type, player, data.getFloat("explosion_radius"), data.getBoolean("spawns_effect_cloud"), (DamageSource)data.get("damage_source"), (DamageSource)data.get("self_damage_source"));
-                        power.setKey((Active.Key)data.get("key"));
-                        return power;
-                    }));
 
     private static <T extends Power> PowerFactory<T> create(PowerFactory<T> factory) {
         POWER_FACTORIES.put(factory, factory.getSerializerId());
