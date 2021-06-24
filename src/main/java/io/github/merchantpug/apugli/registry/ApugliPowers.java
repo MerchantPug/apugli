@@ -52,7 +52,7 @@ public class ApugliPowers {
             .allowCondition());
     public static final PowerFactory<Power> ENERGY_SWIRL = create(new PowerFactory<>(Apugli.identifier("energy_swirl"),
             new SerializableData()
-                    .add("texture_location", ApoliDataTypes.APOLI_IDENTIFIER)
+                    .add("texture_location", SerializableDataTypes.IDENTIFIER)
                     .add("speed", SerializableDataTypes.FLOAT, 0.01F),
             data ->
                     (type, entity) ->
