@@ -6,7 +6,7 @@ This is the Apugli repository where the source code for the Apugli Apoli addon i
 If you'd like to use Apugli in any Apoli or Origins powers you can read up on the [Documentation](https://apugli.readthedocs.io/en/latest/).
 It's recommended to have some knowledge about either mod before doing so.
 
-## Implementing the mod into your project
+## Implementing the library into your project
 
 Assuming you're using a 1.17 default Fabric workspace, you are able to add Apugli as a dependency to your workspace through adding these to your project.
 
