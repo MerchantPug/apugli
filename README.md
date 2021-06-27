@@ -1,6 +1,6 @@
 # Apugli README
 
-This is the Apugli repository where the source code for the Apoli addon is hosted. You may more commonly know this as the TooManyOrigins library for its power types and conditions, either way you can download the .jar from the releases page as a standalone file.
+This is the Apugli repository where the source code for the Apugli Apoli addon is hosted. You may more commonly know this as the TooManyOrigins library for its power types and conditions, either way you can download the .jar from the releases page as a standalone file.
 
 ## Documentation
 If you'd like to use Apugli in any Apoli or Origins powers you can read up on the [Documentation](https://apugli.readthedocs.io/en/latest/).
