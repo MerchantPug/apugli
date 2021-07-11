@@ -139,8 +139,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                         if (apugli_velocityMultiplier < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick) {
                             if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0) {
                                 apugli_velocityMultiplier += 1;
-                                Apugli.LOGGER.info(apugli_velocityMultiplier);
-                                Apugli.LOGGER.info("Current Velocity: " + (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier));
                             }
                         } else {
                             apugli_velocityMultiplier = (float) (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
