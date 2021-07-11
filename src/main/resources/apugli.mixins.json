@@ -4,18 +4,25 @@
   "package": "io.github.merchantpug.apugli.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AbstractFurnaceBlockEntityAccess",
-    "BrewingStandBlockEntityAccess",
-    "CooldownPowerAccess",
+    "AbstractFurnaceBlockEntityAccessor",
+    "BrewingStandBlockEntityAccessor",
+    "CooldownPowerAccessor",
     "DamageEnchantmentMixin",
     "ExplosionMixin",
-    "LivingEntityAccess",
-    "LivingEntityMixin"
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
+    "PlayerEntityAccessor"
   ],
   "client": [
-    "EntityModelsMixin",
+    "AbstractClientPlayerEntityMixin",
+    "ArmorStandEntityRendererMixin",
+    "BipedEntityRendererMixin",
+    "IllagerEntityRendererMixin",
+    "LivingEntityRendererMixin",
     "PlayerEntityClientMixin",
-    "PlayerEntityRendererMixin"
+    "PlayerEntityRendererMixin",
+    "VillagerEntityRendererMixin",
+    "WanderingTraderEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

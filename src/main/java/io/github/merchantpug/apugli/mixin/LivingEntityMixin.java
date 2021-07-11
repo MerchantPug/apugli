@@ -1,14 +1,26 @@
 package io.github.merchantpug.apugli.mixin;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.SetEntityGroupPower;
+import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.access.LivingEntityAccess;
+import io.github.merchantpug.apugli.power.BunnyHopPower;
+import io.github.merchantpug.apugli.power.EdibleItemStackPower;
 import io.github.merchantpug.apugli.power.ModifySoulSpeedPower;
 import io.github.merchantpug.apugli.power.SetApugliEntityGroupPower;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
+import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
+import net.fabricmc.loader.util.sat4j.core.Vec;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,9 +35,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+public abstract class LivingEntityMixin extends Entity implements LivingEntityAccess {
 
     @Shadow public abstract EntityGroup getGroup();
+
+    @Shadow public abstract boolean isFallFlying();
+
+    @Unique private int apugli_amountOfEdiblePower = 0;
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -35,7 +51,7 @@ public abstract class LivingEntityMixin extends Entity {
     private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && ((LivingEntityAccess)this).invokeIsOnSoulSpeedBlock());
+            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && ((LivingEntityAccessor)this).invokeIsOnSoulSpeedBlock());
         }
     }
 
@@ -50,6 +66,8 @@ public abstract class LivingEntityMixin extends Entity {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
             if (soulSpeedValue <= 0) {
                 cir.setReturnValue(super.getVelocityMultiplier());
+            } else {
+                cir.setReturnValue(1.0F);
             }
         }
     }
@@ -65,12 +83,12 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "getGroup", at = @At("HEAD"), cancellable = true)
     public void getGroup(CallbackInfoReturnable<EntityGroup> cir) {
         List<SetEntityGroupPower> originsGroups = PowerHolderComponent.getPowers(this, SetEntityGroupPower.class);
-        List<SetApugliEntityGroupPower> tmoGroups = PowerHolderComponent.getPowers(this, SetApugliEntityGroupPower.class);
-        if(tmoGroups.size() > 0) {
-            if(tmoGroups.size() > 1 || originsGroups.size() > 0) {
-                Apugli.LOGGER.warn("Player " + this.getDisplayName().toString() + " has two instances of SetEntityGroupPower/SetTMOEntityGroupPower.");
+        List<SetApugliEntityGroupPower> apugliGroups = PowerHolderComponent.getPowers(this, SetApugliEntityGroupPower.class);
+        if(apugliGroups.size() > 0) {
+            if(apugliGroups.size() > 1 || originsGroups.size() > 0) {
+                Apugli.LOGGER.warn("Player " + this.getDisplayName().toString() + " has two or more instances of SetEntityGroupPower/SetApugliEntityGroupPower.");
             }
-            cir.setReturnValue(tmoGroups.get(0).group);
+            cir.setReturnValue(apugliGroups.get(0).group);
         }
     }
 
@@ -79,5 +97,79 @@ public abstract class LivingEntityMixin extends Entity {
         if (this.getGroup() == ApugliEntityGroups.PLAYER_UNDEAD) {
             cir.setReturnValue(true);
         }
+    }
+
+    // This spaghetti should hopefully be temporary
+    @Inject(method = "baseTick", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        if (PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).size() != apugli_amountOfEdiblePower) {
+            if ((LivingEntity)(Object)this instanceof PlayerEntity) {
+                if (this.age % 10 == 0) {
+                    for (int i = 0; i < ((PlayerEntityAccessor)this).getInventory().main.size(); i++) {
+                        ItemStack itemStack = ((PlayerEntityAccessor)this).getInventory().main.get(i);
+                        ItemStackFoodComponentAPI.removeFoodComponent(itemStack);
+                    }
+                    for (int i = 0; i < ((PlayerEntityAccessor)this).getInventory().armor.size(); i++) {
+                        ItemStack armorStack = ((PlayerEntityAccessor)this).getInventory().getArmorStack(i);
+                        ItemStackFoodComponentAPI.removeFoodComponent(armorStack);
+                    }
+                    ItemStack offHandStack = ((LivingEntity)(Object)this).getEquippedStack(EquipmentSlot.OFFHAND);
+                    ItemStackFoodComponentAPI.removeFoodComponent(offHandStack);
+                    apugli_amountOfEdiblePower = PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).size();
+                }
+            }
+        }
+        PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).forEach(EdibleItemStackPower::tempTick);
+    }
+
+    @Unique private int apugli_framesOnGround;
+    @Unique private float apugli_velocityMultiplier;
+
+    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
+    private void travel(Vec3d movementInput, CallbackInfo ci) {
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
+                apugli_setFramesOnGround();
+            } else {
+                apugli_framesOnGround = 0;
+            }
+            if (apugli_framesOnGround <= 5) {
+                if (apugli_framesOnGround == 0) {
+                    if (this.getVelocity().getX() < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity || this.getVelocity().getZ() < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity) {
+                        if (apugli_velocityMultiplier < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick) {
+                            if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0) {
+                                apugli_velocityMultiplier += 1;
+                                Apugli.LOGGER.info(apugli_velocityMultiplier);
+                                Apugli.LOGGER.info("Current Velocity: " + (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier));
+                            }
+                        } else {
+                            apugli_velocityMultiplier = (float) (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+                        }
+                    } else {
+                        apugli_velocityMultiplier = (float) (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+                    }
+                }
+                this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
+            } else {
+                apugli_velocityMultiplier = 0;
+            }
+        }
+    }
+
+    @Unique
+    private void apugli_setFramesOnGround() {
+        if (this.age % 3 == 0) {
+            apugli_framesOnGround += 1;
+        }
+    }
+
+    @Unique
+    public void addVelocityMultiplier(double value) {
+        apugli_velocityMultiplier += value;
+    }
+
+    @Unique
+    public float getApugliVelocityMultiplier() {
+        return apugli_velocityMultiplier;
     }
 }

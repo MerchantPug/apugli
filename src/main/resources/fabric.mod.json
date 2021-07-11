@@ -24,13 +24,11 @@
   "mixins": [
     "apugli.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16",
-    "apoli": ">=1.0.3",
-    "reach-entity-attributes": "2.x.x"
+    "apoli": ">=1.0.3"
   }
 }

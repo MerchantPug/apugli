@@ -1,9 +1,8 @@
 package io.github.merchantpug.apugli.networking.packet;
 
-import io.github.apace100.apoli.Apoli;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.mixin.AbstractFurnaceBlockEntityAccess;
-import io.github.merchantpug.apugli.mixin.BrewingStandBlockEntityAccess;
+import io.github.merchantpug.apugli.mixin.AbstractFurnaceBlockEntityAccessor;
+import io.github.merchantpug.apugli.mixin.BrewingStandBlockEntityAccessor;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -61,15 +60,15 @@ public class LightUpBlockPacket {
                 player.world.syncWorldEvent(1590, pos, 0);
             }
             if (entity instanceof AbstractFurnaceBlockEntity) {
-                if (((AbstractFurnaceBlockEntityAccess)entity).getBurnTime() < burnTime) {
-                    ((AbstractFurnaceBlockEntityAccess)entity).setFuelTime(burnTime);
-                    ((AbstractFurnaceBlockEntityAccess)entity).setBurnTime(burnTime);
+                if (((AbstractFurnaceBlockEntityAccessor)entity).getBurnTime() < burnTime) {
+                    ((AbstractFurnaceBlockEntityAccessor)entity).setFuelTime(burnTime);
+                    ((AbstractFurnaceBlockEntityAccessor)entity).setBurnTime(burnTime);
                     player.world.syncWorldEvent(1591, pos, 0);
                 }
             }
             if (entity instanceof BrewingStandBlockEntity) {
-                if (((BrewingStandBlockEntityAccess)entity).getFuel() < brewTime) {
-                    ((BrewingStandBlockEntityAccess) entity).setFuel(brewTime);
+                if (((BrewingStandBlockEntityAccessor)entity).getFuel() < brewTime) {
+                    ((BrewingStandBlockEntityAccessor) entity).setFuel(brewTime);
                 }
                 spawnParticles(particleEffect, pos, particleCount, player);
                 player.swingHand(Hand.MAIN_HAND, true);

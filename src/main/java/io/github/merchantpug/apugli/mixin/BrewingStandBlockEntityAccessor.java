@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(BrewingStandBlockEntity.class)
-public interface BrewingStandBlockEntityAccess {
+public interface BrewingStandBlockEntityAccessor {
     @Accessor
     int getFuel();
 

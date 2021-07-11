@@ -100,12 +100,6 @@ public class RocketJumpPacket {
             player.world.createExplosion(player, ApugliDamageSources.jumpExplosion(player), null, crosshairX, crosshairY, crosshairZ, e, false, Explosion.DestructionType.NONE);
             player.addVelocity(f * speed * d, g * speed * d, h * speed * d);
             player.velocityModified = true;
-            if (tmoCharged && shouldUseCharged) {
-                player.removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-            }
-            if (cursedCharged && shouldUseCharged) {
-                player.removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
-            }
         });
     }
 }
