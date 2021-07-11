@@ -13,6 +13,7 @@ import io.github.merchantpug.apugli.power.SetApugliEntityGroupPower;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import net.fabricmc.loader.util.sat4j.core.Vec;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -20,6 +21,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -123,7 +129,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Unique private int apugli_framesOnGround;
-    @Unique private float apugli_velocityMultiplier;
+    @Unique private int apugli_velocityMultiplier;
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(Vec3d movementInput, CallbackInfo ci) {
@@ -141,10 +147,10 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                                 apugli_velocityMultiplier += 1;
                             }
                         } else {
-                            apugli_velocityMultiplier = (float) (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+                            apugli_velocityMultiplier = (int)(PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
                         }
                     } else {
-                        apugli_velocityMultiplier = (float) (PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+                        apugli_velocityMultiplier = (int)(PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
                     }
                 }
                 this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);

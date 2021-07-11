@@ -122,16 +122,16 @@ public class ApugliPowers {
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
-                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.02)
-                    .add("ability_velocity", SerializableDataTypes.DOUBLE, 2.0)
-                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.2)
+                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.001)
+                    .add("ability_velocity", SerializableDataTypes.INT, 4)
+                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.02)
                     .add("tick_rate", SerializableDataTypes.INT, 10)
                     .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
                     .add("key", ApoliDataTypes.KEY, new Active.Key()),
             data ->
                     (type, entity) -> {
-                        BunnyHopPower power = new BunnyHopPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("increase_per_tick"), data.getDouble("ability_velocity"), data.getDouble("max_velocity"), (SoundEvent)data.get("sound"), data.getInt("tick_rate"));
+                        BunnyHopPower power = new BunnyHopPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("increase_per_tick"), data.getInt("ability_velocity"), data.getDouble("max_velocity"), (SoundEvent)data.get("sound"), data.getInt("tick_rate"));
                         power.setKey((Active.Key)data.get("key"));
                         return power;
                     })

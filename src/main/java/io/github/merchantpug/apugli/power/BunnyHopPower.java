@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -17,12 +18,12 @@ import net.minecraft.util.math.MathHelper;
 public class BunnyHopPower extends ActiveCooldownPower {
     private Key key;
     public final double increasePerTick;
-    private final double abilityVelocity;
+    private final int abilityVelocity;
     public final double maxVelocity;
     private final SoundEvent soundEvent;
     public final int tickRate;
 
-    public BunnyHopPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double increasePerTick, double abilityVelocity, double maxVelocity, SoundEvent soundEvent, int tickRate) {
+    public BunnyHopPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double increasePerTick, int abilityVelocity, double maxVelocity, SoundEvent soundEvent, int tickRate) {
         super(type, entity, cooldownDuration, hudRender, null);
         this.increasePerTick = increasePerTick;
         this.abilityVelocity = abilityVelocity;
@@ -34,17 +35,19 @@ public class BunnyHopPower extends ActiveCooldownPower {
     @Override
     public void onUse() {
         if (canUse()) {
-            if (((LivingEntityAccess)entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
-                ((LivingEntityAccess)entity).addVelocityMultiplier(this.abilityVelocity);
-                if (soundEvent != null) {
-                    entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
+            if (!entity.isTouchingWater() && !entity.isInLava() && !entity.hasVehicle() && !entity.isFallFlying() && !(entity.getVelocity().getX() == 0 || entity.getVelocity().getZ() == 0)) {
+                if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
+                    ((LivingEntityAccess) entity).addVelocityMultiplier(this.abilityVelocity);
+                    if (soundEvent != null) {
+                        entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
+                    }
+                    float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                    float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                    if (!entity.world.isClient) {
+                        ((ServerWorld) entity.world).spawnParticles(ParticleTypes.CLOUD, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getX(), entity.getY() + 0.5, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getZ(), 8, f * 0.25D, 0.0D, h * 0.25D, 0.2);
+                    }
+                    this.use();
                 }
-                float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                for (int i = 0; i < 15; i++) {
-                    entity.world.addParticle(ParticleTypes.CLOUD, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getX(), entity.getY(), (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getZ(), f * 0.25, 0.0, h * 0.25);
-                }
-                this.use();
             }
         }
     }
