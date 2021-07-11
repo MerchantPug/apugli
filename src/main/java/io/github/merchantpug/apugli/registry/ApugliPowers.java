@@ -122,9 +122,9 @@ public class ApugliPowers {
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
-                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.001)
-                    .add("ability_velocity", SerializableDataTypes.INT, 4)
-                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.02)
+                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.00025)
+                    .add("ability_velocity", SerializableDataTypes.INT, 5)
+                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.01)
                     .add("tick_rate", SerializableDataTypes.INT, 10)
                     .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
