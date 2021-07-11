@@ -1,9 +1,11 @@
 package io.github.merchantpug.apugli.power;
 
+import draylar.fabricfurnaces.block.FabricFurnaceBlock;
 import io.github.apace100.apoli.power.ActiveCooldownPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.merchantpug.apugli.networking.packet.LightUpBlockPacket;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
@@ -42,6 +44,11 @@ public class LightUpBlockPower extends ActiveCooldownPower {
                     if (state.getBlock() instanceof AbstractFurnaceBlock || state.getBlock() instanceof CampfireBlock || state.getBlock() instanceof BrewingStandBlock) {
                         LightUpBlockPacket.send(pos, particle, particleCount, burnTime, brewTime, soundEvent);
                         this.use();
+                    }
+                    if (FabricLoader.getInstance().isModLoaded("fabric-furnaces")) {
+                        if (state.getBlock() instanceof FabricFurnaceBlock) {
+                            LightUpBlockPacket.send(pos, particle, particleCount, burnTime, brewTime, soundEvent);
+                        }
                     }
                 }
             }

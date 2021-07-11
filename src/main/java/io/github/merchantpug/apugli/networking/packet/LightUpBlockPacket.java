@@ -1,11 +1,14 @@
 package io.github.merchantpug.apugli.networking.packet;
 
+import draylar.fabricfurnaces.block.FabricFurnaceBlock;
+import draylar.fabricfurnaces.entity.FabricFurnaceEntity;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.mixin.AbstractFurnaceBlockEntityAccessor;
 import io.github.merchantpug.apugli.mixin.BrewingStandBlockEntityAccessor;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.LivingEntity;
@@ -74,6 +77,16 @@ public class LightUpBlockPacket {
                 player.swingHand(Hand.MAIN_HAND, true);
                 playSound(player, soundEvent);
                 player.world.syncWorldEvent(1592, pos, 0);
+            }
+
+            if (FabricLoader.getInstance().isModLoaded("fabric-furnaces")) {
+                if (state.getBlock() instanceof FabricFurnaceBlock) {
+                    player.world.setBlockState(pos, state.with(LIT, true).with(LIT, true), 2);
+                    spawnParticles(particleEffect, pos, particleCount, player);
+                    player.swingHand(Hand.MAIN_HAND, true);
+                    playSound(player, soundEvent);
+                    player.world.syncWorldEvent(1590, pos, 0);
+                }
             }
         });
     }
