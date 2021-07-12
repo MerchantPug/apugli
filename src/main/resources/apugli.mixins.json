@@ -17,12 +17,17 @@
     "AbstractClientPlayerEntityMixin",
     "ArmorStandEntityRendererMixin",
     "BipedEntityRendererMixin",
+    "GameRendererMixin",
     "IllagerEntityRendererMixin",
     "LivingEntityRendererMixin",
+    "PiglinEntityRendererMixin",
     "PlayerEntityClientMixin",
     "PlayerEntityRendererMixin",
+    "SkeletonEntityRendererMixin",
     "VillagerEntityRendererMixin",
-    "WanderingTraderEntityRendererMixin"
+    "WanderingTraderEntityRendererMixin",
+    "ZombieBaseEntityRendererMixin",
+    "ZombieVillagerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

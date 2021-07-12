@@ -32,7 +32,7 @@ public class BunnyHopPower extends ActiveCooldownPower {
     public void onUse() {
         if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
             if (canUse()) {
-                ((LivingEntityAccess) entity).addVelocityMultiplier(this.abilityVelocity);
+                ((LivingEntityAccess)entity).addVelocityMultiplier(this.abilityVelocity);
                 if (soundEvent != null) {
                     entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
                 }

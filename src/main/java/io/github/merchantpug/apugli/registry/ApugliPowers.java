@@ -13,7 +13,6 @@ import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -26,7 +25,6 @@ import net.minecraft.util.registry.Registry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class ApugliPowers {
     private static final Map<PowerFactory<?>, Identifier> POWER_FACTORIES = new LinkedHashMap<>();
@@ -113,18 +111,16 @@ public class ApugliPowers {
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
                     .add("reset_on_respawn", SerializableDataTypes.BOOLEAN),
             data ->
-                    (type, entity) -> {
-                        VisualTimerPower power = new VisualTimerPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getBoolean("reset_on_respawn"));
-                        return power;
-                    })
+                    (type, entity) ->
+                        new VisualTimerPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getBoolean("reset_on_respawn")))
             .allowCondition());
 
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
-                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.00025)
-                    .add("ability_velocity", SerializableDataTypes.INT, 5)
-                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.01)
+                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.0005)
+                    .add("ability_velocity", SerializableDataTypes.INT, 8)
+                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.02)
                     .add("tick_rate", SerializableDataTypes.INT, 10)
                     .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)

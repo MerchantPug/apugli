@@ -1,31 +1,17 @@
 package io.github.merchantpug.apugli.mixin;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.SetEntityGroupPower;
-import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
-import io.github.merchantpug.apugli.power.BunnyHopPower;
-import io.github.merchantpug.apugli.power.EdibleItemStackPower;
-import io.github.merchantpug.apugli.power.ModifySoulSpeedPower;
-import io.github.merchantpug.apugli.power.SetApugliEntityGroupPower;
+import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
-import net.fabricmc.loader.util.sat4j.core.Vec;
-import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -135,8 +121,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                 this.apugli_framesOnGround = 0;
             }
             if (apugli_framesOnGround > 4) {
-                if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0)
-                this.apugli_velocityMultiplier = Math.max(apugli_velocityMultiplier - Math.max(apugli_velocityMultiplier / 2, 1), 0);
+                this.apugli_velocityMultiplier = 0;
             }
         }
     }
@@ -161,12 +146,12 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Unique
-    public void addVelocityMultiplier(double value) {
+    public void addVelocityMultiplier(int value) {
         apugli_velocityMultiplier += value;
     }
 
     @Unique
-    public float getApugliVelocityMultiplier() {
+    public int getApugliVelocityMultiplier() {
         return apugli_velocityMultiplier;
     }
 }

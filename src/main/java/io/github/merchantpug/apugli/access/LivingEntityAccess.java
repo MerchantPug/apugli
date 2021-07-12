@@ -1,6 +1,6 @@
 package io.github.merchantpug.apugli.access;
 
 public interface LivingEntityAccess {
-    void addVelocityMultiplier(double value);
-    float getApugliVelocityMultiplier();
+    void addVelocityMultiplier(int value);
+    int getApugliVelocityMultiplier();
 }
