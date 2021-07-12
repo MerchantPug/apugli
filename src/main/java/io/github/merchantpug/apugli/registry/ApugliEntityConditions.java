@@ -36,12 +36,12 @@ import java.util.stream.Stream;
 public class ApugliEntityConditions {
     public static void register() {
         register(new ConditionFactory<>(Apugli.identifier("entity_in_radius"), new SerializableData()
-                .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION)
+                .add("condition", ApoliDataTypes.ENTITY_CONDITION)
                 .add("radius", SerializableDataTypes.DOUBLE)
                 .add("compare_to", SerializableDataTypes.INT, 1)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
                 (data, entity) -> {
-                    Predicate<LivingEntity> entityCondition = ((ConditionFactory<LivingEntity>.Instance)data.get("entity_condition"));
+                    Predicate<LivingEntity> entityCondition = ((ConditionFactory<LivingEntity>.Instance)data.get("condition"));
                     int stopAt = -1;
                     Comparison comparison = ((Comparison)data.get("comparison"));
                     int compareTo = data.getInt("compare_to");
