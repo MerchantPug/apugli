@@ -135,7 +135,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                 this.apugli_framesOnGround = 0;
             }
             if (apugli_framesOnGround > 4) {
-                this.apugli_velocityMultiplier = 0;
+                if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0)
+                this.apugli_velocityMultiplier = Math.max(apugli_velocityMultiplier - Math.max(apugli_velocityMultiplier / 2, 1), 0);
             }
         }
     }
@@ -149,8 +150,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                         this.apugli_velocityMultiplier = (int)Math.min(apugli_velocityMultiplier + 1, PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity  / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
                     }
                 }
-                this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
             }
+            this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
         }
     }
 

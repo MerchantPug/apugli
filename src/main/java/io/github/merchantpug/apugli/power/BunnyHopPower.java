@@ -30,20 +30,18 @@ public class BunnyHopPower extends ActiveCooldownPower {
 
     @Override
     public void onUse() {
-        if (!entity.isTouchingWater() && !entity.isInLava() && !entity.hasVehicle() && !entity.isFallFlying() && !(entity.getVelocity().getX() == 0 || entity.getVelocity().getZ() == 0)) {
-            if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
-                if (canUse()) {
-                    ((LivingEntityAccess) entity).addVelocityMultiplier(this.abilityVelocity);
-                    if (soundEvent != null) {
-                        entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
-                    }
-                    float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                    float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                    if (!entity.world.isClient) {
-                        ((ServerWorld) entity.world).spawnParticles(ParticleTypes.CLOUD, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getX(), entity.getY() + 0.5, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getZ(), 8, f * 0.25D, 0.0D, h * 0.25D, 0.2);
-                    }
-                    this.use();
+        if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
+            if (canUse()) {
+                ((LivingEntityAccess) entity).addVelocityMultiplier(this.abilityVelocity);
+                if (soundEvent != null) {
+                    entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);
                 }
+                float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                if (!entity.world.isClient) {
+                    ((ServerWorld) entity.world).spawnParticles(ParticleTypes.CLOUD, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getX(), entity.getY() + 0.5, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + entity.getZ(), 8, f * 0.25D, 0.0D, h * 0.25D, 0.2);
+                }
+                this.use();
             }
         }
     }
