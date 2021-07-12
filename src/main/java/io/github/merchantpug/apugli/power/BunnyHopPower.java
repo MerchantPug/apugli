@@ -4,11 +4,7 @@ import io.github.apace100.apoli.power.ActiveCooldownPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -34,9 +30,9 @@ public class BunnyHopPower extends ActiveCooldownPower {
 
     @Override
     public void onUse() {
-        if (canUse()) {
-            if (!entity.isTouchingWater() && !entity.isInLava() && !entity.hasVehicle() && !entity.isFallFlying() && !(entity.getVelocity().getX() == 0 || entity.getVelocity().getZ() == 0)) {
-                if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
+        if (!entity.isTouchingWater() && !entity.isInLava() && !entity.hasVehicle() && !entity.isFallFlying() && !(entity.getVelocity().getX() == 0 || entity.getVelocity().getZ() == 0)) {
+            if (((LivingEntityAccess) entity).getApugliVelocityMultiplier() < this.maxVelocity / this.increasePerTick) {
+                if (canUse()) {
                     ((LivingEntityAccess) entity).addVelocityMultiplier(this.abilityVelocity);
                     if (soundEvent != null) {
                         entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.PLAYERS, 1.0F, (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.2F + 1.0F);

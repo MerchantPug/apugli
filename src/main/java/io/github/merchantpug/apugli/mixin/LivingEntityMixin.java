@@ -105,7 +105,9 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
     }
 
-    // This spaghetti should hopefully be temporary
+    @Unique private int apugli_framesOnGround;
+    @Unique private int apugli_velocityMultiplier;
+
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).size() != apugli_amountOfEdiblePower) {
@@ -126,45 +128,35 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             }
         }
         PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).forEach(EdibleItemStackPower::tempTick);
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
+                this.apugli_setFramesOnGround();
+            } else {
+                this.apugli_framesOnGround = 0;
+            }
+            if (apugli_framesOnGround > 4) {
+                this.apugli_velocityMultiplier = 0;
+            }
+        }
     }
-
-    @Unique private int apugli_framesOnGround;
-    @Unique private int apugli_velocityMultiplier;
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(Vec3d movementInput, CallbackInfo ci) {
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
-            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
-                apugli_setFramesOnGround();
-            } else {
-                apugli_framesOnGround = 0;
-            }
-            if (apugli_framesOnGround <= 5) {
-                if (apugli_framesOnGround == 0) {
-                    if (this.getVelocity().getX() < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity || this.getVelocity().getZ() < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity) {
-                        if (apugli_velocityMultiplier < PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick) {
-                            if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0) {
-                                apugli_velocityMultiplier += 1;
-                            }
-                        } else {
-                            apugli_velocityMultiplier = (int)(PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
-                        }
-                    } else {
-                        apugli_velocityMultiplier = (int)(PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+            if (this.apugli_framesOnGround <= 4) {
+                if (this.apugli_framesOnGround == 0) {
+                    if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0) {
+                        this.apugli_velocityMultiplier = (int)Math.min(apugli_velocityMultiplier + 1, PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity  / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
                     }
                 }
                 this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
-            } else {
-                apugli_velocityMultiplier = 0;
             }
         }
     }
 
     @Unique
     private void apugli_setFramesOnGround() {
-        if (this.age % 3 == 0) {
-            apugli_framesOnGround += 1;
-        }
+        apugli_framesOnGround += 1;
     }
 
     @Unique
