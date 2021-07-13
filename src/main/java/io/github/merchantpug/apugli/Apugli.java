@@ -19,6 +19,7 @@ public class Apugli implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		LOGGER.info("Apugli is initializing. Powering up your powered up game.");
 		ApugliDamageConditions.register();
 		ApugliEntityActions.register();
 		ApugliEntityConditions.register();
