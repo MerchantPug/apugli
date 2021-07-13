@@ -91,7 +91,7 @@ public class RocketJumpPacket {
             if (FabricLoader.getInstance().isModLoaded("cursedorigins")) {
                 cursedCharged = player.hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
             } else cursedCharged = false;
-            double d = (tmoCharged || cursedCharged) && shouldUseCharged ? 2.0D : 1.0D;
+            double d = (tmoCharged || cursedCharged) && shouldUseCharged ? 1.5D : 1.0D;
             float e = (tmoCharged || cursedCharged) && shouldUseCharged ? 2.0F : 1.5F;
             float f = MathHelper.sin(player.getYaw() * 0.017453292F) * MathHelper.cos(player.getPitch() * 0.017453292F);
             float g = MathHelper.sin(player.getPitch() * 0.017453292F);
