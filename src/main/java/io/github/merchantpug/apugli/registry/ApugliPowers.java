@@ -183,10 +183,10 @@ public class ApugliPowers {
             .allowCondition());
     public static final PowerFactory<Power> PLAYER_MODEL = create(new PowerFactory<>(Apugli.identifier("player_model"),
             new SerializableData()
-                    .add("slim", SerializableDataTypes.BOOLEAN),
+                    .add("model", SerializableDataTypes.STRING),
             data ->
                     (type, player) ->
-                            new SetPlayerModelPower(type, player, data.getBoolean("slim")))
+                            new SetPlayerModelPower(type, player, data.getString("model")))
             .allowCondition());
 
     private static <T extends Power> PowerFactory<T> create(PowerFactory<T> factory) {
