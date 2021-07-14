@@ -142,7 +142,9 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Unique
     private void apugli_setFramesOnGround() {
-        apugli_framesOnGround += 1;
+        if (apugli_framesOnGround <= 4) {
+            apugli_framesOnGround += 1;
+        }
     }
 
     @Unique
