@@ -115,13 +115,14 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
         PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).forEach(EdibleItemStackPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
-            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
-                this.apugli_setFramesOnGround();
-            } else {
-                this.apugli_framesOnGround = 0;
-            }
             if (apugli_framesOnGround > 4) {
                 this.apugli_velocityMultiplier = 0;
+            } else {
+                if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
+                    this.apugli_setFramesOnGround();
+                } else {
+                    this.apugli_framesOnGround = 0;
+                }
             }
         }
     }
@@ -142,9 +143,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Unique
     private void apugli_setFramesOnGround() {
-        if (apugli_framesOnGround <= 4) {
             apugli_framesOnGround += 1;
-        }
     }
 
     @Unique
