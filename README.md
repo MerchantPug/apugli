@@ -14,8 +14,8 @@ Assuming you're using a 1.17 default Fabric workspace, you are able to add Apugl
 ```gradle
 repositories {
     maven {
-		url "https://jitpack.io"
-	}
+    	url "https://jitpack.io"
+    }
 }
 
 dependencies {
