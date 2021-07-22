@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -25,6 +26,7 @@ import net.minecraft.util.registry.Registry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class ApugliPowers {
     private static final Map<PowerFactory<?>, Identifier> POWER_FACTORIES = new LinkedHashMap<>();
@@ -144,6 +146,24 @@ public class ApugliPowers {
                         power.setKey((Active.Key)data.get("key"));
                         return power;
                     }).allowCondition());
+    public static final PowerFactory<Power> ITEM_ATTRIBUTE = create(new PowerFactory<>(Apugli.identifier("item_attribute"),
+            new SerializableData()
+                    .add("modifier", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, null)
+                    .add("modifiers", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIERS, null)
+                    .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
+            data ->
+                    (type, player) -> {
+                        ItemAttributePower power = new ItemAttributePower(type, player, (Predicate<ItemStack>)data.get("item_condition"));
+                        if(data.isPresent("modifier")) {
+                            power.addModifier((AttributedEntityAttributeModifier)data.get("modifier"));
+                        }
+                        if(data.isPresent("modifiers")) {
+                            List<AttributedEntityAttributeModifier> modifierList = (List<AttributedEntityAttributeModifier>)data.get("modifiers");
+                            modifierList.forEach(power::addModifier);
+                        }
+                        return power;
+                    }).allowCondition());
+
     public static final PowerFactory<Power> EDIBLE_STACK = create(new PowerFactory<>(Apugli.identifier("edible_stack"),
             new SerializableData()
                     .add("item_condition", ApoliDataTypes.ITEM_CONDITION)

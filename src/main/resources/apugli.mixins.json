@@ -11,7 +11,9 @@
     "ExplosionMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
-    "PlayerEntityAccessor"
+    "PlayerEntityAccessor",
+    "PlayerEntityMixin",
+    "PlayerInventoryMixin"
   ],
   "client": [
     "AbstractClientPlayerEntityMixin",
