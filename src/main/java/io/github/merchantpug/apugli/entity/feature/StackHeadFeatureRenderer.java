@@ -79,8 +79,8 @@ public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityMo
                     matrixStack.translate(0.0D, 0.0625D, 0.0D);
                 }
                 GameProfile gameProfile = null;
-                if (stack.hasTag()) {
-                    NbtCompound nbtCompound = stack.getTag();
+                if (stack.hasNbt()) {
+                    NbtCompound nbtCompound = stack.getNbt();
                     if (nbtCompound.contains("SkullOwner", 10)) {
                         gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                     }
