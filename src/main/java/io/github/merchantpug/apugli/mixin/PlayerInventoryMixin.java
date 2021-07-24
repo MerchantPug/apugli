@@ -25,6 +25,5 @@ public class PlayerInventoryMixin {
                 power.addModifiersToItem(stack);
             }
         });
-        Apugli.LOGGER.info("Cool");
     }
 }
