@@ -10,6 +10,7 @@
     "DamageEnchantmentMixin",
     "ExplosionMixin",
     "ItemConditionsMixin",
+    "ItemStackMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "PlayerEntityAccessor",

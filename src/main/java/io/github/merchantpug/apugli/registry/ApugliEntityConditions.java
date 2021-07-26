@@ -9,6 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -16,11 +17,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
@@ -77,26 +80,36 @@ public class ApugliEntityConditions {
                     StatusEffectInstance instance = new StatusEffectInstance(effect);
                     return entity.canHaveStatusEffect(instance);
                 }));
-        register(new ConditionFactory<>(Apugli.identifier("block_looking_at"), new SerializableData()
-                .add("block_condition", ApoliDataTypes.BLOCK_CONDITION),
+        register(new ConditionFactory<>(Apugli.identifier("looking_at"), new SerializableData()
+                .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
+                .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null),
                 (data, entity) -> {
+                    Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance)data.get("target_condition");
                     Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
+                    double reach = 4.5D;
+                    double baseReach = 4.5D;
                     if (entity instanceof PlayerEntity) {
-                        double baseReach = 4.5D;
-                        if (((PlayerEntity)entity).getAbilities().creativeMode) {
+                        if (((PlayerEntity) entity).getAbilities().creativeMode) {
                             baseReach = 5.0D;
                         }
-                        double reach = baseReach;
-                        if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
-                            reach = ReachEntityAttributes.getReachDistance(entity, baseReach);
-                        }
-                        Vec3d vec3d = entity.getCameraPosVec(0.0F);
-                        Vec3d vec3d2 = entity.getRotationVec(0.0F);
-                        Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
-                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                        if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
-                            return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
-                        }
+                    }
+                    if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
+                        reach = ReachEntityAttributes.getReachDistance(entity, baseReach);
+                    }
+                    Vec3d vec3d = entity.getCameraPosVec(0.0F);
+                    Vec3d vec3d2 = entity.getRotationVec(0.0F);
+                    Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
+                    Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
+                    double d = reach * reach;
+                    Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
+                    EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
+                    BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+                    if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
+                        return entityCondition.test((LivingEntity)entityHitResult.getEntity());
+                    } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
+                        return false;
+                    } else if (blockHitResult != null) {
+                        return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
                     }
                     return false;
                 }));

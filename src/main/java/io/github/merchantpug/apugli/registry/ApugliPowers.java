@@ -4,6 +4,7 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
@@ -13,14 +14,17 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
@@ -167,30 +171,22 @@ public class ApugliPowers {
     public static final PowerFactory<Power> EDIBLE_STACK = create(new PowerFactory<>(Apugli.identifier("edible_stack"),
             new SerializableData()
                     .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
-                    .add("hunger", SerializableDataTypes.INT)
-                    .add("saturation", SerializableDataTypes.FLOAT)
-                    .add("meat", SerializableDataTypes.BOOLEAN, false)
-                    .add("always_edible", SerializableDataTypes.BOOLEAN, false)
-                    .add("snack", SerializableDataTypes.BOOLEAN, false)
-                    .add("effect", SerializableDataTypes.STATUS_EFFECT_INSTANCE, null)
-                    .add("effects", SerializableDataTypes.STATUS_EFFECT_INSTANCES, null)
+                    .add("food_component", ApugliDataTypes.FOOD_COMPONENT)
+                    .add("use_action", ApugliDataTypes.EAT_ACTION)
+                    .add("return_stack", SerializableDataTypes.ITEM_STACK)
+                    .add("sound", SerializableDataTypes.SOUND_EVENT)
+                    .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
                     .add("tick_rate", SerializableDataTypes.INT, 10),
             data ->
                     (type, player) -> {
                         EdibleItemStackPower power = new EdibleItemStackPower(type, player,
                                 (ConditionFactory<ItemStack>.Instance)data.get("item_condition"),
-                                data.getInt("hunger"),
-                                data.getFloat("saturation"),
-                                data.getBoolean("meat"),
-                                data.getBoolean("always_edible"),
-                                data.getBoolean("snack"),
+                                (FoodComponent)data.get("food_component"),
+                                (UseAction)data.get("use_action"),
+                                (ItemStack)data.get("return_stack"),
+                                (SoundEvent)data.get("sound"),
+                                (ActionFactory<Entity>.Instance)data.get("entity_action"),
                                 data.getInt("tick_rate"));
-                        if(data.isPresent("effect")) {
-                            power.addEffect((StatusEffectInstance)data.get("effect"));
-                        }
-                        if(data.isPresent("effects")) {
-                            ((List<StatusEffectInstance>)data.get("effects")).forEach(power::addEffect);
-                        }
                         return power;
                     })
             .allowCondition());
