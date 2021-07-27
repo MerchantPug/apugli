@@ -82,10 +82,8 @@ public class ApugliEntityConditions {
                 }));
         register(new ConditionFactory<>(Apugli.identifier("looking_at"), new SerializableData()
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
-                .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null),
+                .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
                 (data, entity) -> {
-                    Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance)data.get("target_condition");
-                    Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
                     double reach = 4.5D;
                     double baseReach = 4.5D;
                     if (entity instanceof PlayerEntity) {
@@ -105,12 +103,20 @@ public class ApugliEntityConditions {
                     EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                     BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
                     if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
-                        return entityCondition.test((LivingEntity)entityHitResult.getEntity());
+                        if (data.isPresent("condition")) {
+                            Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance)data.get("target_condition");
+                            return entityCondition.test((LivingEntity)entityHitResult.getEntity());
+                        }
+                        return false;
                     } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
                         return false;
                     } else if (blockHitResult != null) {
-                        return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
+                        if (data.isPresent("block_condition")) {
+                            Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
+                            return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
+                        }
                     }
+
                     return false;
                 }));
         register(new ConditionFactory<>(Apugli.identifier("structure"), new SerializableData()
