@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ModifyFoodPower;
 import io.github.merchantpug.apugli.power.EdibleItemStackPower;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
