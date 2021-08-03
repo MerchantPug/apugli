@@ -67,48 +67,13 @@ public class ApugliPowers {
                     (type, entity) ->
                             new EnergySwirlOverlayPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
             .allowCondition());
-    public static final PowerFactory<Power> WEARABLE_STACK = create(new PowerFactory<>(Apugli.identifier("wearable_stack"),
+    public static final PowerFactory<Power> WEARABLE_STACK = create(new PowerFactory<>(Apugli.identifier("wearable_item"),
             new SerializableData()
                     .add("stack", SerializableDataTypes.ITEM_STACK)
                     .add("scale", SerializableDataTypes.FLOAT, 1.0F),
             data ->
                     (type, entity) ->
                             new WearableItemStackPower(type, entity, (ItemStack)data.get("stack"), data.getFloat("scale")))
-            .allowCondition());
-
-    public static final PowerFactory<Power> LIGHT_UP_BLOCK = create(new PowerFactory<>(Apugli.identifier("light_up_block"),
-            new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("burn_time", SerializableDataTypes.INT, 1600)
-                    .add("brew_time", SerializableDataTypes.INT, 20)
-                    .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
-                    .add("particle_count", SerializableDataTypes.INT, 15)
-                    .add("sound", SerializableDataTypes.SOUND_EVENT, null)
-                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
-            data ->
-                    (type, entity) -> {
-                        LightUpBlockPower power = new LightUpBlockPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getInt("burn_time"), data.getInt("brew_time"), (ParticleType)data.get("particle"), data.getInt("particle_count"), (SoundEvent)data.get("sound"));
-                        power.setKey((Active.Key)data.get("key"));
-                        return power;
-                    })
-            .allowCondition());
-
-    public static final PowerFactory<Power> ROCKET_JUMP = create(new PowerFactory<>(Apugli.identifier("rocket_jump"),
-            new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
-                    .add("amount", SerializableDataTypes.FLOAT, 0.0F)
-                    .add("speed", SerializableDataTypes.DOUBLE, 1.0)
-                    .add("use_charged", SerializableDataTypes.BOOLEAN, false)
-                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
-            data ->
-                    (type, entity) -> {
-                        RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("source"), data.getBoolean("use_charged"), data.getFloat("amount"), data.getDouble("speed"));
-                        power.setKey((Active.Key)data.get("key"));
-                        return power;
-                    })
             .allowCondition());
 
     public static final PowerFactory<Power> VISUAL_TIMER = create (new PowerFactory<>(Apugli.identifier("visual_timer"),
@@ -168,7 +133,7 @@ public class ApugliPowers {
                         return power;
                     }).allowCondition());
 
-    public static final PowerFactory<Power> EDIBLE_STACK = create(new PowerFactory<>(Apugli.identifier("edible_stack"),
+    public static final PowerFactory<Power> EDIBLE_STACK = create(new PowerFactory<>(Apugli.identifier("edible_item"),
             new SerializableData()
                     .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
                     .add("food_component", ApugliDataTypes.FOOD_COMPONENT)
@@ -179,7 +144,7 @@ public class ApugliPowers {
                     .add("tick_rate", SerializableDataTypes.INT, 10),
             data ->
                     (type, player) -> {
-                        EdibleItemStackPower power = new EdibleItemStackPower(type, player,
+                        return new EdibleItemStackPower(type, player,
                                 (ConditionFactory<ItemStack>.Instance)data.get("item_condition"),
                                 (FoodComponent)data.get("food_component"),
                                 (UseAction)data.get("use_action"),
@@ -187,7 +152,6 @@ public class ApugliPowers {
                                 (SoundEvent)data.get("sound"),
                                 (ActionFactory<Entity>.Instance)data.get("entity_action"),
                                 data.getInt("tick_rate"));
-                        return power;
                     })
             .allowCondition());
     public static final PowerFactory<Power> SET_TEXTURE = create(new PowerFactory<>(Apugli.identifier("set_texture"),
