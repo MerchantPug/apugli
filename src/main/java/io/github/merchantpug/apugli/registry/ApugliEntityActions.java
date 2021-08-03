@@ -9,8 +9,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.LivingEntityFeatureRendererRegistrationCallback;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.*;
@@ -21,15 +19,12 @@ import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.ServerWorldAccess;
@@ -42,14 +37,14 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 public class ApugliEntityActions {
+    @SuppressWarnings("unchecked")
     public static void register() {
         register(new ActionFactory<>(Apugli.identifier("zombify_villager"), new SerializableData(),
             (data, entity) -> {
-                if (entity instanceof VillagerEntity) {
-                    VillagerEntity villagerEntity = (VillagerEntity)entity;
+                if (entity instanceof VillagerEntity villagerEntity) {
                     ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
                     if (zombieVillagerEntity != null) {
-                        zombieVillagerEntity.initialize((ServerWorldAccess)zombieVillagerEntity.world, zombieVillagerEntity.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), (NbtCompound)null);
+                        zombieVillagerEntity.initialize((ServerWorldAccess)zombieVillagerEntity.world, zombieVillagerEntity.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null);
                         zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
                         zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
                         zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
@@ -64,63 +59,57 @@ public class ApugliEntityActions {
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                 .add("target_action", ApoliDataTypes.ENTITY_ACTION, null)
                 .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null)
-                .add("self_action", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
+                .add("self_action", ApoliDataTypes.ENTITY_ACTION, null),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity) {
-                        boolean conditionFulfilled = true;
-                        if (data.isPresent("condition")) {
-                            Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance)data.get("condition");
-                            conditionFulfilled = entityCondition.test((LivingEntity)entity);
+                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
+                        double baseReach = 4.5D;
+                        if (entity instanceof PlayerEntity) {
+                            if (((PlayerEntity) entity).getAbilities().creativeMode) {
+                                baseReach = 5.0D;
+                            }
                         }
-                        if (conditionFulfilled) {
-                            double reach = 4.5D;
-                            double baseReach = 4.5D;
-                            if (entity instanceof PlayerEntity) {
-                                if (((PlayerEntity) entity).getAbilities().creativeMode) {
-                                    baseReach = 5.0D;
+                        double reach;
+                        if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
+                            reach = ReachEntityAttributes.getReachDistance((LivingEntity) entity, baseReach);
+                        } else {
+                            reach = baseReach;
+                        }
+                        Vec3d vec3d = entity.getCameraPosVec(0.0F);
+                        Vec3d vec3d2 = entity.getRotationVec(0.0F);
+                        Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
+                        Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
+                        double d = reach * reach;
+                        Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
+                        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
+                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+                        if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity && entityHitResult.getType() == HitResult.Type.ENTITY) {
+                            boolean targetCondition = true;
+                            if (data.isPresent("target_condition")) {
+                                Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
+                                targetCondition = entityCondition.test((LivingEntity) entityHitResult.getEntity());
+                            }
+                            if (targetCondition) {
+                                if (data.isPresent("target_action")) {
+                                    ((ActionFactory<Entity>.Instance) data.get("target_action")).accept(entityHitResult.getEntity());
+                                }
+                                if (data.isPresent("self_action")) {
+                                    ((ActionFactory<Entity>.Instance) data.get("target_action")).accept(entity);
                                 }
                             }
-                            if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
-                                reach = ReachEntityAttributes.getReachDistance((LivingEntity)entity, baseReach);
-                            }
-                            Vec3d vec3d = entity.getCameraPosVec(0.0F);
-                            Vec3d vec3d2 = entity.getRotationVec(0.0F);
-                            Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
-                            Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
-                            double d = reach * reach;
-                            Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
-                            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
-                            BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                            if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
-                                boolean targetCondition = true;
-                                if (data.isPresent("target_condition")) {
-                                    Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance)data.get("target_condition");
-                                    targetCondition = entityCondition.test((LivingEntity)entityHitResult.getEntity());
-                                }
-                                if (targetCondition) {
-                                    if (data.isPresent("target_action")) {
-                                        ((ActionFactory<Entity>.Instance)data.get("target_action")).accept(entityHitResult.getEntity());
-                                    }
-                                    if (data.isPresent("self_action")) {
-                                        ((ActionFactory<Entity>.Instance)data.get("target_action")).accept(entity);
-                                    }
-                                }
 
-                            } else if (blockHitResult != null) {
-                                boolean targetCondition = true;
-                                if (data.isPresent("block_condition")) {
-                                    Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("target_condition");
-                                    targetCondition = blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
+                        } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
+                            boolean targetCondition = true;
+                            if (data.isPresent("block_condition")) {
+                                Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("target_condition");
+                                targetCondition = blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
+                            }
+                            if (targetCondition) {
+                                if (data.isPresent("block_action")) {
+                                    ((ActionFactory<Triple<World, BlockPos, Direction>>.Instance) data.get("block_action")).accept(
+                                            Triple.of(entity.world, blockHitResult.getBlockPos(), Direction.UP));
                                 }
-                                if (targetCondition) {
-                                    if (data.isPresent("block_action")) {
-                                        ((ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action")).accept(
-                                                Triple.of(entity.world, blockHitResult.getBlockPos(), Direction.UP));
-                                    }
-                                    if (data.isPresent("self_action")) {
-                                        ((ActionFactory<Entity>.Instance)data.get("target_action")).accept(entity);
-                                    }
+                                if (data.isPresent("self_action")) {
+                                    ((ActionFactory<Entity>.Instance) data.get("target_action")).accept(entity);
                                 }
                             }
                         }
@@ -134,7 +123,7 @@ public class ApugliEntityActions {
                 .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
                 .add("amount", SerializableDataTypes.FLOAT, 0.0F),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity) {
+                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
                             boolean useCharged = data.getBoolean("use_charged");
                             boolean tmoCharged;
                             boolean cursedCharged;
@@ -180,6 +169,72 @@ public class ApugliEntityActions {
                             }
                         }
                     }));
+        register(new ActionFactory<>(Apugli.identifier("rocket_jump"), new SerializableData()
+                .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                .add("amount", SerializableDataTypes.FLOAT, 0.0F)
+                .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
+                .add("use_charged", SerializableDataTypes.BOOLEAN, false),
+                (data, entity) -> {
+                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
+                        double baseReach = 4.5D;
+                        if (entity instanceof PlayerEntity) {
+                            if (((PlayerEntity) entity).getAbilities().creativeMode) {
+                                baseReach = 5.0D;
+                            }
+                        }
+                        double reach;
+                        if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
+                            reach = ReachEntityAttributes.getReachDistance((LivingEntity) entity, baseReach);
+                        } else {
+                            reach = baseReach;
+                        }
+                        Vec3d vec3d = entity.getCameraPosVec(0.0F);
+                        Vec3d vec3d2 = entity.getRotationVec(0.0F);
+                        Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
+                        Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
+                        double entityReach = reach * reach;
+                        Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
+                        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, entityReach);
+                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+
+                        DamageSource damageSource = (DamageSource)data.get("source");
+                        float damageAmount = data.getFloat("amount");
+                        boolean tmoCharged;
+                        boolean cursedCharged;
+                        if (FabricLoader.getInstance().isModLoaded("toomanyorigins")) {
+                            tmoCharged = ((LivingEntity) entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
+                        } else tmoCharged = false;
+                        if (FabricLoader.getInstance().isModLoaded("cursedorigins")) {
+                            cursedCharged = ((LivingEntity) entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+                        } else cursedCharged = false;
+                        double d = (tmoCharged || cursedCharged) && data.getBoolean("use_charged") ? 1.5D : 1.0D;
+                        float e = (tmoCharged || cursedCharged) && data.getBoolean("use_charged") ? 2.0F : 1.5F;
+                        if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity && entityHitResult.getType() == HitResult.Type.ENTITY) {
+                            if (damageSource != null && damageAmount != 0.0F) {
+                                entity.damage(damageSource, damageAmount);
+                            }
+                            float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                            float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
+                            float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+
+                            entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, entityHitResult.getPos().getX(), entityHitResult.getPos().getY(), entityHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+                            entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
+                            entity.velocityModified = true;
+                        } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
+                            if (damageSource != null && damageAmount != 0.0F) {
+                                entity.damage(damageSource, damageAmount);
+                            }
+                            float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+                            float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
+                            float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+
+                            entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+                            entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
+                            entity.velocityModified = true;
+                        }
+                    }
+                }));
+
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {
