@@ -4,7 +4,6 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
 import io.github.apace100.calio.Calio;
-import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.mixin.PlayerEntityAccessor;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ItemAttributePower extends Power {
-    private final List<AttributedEntityAttributeModifier> modifiers = new LinkedList<AttributedEntityAttributeModifier>();
+    private final List<AttributedEntityAttributeModifier> modifiers = new LinkedList<>();
     public final Predicate<ItemStack> predicate;
 
     public ItemAttributePower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate) {
@@ -111,7 +110,6 @@ public class ItemAttributePower extends Power {
                 stack.addAttributeModifier(attributeModifier.getAttribute(), attributeModifier.getModifier(), EquipmentSlot.MAINHAND);
                 Calio.setEntityAttributesAdditional(stack, true);
             }
-            Apugli.LOGGER.info("Loaded attribute " + attributeModifier.getModifier().toString());
         });
     }
 
@@ -129,7 +127,6 @@ public class ItemAttributePower extends Power {
             }
             NbtCompound nbtCompound = modifier.toNbt();
             nbtList.removeIf(nbtElement -> {
-                Apugli.LOGGER.info("Loaded attribute " + nbtElement);
                 return ((NbtCompound)nbtElement).get("Name").equals(nbtCompound.get("Name")) || ((NbtCompound)nbtElement).get("UUID").equals(nbtCompound.get("UUID"));
             });
         });
