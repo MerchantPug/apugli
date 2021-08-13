@@ -105,7 +105,7 @@ public class ApugliEntityConditions {
                     EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                     BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
                     if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
-                        if (data.isPresent("condition")) {
+                        if (data.isPresent("target_condition")) {
                             Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
                             return entityCondition.test((LivingEntity) entityHitResult.getEntity());
                         }
