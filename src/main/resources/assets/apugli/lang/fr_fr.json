@@ -1,0 +1,8 @@
+{
+  "death.attack.jumpExplosion": "%1$s a explopser",
+  "death.attack.jumpExplosion.player": "%1$s c'est fais exploser par %2$s",
+  "death.attack.jumpExplosion.player.item": "%1$s c'est fais exploser par %2$s en utilisant %3$s",
+
+  "death.attack.indirectZombification": "%1$s c'est fais infecté par %2$s",
+  "death.attack.indirectZombification.item": "%1$s c'est fais infecté par %2$s en utilisant %3$s"
+}
