@@ -84,40 +84,38 @@ public class ApugliEntityConditions {
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                 .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
-                        double baseReach = 4.5D;
-                        if (entity instanceof PlayerEntity) {
-                            if (((PlayerEntity) entity).getAbilities().creativeMode) {
-                                baseReach = 5.0D;
-                            }
+                    double baseReach = 4.5D;
+                    if (entity instanceof PlayerEntity) {
+                        if (((PlayerEntity) entity).getAbilities().creativeMode) {
+                            baseReach = 5.0D;
                         }
-                        double reach;
-                        if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
-                            reach = ReachEntityAttributes.getReachDistance((LivingEntity) entity, baseReach);
-                        } else {
-                            reach = baseReach;
+                    }
+                    double reach;
+                    if (FabricLoader.getInstance().isModLoaded("reach-entity-attributes")) {
+                        reach = ReachEntityAttributes.getReachDistance((LivingEntity) entity, baseReach);
+                    } else {
+                        reach = baseReach;
+                    }
+                    Vec3d vec3d = entity.getCameraPosVec(0.0F);
+                    Vec3d vec3d2 = entity.getRotationVec(0.0F);
+                    Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
+                    Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
+                    double d = reach * reach;
+                    Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
+                    EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
+                    BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+                    if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
+                        if (data.isPresent("condition")) {
+                            Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
+                            return entityCondition.test((LivingEntity) entityHitResult.getEntity());
                         }
-                        Vec3d vec3d = entity.getCameraPosVec(0.0F);
-                        Vec3d vec3d2 = entity.getRotationVec(0.0F);
-                        Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
-                        Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0D);
-                        double d = reach * reach;
-                        Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
-                        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
-                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                        if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
-                            if (data.isPresent("condition")) {
-                                Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
-                                return entityCondition.test((LivingEntity) entityHitResult.getEntity());
-                            }
-                            return false;
-                        } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
-                            return false;
-                        } else if (blockHitResult != null) {
-                            if (data.isPresent("block_condition")) {
-                                Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("block_condition");
-                                return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
-                            }
+                        return false;
+                    } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
+                        return false;
+                    } else if (blockHitResult != null) {
+                        if (data.isPresent("block_condition")) {
+                            Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("block_condition");
+                            return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
                         }
                     }
                     return false;
@@ -150,14 +148,6 @@ public class ApugliEntityConditions {
                     int compareTo = data.getInt("compare_to");
                     if (entity instanceof ServerPlayerEntity && !entity.world.isClient()) {
                         return comparison.compare(((ServerPlayerEntityAccessor) entity).getJoinInvulnerabilityTicks(), compareTo);
-                    }
-                    return false;
-                }));
-        register(new ConditionFactory<>(Apugli.identifier("mod_loaded"), new SerializableData()
-                .add("modid", SerializableDataTypes.STRING),
-                (data, entity) -> {
-                    if (FabricLoader.getInstance().isModLoaded(data.getString("modid"))) {
-                        return true;
                     }
                     return false;
                 }));
