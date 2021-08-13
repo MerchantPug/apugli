@@ -66,7 +66,7 @@ public class ApugliEntityActions {
                 .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null)
                 .add("self_action", ApoliDataTypes.ENTITY_ACTION, null),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
+                    if (entity instanceof LivingEntity) {
                         double baseReach = 4.5D;
                         if (entity instanceof PlayerEntity) {
                             if (((PlayerEntity) entity).getAbilities().creativeMode) {
@@ -98,7 +98,6 @@ public class ApugliEntityActions {
                                     ((ActionFactory<Entity>.Instance) data.get("target_action")).accept(entity);
                                 }
                             }
-
                         } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK && data.isPresent("block_condition")) {
                             Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("block_condition");
                             boolean targetCondition = blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
@@ -174,7 +173,7 @@ public class ApugliEntityActions {
                 .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
                 .add("use_charged", SerializableDataTypes.BOOLEAN, false),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
+                    if (entity instanceof LivingEntity) {
                         double baseReach = 4.5D;
                         if (entity instanceof PlayerEntity) {
                             if (((PlayerEntity) entity).getAbilities().creativeMode) {
@@ -216,9 +215,11 @@ public class ApugliEntityActions {
                             float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
                             float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
 
-                            entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, entityHitResult.getPos().getX(), entityHitResult.getPos().getY(), entityHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
-                            entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
-                            entity.velocityModified = true;
+                            if (!entity.world.isClient()) {
+                                entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+                                entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
+                                entity.velocityModified = true;
+                            }
                         } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
                             if (damageSource != null && damageAmount != 0.0F) {
                                 entity.damage(damageSource, damageAmount);
@@ -227,9 +228,11 @@ public class ApugliEntityActions {
                             float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
                             float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
 
-                            entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, entityHitResult.getPos().getX(), entityHitResult.getPos().getY(), entityHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
-                            entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
-                            entity.velocityModified = true;
+                            if (!entity.world.isClient()) {
+                                entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+                                entity.addVelocity(f * data.getDouble("speed") * d, g * data.getDouble("speed") * d, h * data.getDouble("speed") * d);
+                                entity.velocityModified = true;
+                            }
                         }
                     }
                 }));
