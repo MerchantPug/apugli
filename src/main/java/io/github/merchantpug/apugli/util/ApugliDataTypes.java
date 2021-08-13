@@ -10,6 +10,7 @@ import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.explosion.Explosion;
 
@@ -31,8 +32,13 @@ public class ApugliDataTypes {
                     "eat", UseAction.EAT,
                     "drink", UseAction.DRINK
             )));
+    public static final SerializableDataType<Hand> HAND =
+            SerializableDataType.mapped(Hand.class, HashBiMap.create(ImmutableMap.of(
+                    "mainhand", Hand.MAIN_HAND,
+                    "offhand", Hand.OFF_HAND
+            )));
     public static final SerializableDataType<FoodComponent> FOOD_COMPONENT = SerializableDataType.compound(FoodComponent.class, new SerializableData()
-                    .add("food", SerializableDataTypes.INT)
+                    .add("hunger", SerializableDataTypes.INT)
                     .add("saturation", SerializableDataTypes.FLOAT)
                     .add("meat", SerializableDataTypes.BOOLEAN, false)
                     .add("always_edible", SerializableDataTypes.BOOLEAN, false)

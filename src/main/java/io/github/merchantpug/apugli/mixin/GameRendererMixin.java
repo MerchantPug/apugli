@@ -17,12 +17,14 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements SynchronousResourceReloader, AutoCloseable {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
     @ModifyVariable(method = "updateMovementFovMultiplier", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getSpeed()F"))
     private float modifyF(float f) {
         if (PowerHolderComponent.hasPower(this.client.getCameraEntity(), BunnyHopPower.class)) {
-            f += PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).increasePerTick * ((LivingEntityAccess)this.client.getCameraEntity()).getApugliVelocityMultiplier() * 20;
+            f += PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).increasePerTick * ((LivingEntityAccess) this.client.getCameraEntity()).getApugliVelocityMultiplier() * 20;
         }
         return f;
     }

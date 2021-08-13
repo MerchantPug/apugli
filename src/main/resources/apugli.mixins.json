@@ -15,7 +15,8 @@
     "LivingEntityMixin",
     "PlayerEntityAccessor",
     "PlayerEntityMixin",
-    "PlayerInventoryMixin"
+    "PlayerInventoryMixin",
+    "ServerPlayerEntityAccessor"
   ],
   "client": [
     "AbstractClientPlayerEntityMixin",
@@ -25,7 +26,6 @@
     "IllagerEntityRendererMixin",
     "LivingEntityRendererMixin",
     "PiglinEntityRendererMixin",
-    "PlayerEntityClientMixin",
     "PlayerEntityRendererMixin",
     "SkeletonEntityRendererMixin",
     "VillagerEntityRendererMixin",

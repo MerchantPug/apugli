@@ -2,7 +2,7 @@ package io.github.merchantpug.apugli.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.power.SetPlayerModelPower;
+import io.github.merchantpug.apugli.power.SetTexturePower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -23,9 +23,9 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
     private void getModel(CallbackInfoReturnable<String> cir) {
-        if (PowerHolderComponent.hasPower(this, SetPlayerModelPower.class)) {
-            if (PowerHolderComponent.getPowers(this, SetPlayerModelPower.class).get(0).slim.equals("slim") || PowerHolderComponent.getPowers(this, SetPlayerModelPower.class).get(0).slim.equals("default")) {
-                cir.setReturnValue(PowerHolderComponent.getPowers(this, SetPlayerModelPower.class).get(0).slim);
+        if (PowerHolderComponent.hasPower(this, SetTexturePower.class)) {
+            if (PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals("slim") || PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals("default")) {
+                cir.setReturnValue(PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model);
             }
         }
     }

@@ -7,11 +7,13 @@ import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
+import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,6 +35,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow public abstract boolean isFallFlying();
 
+    @Shadow protected abstract boolean isOnSoulSpeedBlock();
+
     @Unique private int apugli_amountOfEdiblePower = 0;
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
@@ -47,6 +51,15 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
     }
 
+    @Inject(method = "isOnSoulSpeedBlock", at = @At("HEAD"), cancellable = true)
+    private void isOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
+        PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).forEach(power -> {
+            if (power.blockCondition != null) {
+                cir.setReturnValue(power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)));
+            }
+        });
+    }
+
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
     private int replaceLevelOfSouLSpeed(int i) {
         return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, i);
@@ -56,7 +69,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     private void getVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            if (soulSpeedValue <= 0) {
+            if (soulSpeedValue <= 0 || !this.isOnSoulSpeedBlock()) {
                 cir.setReturnValue(super.getVelocityMultiplier());
             } else {
                 cir.setReturnValue(1.0F);
@@ -120,7 +133,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             }
             if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
                 if (apugli_framesOnGround <= 4) {
-                    this.apugli_setFramesOnGround();
+                    apugli_framesOnGround += 1;
                 }
             } else {
                 this.apugli_framesOnGround = 0;
@@ -140,11 +153,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             }
             this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
         }
-    }
-
-    @Unique
-    private void apugli_setFramesOnGround() {
-        apugli_framesOnGround += 1;
     }
 
     @Unique

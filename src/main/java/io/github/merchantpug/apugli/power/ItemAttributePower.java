@@ -1,5 +1,8 @@
 package io.github.merchantpug.apugli.power;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.mojang.datafixers.kinds.IdF;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
@@ -102,14 +105,12 @@ public class ItemAttributePower extends Power {
             }
             if (stack.getItem() instanceof ArmorItem) {
                 stack.addAttributeModifier(attributeModifier.getAttribute(), attributeModifier.getModifier(), ((ArmorItem) stack.getItem()).getSlotType());
-                Calio.setEntityAttributesAdditional(stack, true);
             } else if (stack.getItem() instanceof ShieldItem) {
                 stack.addAttributeModifier(attributeModifier.getAttribute(), attributeModifier.getModifier(), EquipmentSlot.OFFHAND);
-                Calio.setEntityAttributesAdditional(stack, true);
             } else {
                 stack.addAttributeModifier(attributeModifier.getAttribute(), attributeModifier.getModifier(), EquipmentSlot.MAINHAND);
-                Calio.setEntityAttributesAdditional(stack, true);
             }
+            Calio.setEntityAttributesAdditional(stack, true);
         });
     }
 

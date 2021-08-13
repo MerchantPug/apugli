@@ -8,6 +8,7 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.mixin.ServerPlayerEntityAccessor;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,6 +20,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
@@ -80,7 +82,7 @@ public class ApugliEntityConditions {
                 }));
         register(new ConditionFactory<>(Apugli.identifier("looking_at"), new SerializableData()
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
-                .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
+                .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null),
                 (data, entity) -> {
                     if (entity instanceof LivingEntity && !entity.world.isClient()) {
                         double baseReach = 4.5D;
@@ -137,6 +139,25 @@ public class ApugliEntityConditions {
                                 }
                             }
                         }
+                    }
+                    return false;
+                }));
+        register(new ConditionFactory<>(Apugli.identifier("join_invulnerability_ticks"), new SerializableData()
+                .add("compare_to", SerializableDataTypes.INT)
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
+                (data, entity) -> {
+                    Comparison comparison = ((Comparison)data.get("comparison"));
+                    int compareTo = data.getInt("compare_to");
+                    if (entity instanceof ServerPlayerEntity && !entity.world.isClient()) {
+                        return comparison.compare(((ServerPlayerEntityAccessor) entity).getJoinInvulnerabilityTicks(), compareTo);
+                    }
+                    return false;
+                }));
+        register(new ConditionFactory<>(Apugli.identifier("mod_loaded"), new SerializableData()
+                .add("modid", SerializableDataTypes.STRING),
+                (data, entity) -> {
+                    if (FabricLoader.getInstance().isModLoaded(data.getString("modid"))) {
+                        return true;
                     }
                     return false;
                 }));

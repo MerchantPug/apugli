@@ -28,6 +28,8 @@ import java.util.List;
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
     @Shadow protected abstract boolean addFeature(FeatureRenderer<T, M> feature);
 
+    @Shadow public abstract M getModel();
+
     protected LivingEntityRendererMixin(EntityRendererFactory.Context ctx) {
         super(ctx);
     }

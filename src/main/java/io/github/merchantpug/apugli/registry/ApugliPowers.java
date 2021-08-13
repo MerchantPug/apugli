@@ -14,6 +14,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -46,10 +47,11 @@ public class ApugliPowers {
     public static final PowerFactory<Power> MODIFY_SOUL_SPEED = create(new PowerFactory<>(Apugli.identifier("modify_soul_speed"),
             new SerializableData()
                     .add("modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
-                    .add("modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null),
+                    .add("modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                    .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
             data ->
                     (type, entity) -> {
-                        ModifySoulSpeedPower power = new ModifySoulSpeedPower(type, entity);
+                        ModifySoulSpeedPower power = new ModifySoulSpeedPower(type, entity, (ConditionFactory< CachedBlockPosition >.Instance)data.get("block_condition"));
                         if(data.isPresent("modifier")) {
                             power.addModifier(data.getModifier("modifier"));
                         }
@@ -104,17 +106,6 @@ public class ApugliPowers {
                     })
             .allowCondition());
 
-    public static final PowerFactory<Power> EAT_GRASS = create(new PowerFactory<>(Apugli.identifier("eat_grass"),
-            new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
-            data ->
-                    (type, player) -> {
-                        EatGrassPower power = new EatGrassPower(type, player, data.getInt("cooldown"), (HudRender)data.get("hud_render"));
-                        power.setKey((Active.Key)data.get("key"));
-                        return power;
-                    }).allowCondition());
     public static final PowerFactory<Power> ITEM_ATTRIBUTE = create(new PowerFactory<>(Apugli.identifier("item_attribute"),
             new SerializableData()
                     .add("modifier", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, null)
@@ -133,13 +124,13 @@ public class ApugliPowers {
                         return power;
                     }).allowCondition());
 
-    public static final PowerFactory<Power> EDIBLE_STACK = create(new PowerFactory<>(Apugli.identifier("edible_item"),
+    public static final PowerFactory<Power> EDIBLE_ITEM = create(new PowerFactory<>(Apugli.identifier("edible_item"),
             new SerializableData()
                     .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
                     .add("food_component", ApugliDataTypes.FOOD_COMPONENT)
-                    .add("use_action", ApugliDataTypes.EAT_ACTION)
-                    .add("return_stack", SerializableDataTypes.ITEM_STACK)
-                    .add("sound", SerializableDataTypes.SOUND_EVENT)
+                    .add("use_action", ApugliDataTypes.EAT_ACTION, null)
+                    .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
+                    .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
                     .add("tick_rate", SerializableDataTypes.INT, 10),
             data ->
@@ -154,19 +145,14 @@ public class ApugliPowers {
                                 data.getInt("tick_rate"));
                     })
             .allowCondition());
+
     public static final PowerFactory<Power> SET_TEXTURE = create(new PowerFactory<>(Apugli.identifier("set_texture"),
             new SerializableData()
-                    .add("texture_location", SerializableDataTypes.IDENTIFIER, null),
+                    .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
+                    .add("player_model", SerializableDataTypes.STRING, null),
             data ->
                     (type, player) ->
-                        new SetTexturePower(type, player, data.getId("texture_location")))
-            .allowCondition());
-    public static final PowerFactory<Power> PLAYER_MODEL = create(new PowerFactory<>(Apugli.identifier("player_model"),
-            new SerializableData()
-                    .add("model", SerializableDataTypes.STRING),
-            data ->
-                    (type, player) ->
-                            new SetPlayerModelPower(type, player, data.getString("model")))
+                        new SetTexturePower(type, player, data.getId("texture_location"), data.getString("player_model")))
             .allowCondition());
 
     private static <T extends Power> PowerFactory<T> create(PowerFactory<T> factory) {
