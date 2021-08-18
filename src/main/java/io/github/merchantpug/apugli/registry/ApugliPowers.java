@@ -69,6 +69,23 @@ public class ApugliPowers {
                     (type, entity) ->
                             new EnergySwirlOverlayPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
             .allowCondition());
+    public static final PowerFactory<Power> ROCKET_JUMP = create(new PowerFactory<>(Apugli.identifier("rocket_jump"),
+            new SerializableData()
+                    .add("cooldown", SerializableDataTypes.INT)
+                    .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                    .add("amount", SerializableDataTypes.FLOAT, 0.0F)
+                    .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
+                    .add("use_charged", SerializableDataTypes.BOOLEAN, false)
+                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
+                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
+            (data) ->
+                    (type, entity) ->  {
+                        RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("speed"), data.getBoolean("use_charged"));
+                        power.setKey((Active.Key)data.get("key"));
+                        return power;
+                    })
+            .allowCondition());
+
     public static final PowerFactory<Power> WEARABLE_STACK = create(new PowerFactory<>(Apugli.identifier("wearable_item"),
             new SerializableData()
                     .add("stack", SerializableDataTypes.ITEM_STACK)
