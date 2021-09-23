@@ -8,6 +8,7 @@ import io.github.merchantpug.apugli.registry.ApugliDamageSources;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -22,6 +23,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.explosion.Explosion;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class RocketJumpPower extends ActiveCooldownPower {
@@ -30,6 +33,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
     private float amount;
     private double speed;
     private boolean useCharged;
+    private final List<EntityAttributeModifier> modifiers = new LinkedList<>();
 
     public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, DamageSource source, float amount, double speed, boolean useCharged) {
         super(type, entity, cooldownDuration, hudRender, null);
@@ -74,7 +78,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 } else cursedCharged = false;
                 double d = (tmoCharged || cursedCharged) && this.useCharged ? 1.5D : 1.0D;
                 float e = (tmoCharged || cursedCharged) && this.useCharged ? 2.0F : 1.5F;
-                if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity && entityHitResult.getType() == HitResult.Type.ENTITY) {
+                if (entityHitResult != null && entityHitResult.getType() == HitResult.Type.ENTITY) {
                     if (this.source != null && this.amount != 0.0F) {
                         entity.damage(this.source, this.amount);
                     }
@@ -85,6 +89,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                     entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
                     entity.addVelocity(f * this.speed * d, g * this.speed * d, h * this.speed * d);
                     entity.velocityModified = true;
+                    entity.fallDistance = 0;
                     this.use();
                 } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
                     if (this.source != null && this.amount != 0.0F) {
@@ -97,6 +102,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                     entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
                     entity.addVelocity(f * this.speed * d, g * this.speed * d, h * this.speed * d);
                     entity.velocityModified = true;
+                    entity.fallDistance = 0;
                     this.use();
                 }
             }
@@ -111,5 +117,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
     @Override
     public void setKey(Key key) {
         this.key = key;
+    }
+
+    public void addChargedJumpModifier(EntityAttributeModifier modifier) {
+        this.modifiers.add(modifier);
+    }
+
+    public List<EntityAttributeModifier> addChargedJumpModifiers() {
+        return modifiers;
     }
 }
