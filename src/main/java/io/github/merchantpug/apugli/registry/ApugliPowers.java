@@ -7,7 +7,6 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -19,10 +18,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
@@ -31,7 +28,6 @@ import net.minecraft.util.registry.Registry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class ApugliPowers {
     private static final Map<PowerFactory<?>, Identifier> POWER_FACTORIES = new LinkedHashMap<>();
@@ -95,16 +91,6 @@ public class ApugliPowers {
                             new WearableItemStackPower(type, entity, (ItemStack)data.get("stack"), data.getFloat("scale")))
             .allowCondition());
 
-    public static final PowerFactory<Power> VISUAL_TIMER = create (new PowerFactory<>(Apugli.identifier("visual_timer"),
-            new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("reset_on_respawn", SerializableDataTypes.BOOLEAN),
-            data ->
-                    (type, entity) ->
-                        new VisualTimerPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getBoolean("reset_on_respawn")))
-            .allowCondition());
-
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)
@@ -122,24 +108,6 @@ public class ApugliPowers {
                         return power;
                     })
             .allowCondition());
-
-    public static final PowerFactory<Power> ITEM_ATTRIBUTE = create(new PowerFactory<>(Apugli.identifier("item_attribute"),
-            new SerializableData()
-                    .add("modifier", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, null)
-                    .add("modifiers", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIERS, null)
-                    .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
-            data ->
-                    (type, player) -> {
-                        ItemAttributePower power = new ItemAttributePower(type, player, (Predicate<ItemStack>)data.get("item_condition"));
-                        if(data.isPresent("modifier")) {
-                            power.addModifier((AttributedEntityAttributeModifier)data.get("modifier"));
-                        }
-                        if(data.isPresent("modifiers")) {
-                            List<AttributedEntityAttributeModifier> modifierList = (List<AttributedEntityAttributeModifier>)data.get("modifiers");
-                            modifierList.forEach(power::addModifier);
-                        }
-                        return power;
-                    }).allowCondition());
 
     public static final PowerFactory<Power> EDIBLE_ITEM = create(new PowerFactory<>(Apugli.identifier("edible_item"),
             new SerializableData()
