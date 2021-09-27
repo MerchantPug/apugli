@@ -18,6 +18,7 @@ public class Apugli implements ModInitializer {
 		ApugliBlockConditions.register();
 		ApugliDamageConditions.register();
 		ApugliEntityConditions.register();
+		ApugliBiEntityConditions.register();
 		ApugliPowers.init();
 	}
 
