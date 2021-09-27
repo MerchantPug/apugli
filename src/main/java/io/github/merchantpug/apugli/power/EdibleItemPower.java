@@ -3,23 +3,18 @@ package io.github.merchantpug.apugli.power;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
-import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.UseAction;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class EdibleItemStackPower extends Power {
+public class EdibleItemPower extends Power {
     private final Predicate<ItemStack> predicate;
     private final FoodComponent foodComponent;
     private final UseAction useAction;
@@ -28,7 +23,7 @@ public class EdibleItemStackPower extends Power {
     private final Consumer<Entity> entityActionWhenEaten;
     private final int tickRate;
 
-    public EdibleItemStackPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate, FoodComponent foodComponent, UseAction useAction, ItemStack returnStack, SoundEvent sound, Consumer<Entity> entityActionWhenEaten, int tickRate) {
+    public EdibleItemPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate, FoodComponent foodComponent, UseAction useAction, ItemStack returnStack, SoundEvent sound, Consumer<Entity> entityActionWhenEaten, int tickRate) {
         super(type, entity);
         this.predicate = predicate;
         this.foodComponent = foodComponent;

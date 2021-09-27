@@ -13,7 +13,6 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -109,7 +108,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).size() != apugli_amountOfEdiblePower) {
+        if (PowerHolderComponent.getPowers(this, EdibleItemPower.class).size() != apugli_amountOfEdiblePower) {
             if ((LivingEntity)(Object)this instanceof PlayerEntity) {
                 if (this.age % 10 == 0) {
                     for (int i = 0; i < ((PlayerEntityAccessor)this).getInventory().main.size(); i++) {
@@ -122,11 +121,11 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                     }
                     ItemStack offHandStack = ((LivingEntity)(Object)this).getEquippedStack(EquipmentSlot.OFFHAND);
                     ItemStackFoodComponentAPI.removeFoodComponent(offHandStack);
-                    apugli_amountOfEdiblePower = PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).size();
+                    apugli_amountOfEdiblePower = PowerHolderComponent.getPowers(this, EdibleItemPower.class).size();
                 }
             }
         }
-        PowerHolderComponent.getPowers(this, EdibleItemStackPower.class).forEach(EdibleItemStackPower::tempTick);
+        PowerHolderComponent.getPowers(this, EdibleItemPower.class).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
             if (apugli_framesOnGround > 4) {
                 this.apugli_velocityMultiplier = 0;
