@@ -1,8 +1,12 @@
 package io.github.merchantpug.apugli.registry;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
-import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.CooldownPower;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.VariableIntPower;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
@@ -11,9 +15,6 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,6 +24,7 @@ import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -87,7 +89,7 @@ public class ApugliEntityActions {
                         Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
                         EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                         BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                        if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity && entityHitResult.getType() == HitResult.Type.ENTITY) {
+                        if (entityHitResult != null && entityHitResult.getType() == HitResult.Type.ENTITY) {
                             if (data.isPresent("target_action")) {
                                 Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
                                 boolean targetCondition = entityCondition == null || entityCondition.test((LivingEntity) entityHitResult.getEntity());
@@ -174,6 +176,19 @@ public class ApugliEntityActions {
                 ((PlayerEntity) entity).swingHand((Hand)data.get("hand"), true);
             }
         }));
+        register(new ActionFactory<>(Apugli.identifier("drop_item"), new SerializableData()
+                .add("equipment_slot", SerializableDataTypes.EQUIPMENT_SLOT)
+                .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
+                (data, entity) -> {
+                    if (entity instanceof LivingEntity) {
+                        ConditionFactory<ItemStack>.Instance condition = (ConditionFactory<ItemStack>.Instance)data.get("item_condition");
+                        ItemStack equippedItem = ((LivingEntity)entity).getEquippedStack((EquipmentSlot)data.get("equipment_slot"));
+                        if(!equippedItem.isEmpty() && condition.test(equippedItem)) {
+                            entity.dropStack(equippedItem, entity.getEyeHeight(entity.getPose()));
+                            entity.equipStack((EquipmentSlot)data.get("equipment_slot"), ItemStack.EMPTY);
+                        }
+                    }
+                }));
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {
