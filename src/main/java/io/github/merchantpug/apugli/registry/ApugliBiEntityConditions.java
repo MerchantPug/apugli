@@ -7,7 +7,7 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -31,7 +31,7 @@ public class ApugliBiEntityConditions {
                 }));
     }
 
-    private static void register(ConditionFactory<Pair<LivingEntity, LivingEntity>> conditionFactory) {
+    private static void register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
         Registry.register(ApoliRegistries.BIENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }

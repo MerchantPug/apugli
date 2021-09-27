@@ -66,14 +66,21 @@ public class ApugliEntityConditions {
                 }));
         register(new ConditionFactory<>(Apugli.identifier("entity_group"), new SerializableData()
                 .add("group", ApugliDataTypes.APUGLI_ENTITY_GROUP),
-                (data, entity) ->
-                        entity.getGroup() == data.get("group")));
+                (data, entity) -> {
+                    if (entity instanceof LivingEntity) {
+                        return ((LivingEntity)entity).getGroup() == data.get("group");
+                    }
+                    return false;
+                }));
         register(new ConditionFactory<>(Apugli.identifier("can_have_effect"), new SerializableData()
                 .add("effect", SerializableDataTypes.STATUS_EFFECT),
                 (data, entity) -> {
-                    StatusEffect effect = (StatusEffect)data.get("effect");
-                    StatusEffectInstance instance = new StatusEffectInstance(effect);
-                    return entity.canHaveStatusEffect(instance);
+                    if (entity instanceof LivingEntity) {
+                        StatusEffect effect = (StatusEffect)data.get("effect");
+                        StatusEffectInstance instance = new StatusEffectInstance(effect);
+                        return ((LivingEntity)entity).canHaveStatusEffect(instance);
+                    }
+                    return false;
                 }));
         register(new ConditionFactory<>(Apugli.identifier("raycast"), new SerializableData()
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
@@ -146,7 +153,7 @@ public class ApugliEntityConditions {
                 }));
     }
 
-    private static void register(ConditionFactory<LivingEntity> conditionFactory) {
+    private static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }
