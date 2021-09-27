@@ -3,7 +3,6 @@ package io.github.merchantpug.apugli.mixin;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.SetEntityGroupPower;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
@@ -28,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.List;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements LivingEntityAccess {
+public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract EntityGroup getGroup();
 
