@@ -1,8 +1,10 @@
 package io.github.merchantpug.apugli.power;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ActiveCooldownPower;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.merchantpug.apugli.registry.ApugliDamageSources;
 import net.fabricmc.loader.api.FabricLoader;
@@ -25,7 +27,9 @@ import net.minecraft.world.explosion.Explosion;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class RocketJumpPower extends ActiveCooldownPower {
     private Key key;
@@ -67,7 +71,6 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
                 EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, entityReach);
                 BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-
                 boolean tmoCharged;
                 boolean cursedCharged;
                 if (FabricLoader.getInstance().isModLoaded("toomanyorigins")) {
@@ -76,37 +79,35 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 if (FabricLoader.getInstance().isModLoaded("cursedorigins")) {
                     cursedCharged = ((LivingEntity) entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
                 } else cursedCharged = false;
-                double d = (tmoCharged || cursedCharged) && this.useCharged ? 1.5D : 1.0D;
-                float e = (tmoCharged || cursedCharged) && this.useCharged ? 2.0F : 1.5F;
+                boolean isCharged = tmoCharged || cursedCharged;
                 if (entityHitResult != null && entityHitResult.getType() == HitResult.Type.ENTITY) {
-                    if (this.source != null && this.amount != 0.0F) {
-                        entity.damage(this.source, this.amount);
-                    }
-                    float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                    float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
-                    float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-
-                    entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
-                    entity.addVelocity(f * this.speed * d, g * this.speed * d, h * this.speed * d);
-                    entity.velocityModified = true;
-                    entity.fallDistance = 0;
+                    this.handleRocketJump(entityHitResult, isCharged);
                     this.use();
                 } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
-                    if (this.source != null && this.amount != 0.0F) {
-                        entity.damage(this.source, this.amount);
-                    }
-                    float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-                    float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
-                    float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
-
-                    entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, blockHitResult.getPos().getX(), blockHitResult.getPos().getY(), blockHitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
-                    entity.addVelocity(f * this.speed * d, g * this.speed * d, h * this.speed * d);
-                    entity.velocityModified = true;
-                    entity.fallDistance = 0;
+                    this.handleRocketJump(blockHitResult, isCharged);
                     this.use();
                 }
             }
         }
+    }
+
+    private void handleRocketJump(HitResult hitResult, boolean isCharged) {
+        double speed = this.speed;
+        if (isCharged && this.useCharged && !this.getChargedModifiers().isEmpty()) {
+            speed = modifyCharged(entity, RocketJumpPower.class, this.speed, null, null);
+        }
+        float e = isCharged && this.useCharged ? 2.0F : 1.5F;
+        if (this.source != null && this.amount != 0.0F) {
+            entity.damage(this.source, this.amount);
+        }
+        float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+        float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
+        float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
+
+        entity.world.createExplosion(entity, ApugliDamageSources.jumpExplosion((LivingEntity) entity), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+        entity.addVelocity(f * speed, g * speed, h * speed);
+        entity.velocityModified = true;
+        entity.fallDistance = 0;
     }
 
     @Override
@@ -123,7 +124,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
         this.modifiers.add(modifier);
     }
 
-    public List<EntityAttributeModifier> addChargedJumpModifiers() {
+    public List<EntityAttributeModifier> getChargedModifiers() {
         return modifiers;
+    }
+
+    private static <T extends RocketJumpPower> double modifyCharged(Entity entity, Class<T> powerClass, double baseValue, Predicate<T> powerFilter, Consumer<T> powerAction) {
+        List<EntityAttributeModifier> modifiers = PowerHolderComponent.KEY.get(entity).getPowers(powerClass).stream()
+                .flatMap(p -> p.getChargedModifiers().stream()).collect(Collectors.toList());
+        return (float) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
     }
 }
