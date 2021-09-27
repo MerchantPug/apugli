@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.power.BunnyHopPower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,7 +23,7 @@ public abstract class GameRendererMixin implements SynchronousResourceReloader, 
     @ModifyVariable(method = "updateMovementFovMultiplier", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getSpeed()F"))
     private float modifyF(float f) {
         if (PowerHolderComponent.hasPower(this.client.getCameraEntity(), BunnyHopPower.class)) {
-            f += PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).increasePerTick * ((LivingEntityAccess) this.client.getCameraEntity()).getApugliVelocityMultiplier() * 20;
+            f += PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).increasePerTick * PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).getValue() * 20;
         }
         return f;
     }

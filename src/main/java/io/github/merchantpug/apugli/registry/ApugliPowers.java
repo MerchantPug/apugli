@@ -104,20 +104,25 @@ public class ApugliPowers {
 
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.000375)
-                    .add("ability_velocity", SerializableDataTypes.INT, 5)
-                    .add("max_velocity", SerializableDataTypes.DOUBLE, 0.015)
-                    .add("tick_rate", SerializableDataTypes.INT, 10)
-                    .add("sound", SerializableDataTypes.SOUND_EVENT, null)
+                    .add("min", SerializableDataTypes.INT)
+                    .add("max", SerializableDataTypes.INT)
+                    .addFunctionedDefault("start_value", SerializableDataTypes.INT, data -> data.getInt("min"))
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("key", ApoliDataTypes.KEY, new Active.Key()),
+                    .add("min_action", ApoliDataTypes.ENTITY_ACTION, null)
+                    .add("max_action", ApoliDataTypes.ENTITY_ACTION, null)
+                    .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.000375)
+                    .add("tick_rate", SerializableDataTypes.INT, 10),
             data ->
-                    (type, entity) -> {
-                        BunnyHopPower power = new BunnyHopPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("increase_per_tick"), data.getInt("ability_velocity"), data.getDouble("max_velocity"), (SoundEvent)data.get("sound"), data.getInt("tick_rate"));
-                        power.setKey((Active.Key)data.get("key"));
-                        return power;
-                    })
+                    (type, player) ->
+                            new BunnyHopPower(type, player,
+                                    (HudRender)data.get("hud_render"),
+                                    data.getInt("start_value"),
+                                    data.getInt("min"),
+                                    data.getInt("max"),
+                                    (ActionFactory<Entity>.Instance)data.get("min_action"),
+                                    (ActionFactory<Entity>.Instance)data.get("max_action"),
+                                    data.getDouble("increase_per_tick"),
+                                    data.getInt("tick_rate")))
             .allowCondition());
 
     public static final PowerFactory<Power> EDIBLE_ITEM = create(new PowerFactory<>(Apugli.identifier("edible_item"),

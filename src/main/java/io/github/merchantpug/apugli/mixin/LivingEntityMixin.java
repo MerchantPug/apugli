@@ -104,7 +104,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Unique private int apugli_framesOnGround;
-    @Unique private int apugli_velocityMultiplier;
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
@@ -127,8 +126,9 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
         PowerHolderComponent.getPowers(this, EdibleItemPower.class).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+            BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (apugli_framesOnGround > 4) {
-                this.apugli_velocityMultiplier = 0;
+                bunnyHopPower.setValue(0);
             }
             if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
                 if (apugli_framesOnGround <= 4) {
@@ -143,24 +143,17 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void travel(Vec3d movementInput, CallbackInfo ci) {
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+            BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (this.apugli_framesOnGround <= 4) {
                 if (this.apugli_framesOnGround == 0) {
-                    if (this.age % PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).tickRate == 0) {
-                        this.apugli_velocityMultiplier = (int)Math.min(apugli_velocityMultiplier + 1, PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).maxVelocity  / PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick);
+                    if (this.age % bunnyHopPower.tickRate == 0) {
+                        if (bunnyHopPower.getValue() != bunnyHopPower.getMax()) {
+                            bunnyHopPower.increment();
+                        }
                     }
                 }
             }
-            this.updateVelocity((float) PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0).increasePerTick * apugli_velocityMultiplier, movementInput);
+            this.updateVelocity((float)bunnyHopPower.increasePerTick * bunnyHopPower.getValue(), movementInput);
         }
-    }
-
-    @Unique
-    public void addVelocityMultiplier(int value) {
-        apugli_velocityMultiplier += value;
-    }
-
-    @Unique
-    public int getApugliVelocityMultiplier() {
-        return apugli_velocityMultiplier;
     }
 }
