@@ -2,7 +2,7 @@ package io.github.merchantpug.apugli.entity.feature;
 
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.power.WearableItemStackPower;
+import io.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
@@ -23,7 +23,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
@@ -32,15 +31,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3f;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Environment(EnvType.CLIENT)
 public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
     private final Map<SkullBlock.SkullType, SkullBlockEntityModel> headModels;
-    private float scaleX;
-    private float scaleY;
-    private float scaleZ;
-    private ItemStack stack;
 
     public StackHeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
         super(context);
@@ -48,13 +42,11 @@ public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityMo
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        if (PowerHolderComponent.hasPower(entity, WearableItemStackPower.class)) {
-            setScaleX(entity);
-            setScaleY(entity);
-            setScaleZ(entity);
-        }
-        setStack(entity);
-        renderIndividualStack(matrices, vertexConsumers, light, entity, tickDelta, scaleX, scaleY, scaleZ, stack);
+        PowerHolderComponent.getPowers(entity, ModifyEquippedItemRenderPower.class).forEach(power -> {
+            if (power.slot == EquipmentSlot.HEAD) {
+                renderIndividualStack(matrices, vertexConsumers, light, entity, tickDelta, this.getScaleX(entity, power.scale), power.scale, this.getScaleZ(entity, power.scale), power.stack);
+            }
+        });
     }
 
     public void renderIndividualStack(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float scaleX, float scaleY, float scaleZ, ItemStack stack) {
@@ -108,27 +100,11 @@ public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityMo
         }
     }
 
-    protected void setScaleX(LivingEntity entity) {
-        WearableItemStackPower power = PowerHolderComponent.getPowers(entity, WearableItemStackPower.class).get(0);
-        scaleX = entity instanceof PiglinEntity ? power.getScale() + 1.0019531F : power.getScale();
+    protected float getScaleX(LivingEntity entity, float scaleX) {
+        return entity instanceof PiglinEntity ? scaleX * 1.0019531F : scaleX;
     }
 
-    protected void setScaleY(LivingEntity entity) {
-        WearableItemStackPower power = PowerHolderComponent.getPowers(entity, WearableItemStackPower.class).get(0);
-        scaleY = power.getScale();
-    }
-
-    protected void setScaleZ(LivingEntity entity) {
-        WearableItemStackPower power = PowerHolderComponent.getPowers(entity, WearableItemStackPower.class).get(0);
-        scaleZ = entity instanceof PiglinEntity ? power.getScale() + 1.0019531F : power.getScale();
-    }
-
-    protected void setStack(LivingEntity entity) {
-        if (PowerHolderComponent.hasPower(entity, WearableItemStackPower.class)) {
-            WearableItemStackPower power = PowerHolderComponent.getPowers(entity, WearableItemStackPower.class).get(0);
-            stack = power.getItemStack() != null ? power.getItemStack() : ItemStack.EMPTY;
-        } else {
-            stack = ItemStack.EMPTY;
-        }
+    protected float getScaleZ(LivingEntity entity, float scaleZ) {
+        return entity instanceof PiglinEntity ? scaleZ * 1.0019531F : scaleZ;
     }
 }

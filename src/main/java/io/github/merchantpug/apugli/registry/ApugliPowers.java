@@ -16,6 +16,7 @@ import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.FoodComponent;
@@ -72,23 +73,33 @@ public class ApugliPowers {
                     .add("amount", SerializableDataTypes.FLOAT, 0.0F)
                     .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
                     .add("use_charged", SerializableDataTypes.BOOLEAN, false)
+                    .add("charged_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                    .add("charged_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
                     .add("hud_render", ApoliDataTypes.HUD_RENDER)
                     .add("key", ApoliDataTypes.KEY, new Active.Key()),
             (data) ->
                     (type, entity) ->  {
                         RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("speed"), data.getBoolean("use_charged"));
                         power.setKey((Active.Key)data.get("key"));
+                        if(data.isPresent("charged_modifier")) {
+                            power.addChargedJumpModifier(data.getModifier("charged_modifier"));
+                        }
+                        if(data.isPresent("charged_modifiers")) {
+                            ((List<EntityAttributeModifier>)data.get("charged_modifiers")).forEach(power::addChargedJumpModifier);
+                        }
                         return power;
                     })
             .allowCondition());
 
-    public static final PowerFactory<Power> WEARABLE_STACK = create(new PowerFactory<>(Apugli.identifier("wearable_item"),
+    public static final PowerFactory<Power> MODIFY_EQUIPPED_ITEM_RENDER = create(new PowerFactory<>(Apugli.identifier("modify_equipped_item_render"),
             new SerializableData()
+                    .add("equipment_slot", SerializableDataTypes.EQUIPMENT_SLOT)
                     .add("stack", SerializableDataTypes.ITEM_STACK)
-                    .add("scale", SerializableDataTypes.FLOAT, 1.0F),
+                    .add("scale", SerializableDataTypes.FLOAT, 1.0F)
+                    .add("render_equipped", SerializableDataTypes.BOOLEAN, true),
             data ->
                     (type, entity) ->
-                            new WearableItemStackPower(type, entity, (ItemStack)data.get("stack"), data.getFloat("scale")))
+                            new ModifyEquippedItemRenderPower(type, entity, (EquipmentSlot)data.get("equipment_slot"), (ItemStack)data.get("stack"), data.getFloat("scale"), data.getBoolean("render_equipped")))
             .allowCondition());
 
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
@@ -120,7 +131,7 @@ public class ApugliPowers {
                     .add("tick_rate", SerializableDataTypes.INT, 10),
             data ->
                     (type, player) -> {
-                        return new EdibleItemStackPower(type, player,
+                        return new EdibleItemPower(type, player,
                                 (ConditionFactory<ItemStack>.Instance)data.get("item_condition"),
                                 (FoodComponent)data.get("food_component"),
                                 (UseAction)data.get("use_action"),

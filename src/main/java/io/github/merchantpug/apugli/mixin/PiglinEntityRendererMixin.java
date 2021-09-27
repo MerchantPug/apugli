@@ -1,6 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
-import io.github.merchantpug.apugli.entity.feature.StackHelmetFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackArmorFeatureRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -25,6 +25,6 @@ public class PiglinEntityRendererMixin extends BipedEntityRenderer<MobEntity, Pi
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombie, CallbackInfo ci) {
-        this.addFeature(new StackHelmetFeatureRenderer<>(this, new BipedEntityModel(ctx.getPart(outerArmorLayer))));
+        this.addFeature(new StackArmorFeatureRenderer<>(this, new BipedEntityModel<>(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer))));
     }
 }

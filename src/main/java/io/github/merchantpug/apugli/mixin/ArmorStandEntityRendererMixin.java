@@ -1,7 +1,8 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.merchantpug.apugli.entity.feature.StackHeadFeatureRenderer;
-import io.github.merchantpug.apugli.entity.feature.StackHelmetFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackArmorFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackHeldItemFeatureRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
@@ -25,6 +26,7 @@ public abstract class ArmorStandEntityRendererMixin extends LivingEntityRenderer
     @Inject(method = "<init>", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context context, CallbackInfo ci) {
         this.addFeature(new StackHeadFeatureRenderer<>(this, context.getModelLoader()));
-        this.addFeature(new StackHelmetFeatureRenderer(this, new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))));
+        this.addFeature(new StackArmorFeatureRenderer(this, new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_INNER_ARMOR)), new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))));
+        this.addFeature(new StackHeldItemFeatureRenderer(this));
     }
 }

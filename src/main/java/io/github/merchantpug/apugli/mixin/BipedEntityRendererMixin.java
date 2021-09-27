@@ -1,6 +1,7 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.merchantpug.apugli.entity.feature.StackHeadFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackHeldItemFeatureRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -24,5 +25,6 @@ public abstract class BipedEntityRendererMixin<T extends MobEntity, M extends Bi
     @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;Lnet/minecraft/client/render/entity/model/BipedEntityModel;FFFF)V", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context ctx, M model, float shadowRadius, float scaleX, float scaleY, float scaleZ, CallbackInfo ci) {
         this.addFeature(new StackHeadFeatureRenderer(this, ctx.getModelLoader()));
+        this.addFeature(new StackHeldItemFeatureRenderer(this));
     }
 }

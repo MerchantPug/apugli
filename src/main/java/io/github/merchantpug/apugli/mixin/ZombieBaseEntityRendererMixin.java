@@ -1,6 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
-import io.github.merchantpug.apugli.entity.feature.StackHelmetFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackArmorFeatureRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -23,6 +23,6 @@ public class ZombieBaseEntityRendererMixin<T extends ZombieEntity, M extends Zom
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context ctx, M bodyModel, M legsArmorModel, M bodyArmorModel, CallbackInfo ci) {
-        this.addFeature(new StackHelmetFeatureRenderer(this, bodyArmorModel));
+        this.addFeature(new StackArmorFeatureRenderer(this, legsArmorModel, bodyArmorModel));
     }
 }

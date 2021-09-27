@@ -1,6 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
-import io.github.merchantpug.apugli.entity.feature.StackHelmetFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.StackArmorFeatureRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -24,6 +24,6 @@ public class SkeletonEntityRendererMixin extends BipedEntityRenderer<AbstractSke
 
     @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;Lnet/minecraft/client/render/entity/model/EntityModelLayer;Lnet/minecraft/client/render/entity/model/EntityModelLayer;Lnet/minecraft/client/render/entity/model/EntityModelLayer;)V", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context ctx, EntityModelLayer layer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer, CallbackInfo ci) {
-        this.addFeature(new StackHelmetFeatureRenderer(this, new SkeletonEntityModel(ctx.getPart(bodyArmorLayer))));
+        this.addFeature(new StackArmorFeatureRenderer(this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer))));
     }
 }
