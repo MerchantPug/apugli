@@ -50,14 +50,14 @@ public abstract class HeldItemRendererMixin {
         if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.slot == EquipmentSlot.OFFHAND)) {
             modifyEquippedItemRenderPowers.forEach(power -> {
                 if (power.slot == EquipmentSlot.OFFHAND && this.offHand.isEmpty() || power.slot == EquipmentSlot.OFFHAND && !power.shouldRenderEquipped()) {
-                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
                 }
             });
             if (!this.offHand.isEmpty() && modifyEquippedItemRenderPowers.stream().noneMatch(power -> power.slot == EquipmentSlot.OFFHAND && !power.shouldRenderEquipped())) {
-                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, this.offHand, equipProgress, matrices, vertexConsumers, light);
+                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, this.offHand, equipProgress, matrices, vertexConsumers, light);
             }
         } else {
-            this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, this.offHand, equipProgress, matrices, vertexConsumers, light);
+                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, this.offHand, equipProgress, matrices, vertexConsumers, light);
         }
     }
 }
