@@ -10,7 +10,6 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.mixin.ServerPlayerEntityAccessor;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -19,7 +18,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
@@ -32,11 +30,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ApugliEntityConditions {
 
@@ -80,7 +75,7 @@ public class ApugliEntityConditions {
                     StatusEffectInstance instance = new StatusEffectInstance(effect);
                     return entity.canHaveStatusEffect(instance);
                 }));
-        register(new ConditionFactory<>(Apugli.identifier("looking_at"), new SerializableData()
+        register(new ConditionFactory<>(Apugli.identifier("raycast"), new SerializableData()
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                 .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null),
                 (data, entity) -> {
@@ -104,15 +99,13 @@ public class ApugliEntityConditions {
                     Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
                     EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                     BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                    if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
+                    if (entityHitResult != null && entityHitResult.getType() == HitResult.Type.ENTITY) {
                         if (data.isPresent("target_condition")) {
                             Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
                             return entityCondition.test((LivingEntity) entityHitResult.getEntity());
                         }
                         return false;
-                    } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
-                        return false;
-                    } else if (blockHitResult != null) {
+                    } else if (blockHitResult != null && blockHitResult.getType() == HitResult.Type.BLOCK) {
                         if (data.isPresent("block_condition")) {
                             Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("block_condition");
                             return blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
