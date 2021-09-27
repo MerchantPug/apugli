@@ -18,9 +18,6 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-    private ArrayList<Identifier> skin = new ArrayList<>();
-    private ArrayList<Float> speed = new ArrayList<>();
-    private int powerAmount = 0;
 
     public EnergySwirlOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
         super(featureRendererContext);
@@ -28,37 +25,22 @@ public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        List<EnergySwirlOverlayPower> powers = PowerHolderComponent.getPowers(entity, EnergySwirlOverlayPower.class);
-        if (powers.size() != powerAmount) {
-            skin.clear();
-            speed.clear();
-            powers.forEach(power -> {
-                skin.add(power.getTextureLocation());
-                speed.add(power.getSpeed());
-            });
-            powerAmount = powers.size();
-        }
-        for (int i = 0; i < powers.size(); i++) {
-            float f = (float)entity.age + tickDelta;
-            EntityModel<T> entityModel = this.getContextModel();
-            entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
-            this.getContextModel().copyStateTo(entityModel);
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(i), this.getEnergySwirlX(f, i) % 1.0F, f * 0.01F % 1.0F));
-            entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-            entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
-        }
+        PowerHolderComponent.getPowers(entity, EnergySwirlOverlayPower.class).forEach(power -> {
+            this.renderOverlay(power.getTextureLocation(), power.getSpeed(), matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+        });
     }
 
-    protected float getEnergySwirlX(float partialAge, int i) {
-        return partialAge * getSpeed(i);
+    public void renderOverlay(Identifier textureLocation, float speed, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        float f = (float)entity.age + tickDelta;
+        EntityModel<T> entityModel = this.getContextModel();
+        entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
+        this.getContextModel().copyStateTo(entityModel);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(textureLocation, this.getEnergySwirlX(f, speed) % 1.0F, f * 0.01F % 1.0F));
+        entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+        entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
     }
 
-    protected Identifier getEnergySwirlTexture(int i) {
-        return skin.get(i);
-    }
-
-    protected float getSpeed(int i) {
-        return speed.get(i);
+    protected float getEnergySwirlX(float partialAge, float speed) {
+        return partialAge * speed;
     }
 }
-
