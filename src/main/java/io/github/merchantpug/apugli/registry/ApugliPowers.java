@@ -13,6 +13,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import io.github.merchantpug.apugli.util.PlayerModelType;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -128,8 +129,8 @@ public class ApugliPowers {
     public static final PowerFactory<Power> EDIBLE_ITEM = create(new PowerFactory<>(Apugli.identifier("edible_item"),
             new SerializableData()
                     .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
-                    .add("food_component", ApugliDataTypes.FOOD_COMPONENT)
-                    .add("use_action", ApugliDataTypes.EAT_ACTION, null)
+                    .add("food_component", SerializableDataTypes.FOOD_COMPONENT)
+                    .add("use_action", SerializableDataTypes.USE_ACTION, null)
                     .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
                     .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                     .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
@@ -150,10 +151,10 @@ public class ApugliPowers {
     public static final PowerFactory<Power> SET_TEXTURE = create(new PowerFactory<>(Apugli.identifier("set_texture"),
             new SerializableData()
                     .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
-                    .add("player_model", SerializableDataTypes.STRING, null),
+                    .add("player_model", ApugliDataTypes.PLAYER_MODEL_TYPE, null),
             data ->
                     (type, player) ->
-                        new SetTexturePower(type, player, data.getId("texture_location"), data.getString("player_model")))
+                        new SetTexturePower(type, player, data.getId("texture_location"), (PlayerModelType)data.get("player_model")))
             .allowCondition());
 
     private static <T extends Power> PowerFactory<T> create(PowerFactory<T> factory) {

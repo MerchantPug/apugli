@@ -6,7 +6,6 @@
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
     "BrewingStandBlockEntityAccessor",
-    "CooldownPowerAccessor",
     "DamageEnchantmentMixin",
     "ExplosionMixin",
     "ItemConditionsMixin",

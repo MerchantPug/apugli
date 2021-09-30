@@ -27,7 +27,9 @@ public class EdibleItemPower extends Power {
         super(type, entity);
         this.predicate = predicate;
         this.foodComponent = foodComponent;
-        this.useAction = useAction;
+        if (useAction == UseAction.EAT || useAction ==  UseAction.DRINK) {
+            this.useAction = useAction;
+        } else this.useAction = null;
         this.returnStack = returnStack;
         this.sound = sound;
         this.entityActionWhenEaten = entityActionWhenEaten;
