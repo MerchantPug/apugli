@@ -38,7 +38,7 @@ public class ApugliEntityConditions {
     @SuppressWarnings("unchecked")
     public static void register() {
         register(new ConditionFactory<>(Apugli.identifier("entity_in_radius"), new SerializableData()
-                .add("condition", ApoliDataTypes.ENTITY_CONDITION)
+                .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION)
                 .add("radius", SerializableDataTypes.DOUBLE)
                 .add("compare_to", SerializableDataTypes.INT, 1)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
