@@ -1,22 +1,21 @@
 package io.github.merchantpug.apugli.registry;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.CooldownPower;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.VariableIntPower;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.*;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -24,6 +23,7 @@ import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Hand;
@@ -33,14 +33,15 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.world.*;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import org.apache.commons.lang3.tuple.Triple;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class ApugliEntityActions {
@@ -116,61 +117,89 @@ public class ApugliEntityActions {
                     }
                 }));
         register(new ActionFactory<>(Apugli.identifier("explode"), new SerializableData()
-                .add("radius", SerializableDataTypes.FLOAT)
-                .add("behavior", ApugliDataTypes.EXPLOSION_BEHAVIOR)
+                .add("power", SerializableDataTypes.FLOAT)
+                .add("destruction_type", SerializableDataType.enumValue(Explosion.DestructionType.class), Explosion.DestructionType.BREAK)
+                .add("damage_self", SerializableDataTypes.BOOLEAN, true)
+                .add("indestructible", ApoliDataTypes.BLOCK_CONDITION, null)
+                .add("destructible", ApoliDataTypes.BLOCK_CONDITION, null)
+                .add("create_fire", SerializableDataTypes.BOOLEAN, false)
                 .add("use_charged", SerializableDataTypes.BOOLEAN, false)
-                .add("spawn_effect_cloud", SerializableDataTypes.BOOLEAN, false)
-                .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
-                .add("amount", SerializableDataTypes.FLOAT, 0.0F),
+                .add("charged_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("charged_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("spawn_effect_cloud", SerializableDataTypes.BOOLEAN, false),
                 (data, entity) -> {
-                    if (entity instanceof LivingEntity && !entity.world.isClient()) {
-                        boolean useCharged = data.getBoolean("use_charged");
-                        boolean tmoCharged;
-                        boolean cursedCharged;
-                        float f = 1.0F;
-                        if (useCharged) {
-                            if (FabricLoader.getInstance().isModLoaded("toomanyorigins")) {
-                                tmoCharged = ((LivingEntity)entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-                            } else tmoCharged = false;
-                            if (FabricLoader.getInstance().isModLoaded("cursedorigins")) {
-                                cursedCharged = ((LivingEntity)entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
-                            } else cursedCharged = false;
+                    if(entity.world.isClient) {
+                        return;
+                    }
+                    boolean useCharged = data.getBoolean("use_charged");
+                    boolean tmoCharged;
+                    boolean cursedCharged;
+                    List<EntityAttributeModifier> chargedModifiers = new ArrayList<>();
+                    if (data.isPresent("charged_modifier")) {
+                        chargedModifiers.add((EntityAttributeModifier)data.get("charged_modifier"));
+                    }
+                    if (data.isPresent("charged_modifiers")) {
+                        ((List<EntityAttributeModifier>)data.get("charged_modifiers")).forEach(modifier -> {
+                            chargedModifiers.add((EntityAttributeModifier)data.get("charged_modifier"));
+                        });
+                    }
+                    float power = data.getFloat("power");
+                    if (useCharged) {
+                        if (FabricLoader.getInstance().isModLoaded("apugli")) {
+                            tmoCharged = ((LivingEntity)entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
+                        } else tmoCharged = false;
+                        if (FabricLoader.getInstance().isModLoaded("cursedorigins")) {
+                            cursedCharged = ((LivingEntity)entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+                        } else cursedCharged = false;
 
-                            if (tmoCharged) {
-                                ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-                                f = 2.0F;
-                            }
-                            if (cursedCharged) {
-                                ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
-                                f = 2.0F;
-                            }
+                        if (tmoCharged || cursedCharged) {
+                            ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
+                            ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+                            power = (float)AttributeUtil.applyModifiers(chargedModifiers, power);
                         }
-
-                        entity.world.createExplosion(entity, DamageSource.explosion((LivingEntity)entity), null, entity.getX(), entity.getY(), entity.getZ(), data.getFloat("radius") * f, false, (Explosion.DestructionType)data.get("behavior"));
-
-                        Collection<StatusEffectInstance> collection = ((LivingEntity)entity).getStatusEffects();
-                        if (!collection.isEmpty() && data.getBoolean("spawn_effect_cloud")) {
-                            AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
-                            areaEffectCloudEntity.setRadius(2.5F);
-                            areaEffectCloudEntity.setRadiusOnUse(-0.5F);
-                            areaEffectCloudEntity.setWaitTime(10);
-                            areaEffectCloudEntity.setDuration(areaEffectCloudEntity.getDuration() / 2);
-                            areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-
-                            for (StatusEffectInstance statusEffectInstance : collection) {
-                                areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
+                    }
+                    if(data.isPresent("indestructible")) {
+                        Predicate<CachedBlockPosition> blockCondition = (Predicate<CachedBlockPosition>)data.get("indestructible");
+                        ExplosionBehavior eb = new ExplosionBehavior() {
+                            @Override
+                            public Optional<Float> getBlastResistance(Explosion explosion, BlockView blockView, BlockPos world, BlockState pos, FluidState blockState) {
+                                Optional<Float> def = super.getBlastResistance(explosion, blockView, world, pos, blockState);
+                                Optional<Float> ovr = blockCondition.test(
+                                        new CachedBlockPosition(entity.world, world, true)) ?
+                                        Optional.of(Blocks.WATER.getBlastResistance()) : Optional.empty();
+                                return ovr.isPresent() ? def.isPresent() ? def.get() > ovr.get() ? def : ovr : ovr : def;
                             }
-                            entity.world.spawnEntity(areaEffectCloudEntity);
+                        };
+                        entity.world.createExplosion(data.getBoolean("damage_self") ? null : entity,
+                                entity instanceof LivingEntity ?
+                                        DamageSource.explosion((LivingEntity)entity) :
+                                        DamageSource.explosion((LivingEntity) null),
+                                eb, entity.getX(), entity.getY(), entity.getZ(),
+                                power, data.getBoolean("create_fire"),
+                                (Explosion.DestructionType) data.get("destruction_type"));
+                    } else {
+                        entity.world.createExplosion(data.getBoolean("damage_self") ? null : entity,
+                                entity.getX(), entity.getY(), entity.getZ(),
+                                power, data.getBoolean("create_fire"),
+                                (Explosion.DestructionType) data.get("destruction_type"));
+                    }
+                    Collection<StatusEffectInstance> collection = ((LivingEntity)entity).getStatusEffects();
+                    if (!collection.isEmpty() && data.getBoolean("spawn_effect_cloud")) {
+                        AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
+                        areaEffectCloudEntity.setRadius(2.5F);
+                        areaEffectCloudEntity.setRadiusOnUse(-0.5F);
+                        areaEffectCloudEntity.setWaitTime(10);
+                        areaEffectCloudEntity.setDuration(areaEffectCloudEntity.getDuration() / 2);
+                        areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
+
+                        for (StatusEffectInstance statusEffectInstance : collection) {
+                            areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
                         }
-                        DamageSource source = (DamageSource)data.get("source");
-                        float amount = data.getFloat("amount");
-                        if (source != null && amount != 0.0F) {
-                            entity.damage(source, amount);
-                        }
+                        entity.world.spawnEntity(areaEffectCloudEntity);
                     }
                 }));
         register(new ActionFactory<>(Apugli.identifier("swing_hand"), new SerializableData()
-                .add("hand", ApugliDataTypes.HAND),
+                .add("hand", SerializableDataTypes.HAND),
         (data, entity) -> {
             if (entity instanceof PlayerEntity && !entity.world.isClient) {
                 ((PlayerEntity) entity).swingHand((Hand)data.get("hand"), true);
