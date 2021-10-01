@@ -95,16 +95,6 @@ public class ApugliPowers {
                             new WearableItemStackPower(type, entity, (ItemStack)data.get("stack"), data.getFloat("scale")))
             .allowCondition());
 
-    public static final PowerFactory<Power> VISUAL_TIMER = create (new PowerFactory<>(Apugli.identifier("visual_timer"),
-            new SerializableData()
-                    .add("cooldown", SerializableDataTypes.INT)
-                    .add("hud_render", ApoliDataTypes.HUD_RENDER)
-                    .add("reset_on_respawn", SerializableDataTypes.BOOLEAN),
-            data ->
-                    (type, entity) ->
-                        new VisualTimerPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getBoolean("reset_on_respawn")))
-            .allowCondition());
-
     public static final PowerFactory<Power> BUNNY_HOP = create(new PowerFactory<>(Apugli.identifier("bunny_hop"),
             new SerializableData()
                     .add("cooldown", SerializableDataTypes.INT)

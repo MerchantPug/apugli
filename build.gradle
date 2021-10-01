@@ -31,6 +31,15 @@ repositories {
 			includeGroup "com.jamieswhiteshirt"
 		}
 	}
+	maven {
+		url "https://maven.shedaniel.me/"
+	}
+	maven {
+		url "https://api.modrinth.com/maven"
+	}
+	flatDir {
+		dir rootProject.file("libs")
+	}
 }
 
 dependencies {

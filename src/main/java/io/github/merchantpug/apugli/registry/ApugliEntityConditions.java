@@ -48,7 +48,7 @@ public class ApugliEntityConditions {
                 .add("compare_to", SerializableDataTypes.INT, 1)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
                 (data, entity) -> {
-                    Predicate<LivingEntity> entityCondition = ((ConditionFactory<LivingEntity>.Instance)data.get("condition"));
+                    Predicate<Entity> entityCondition = ((ConditionFactory<Entity>.Instance)data.get("condition"));
                     int stopAt = -1;
                     Comparison comparison = ((Comparison)data.get("comparison"));
                     int compareTo = data.getInt("compare_to");
@@ -71,14 +71,21 @@ public class ApugliEntityConditions {
                 }));
         register(new ConditionFactory<>(Apugli.identifier("entity_group"), new SerializableData()
                 .add("group", ApugliDataTypes.APUGLI_ENTITY_GROUP),
-                (data, entity) ->
-                        entity.getGroup() == data.get("group")));
+                (data, entity) -> {
+                    if (entity instanceof LivingEntity) {
+                        return ((LivingEntity)entity).getGroup() == data.get("group");
+                    }
+                    return false;
+                }));
         register(new ConditionFactory<>(Apugli.identifier("can_have_effect"), new SerializableData()
                 .add("effect", SerializableDataTypes.STATUS_EFFECT),
                 (data, entity) -> {
-                    StatusEffect effect = (StatusEffect)data.get("effect");
-                    StatusEffectInstance instance = new StatusEffectInstance(effect);
-                    return entity.canHaveStatusEffect(instance);
+                    if (entity instanceof LivingEntity) {
+                        StatusEffect effect = (StatusEffect)data.get("effect");
+                        StatusEffectInstance instance = new StatusEffectInstance(effect);
+                        return ((LivingEntity)entity).canHaveStatusEffect(instance);
+                    }
+                    return false;
                 }));
         register(new ConditionFactory<>(Apugli.identifier("looking_at"), new SerializableData()
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
@@ -104,14 +111,11 @@ public class ApugliEntityConditions {
                     Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
                     EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                     BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                    if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
+                    if (entityHitResult != null) {
                         if (data.isPresent("target_condition")) {
-                            Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
-                            return entityCondition.test((LivingEntity) entityHitResult.getEntity());
+                            Predicate<Entity> entityCondition = (ConditionFactory<Entity>.Instance) data.get("target_condition");
+                            return entityCondition.test(entityHitResult.getEntity());
                         }
-                        return false;
-                    } else if (entityHitResult != null && !(entityHitResult.getEntity() instanceof LivingEntity)) {
-                        return false;
                     } else if (blockHitResult != null) {
                         if (data.isPresent("block_condition")) {
                             Predicate<CachedBlockPosition> blockCondition = (ConditionFactory<CachedBlockPosition>.Instance) data.get("block_condition");
@@ -153,7 +157,7 @@ public class ApugliEntityConditions {
                 }));
     }
 
-    private static void register(ConditionFactory<LivingEntity> conditionFactory) {
+    private static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }

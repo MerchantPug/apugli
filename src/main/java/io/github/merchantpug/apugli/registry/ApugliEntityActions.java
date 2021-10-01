@@ -87,10 +87,10 @@ public class ApugliEntityActions {
                         Predicate<Entity> predicate = (entityx) -> !entityx.isSpectator() && entityx.collides();
                         EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, d);
                         BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
-                        if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity && entityHitResult.getType() == HitResult.Type.ENTITY) {
+                        if (entityHitResult != null && entityHitResult.getType() == HitResult.Type.ENTITY) {
                             if (data.isPresent("target_action")) {
-                                Predicate<LivingEntity> entityCondition = (ConditionFactory<LivingEntity>.Instance) data.get("target_condition");
-                                boolean targetCondition = entityCondition == null || entityCondition.test((LivingEntity) entityHitResult.getEntity());
+                                Predicate<Entity> entityCondition = (ConditionFactory<Entity>.Instance) data.get("target_condition");
+                                boolean targetCondition = entityCondition == null || entityCondition.test(entityHitResult.getEntity());
                                 if (targetCondition) {
                                     ((ActionFactory<Entity>.Instance) data.get("target_action")).accept(entityHitResult.getEntity());
                                     if (data.isPresent("self_action")) {
