@@ -2,10 +2,16 @@ package io.github.merchantpug.apugli.power;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ActiveCooldownPower;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.registry.ApugliDamageSources;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
@@ -38,6 +44,33 @@ public class RocketJumpPower extends ActiveCooldownPower {
     private double speed;
     private boolean useCharged;
     private final List<EntityAttributeModifier> modifiers = new LinkedList<>();
+
+    public static PowerFactory<?> getFactory() {
+        return new PowerFactory<RocketJumpPower>(Apugli.identifier("rocket_jump"),
+                new SerializableData()
+                        .add("cooldown", SerializableDataTypes.INT)
+                        .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                        .add("amount", SerializableDataTypes.FLOAT, 0.0F)
+                        .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
+                        .add("use_charged", SerializableDataTypes.BOOLEAN, false)
+                        .add("charged_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                        .add("charged_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                        .add("hud_render", ApoliDataTypes.HUD_RENDER)
+                        .add("key", ApoliDataTypes.KEY, new Active.Key()),
+                (data) ->
+                        (type, entity) ->  {
+                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("speed"), data.getBoolean("use_charged"));
+                            power.setKey((Active.Key)data.get("key"));
+                            if(data.isPresent("charged_modifier")) {
+                                power.addChargedJumpModifier(data.getModifier("charged_modifier"));
+                            }
+                            if(data.isPresent("charged_modifiers")) {
+                                ((List<EntityAttributeModifier>)data.get("charged_modifiers")).forEach(power::addChargedJumpModifier);
+                            }
+                            return power;
+                        })
+                .allowCondition();
+    }
 
     public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, DamageSource source, float amount, double speed, boolean useCharged) {
         super(type, entity, cooldownDuration, hudRender, null);

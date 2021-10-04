@@ -1,7 +1,7 @@
 package io.github.merchantpug.apugli.entity.feature;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.power.EnergySwirlOverlayPower;
+import io.github.merchantpug.apugli.power.EnergySwirlPower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.*;
@@ -12,10 +12,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 @Environment(EnvType.CLIENT)
 public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
 
@@ -25,7 +21,7 @@ public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        PowerHolderComponent.getPowers(entity, EnergySwirlOverlayPower.class).forEach(power -> {
+        PowerHolderComponent.getPowers(entity, EnergySwirlPower.class).forEach(power -> {
             this.renderOverlay(power.getTextureLocation(), power.getSpeed(), matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
         });
     }

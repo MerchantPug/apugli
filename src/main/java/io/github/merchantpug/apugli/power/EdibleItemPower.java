@@ -1,7 +1,14 @@
 package io.github.merchantpug.apugli.power;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -22,6 +29,28 @@ public class EdibleItemPower extends Power {
     private final SoundEvent sound;
     private final Consumer<Entity> entityActionWhenEaten;
     private final int tickRate;
+
+    public static PowerFactory<?> getFactory() {
+        return new PowerFactory<EdibleItemPower>(Apugli.identifier("edible_item"),
+                new SerializableData()
+                        .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
+                        .add("food_component", SerializableDataTypes.FOOD_COMPONENT)
+                        .add("use_action", SerializableDataTypes.USE_ACTION, null)
+                        .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
+                        .add("sound", SerializableDataTypes.SOUND_EVENT, null)
+                        .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                        .add("tick_rate", SerializableDataTypes.INT, 10),
+                data ->
+                        (type, player) -> new EdibleItemPower(type, player,
+                                    (ConditionFactory<ItemStack>.Instance)data.get("item_condition"),
+                                    (FoodComponent)data.get("food_component"),
+                                    (UseAction)data.get("use_action"),
+                                    (ItemStack)data.get("return_stack"),
+                                    (SoundEvent)data.get("sound"),
+                                    (ActionFactory<Entity>.Instance)data.get("entity_action"),
+                                    data.getInt("tick_rate")))
+                .allowCondition();
+    }
 
     public EdibleItemPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate, FoodComponent foodComponent, UseAction useAction, ItemStack returnStack, SoundEvent sound, Consumer<Entity> entityActionWhenEaten, int tickRate) {
         super(type, entity);
