@@ -43,9 +43,7 @@ public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityMo
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         PowerHolderComponent.getPowers(entity, ModifyEquippedItemRenderPower.class).forEach(power -> {
-            if (power.slot == EquipmentSlot.HEAD) {
-                renderIndividualStack(matrices, vertexConsumers, light, entity, tickDelta, this.getScaleX(entity, power.scale), power.scale, this.getScaleZ(entity, power.scale), power.stack);
-            }
+            if (power.slot == EquipmentSlot.HEAD) renderIndividualStack(matrices, vertexConsumers, light, entity, tickDelta, this.getScaleX(entity, power.scale), power.scale, this.getScaleZ(entity, power.scale), power.stack);
         });
     }
 
@@ -67,9 +65,7 @@ public class StackHeadFeatureRenderer<T extends LivingEntity, M extends EntityMo
             if (item instanceof BlockItem && ((BlockItem) item).getBlock() instanceof AbstractSkullBlock) {
                 o = 1.1875F;
                 matrixStack.scale(1.1875F, -1.1875F, -1.1875F);
-                if (bl) {
-                    matrixStack.translate(0.0D, 0.0625D, 0.0D);
-                }
+                if (bl) matrixStack.translate(0.0D, 0.0625D, 0.0D);
                 GameProfile gameProfile = null;
                 if (stack.hasNbt()) {
                     NbtCompound nbtCompound = stack.getNbt();

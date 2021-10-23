@@ -1,6 +1,12 @@
 package io.github.merchantpug.apugli;
 
 import io.github.merchantpug.apugli.registry.*;
+import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
+import io.github.merchantpug.apugli.registry.action.ApugliEntityActions;
+import io.github.merchantpug.apugli.registry.condition.ApugliBiEntityConditions;
+import io.github.merchantpug.apugli.registry.condition.ApugliBlockConditions;
+import io.github.merchantpug.apugli.registry.condition.ApugliDamageConditions;
+import io.github.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +21,9 @@ public class Apugli implements ModInitializer {
 		LOGGER.info("Apugli has initialized. Powering up your powered up game.");
 		ApugliBlockActions.register();
 		ApugliEntityActions.register();
+		ApugliBiEntityConditions.register();
 		ApugliBlockConditions.register();
 		ApugliDamageConditions.register();
-		ApugliBiEntityConditions.register();
 		ApugliEntityConditions.register();
 		ApugliPowerFactories.register();
 	}

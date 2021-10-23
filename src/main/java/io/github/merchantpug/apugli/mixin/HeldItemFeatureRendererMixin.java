@@ -39,20 +39,7 @@ public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M ext
     @Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
     private void disableItemRendering(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(entity, ModifyEquippedItemRenderPower.class);
-        if (this.isRightMainHand) {
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> !power.shouldRenderEquipped() && power.slot == EquipmentSlot.MAINHAND) && arm == Arm.RIGHT) {
-                ci.cancel();
-            }
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> !power.shouldRenderEquipped() && power.slot == EquipmentSlot.OFFHAND) && arm == Arm.LEFT) {
-                ci.cancel();
-            }
-        } else {
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> !power.shouldRenderEquipped() && power.slot == EquipmentSlot.OFFHAND) && arm == Arm.RIGHT) {
-                ci.cancel();
-            }
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> !power.shouldRenderEquipped() && power.slot == EquipmentSlot.MAINHAND) && arm == Arm.LEFT) {
-                ci.cancel();
-            }
-        }
+        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && !this.isRightMainHand))) && arm == Arm.RIGHT) ci.cancel();
+        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && !this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && this.isRightMainHand))) && arm == Arm.LEFT) ci.cancel();
     }
 }

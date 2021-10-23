@@ -55,20 +55,21 @@ public class StackHeldItemFeatureRenderer<T extends LivingEntity, M extends Enti
                 matrixStack.scale(0.5F, 0.5F, 0.5F);
             }
 
-            this.renderItem(livingEntity, rightHandStack, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
-            this.renderItem(livingEntity, leftHandStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
+            this.renderItem(livingEntity, rightHandStack, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
+            this.renderItem(livingEntity, leftHandStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
             matrixStack.pop();
         }
     }
 
-    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if (!stack.isEmpty()) {
+    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean shouldRenderEquipped, boolean shouldMergeWithHeld) {
+        boolean isMainArm = entity.getMainArm() == arm;
+        if (!stack.isEmpty() && (!shouldRenderEquipped || ((entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || shouldMergeWithHeld) && isMainArm || (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() || shouldMergeWithHeld) && !isMainArm))) {
             matrices.push();
-            ((ModelWithArms)this.getContextModel()).setArmAngle(arm, matrices);
+            (this.getContextModel()).setArmAngle(arm, matrices);
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             boolean bl = arm == Arm.LEFT;
-            matrices.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125D, -0.625D);
+            matrices.translate(((float)(bl ? -1 : 1) / 16.0F), 0.125D, -0.625D);
             MinecraftClient.getInstance().getHeldItemRenderer().renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
             matrices.pop();
         }

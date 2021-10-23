@@ -15,6 +15,7 @@
   "license": "MIT",
   "icon": "assets/apugli/icon.png",
 
+  "accessWidener" : "apugli.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -34,6 +35,6 @@
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16",
-    "apoli": ">=1.0.4"
+    "apoli": ">=2.0.1"
   }
 }

@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.registry;
+package io.github.merchantpug.apugli.registry.condition;
 
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;

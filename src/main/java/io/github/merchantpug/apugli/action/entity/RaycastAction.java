@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -77,14 +78,17 @@ public class RaycastAction {
     }
 
     private static void onHitEntity(SerializableData.Instance data, Entity entity, EntityHitResult result) {
-        if (!data.isPresent("target_action")) return;
+        if (!data.isPresent("target_action") && !data.isPresent("bientity_action")) return;
         Entity targetEntity = result.getEntity();
+        Pair<Entity, Entity> pair = new Pair<>(entity, targetEntity);
 
-        boolean targetCondition = !data.isPresent("target_condition") || ((Predicate<Entity>)data.get("target_condition")).test(targetEntity);
+        boolean targetCondition = !data.isPresent("target_condition") || ((Predicate<Entity>)data.get("target_condition")).test(targetEntity) && !data.isPresent("bientity_condition") || ((Predicate<Pair<Entity, Entity>>)data.get("bientity_condition")).test(pair);
         if(!targetCondition) return;
 
         Consumer<Entity> targetAction = (Consumer<Entity>)data.get("target_action");
-        targetAction.accept(targetEntity);
+        if (targetAction != null) targetAction.accept(targetEntity);
+        Consumer<Pair<Entity, Entity>> biEntityAction = (Consumer<Pair<Entity, Entity>>)data.get("bientity_action");
+        if (biEntityAction != null) biEntityAction.accept(pair);
 
         fireSelfAction(data, entity);
     }
@@ -93,8 +97,11 @@ public class RaycastAction {
         return new ActionFactory<>(Apugli.identifier("raycast"),
                 new SerializableData()
                         .add("distance", SerializableDataTypes.DOUBLE, null)
+                        .add("particles", SerializableDataTypes.PARTICLE_TYPE, null)
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
+                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
+                        .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
                         .add("target_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null)
                         .add("self_action", ApoliDataTypes.ENTITY_ACTION, null),
