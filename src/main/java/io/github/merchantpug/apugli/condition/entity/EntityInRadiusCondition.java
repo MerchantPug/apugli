@@ -7,13 +7,14 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Pair;
 
 import java.util.function.Predicate;
 
 public class EntityInRadiusCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
-        Predicate<LivingEntity> entityCondition = ((ConditionFactory<LivingEntity>.Instance) data.get("entity_condition"));
+        Predicate<Entity> entityCondition = ((ConditionFactory<Entity>.Instance) data.get("entity_condition"));
+        Predicate<Pair<Entity, Entity>> biEntityCondition = ((ConditionFactory<Pair<Entity, Entity>>.Instance) data.get("bientity_condition"));
         int stopAt = -1;
         Comparison comparison = ((Comparison) data.get("comparison"));
         int compareTo = data.getInt("compare_to");
@@ -23,8 +24,8 @@ public class EntityInRadiusCondition {
         }
         int count = 0;
         for (Entity target : entity.world.getOtherEntities(entity, entity.getBoundingBox().expand(data.getDouble("radius")))) {
-            if (target instanceof LivingEntity) {
-                if (entityCondition.test((LivingEntity) target)) {
+            if (target != null) {
+                if ((entityCondition == null || entityCondition.test(target)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(entity, target)))) {
                     count++;
                     if (count == stopAt) {
                         break;
@@ -37,7 +38,8 @@ public class EntityInRadiusCondition {
 
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("entity_in_radius"), new SerializableData()
-                .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION)
+                .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION, null)
+                .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
                 .add("radius", SerializableDataTypes.DOUBLE)
                 .add("compare_to", SerializableDataTypes.INT, 1)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
