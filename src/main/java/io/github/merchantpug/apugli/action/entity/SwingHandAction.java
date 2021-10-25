@@ -10,9 +10,7 @@ import net.minecraft.util.Hand;
 
 public class SwingHandAction {
     public static void action(SerializableData.Instance data, Entity entity) {
-        if (entity instanceof PlayerEntity && !entity.world.isClient) {
-            ((PlayerEntity) entity).swingHand((Hand)data.get("hand"), true);
-        }
+        if (entity instanceof PlayerEntity player && !entity.world.isClient) player.swingHand((Hand)data.get("hand"), true);
     }
 
     public static ActionFactory<Entity> getFactory() {
