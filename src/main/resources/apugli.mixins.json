@@ -13,7 +13,8 @@
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "PlayerEntityAccessor",
-    "ServerPlayerEntityAccessor"
+    "ServerPlayerEntityAccessor",
+    "StatusEffectMixin"
   ],
   "client": [
     "AbstractClientPlayerEntityMixin",

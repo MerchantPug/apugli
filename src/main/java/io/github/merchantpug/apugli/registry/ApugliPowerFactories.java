@@ -9,6 +9,7 @@ public class ApugliPowerFactories {
     public static void register() {
         register(BunnyHopPower.getFactory());
         register(EdibleItemPower.getFactory());
+        register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
