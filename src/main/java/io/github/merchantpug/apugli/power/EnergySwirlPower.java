@@ -16,13 +16,13 @@ public class EnergySwirlPower extends Power {
     private final float speed;
 
     public static PowerFactory<?> getFactory() {
-        return new PowerFactory<>(Apugli.identifier("set_texture"),
+        return new PowerFactory<EnergySwirlPower>(Apugli.identifier("energy_swirl"),
                 new SerializableData()
-                        .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
-                        .add("player_model", ApugliDataTypes.PLAYER_MODEL_TYPE, null),
+                        .add("texture_location", SerializableDataTypes.IDENTIFIER)
+                        .add("speed", SerializableDataTypes.FLOAT, 0.01F),
                 data ->
-                        (type, player) ->
-                                new SetTexturePower(type, player, data.getId("texture_location"), (PlayerModelType)data.get("player_model")))
+                        (type, entity) ->
+                                new EnergySwirlPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
                 .allowCondition();
     }
 

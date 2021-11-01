@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.merchantpug.apugli.util.PlayerModelType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
@@ -15,13 +16,13 @@ public class SetTexturePower extends Power {
     public final PlayerModelType model;
 
     public static PowerFactory<?> getFactory() {
-        return new PowerFactory<EnergySwirlPower>(Apugli.identifier("energy_swirl"),
+        return new PowerFactory<>(Apugli.identifier("set_texture"),
                 new SerializableData()
-                        .add("texture_location", SerializableDataTypes.IDENTIFIER)
-                        .add("speed", SerializableDataTypes.FLOAT, 0.01F),
+                        .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
+                        .add("player_model", ApugliDataTypes.PLAYER_MODEL_TYPE, null),
                 data ->
-                        (type, entity) ->
-                                new EnergySwirlPower(type, entity, data.getId("texture_location"), data.getFloat("speed")))
+                        (type, player) ->
+                                new SetTexturePower(type, player, data.getId("texture_location"), (PlayerModelType)data.get("player_model")))
                 .allowCondition();
     }
 

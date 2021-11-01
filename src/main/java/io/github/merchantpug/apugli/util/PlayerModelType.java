@@ -6,7 +6,7 @@ public enum PlayerModelType {
 
     private final String name;
 
-    private PlayerModelType(String string) {
+    PlayerModelType(String string) {
         name = string;
     }
 
