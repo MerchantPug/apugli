@@ -38,7 +38,7 @@ public class EntityInRadiusCondition {
 
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("entity_in_radius"), new SerializableData()
-                .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION, null)
+                .add("condition", ApoliDataTypes.ENTITY_CONDITION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
                 .add("radius", SerializableDataTypes.DOUBLE)
                 .add("compare_to", SerializableDataTypes.INT, 1)
