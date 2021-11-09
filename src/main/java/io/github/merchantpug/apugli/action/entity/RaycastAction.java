@@ -6,20 +6,20 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.particle.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Triple;
@@ -30,12 +30,12 @@ import java.util.function.Predicate;
 @SuppressWarnings("unchecked")
 public class RaycastAction {
     public static void action(SerializableData.Instance data, Entity entity) {
-        double baseReach = (entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode) ? 5.0D : 4.5D;
+        double baseReach = (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) ? 5.0D : 4.5D;
         double reach = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getReachDistance((LivingEntity)entity, baseReach) : baseReach;
         double distance = data.isPresent("distance") ? data.getDouble("distance") : reach;
         Vec3d eyePosition = entity.getCameraPosVec(0);
-        Vec3d lookVector = entity.getRotationVec(0);
-        Vec3d traceEnd = eyePosition.add(lookVector.x * distance, lookVector.y * distance, lookVector.z * distance);
+        Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
+        Vec3d traceEnd = eyePosition.add(lookVector);
         Box box = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
         RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.ANY, entity);
@@ -45,7 +45,11 @@ public class RaycastAction {
         EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 
         HitResult.Type blockHitResultType = blockHitResult.getType();
-        HitResult.Type entityHitResultType = (entityHitResult != null) ? entityHitResult.getType() : null;
+        HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
+
+        double squaredParticleDistance = entityHitResult != null ? entityHitResult.getPos().squaredDistanceTo(eyePosition.x, eyePosition.y, eyePosition.z) : entityReach;
+        RaycastAction.createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
+
         if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
         if (blockHitResultType == HitResult.Type.BLOCK) {
@@ -54,6 +58,16 @@ public class RaycastAction {
 
         if (entityHitResultType == HitResult.Type.ENTITY) {
             RaycastAction.onHitEntity(data, entity, entityHitResult);
+        }
+    }
+
+    private static void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
+        if ((!data.isPresent("particle") && !data.isPresent("dust_particle")) || entity.world.isClient()) return;
+        ParticleType<?> particleType = (ParticleType<?>)data.get("particle");
+        ParticleEffect particleEffect = data.isPresent("dust_particle") ? (ParticleEffect)data.get("dust_particle") : (ParticleEffect)particleType;
+
+        for (double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
+            ((ServerWorld)entity.world).spawnParticles(particleEffect, entity.getEyePos().getX() + d * entity.getRotationVec(0).getX(), entity.getEyePos().getY() + d * entity.getRotationVec(0).getY(), entity.getEyePos().getZ() + d * entity.getRotationVec(0).getZ(), 1, 0, 0, 0, 0);
         }
     }
 
@@ -82,7 +96,7 @@ public class RaycastAction {
         Entity targetEntity = result.getEntity();
         Pair<Entity, Entity> pair = new Pair<>(entity, targetEntity);
 
-        boolean targetCondition = !data.isPresent("target_condition") || ((Predicate<Entity>)data.get("target_condition")).test(targetEntity) && !data.isPresent("bientity_condition") || ((Predicate<Pair<Entity, Entity>>)data.get("bientity_condition")).test(pair);
+        boolean targetCondition = (!data.isPresent("target_condition") || ((Predicate<Entity>)data.get("target_condition")).test(targetEntity)) && (!data.isPresent("bientity_condition") || ((Predicate<Pair<Entity, Entity>>)data.get("bientity_condition")).test(pair));
         if(!targetCondition) return;
 
         Consumer<Entity> targetAction = (Consumer<Entity>)data.get("target_action");
@@ -97,7 +111,9 @@ public class RaycastAction {
         return new ActionFactory<>(Apugli.identifier("raycast"),
                 new SerializableData()
                         .add("distance", SerializableDataTypes.DOUBLE, null)
-                        .add("particles", SerializableDataTypes.PARTICLE_TYPE, null)
+                        .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
+                        .add("dust_particle", ApugliDataTypes.DUST_PARTICLE, null)
+                        .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                         .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
