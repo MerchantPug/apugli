@@ -24,10 +24,8 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
     private void getModel(CallbackInfoReturnable<String> cir) {
-        if (PowerHolderComponent.hasPower(this, SetTexturePower.class)) {
-            if (PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.DEFAULT) || PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.SLIM)) {
-                cir.setReturnValue(PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.toString());
-            }
+        if (PowerHolderComponent.hasPower(this, SetTexturePower.class) && (PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.DEFAULT) || PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.SLIM))) {
+            cir.setReturnValue(PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.toString());
         }
     }
 }
