@@ -14,7 +14,7 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -34,12 +34,13 @@ public class LightUpAction {
     }
 
     private static void lightFurnace(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
+        if (!data.isPresent("burn_time")) return;
         BlockState state = block.getLeft().getBlockState(block.getMiddle());
         BlockEntity entity = block.getLeft().getBlockEntity(block.getMiddle());
         if (!(state.getBlock() instanceof AbstractFurnaceBlock) && FabricLoader.getInstance().isModLoaded("fabric-furnaces") && !(state.getBlock() instanceof FabricFurnaceBlock)) return;
         if (!(entity instanceof AbstractFurnaceBlockEntity)) return;
         block.getLeft().setBlockState(block.getMiddle(), state.with(LIT, true).with(LIT, true), 2);
-        spawnParticles(block, (ParticleType<?>)data.get("particle"), data.getInt("particle_count"));
+        spawnParticles(data, block);
         playSound(block, (SoundEvent)data.get("sound"));
         if (((AbstractFurnaceBlockEntityAccessor)entity).getBurnTime() < data.getInt("burn_time")) {
             ((AbstractFurnaceBlockEntityAccessor)entity).setFuelTime(data.getInt("burn_time"));
@@ -49,22 +50,25 @@ public class LightUpAction {
 
     private static void lightCampfire(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
         BlockState state = block.getLeft().getBlockState(block.getMiddle());
-        if (!(state.getBlock() instanceof CampfireBlock) || !data.getBoolean("light_campfire")) return;
+        if (!(state.getBlock() instanceof CampfireBlock) || !data.getBoolean("light_campfire") || block.getLeft().getBlockState(block.getMiddle()).get(LIT)) return;
         block.getLeft().setBlockState(block.getMiddle(), state.with(LIT, true).with(LIT, true), 2);
-        spawnParticles(block, (ParticleType<?>)data.get("particle"), data.getInt("particle_count"));
+        spawnParticles(data, block);
         playSound(block, (SoundEvent)data.get("sound"));
     }
 
     private static void lightBrewingStand(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
+        if (!data.isPresent("brew_time")) return;
         BlockEntity entity = block.getLeft().getBlockEntity(block.getMiddle());
         if (!(entity instanceof BrewingStandBlockEntity)) return;
-        if (((BrewingStandBlockEntityAccessor) entity).getFuel() < data.getInt("brew_time")) ((BrewingStandBlockEntityAccessor) entity).setFuel(data.getInt("brew_time"));
-        spawnParticles(block, (ParticleType<?>)data.get("particle"), data.getInt("particle_count"));
+        if (((BrewingStandBlockEntityAccessor)entity).getFuel() < data.getInt("brew_time")) ((BrewingStandBlockEntityAccessor)entity).setFuel(data.getInt("brew_time"));
+        spawnParticles(data, block);
         playSound(block, (SoundEvent)data.get("sound"));
     }
 
-    private static void spawnParticles(Triple<World, BlockPos, Direction> block, ParticleType<?> particle, int particleCount) {
-        if (particle != null && particleCount > 0 && !block.getLeft().isClient()) ((ServerWorld)block.getLeft()).spawnParticles((DefaultParticleType)particle, block.getMiddle().getX() + 0.5, block.getMiddle().getY() + 0.3, block.getMiddle().getZ() + 0.5, particleCount, block.getLeft().getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, block.getLeft().getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
+    private static void spawnParticles(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
+        if (!data.isPresent("particle") || data.getInt("particle_count") <= 0 || block.getLeft().isClient()) return;
+        ParticleType<?> particleType = (ParticleType<?>)data.get("particle");
+        ((ServerWorld)block.getLeft()).spawnParticles((ParticleEffect)particleType, block.getMiddle().getX() + 0.5, block.getMiddle().getY() + 0.3, block.getMiddle().getZ() + 0.5, data.getInt("particle_count"), block.getLeft().getRandom().nextDouble() * 0.2D - 0.1D, 0.1D, block.getLeft().getRandom().nextDouble() * 0.2D - 0.1D, 0.05D);
     }
 
     private static void playSound(Triple<World, BlockPos, Direction> block, SoundEvent sound) {
@@ -74,8 +78,8 @@ public class LightUpAction {
 
     public static ActionFactory<Triple<World, BlockPos, Direction>> getFactory() {
         return new ActionFactory<>(Apugli.identifier("light_up"), new SerializableData()
-                .add("burn_time", SerializableDataTypes.INT)
-                .add("brew_time", SerializableDataTypes.INT)
+                .add("burn_time", SerializableDataTypes.INT, null)
+                .add("brew_time", SerializableDataTypes.INT, null)
                 .add("light_campfire", SerializableDataTypes.BOOLEAN, true)
                 .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
                 .add("particle_count", SerializableDataTypes.INT, 0)
