@@ -30,8 +30,6 @@ public abstract class HeadFeatureRendererMixin<T extends LivingEntity, M extends
     @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
     private void preventHeadRender(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class);
-        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldMergeWithHeld() && power.slot == EquipmentSlot.HEAD)) {
-            ci.cancel();
-        }
+        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldMergeWithHeld() && power.slot == EquipmentSlot.HEAD)) ci.cancel();
     }
 }
