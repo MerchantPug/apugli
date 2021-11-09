@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.mixin;
+package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.merchantpug.apugli.entity.feature.StackHeadFeatureRenderer;
 import io.github.merchantpug.apugli.entity.feature.StackHeldItemFeatureRenderer;

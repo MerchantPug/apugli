@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.mixin;
+package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;

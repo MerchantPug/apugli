@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.mixin;
+package io.github.merchantpug.apugli.mixin.client;
 
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.component.PowerHolderComponent;
