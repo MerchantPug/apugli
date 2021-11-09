@@ -89,8 +89,8 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 double reach = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getReachDistance(entity, baseReach) : baseReach;
                 double distance = !Double.isNaN(this.distance) ? this.distance : reach;
                 Vec3d eyePosition = entity.getCameraPosVec(0);
-                Vec3d lookVector = entity.getRotationVec(0);
-                Vec3d traceEnd = eyePosition.add(lookVector.x * distance, lookVector.y * distance, lookVector.z * distance);
+                Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
+                Vec3d traceEnd = eyePosition.add(lookVector);
                 Box box = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
                 RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
@@ -130,6 +130,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
         entity.addVelocity(f * speed, g * speed, h * speed);
         entity.velocityModified = true;
         entity.fallDistance = 0;
+        this.use();
     }
 
     @Override
