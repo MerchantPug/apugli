@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.entity.feature.StackHeadFeatureRenderer;
 import io.github.merchantpug.apugli.entity.feature.StackArmorFeatureRenderer;
 import io.github.merchantpug.apugli.entity.feature.StackHeldItemFeatureRenderer;
@@ -15,14 +14,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.feature.PlayerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.util.Hand;
-import org.lwjgl.system.CallbackI;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -50,9 +47,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void modifyEntityLayerSolid(Args args, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve) {
         if (PowerHolderComponent.hasPower(player, SetTexturePower.class)) {
             SetTexturePower texturePower = PowerHolderComponent.getPowers(player, SetTexturePower.class).get(0);
-            if (texturePower.textureLocation != null) {
-                args.set(0, texturePower.textureLocation);
-            }
+            if (texturePower.textureLocation != null) args.set(0, texturePower.textureLocation);
         }
     }
 
@@ -60,18 +55,15 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private void modifyEntityLayerTranslucent(Args args, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve) {
         if (PowerHolderComponent.hasPower(player, SetTexturePower.class)) {
             SetTexturePower texturePower = PowerHolderComponent.getPowers(player, SetTexturePower.class).get(0);
-            if (texturePower.textureLocation != null) {
-                args.set(0, texturePower.textureLocation);
-            }
+            if (texturePower.textureLocation != null) args.set(0, texturePower.textureLocation);
         }
     }
 
     @Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)
     private static void setArmPoseWhenModifiedItem(AbstractClientPlayerEntity player, Hand hand, CallbackInfoReturnable<BipedEntityModel.ArmPose> cir) {
         PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).forEach(power -> {
-            if (power.armPose != null && power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND || power.armPose != null && power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND) {
-                cir.setReturnValue(power.armPose);
-            }
+            if (power.armPose != null && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND)) cir.setReturnValue(power.armPose);
         });
+        if (PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.stack.isEmpty()))) cir.setReturnValue(BipedEntityModel.ArmPose.EMPTY);
     }
 }
