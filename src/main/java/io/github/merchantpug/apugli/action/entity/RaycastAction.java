@@ -7,6 +7,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import io.github.merchantpug.apugli.util.RaycastUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -24,6 +25,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Triple;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -38,7 +40,7 @@ public class RaycastAction {
         Vec3d traceEnd = eyePosition.add(lookVector);
         Box box = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
-        RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.ANY, entity);
+        RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
         BlockHitResult blockHitResult = entity.world.raycast(context);
 
         double entityReach = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : distance * distance;
@@ -47,8 +49,13 @@ public class RaycastAction {
         HitResult.Type blockHitResultType = blockHitResult.getType();
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
-        double squaredParticleDistance = entityHitResult != null ? entityHitResult.getPos().squaredDistanceTo(eyePosition.x, eyePosition.y, eyePosition.z) : entityReach;
-        RaycastAction.createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
+        double squaredParticleDistance = entityHitResult != null && !data.getBoolean("pierce") ? entityHitResult.getPos().squaredDistanceTo(eyePosition.x, eyePosition.y, eyePosition.z) : entityReach;
+        createParticlesAtHitPos(data, entity, squaredParticleDistance);
+
+        if (data.getBoolean("pierce")) {
+            List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+            RaycastAction.handlePierce(data, entity, list);
+        }
 
         if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
@@ -58,7 +65,14 @@ public class RaycastAction {
 
         if (entityHitResultType == HitResult.Type.ENTITY) {
             RaycastAction.onHitEntity(data, entity, entityHitResult);
+            fireSelfAction(data, entity);
         }
+    }
+
+    private static void handlePierce(SerializableData.Instance data, Entity entity, List<EntityHitResult> list) {
+        if (list.isEmpty()) return;
+        list.forEach(targetEntity -> onHitEntity(data, entity, targetEntity));
+        fireSelfAction(data, entity);
     }
 
     private static void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
@@ -103,14 +117,13 @@ public class RaycastAction {
         if (targetAction != null) targetAction.accept(targetEntity);
         Consumer<Pair<Entity, Entity>> biEntityAction = (Consumer<Pair<Entity, Entity>>)data.get("bientity_action");
         if (biEntityAction != null) biEntityAction.accept(pair);
-
-        fireSelfAction(data, entity);
     }
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(Apugli.identifier("raycast"),
                 new SerializableData()
                         .add("distance", SerializableDataTypes.DOUBLE, null)
+                        .add("pierce", SerializableDataTypes.BOOLEAN, false)
                         .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
                         .add("dust_particle", ApugliDataTypes.DUST_PARTICLE, null)
                         .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
