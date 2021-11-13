@@ -7,12 +7,17 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.mixin.AbstractDustParticleEffectAccessor;
 import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.Vec3f;
+
+import java.util.List;
 
 public class ApugliDataTypes {
     public static final SerializableDataType<EntityGroup> APUGLI_ENTITY_GROUP =
@@ -50,4 +55,8 @@ public class ApugliDataTypes {
                 data.set("blue_to", particleEffect instanceof DustColorTransitionParticleEffect ? ((DustColorTransitionParticleEffect)particleEffect).getToColor().getZ() : 0.0F);
                 return data;
             }));
+
+    public static final SerializableDataType<List<Block>> BLOCKS = SerializableDataType.list(SerializableDataTypes.BLOCK);
+
+    public static final SerializableDataType<List<BlockState>> BLOCK_STATES = SerializableDataType.list(SerializableDataTypes.BLOCK_STATE);
 }

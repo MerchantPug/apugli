@@ -1,5 +1,6 @@
 package io.github.merchantpug.apugli;
 
+import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.merchantpug.apugli.registry.*;
 import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
 import io.github.merchantpug.apugli.registry.action.ApugliEntityActions;
@@ -26,7 +27,10 @@ public class Apugli implements ModInitializer {
 		ApugliDamageConditions.register();
 		ApugliEntityConditions.register();
 		ApugliPowerFactories.register();
+
+		NamespaceAlias.addAlias(MODID, "ope");
 	}
+
 
 	public static Identifier identifier(String path) {
 		return new Identifier(MODID, path);

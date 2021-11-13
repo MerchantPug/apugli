@@ -6,6 +6,7 @@
   "mixins": [
     "AbstractDustParticleEffectAccessor",
     "AbstractFurnaceBlockEntityAccessor",
+    "BlockItemMixin",
     "BrewingStandBlockEntityAccessor",
     "DamageEnchantmentMixin",
     "ExplosionMixin",
@@ -14,6 +15,7 @@
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "PlayerEntityAccessor",
+    "PlayerEntityMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectMixin"
   ],

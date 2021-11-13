@@ -50,7 +50,7 @@ public class RaycastAction {
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
         double squaredParticleDistance = entityHitResult != null && !data.getBoolean("pierce") ? entityHitResult.getPos().squaredDistanceTo(eyePosition.x, eyePosition.y, eyePosition.z) : entityReach;
-        createParticlesAtHitPos(data, entity, squaredParticleDistance);
+        createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
 
         if (data.getBoolean("pierce")) {
             List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
