@@ -8,14 +8,20 @@ import net.minecraft.util.registry.Registry;
 public class ApugliPowerFactories {
     public static void register() {
         register(ActionOnBlockPlacedPower.getFactory());
+        register(ActionOnEquipPower.getFactory());
         register(ApugliModifyDamageTakenPower.getFactory());
         register(BunnyHopPower.getFactory());
+        register(CustomFootstepPower.getFactory());
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());
         register(ModifyBlockPlacedPower.getFactory());
+        register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
+        register(ModifyStatusEffectAmplifierPower.getFactory());
+        register(ModifyStatusEffectDurationPower.getFactory());
+        register(PreventLabelRenderPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetApugliEntityGroupPower.getFactory());
         register(SetTexturePower.getFactory());

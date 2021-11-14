@@ -10,6 +10,7 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,29 @@ public abstract class LivingEntityMixin extends Entity {
         super(entityType, world);
     }
 
+    @ModifyVariable(method = "addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
+    private StatusEffectInstance modifyStatusEffect(StatusEffectInstance effect) {
+        StatusEffect effectType = effect.getEffectType();
+        int originalAmp = effect.getAmplifier();
+        int originalDur = effect.getDuration();
+
+        int amplifier = Math.round(PowerHolderComponent.modify(this, ModifyStatusEffectAmplifierPower.class, originalAmp, power -> power.doesApply(effectType)));
+        int duration = Math.round(PowerHolderComponent.modify(this, ModifyStatusEffectDurationPower.class, originalDur, power -> power.doesApply(effectType)));
+
+        if (amplifier != originalAmp || duration != originalDur) {
+            return new StatusEffectInstance(
+                    effectType,
+                    duration,
+                    amplifier,
+                    effect.isAmbient(),
+                    effect.shouldShowParticles(),
+                    effect.shouldShowIcon(),
+                    ((StatusEffectInstanceAccessor)effect).getHiddenEffect()
+            );
+        }
+        return effect;
+    }
+
     @Inject(method = "shouldDisplaySoulSpeedEffects", at = @At("HEAD"), cancellable = true)
     private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
@@ -51,7 +75,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "canHaveStatusEffect", at = @At("HEAD"), cancellable = true)
-    private void makeUndeadImmuneToEffects(StatusEffectInstance effect, CallbackInfoReturnable<Boolean> cir) {
+    private void makeImmuneToBlacklistedEffects(StatusEffectInstance effect, CallbackInfoReturnable<Boolean> cir) {
         for (EffectWhitelistPower power : PowerHolderComponent.getPowers(this, EffectWhitelistPower.class)) {
             if(!power.doesApply(effect)) {
                 cir.setReturnValue(false);
@@ -149,7 +173,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3d movementInput, CallbackInfo ci) {
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
