@@ -45,10 +45,6 @@ public class ModifyEquippedItemRenderPower extends Power {
         this.armPose = armPose;
     }
 
-    public boolean isSlotForArmor() {
-        return this.slot == EquipmentSlot.HEAD || this.slot == EquipmentSlot.CHEST || this.slot == EquipmentSlot.LEGS || this.slot == EquipmentSlot.FEET;
-    }
-
     public boolean shouldOverride() {
         return this.override;
     }

@@ -39,7 +39,7 @@ public class StackArmorFeatureRenderer<T extends LivingEntity, M extends BipedEn
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class).forEach(power -> {
-            if (power.isSlotForArmor()) {
+            if (power.slot.getType() == EquipmentSlot.Type.ARMOR) {
                 this.renderArmor(power.stack, matrixStack, vertexConsumerProvider, livingEntity, power.slot, i, this.getArmor(power.slot));
             }
         });
