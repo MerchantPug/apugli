@@ -9,13 +9,14 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.access.PlayerEntityAccess;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -24,14 +25,13 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class ModifyBlockPlacedPower extends Power {
     private final List<BlockState> blockStates = new ArrayList<>();
     public final ConditionFactory<ItemStack>.Instance itemCondition;
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
-    private int seed;
+    private int seed = (int)(Math.random() * Integer.MAX_VALUE);
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ModifyBlockPlacedPower>(Apugli.identifier("modify_block_placed"),
@@ -62,20 +62,32 @@ public class ModifyBlockPlacedPower extends Power {
                 .allowCondition();
     }
 
+    @Override
+    public void fromTag(NbtElement tag) {
+        if (!(tag instanceof NbtCompound)) return;
+        this.seed = ((NbtCompound) tag).getInt("Seed");
+    }
+
+    @Override
+    public NbtElement toTag() {
+        NbtCompound nbt =  new NbtCompound();
+        nbt.putInt("Seed", this.seed);
+        return nbt;
+    }
+
     public int getSeed() {
-        return ((PlayerEntityAccess)(Object)entity).getSeed();
+        return this.seed;
     }
 
     public void generateSeed() {
         if (!(entity instanceof PlayerEntity)) return;
         if (!entity.world.isClient()) {
-            seed = (int)(Math.random() * Integer.MAX_VALUE);
+            this.seed = (int)(Math.random() * Integer.MAX_VALUE);
             PowerHolderComponent.syncPower(entity, this.getType());
         }
-        ((PlayerEntityAccess)(Object)entity).setSeed(seed);
     }
 
-    public void executeActions(Optional<BlockPos> placedBlockPos) {
+    public void executeAction(Optional<BlockPos> placedBlockPos) {
         if (placedBlockPos.isEmpty() || blockAction == null) return;
         blockAction.accept(Triple.of(entity.world, placedBlockPos.get(), Direction.UP));
     }

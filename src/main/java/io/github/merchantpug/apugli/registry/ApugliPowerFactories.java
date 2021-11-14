@@ -7,6 +7,8 @@ import net.minecraft.util.registry.Registry;
 
 public class ApugliPowerFactories {
     public static void register() {
+        register(ActionOnBlockPlacedPower.getFactory());
+        register(ApugliModifyDamageTakenPower.getFactory());
         register(BunnyHopPower.getFactory());
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
