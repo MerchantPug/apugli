@@ -14,8 +14,8 @@
     "ItemStackMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
+    "ModifyDamageTakenPowerAccessor",
     "PlayerEntityAccessor",
-    "PlayerEntityMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectMixin"
   ],
