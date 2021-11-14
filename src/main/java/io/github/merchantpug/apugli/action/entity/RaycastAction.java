@@ -125,7 +125,6 @@ public class RaycastAction {
                 new SerializableData()
                         .add("distance", SerializableDataTypes.DOUBLE, null)
                         .add("pierce", SerializableDataTypes.BOOLEAN, false)
-                        .add("shape_type", SerializableDataType.enumValue(RaycastContext.ShapeType.class), RaycastContext.ShapeType.OUTLINE)
                         .add("fluid_handling", SerializableDataType.enumValue(RaycastContext.FluidHandling.class), RaycastContext.FluidHandling.NONE)
                         .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
                         .add("dust_particle", ApugliDataTypes.DUST_PARTICLE, null)
