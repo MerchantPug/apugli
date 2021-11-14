@@ -24,7 +24,7 @@ public class ActionOnBlockPlacedPower extends Power {
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
 
     public static PowerFactory<?> getFactory() {
-        return new PowerFactory<ActionOnBlockPlacedPower>(Apugli.identifier("modify_block_placed"),
+        return new PowerFactory<ActionOnBlockPlacedPower>(Apugli.identifier("action_on_block_placed"),
                 new SerializableData()
                         .add("block", SerializableDataTypes.BLOCK, null)
                         .add("block_state", SerializableDataTypes.BLOCK_STATE, null)
