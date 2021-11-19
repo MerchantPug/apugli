@@ -2,6 +2,8 @@ package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.power.PreventLabelRenderPower;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -14,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<T extends Entity> {
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
