@@ -9,6 +9,7 @@
     "BrewingStandBlockEntityAccessor",
     "DamageEnchantmentMixin",
     "EnchantmentHelperMixin",
+    "EntityMixin",
     "ExplosionMixin",
     "ItemConditionsMixin",
     "ItemPredicateMixin",

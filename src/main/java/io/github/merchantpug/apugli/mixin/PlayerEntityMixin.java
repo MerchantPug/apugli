@@ -2,19 +2,20 @@ package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.power.ActionOnEquipPower;
-import io.github.merchantpug.apugli.power.CustomFootstepPower;
-import net.minecraft.block.BlockState;
+import io.github.merchantpug.apugli.power.CustomDeathSoundPower;
+import io.github.merchantpug.apugli.power.CustomHurtSoundPower;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
@@ -25,13 +26,22 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        List<CustomFootstepPower> powers = PowerHolderComponent.getPowers((PlayerEntity)(Object)this, CustomFootstepPower.class);
-        if (powers.stream().anyMatch(CustomFootstepPower::isMuted)) return;
-        super.playStepSound(pos, state);
+    @Inject(method = "getHurtSound", at = @At("HEAD"), cancellable = true)
+    private void modifyHurtSound(CallbackInfoReturnable<SoundEvent> cir) {
+        List<CustomHurtSoundPower> powers = PowerHolderComponent.getPowers(this, CustomHurtSoundPower.class);
         if (powers.isEmpty()) return;
-        powers.forEach(power -> power.playFootstep(this));
+        if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) cir.cancel();
+        powers.forEach(power -> power.playDeathSound(this));
+        cir.cancel();
+    }
+
+    @Inject(method = "getDeathSound", at = @At("HEAD"), cancellable = true)
+    private void modifyDeathSound(CallbackInfoReturnable<SoundEvent> cir) {
+        List<CustomDeathSoundPower> powers = PowerHolderComponent.getPowers((LivingEntity)(Object)this, CustomDeathSoundPower.class);
+        if (powers.isEmpty()) return;
+        if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) cir.cancel();
+        powers.forEach(power -> power.playDeathSound((LivingEntity)(Object)this));
+        cir.cancel();
     }
 
     @Inject(method = "equipStack", at = @At(value = "TAIL"))

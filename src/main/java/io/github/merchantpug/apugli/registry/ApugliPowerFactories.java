@@ -12,6 +12,8 @@ public class ApugliPowerFactories {
         register(ApugliModifyDamageTakenPower.getFactory());
         register(BunnyHopPower.getFactory());
         register(CustomFootstepPower.getFactory());
+        register(CustomDeathSoundPower.getFactory());
+        register(CustomHurtSoundPower.getFactory());
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());

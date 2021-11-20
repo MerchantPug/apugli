@@ -1,0 +1,5 @@
+{
+  "type": "ope:custom_death_sound",
+  "sound": "minecraft:entity.enderman.death",
+  "pitch": 2.0
+}

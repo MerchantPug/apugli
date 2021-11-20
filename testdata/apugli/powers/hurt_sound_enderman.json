@@ -1,0 +1,4 @@
+{
+  "type": "ope:custom_hurt_sound",
+  "sound": "minecraft:entity.enderman.hurt"
+}
