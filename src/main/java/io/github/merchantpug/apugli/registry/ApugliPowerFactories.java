@@ -15,12 +15,14 @@ public class ApugliPowerFactories {
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());
+        register(ForceParticleRenderPower.getFactory());
         register(ModifyBlockPlacedPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
         register(ModifyStatusEffectAmplifierPower.getFactory());
         register(ModifyStatusEffectDurationPower.getFactory());
+        register(PreventSoundPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetApugliEntityGroupPower.getFactory());
