@@ -15,6 +15,7 @@ public class ApugliEntityActions {
         register(EnderChestAction.getFactory());
         register(FireProjectileAction.getFactory());
         register(RaycastAction.getFactory());
+        register(SetNoGravityAction.getFactory());
         register(SwingHandAction.getFactory());
         register(ZombifyVillagerAction.getFactory());
     }
