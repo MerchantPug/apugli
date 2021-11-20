@@ -31,11 +31,7 @@ public class ApugliModifyDamageTakenPower extends ModifyDamageTakenPower {
 
     @Override
     public boolean doesApply(DamageSource source, float damageAmount) {
-        if (!((ModifyDamageTakenPowerAccessor) this).getCondition().test(new Pair(source, damageAmount))) return false;
-        if (source.getAttacker() != null) {
-            return biEntityCondition.test(new Pair(entity, source.getAttacker()));
-        }
-        return true;
+        return source.getAttacker() == null ? ((ModifyDamageTakenPowerAccessor) this).getCondition().test(new Pair(source, damageAmount)) && biEntityCondition == null : ((ModifyDamageTakenPowerAccessor) this).getCondition().test(new Pair(source, damageAmount)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(entity, source.getAttacker())));
     }
 
     public void setBiEntityAction(Consumer<Pair<Entity, Entity>> biEntityAction) {
