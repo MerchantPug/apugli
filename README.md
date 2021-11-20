@@ -27,8 +27,8 @@ dependencies {
 If you wish to remove Fabric Furnaces as a dependency in the mod environment, you can do so by excluding it from the mod implementation
 ```gradle
 dependencies {
-    modImplementation "com.github.MerchantPug:apugli:${project.apugli_version}" {
-	    exclude (module: "fabric-furnaces")
+    modImplementation("com.github.MerchantPug:apugli:${project.apugli_version}") {
+	    exclude module: "fabric-furnaces"
     }
     include "com.github.MerchantPug:apugli:${project.apugli_version}"
 }
