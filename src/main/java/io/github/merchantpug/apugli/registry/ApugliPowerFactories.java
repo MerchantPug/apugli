@@ -16,6 +16,7 @@ public class ApugliPowerFactories {
         register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());
         register(ForceParticleRenderPower.getFactory());
+        register(HoverPower.getFactory());
         register(ModifyBlockPlacedPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
