@@ -1,8 +1,5 @@
 {
   "death.attack.jumpExplosion": "%1$s patladı",
   "death.attack.jumpExplosion.player": "%1$s, %2$s tarafından patlatıldı",
-  "death.attack.jumpExplosion.player.item": "%1$s, %2$s tarafından %3$s kullanılarak patlatıldı",
-
-  "death.attack.indirectZombification": "%1$s, %2$s tarafından enfekte edildi",
-  "death.attack.indirectZombification.item": "%1$s, %2$s tarafından, %3$s kullanılarak enfekte edildi" 
+  "death.attack.jumpExplosion.player.item": "%1$s, %2$s tarafından %3$s kullanılarak patlatıldı"
 }

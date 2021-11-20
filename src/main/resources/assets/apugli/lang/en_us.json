@@ -1,8 +1,5 @@
 {
   "death.attack.jumpExplosion": "%1$s was blown up",
   "death.attack.jumpExplosion.player": "%1$s was blown up by %2$s",
-  "death.attack.jumpExplosion.player.item": "%1$s was blown up by %2$s using %3$s",
-
-  "death.attack.indirectZombification": "%1$s was infected by %2$s",
-  "death.attack.indirectZombification.item": "%1$s was infected by %2$s using %3$s"
+  "death.attack.jumpExplosion.player.item": "%1$s was blown up by %2$s using %3$s"
 }
