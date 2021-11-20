@@ -1,0 +1,13 @@
+{
+  "type": "apoli:shader",
+  "shader": "minecraft:shaders/post/blobs2.json",
+  "condition": {
+    "type": "apugli:particle_in_radius",
+    "particles": [
+      "large_smoke",
+      "campfire_cosy_smoke",
+      "campfire_signal_smoke"
+    ],
+    "radius": 3.0
+  }
+}

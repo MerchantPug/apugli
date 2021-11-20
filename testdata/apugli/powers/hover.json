@@ -1,0 +1,15 @@
+{
+  "type": "apugli:hover",
+  "min": 0,
+  "max": 40,
+  "time_until_recharge": 20,
+  "start_value": 40,
+  "hud_render": {
+    "should_render": true,
+    "sprite_location": "apugli:simple"
+  },
+  "key": {
+    "key": "key.jump",
+    "continuous": true
+  }
+}

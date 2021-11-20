@@ -1,0 +1,15 @@
+{
+  "type": "apoli:active_self",
+  "entity_action": {
+    "type": "apugli:set_no_gravity",
+    "value": false
+  },
+  "cooldown": 2,
+  "hud_render": {
+    "should_render": false
+  },
+  "key": {
+    "key": "key.use",
+    "continuous": false
+  }
+}
