@@ -1,7 +1,9 @@
 package io.github.merchantpug.apugli.registry;
 
+import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
 import net.minecraft.util.registry.Registry;
 
@@ -19,6 +21,7 @@ public class ApugliPowerFactories {
         register(EnergySwirlPower.getFactory());
         register(ForceParticleRenderPower.getFactory());
         register(HoverPower.getFactory());
+        register(Power.createSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
         register(ModifyBlockPlacedPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());

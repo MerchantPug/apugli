@@ -131,7 +131,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "isUndead", at = @At("HEAD"), cancellable = true)
     private void isUndead(CallbackInfoReturnable<Boolean> cir) {
-        if (this.getGroup() == ApugliEntityGroups.PLAYER_UNDEAD) {
+        if (PowerHolderComponent.hasPower(this, InvertInstantEffectsPower.class)) {
             cir.setReturnValue(true);
         }
     }

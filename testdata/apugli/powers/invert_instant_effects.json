@@ -1,0 +1,6 @@
+{
+  "type": "apugli:invert_instant_effects",
+  "condition": {
+    "type": "apoli:exposed_to_sun"
+  }
+}
