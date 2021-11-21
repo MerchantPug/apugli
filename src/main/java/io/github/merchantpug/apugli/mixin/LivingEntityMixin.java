@@ -158,10 +158,11 @@ public abstract class LivingEntityMixin extends Entity {
             }
         }
         PowerHolderComponent.getPowers(this, EdibleItemPower.class).forEach(EdibleItemPower::tempTick);
-        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (apugli_framesOnGround > 4) {
                 bunnyHopPower.setValue(0);
+                PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
             }
             if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
                 if (apugli_framesOnGround <= 4) {
@@ -175,13 +176,14 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3d movementInput, CallbackInfo ci) {
-        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)  && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (this.apugli_framesOnGround <= 4) {
                 if (this.apugli_framesOnGround == 0) {
                     if (this.age % bunnyHopPower.tickRate == 0) {
-                        if (bunnyHopPower.getValue() != bunnyHopPower.getMax()) {
+                        if (bunnyHopPower.getValue() < bunnyHopPower.getMax()) {
                             bunnyHopPower.increment();
+                            PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
                         }
                     }
                 }
