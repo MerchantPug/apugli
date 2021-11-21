@@ -20,7 +20,7 @@ import org.apache.commons.lang3.tuple.Triple;
 public class DestroyAction {
     public static void action(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
         if (block.getLeft().isClient()) return;
-        block.getLeft().breakBlock(block.getMiddle(), true);
+        block.getLeft().breakBlock(block.getMiddle(), data.getBoolean("drop_block"));
     }
 
     public static ActionFactory<Triple<World, BlockPos, Direction>> getFactory() {
