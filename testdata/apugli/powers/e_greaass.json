@@ -1,0 +1,156 @@
+{
+  "type": "apoli:multiple",
+  "eat_grains": {
+    "type": "apoli:active_self",
+    "entity_action": {
+      "type": "apugli:raycast",
+      "block_action": {
+        "type": "apugli:destroy",
+        "drop_block": false
+      },
+      "block_condition": {
+        "type": "apoli:in_tag",
+        "tag": "apugli:tall_grasses_grains"
+      },
+      "self_action": {
+        "type": "apoli:and",
+        "actions": [
+          {
+            "type": "apoli:feed",
+            "food": 6,
+            "saturation": 0.6
+          },
+          {
+            "type": "apugli:swing_hand",
+            "hand": "MAIN_HAND"
+          },
+          {
+            "type": "apoli:play_sound",
+            "sound": "minecraft:entity.generic.eat",
+            "pitch": 0.4
+          }
+        ]
+      }
+    },
+    "cooldown": 4,
+    "hud_render": {
+      "should_render": false
+    },
+    "key": {
+      "key": "key.use",
+      "continuous": true
+    },
+    "condition": {
+      "type": "apoli:equipped_item",
+      "equipment_slot": "mainhand",
+      "item_condition": {
+        "type": "apoli:empty"
+      }
+    }
+  },
+  "eat_grass": {
+    "type": "apoli:active_self",
+    "entity_action": {
+      "type": "apugli:raycast",
+      "block_action": {
+        "type": "apugli:destroy",
+        "drop_block": false
+      },
+      "block_condition": {
+        "type": "apoli:in_tag",
+        "tag": "apugli:grasses"
+      },
+      "self_action": {
+        "type": "apoli:and",
+        "actions": [
+          {
+            "type": "apoli:feed",
+            "food": 6,
+            "saturation": 0.6
+          },
+          {
+            "type": "apugli:swing_hand",
+            "hand": "MAIN_HAND"
+          },
+          {
+            "type": "apoli:play_sound",
+            "sound": "minecraft:entity.generic.eat",
+            "pitch": 0.4
+          }
+        ]
+      }
+    },
+    "cooldown": 4,
+    "hud_render": {
+      "should_render": false
+    },
+    "key": {
+      "key": "key.use",
+      "continuous": true
+    },
+    "condition": {
+      "type": "apoli:equipped_item",
+      "equipment_slot": "mainhand",
+      "item_condition": {
+        "type": "apoli:empty"
+      }
+    }
+  },
+  "eat_grass_block": {
+    "type": "apoli:active_self",
+    "entity_action": {
+      "type": "apugli:raycast",
+      "block_action": {
+        "type": "apoli:and",
+        "actions": [
+          {
+            "type": "apugli:destroy",
+            "drop_block": false
+          },
+          {
+            "type": "apoli:set_block",
+            "block": "minecraft:dirt"
+          }
+        ]
+      },
+      "block_condition": {
+        "type": "apoli:in_tag",
+        "tag": "apugli:grass_blocks"
+      },
+      "self_action": {
+        "type": "apoli:and",
+        "actions": [
+          {
+            "type": "apoli:feed",
+            "food": 6,
+            "saturation": 0.6
+          },
+          {
+            "type": "apugli:swing_hand",
+            "hand": "MAIN_HAND"
+          },
+          {
+            "type": "apoli:play_sound",
+            "sound": "minecraft:entity.generic.eat",
+            "pitch": 0.4
+          }
+        ]
+      }
+    },
+    "cooldown": 4,
+    "hud_render": {
+      "should_render": false
+    },
+    "key": {
+      "key": "key.use",
+      "continuous": true
+    },
+    "condition": {
+      "type": "apoli:equipped_item",
+      "equipment_slot": "mainhand",
+      "item_condition": {
+        "type": "apoli:empty"
+      }
+    }
+  }
+}
