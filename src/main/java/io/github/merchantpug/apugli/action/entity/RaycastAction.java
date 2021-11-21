@@ -56,6 +56,7 @@ public class RaycastAction {
         if (data.getBoolean("pierce")) {
             List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
             RaycastAction.handlePierce(data, entity, list);
+            return;
         }
 
         if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
@@ -65,14 +66,13 @@ public class RaycastAction {
         }
 
         if (entityHitResultType == HitResult.Type.ENTITY) {
-            RaycastAction.onHitEntity(data, entity, entityHitResult);
-            fireSelfAction(data, entity);
+            RaycastAction.onHitEntity(data, entity, entityHitResult, false);
         }
     }
 
     private static void handlePierce(SerializableData.Instance data, Entity entity, List<EntityHitResult> list) {
         if (list.isEmpty()) return;
-        list.forEach(targetEntity -> onHitEntity(data, entity, targetEntity));
+        list.forEach(targetEntity -> onHitEntity(data, entity, targetEntity, true));
         fireSelfAction(data, entity);
     }
 
@@ -105,7 +105,7 @@ public class RaycastAction {
         fireSelfAction(data, entity);
     }
 
-    private static void onHitEntity(SerializableData.Instance data, Entity entity, EntityHitResult result) {
+    private static void onHitEntity(SerializableData.Instance data, Entity entity, EntityHitResult result, boolean calledThroughPierce) {
         if (!data.isPresent("target_action") && !data.isPresent("bientity_action")) return;
         Entity targetEntity = result.getEntity();
         Pair<Entity, Entity> pair = new Pair<>(entity, targetEntity);
@@ -117,6 +117,9 @@ public class RaycastAction {
         if (targetAction != null) targetAction.accept(targetEntity);
         Consumer<Pair<Entity, Entity>> biEntityAction = (Consumer<Pair<Entity, Entity>>)data.get("bientity_action");
         if (biEntityAction != null) biEntityAction.accept(pair);
+
+        if (calledThroughPierce) return;
+        fireSelfAction(data, entity);
     }
 
     public static ActionFactory<Entity> getFactory() {
