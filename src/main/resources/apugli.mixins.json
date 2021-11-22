@@ -22,7 +22,8 @@
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectInstanceAccessor",
-    "StatusEffectMixin"
+    "StatusEffectMixin",
+    "TemptGoalMixin"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",

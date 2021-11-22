@@ -7,6 +7,7 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -18,22 +19,25 @@ import java.util.function.Predicate;
 public class PreventBreedingPower extends Power {
     private final Predicate<Pair<Entity, Entity>> biEntityCondition;
     private final Consumer<Pair<Entity, Entity>> biEntityAction;
+    public final boolean preventFollow;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<PreventBreedingPower>(Apugli.identifier("prevent_breeding"),
                 new SerializableData()
                         .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
-                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null),
+                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
+                        .add("prevent_follow", SerializableDataTypes.BOOLEAN, true),
                 data ->
                         (type, entity) ->
-                                new PreventBreedingPower(type, entity, (ConditionFactory<Pair<Entity, Entity>>.Instance)data.get("bientity_condition"), (ActionFactory<Pair<Entity, Entity>>.Instance)data.get("bientity_action")))
+                                new PreventBreedingPower(type, entity, (ConditionFactory<Pair<Entity, Entity>>.Instance)data.get("bientity_condition"), (ActionFactory<Pair<Entity, Entity>>.Instance)data.get("bientity_action"), data.getBoolean("prevent_follow")))
                 .allowCondition();
     }
 
-    public PreventBreedingPower(PowerType<?> type, LivingEntity entity, Predicate<Pair<Entity, Entity>> biEntityCondition, Consumer<Pair<Entity, Entity>> biEntityAction) {
+    public PreventBreedingPower(PowerType<?> type, LivingEntity entity, Predicate<Pair<Entity, Entity>> biEntityCondition, Consumer<Pair<Entity, Entity>> biEntityAction, boolean preventFollow) {
         super(type, entity);
         this.biEntityCondition = biEntityCondition;
         this.biEntityAction = biEntityAction;
+        this.preventFollow = preventFollow;
     }
 
     public boolean doesApply(Entity mobEntity) {
