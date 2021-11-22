@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@Mixin(ModifyDamageTakenPower.class)
+@Mixin(value = ModifyDamageTakenPower.class, remap = false)
 public interface ModifyDamageTakenPowerAccessor {
     @Accessor
     Consumer<Entity> getSelfAction();
