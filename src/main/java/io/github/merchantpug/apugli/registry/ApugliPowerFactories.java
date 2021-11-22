@@ -28,6 +28,7 @@ public class ApugliPowerFactories {
         register(ModifySoulSpeedPower.getFactory());
         register(ModifyStatusEffectAmplifierPower.getFactory());
         register(ModifyStatusEffectDurationPower.getFactory());
+        register(Power.createSimpleFactory(PreventBeeAngerPower::new, Apugli.identifier("prevent_bee_anger")));
         register(PreventBreedingPower.getFactory());
         register(PreventSoundPower.getFactory());
         register(PreventLabelRenderPower.getFactory());

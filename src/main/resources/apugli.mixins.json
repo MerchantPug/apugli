@@ -6,6 +6,8 @@
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
     "AnimalEntityMixin",
+    "BeehiveBlockEntityMixin",
+    "BeehiveBlockMixin",
     "BlockItemMixin",
     "BrewingStandBlockEntityAccessor",
     "DamageEnchantmentMixin",
