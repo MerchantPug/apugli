@@ -61,7 +61,7 @@ public class HoverPower extends ResourcePower implements Active {
 
     @Override
     public void onUse() {
-        if (this.canUse() && entity.getVelocity().y <= 0.0D) {
+        if (this.canUse() && entity.getVelocity().y < 0.0D && !entity.isOnGround()) {
             entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
             entity.fallDistance = 0.0F;
             if (decreaseWhileUsing && entity.age % tickRate == 0) {
