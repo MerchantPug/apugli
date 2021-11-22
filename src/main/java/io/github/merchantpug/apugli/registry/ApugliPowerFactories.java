@@ -28,6 +28,7 @@ public class ApugliPowerFactories {
         register(ModifySoulSpeedPower.getFactory());
         register(ModifyStatusEffectAmplifierPower.getFactory());
         register(ModifyStatusEffectDurationPower.getFactory());
+        register(PreventBreedingPower.getFactory());
         register(PreventSoundPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
         register(RocketJumpPower.getFactory());
