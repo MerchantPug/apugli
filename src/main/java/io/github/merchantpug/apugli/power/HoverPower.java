@@ -62,7 +62,7 @@ public class HoverPower extends ResourcePower implements Active {
     @Override
     public void onUse() {
         if (this.canUse() && entity.getVelocity().y <= 0.0D) {
-            entity.setNoGravity(true);
+            entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
             entity.fallDistance = 0.0F;
             if (decreaseWhileUsing && entity.age % tickRate == 0) {
                 this.decrement();
@@ -78,7 +78,6 @@ public class HoverPower extends ResourcePower implements Active {
     public void tick() {
         if (this.lastUseTime != entity.world.getTime()) {
             isInUse = false;
-            entity.setNoGravity(false);
             PowerHolderComponent.syncPower(entity, this.getType());
         }
         if (decreaseWhileUsing && !isInUse && entity.isOnGround() && rechargeTimer < timeUntilRecharge) {
