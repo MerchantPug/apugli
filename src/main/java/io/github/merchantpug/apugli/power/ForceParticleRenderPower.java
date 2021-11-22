@@ -21,14 +21,14 @@ public class ForceParticleRenderPower extends Power {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ForceParticleRenderPower>(Apugli.identifier("force_particle_render"),
                 new SerializableData()
-                        .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
+                        .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
                         .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE), null)
                         .add("particles_mode", SerializableDataType.enumValue(ParticlesMode.class), ParticlesMode.MINIMAL),
                 data ->
                         (type, entity) -> {
-                            ForceParticleRenderPower power = new ForceParticleRenderPower(type, entity, data.get("particles_mode"));
+                            ForceParticleRenderPower power = new ForceParticleRenderPower(type, entity, (ParticlesMode)data.get("particles_mode"));
                             if(data.isPresent("particle")) {
-                                power.addParticle(data.get("particle"));
+                                power.addParticle((ParticleEffect)data.get("particle"));
                             }
                             if(data.isPresent("particles")) {
                                 ((List<ParticleEffect>)data.get("particles")).forEach(power::addParticle);

@@ -3,10 +3,12 @@ package io.github.merchantpug.apugli.power;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -31,13 +33,13 @@ public class PreventSoundPower extends Power {
                         (type, entity) -> {
                             PreventSoundPower power = new PreventSoundPower(type, entity);
                             if(data.isPresent("category")) {
-                                power.addCategory(data.get("category"));
+                                power.addCategory((SoundCategory)data.get("category"));
                             }
                             if(data.isPresent("categories")) {
                                 ((List<SoundCategory>)data.get("categories")).forEach(power::addCategory);
                             }
                             if(data.isPresent("sound")) {
-                                power.addSound(data.get("sound"));
+                                power.addSound((SoundEvent)data.get("sound"));
                             }
                             if(data.isPresent("sounds")) {
                                 ((List<SoundEvent>)data.get("sounds")).forEach(power::addSound);

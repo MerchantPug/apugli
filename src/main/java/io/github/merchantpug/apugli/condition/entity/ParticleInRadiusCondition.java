@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ParticleInRadiusCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
         if (!entity.world.isClient()) return false;
-        List<ParticleEffect> particles = data.get("particles");
+        List<ParticleEffect> particles = (List<ParticleEffect>)data.get("particles");
         int stopAt = -1;
         Comparison comparison = ((Comparison) data.get("comparison"));
         int compareTo = data.getInt("compare_to");
@@ -48,7 +48,7 @@ public class ParticleInRadiusCondition {
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("particle_in_radius"), new SerializableData()
                 .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
-                .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE), null)
+                .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_TYPE), null)
                 .add("radius", SerializableDataTypes.DOUBLE)
                 .add("compare_to", SerializableDataTypes.INT, 1)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),

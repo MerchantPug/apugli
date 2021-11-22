@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "io.github.merchantpug.apugli.Apugli"
+    ],
+    "client": [
+      "io.github.merchantpug.apugli.ApugliClient"
     ]
   },
   "mixins": [

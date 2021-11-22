@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.ResourcePower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -43,16 +44,16 @@ public class HoverPower extends ResourcePower implements Active {
                 data ->
                         (type, entity) -> {
                                 HoverPower power = new HoverPower(type, entity,
-                                        data.get("hud_render"),
+                                        (HudRender)data.get("hud_render"),
                                         data.getInt("start_value"),
                                         data.getInt("min"),
                                         data.getInt("max"),
-                                        data.get("min_action"),
-                                        data.get("max_action"),
+                                        (ActionFactory<Entity>.Instance)data.get("min_action"),
+                                        (ActionFactory<Entity>.Instance)data.get("max_action"),
                                         data.getBoolean("decrease_while_using"),
                                         data.getInt("tick_rate"),
                                         data.getInt("time_until_recharge"));
-                                power.setKey(data.get("key"));
+                                power.setKey((Active.Key)data.get("key"));
                                 return power;
                         })
                 .allowCondition();

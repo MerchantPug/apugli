@@ -140,24 +140,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(this, EdibleItemPower.class).size() != apugli_amountOfEdiblePower) {
-            if ((LivingEntity)(Object)this instanceof PlayerEntity) {
-                if (this.age % 10 == 0) {
-                    for (int i = 0; i < ((PlayerEntityAccessor)this).getInventory().main.size(); i++) {
-                        ItemStack itemStack = ((PlayerEntityAccessor)this).getInventory().main.get(i);
-                        ItemStackFoodComponentAPI.removeFoodComponent(itemStack);
-                    }
-                    for (int i = 0; i < ((PlayerEntityAccessor)this).getInventory().armor.size(); i++) {
-                        ItemStack armorStack = ((PlayerEntityAccessor)this).getInventory().getArmorStack(i);
-                        ItemStackFoodComponentAPI.removeFoodComponent(armorStack);
-                    }
-                    ItemStack offHandStack = ((LivingEntity)(Object)this).getEquippedStack(EquipmentSlot.OFFHAND);
-                    ItemStackFoodComponentAPI.removeFoodComponent(offHandStack);
-                    apugli_amountOfEdiblePower = PowerHolderComponent.getPowers(this, EdibleItemPower.class).size();
-                }
-            }
-        }
-        PowerHolderComponent.getPowers(this, EdibleItemPower.class).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (apugli_framesOnGround > 4) {

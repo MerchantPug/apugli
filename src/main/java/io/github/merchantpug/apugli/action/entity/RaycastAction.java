@@ -78,7 +78,7 @@ public class RaycastAction {
 
     private static void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
         if (!data.isPresent("particle") || entity.world.isClient()) return;
-        ParticleEffect particleEffect = data.get("particle");
+        ParticleEffect particleEffect = (ParticleEffect)data.get("particle");
 
         for (double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
             ((ServerWorld)entity.world).spawnParticles(particleEffect, entity.getEyePos().getX() + d * entity.getRotationVec(0).getX(), entity.getEyePos().getY() + d * entity.getRotationVec(0).getY(), entity.getEyePos().getZ() + d * entity.getRotationVec(0).getZ(), 1, 0, 0, 0, 0);
@@ -87,7 +87,7 @@ public class RaycastAction {
 
     private static void fireSelfAction(SerializableData.Instance data, Entity entity) {
         if (!data.isPresent("self_action") || !entity.isAlive()) return;
-        Consumer<Entity> selfAction = data.get("self_action");
+        Consumer<Entity> selfAction = (ActionFactory<Entity>.Instance)data.get("self_action");
 
         selfAction.accept(entity);
     }

@@ -13,10 +13,10 @@ import java.util.function.Predicate;
 
 public class EntityInRadiusCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
-        Predicate<Entity> entityCondition = (data.get("condition"));
-        Predicate<Pair<Entity, Entity>> biEntityCondition = (data.get("bientity_condition"));
+        Predicate<Entity> entityCondition = (ConditionFactory<Entity>.Instance)data.get("condition");
+        Predicate<Pair<Entity, Entity>> biEntityCondition = (ConditionFactory<Pair<Entity, Entity>>.Instance)data.get("bientity_condition");
         int stopAt = -1;
-        Comparison comparison = (data.get("comparison"));
+        Comparison comparison = (Comparison)data.get("comparison");
         int compareTo = data.getInt("compare_to");
         switch (comparison) {
             case EQUAL, LESS_THAN_OR_EQUAL, GREATER_THAN -> stopAt = compareTo + 1;

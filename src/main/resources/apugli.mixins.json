@@ -17,7 +17,6 @@
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "ModifyDamageTakenPowerAccessor",
-    "PlayerEntityAccessor",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
