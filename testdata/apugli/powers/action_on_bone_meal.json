@@ -1,0 +1,40 @@
+{
+  "type": "apugli:action_on_bonemeal",
+  "block_action": {
+    "type": "apoli:and",
+    "actions": [
+      {
+        "type": "apoli:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "z": 1
+      },
+      {
+        "type": "apoli:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "z": -1
+      },
+      {
+        "type": "apoli:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "x": 1
+      },
+      {
+        "type": "apoli:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "x": -1
+      }
+    ]
+  },
+  "condition": {
+    "type": "apoli:sneaking",
+    "inverted": true
+  }
+}

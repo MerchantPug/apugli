@@ -9,6 +9,7 @@
     "BeehiveBlockEntityMixin",
     "BeehiveBlockMixin",
     "BlockItemMixin",
+    "BoneMealItemMixin",
     "BrewingStandBlockEntityAccessor",
     "EnchantmentHelperMixin",
     "EntityMixin",
