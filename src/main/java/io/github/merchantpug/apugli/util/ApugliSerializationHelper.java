@@ -2,7 +2,6 @@ package io.github.merchantpug.apugli.util;
 
 import io.github.apace100.calio.SerializationHelper;
 import io.github.apace100.calio.util.StatusEffectChance;
-import io.github.merchantpug.apugli.Apugli;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.network.PacketByteBuf;
 
@@ -48,7 +47,6 @@ public class ApugliSerializationHelper {
         chanceList.forEach(sec -> {
             builder.statusEffect(sec.statusEffectInstance, sec.chance);
         });
-        Apugli.LOGGER.info(builder.build().toString());
         return builder.build();
     }
 }
