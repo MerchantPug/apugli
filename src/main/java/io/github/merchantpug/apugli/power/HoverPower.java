@@ -80,12 +80,8 @@ public class HoverPower extends ResourcePower implements Active {
             isInUse = false;
             PowerHolderComponent.syncPower(entity, this.getType());
         }
-        if (decreaseWhileUsing && !isInUse && entity.isOnGround() && rechargeTimer < timeUntilRecharge) {
+        if (decreaseWhileUsing && !isInUse && rechargeTimer < timeUntilRecharge) {
             rechargeTimer += 1;
-            PowerHolderComponent.syncPower(entity, this.getType());
-        }
-        if (!entity.isOnGround() && rechargeTimer != 0) {
-            rechargeTimer = 0;
             PowerHolderComponent.syncPower(entity, this.getType());
         }
         if (rechargeTimer == timeUntilRecharge) {
