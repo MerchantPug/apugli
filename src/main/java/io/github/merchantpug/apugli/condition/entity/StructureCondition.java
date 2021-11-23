@@ -34,7 +34,7 @@ public class StructureCondition {
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("structure"), new SerializableData()
                 .add("structure", SerializableDataTypes.IDENTIFIER),
-                ApugliEntityGroupCondition::condition
+                StructureCondition::condition
         );
     }
 }
