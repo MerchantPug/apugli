@@ -10,7 +10,6 @@
     "BeehiveBlockMixin",
     "BlockItemMixin",
     "BrewingStandBlockEntityAccessor",
-    "DamageEnchantmentMixin",
     "EnchantmentHelperMixin",
     "EntityMixin",
     "ExplosionMixin",

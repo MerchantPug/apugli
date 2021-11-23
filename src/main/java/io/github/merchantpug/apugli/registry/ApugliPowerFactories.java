@@ -23,6 +23,8 @@ public class ApugliPowerFactories {
         register(HoverPower.getFactory());
         register(Power.createSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
         register(ModifyBlockPlacedPower.getFactory());
+        register(ModifyEnchantmentDamageDealtPower.getFactory());
+        register(ModifyEnchantmentDamageTakenPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
@@ -33,7 +35,6 @@ public class ApugliPowerFactories {
         register(PreventSoundPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
         register(RocketJumpPower.getFactory());
-        register(SetApugliEntityGroupPower.getFactory());
         register(SetTexturePower.getFactory());
     }
 

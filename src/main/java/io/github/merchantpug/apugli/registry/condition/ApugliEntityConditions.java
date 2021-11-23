@@ -8,7 +8,6 @@ import net.minecraft.util.registry.Registry;
 
 public class ApugliEntityConditions {
     public static void register() {
-        register(ApugliEntityGroupCondition.getFactory());
         register(CanHaveEffectCondition.getFactory());
         register(EntityInRadiusCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());

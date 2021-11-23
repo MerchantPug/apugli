@@ -1,18 +1,17 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.SetEntityGroupPower;
-import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.*;
-import io.github.merchantpug.apugli.registry.ApugliEntityGroups;
-import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -27,20 +26,64 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
-
-    @Shadow public abstract EntityGroup getGroup();
 
     @Shadow public abstract boolean isFallFlying();
 
     @Shadow protected abstract boolean isOnSoulSpeedBlock();
 
-    @Unique private int apugli_amountOfEdiblePower = 0;
+    @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot slot);
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Unique private boolean hasModifiedDamage;
+
+    @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
+    private float modifyDamageTaken(float originalValue, DamageSource source, float amount) {
+        float[] additionalValue = {0.0F};
+        LivingEntity thisAsLiving = (LivingEntity)(Object)this;
+
+        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity && !source.isProjectile()) {
+            List<ModifyEnchantmentDamageDealtPower> damageDealtPowers = PowerHolderComponent.getPowers(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class).stream().filter(p -> p.doesApply(source, amount, thisAsLiving)).collect(Collectors.toList());
+
+            damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
+
+            for (ModifyEnchantmentDamageDealtPower power : damageDealtPowers) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                    additionalValue[0] = PowerHolderComponent.modify(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class,
+                            additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(thisAsLiving));
+                }
+            }
+        }
+
+        List<ModifyEnchantmentDamageTakenPower> damageTakenPowers = PowerHolderComponent.getPowers(this, ModifyEnchantmentDamageTakenPower.class).stream().filter(p -> p.doesApply(source, amount)).collect(Collectors.toList());
+
+        damageTakenPowers.forEach(power -> additionalValue[0] += power.baseValue);
+
+        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
+            for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                    additionalValue[0] = PowerHolderComponent.modify(this, ModifyEnchantmentDamageTakenPower.class,
+                            additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(source.getAttacker()));
+                }
+            }
+        }
+
+        hasModifiedDamage = originalValue +  additionalValue[0] != originalValue;
+
+        return originalValue + additionalValue[0];
+    }
+
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
+    private void preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if(hasModifiedDamage && amount == 0.0F) {
+            cir.setReturnValue(false);
+        }
     }
 
     @ModifyVariable(method = "addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
@@ -117,20 +160,8 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "getGroup", at = @At("HEAD"), cancellable = true)
-    public void getGroup(CallbackInfoReturnable<EntityGroup> cir) {
-        List<SetEntityGroupPower> originsGroups = PowerHolderComponent.getPowers(this, SetEntityGroupPower.class);
-        List<SetApugliEntityGroupPower> apugliGroups = PowerHolderComponent.getPowers(this, SetApugliEntityGroupPower.class);
-        if(apugliGroups.size() > 0) {
-            if(apugliGroups.size() > 1 || originsGroups.size() > 0) {
-                Apugli.LOGGER.warn("Player " + this.getDisplayName().toString() + " has two or more instances of SetEntityGroupPower/SetApugliEntityGroupPower.");
-            }
-            cir.setReturnValue(apugliGroups.get(0).group);
-        }
-    }
-
     @Inject(method = "isUndead", at = @At("HEAD"), cancellable = true)
-    private void isUndead(CallbackInfoReturnable<Boolean> cir) {
+    private void invertInstantEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, InvertInstantEffectsPower.class)) {
             cir.setReturnValue(true);
         }
@@ -146,7 +177,7 @@ public abstract class LivingEntityMixin extends Entity {
                 bunnyHopPower.setValue(0);
                 PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
             }
-            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying() || (this.getVelocity().getX() == 0 && this.getVelocity().getZ() == 0)) {
+            if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying()) {
                 if (apugli_framesOnGround <= 4) {
                     apugli_framesOnGround += 1;
                 }
@@ -158,7 +189,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3d movementInput, CallbackInfo ci) {
-        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)  && !this.world.isClient) {
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (this.apugli_framesOnGround <= 4) {
                 if (this.apugli_framesOnGround == 0) {
