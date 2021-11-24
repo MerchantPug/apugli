@@ -40,6 +40,7 @@ public class EffectWhitelistPower extends Power {
     public EffectWhitelistPower(PowerType<?> type, LivingEntity entity) {
         super(type, entity);
     }
+
     public EffectWhitelistPower(PowerType<?> type, LivingEntity entity, StatusEffect effect) {
         super(type, entity);
         addEffect(effect);
