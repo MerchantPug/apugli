@@ -39,7 +39,7 @@ public class HoverPower extends ResourcePower implements Active {
                         .add("max_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("decrease_while_using", SerializableDataTypes.BOOLEAN, true)
                         .add("tick_rate", SerializableDataTypes.INT, 1)
-                        .add("time_until_recharge", SerializableDataTypes.INT, 20)
+                        .add("time_until_recharge", SerializableDataTypes.INT, 15)
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 data ->
                         (type, entity) -> {
@@ -81,7 +81,11 @@ public class HoverPower extends ResourcePower implements Active {
             PowerHolderComponent.syncPower(entity, this.getType());
         }
         if (decreaseWhileUsing && !isInUse && rechargeTimer < timeUntilRecharge) {
-            rechargeTimer += 1;
+            if (entity.isOnGround()) {
+                rechargeTimer += 1;
+            } else {
+                rechargeTimer = 0;
+            }
             PowerHolderComponent.syncPower(entity, this.getType());
         }
         if (rechargeTimer == timeUntilRecharge) {
