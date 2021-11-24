@@ -9,10 +9,7 @@ import net.minecraft.util.registry.Registry;
 public class ApugliEntityActions {
     public static void register() {
         register(ApugliExplodeAction.getFactory());
-        register(AreaOfEffectAction.getFactory());
-        register(CraftingTableAction.getFactory());
         register(DropItemAction.getFactory());
-        register(EnderChestAction.getFactory());
         register(FireProjectileAction.getFactory());
         register(RaycastAction.getFactory());
         register(SetNoGravityAction.getFactory());

@@ -1,7 +1,11 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.access.LivingEntityAccess;
+import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.power.*;
+import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -10,9 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,26 +27,50 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+public abstract class LivingEntityMixin extends Entity implements LivingEntityAccess {
 
     @Shadow public abstract boolean isFallFlying();
 
     @Shadow protected abstract boolean isOnSoulSpeedBlock();
 
-    @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot slot);
+    @Shadow public abstract boolean isDead();
+
+    @Shadow protected abstract boolean tryUseTotem(DamageSource source);
+
+    @Shadow public int hurtTime;
+
+    @Shadow public int maxHurtTime;
+
+    @Shadow protected abstract void initDataTracker();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
+    @Unique private final HashMap<Entity, Integer> hitsHashmap = new HashMap<>();
+
+    @Inject(method = "damage", at = @At(value = "HEAD"))
+    private void addToHits(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (this.world.isClient || source.getAttacker() == null || source.getAttacker().world.isClient || !(source.getAttacker() instanceof LivingEntity) || this.hurtTime > 0 && this.hurtTime != this.maxHurtTime) return;
+        if (this.isDead() && !this.tryUseTotem(source) && hitsHashmap.containsKey(source.getAttacker())) {
+            hitsHashmap.remove(source.getAttacker());
+            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.REMOVE, 0);
+            return;
+        }
+        int newValue = hitsHashmap.containsKey(source.getAttacker()) ? hitsHashmap.get(source.getAttacker()) + 1 : 1;
+        hitsHashmap.put(source.getAttacker(), newValue);
+        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, newValue);
+    }
+
     @Unique private boolean hasModifiedDamage;
 
     @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
-    private float modifyDamageTaken(float originalValue, DamageSource source, float amount) {
+    private float modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
         float[] additionalValue = {0.0F};
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
 
@@ -84,29 +110,6 @@ public abstract class LivingEntityMixin extends Entity {
         if(hasModifiedDamage && amount == 0.0F) {
             cir.setReturnValue(false);
         }
-    }
-
-    @ModifyVariable(method = "addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
-    private StatusEffectInstance modifyStatusEffect(StatusEffectInstance effect) {
-        StatusEffect effectType = effect.getEffectType();
-        int originalAmp = effect.getAmplifier();
-        int originalDur = effect.getDuration();
-
-        int amplifier = Math.round(PowerHolderComponent.modify(this, ModifyStatusEffectAmplifierPower.class, originalAmp, power -> power.doesApply(effectType)));
-        int duration = Math.round(PowerHolderComponent.modify(this, ModifyStatusEffectDurationPower.class, originalDur, power -> power.doesApply(effectType)));
-
-        if (amplifier != originalAmp || duration != originalDur) {
-            return new StatusEffectInstance(
-                    effectType,
-                    duration,
-                    amplifier,
-                    effect.isAmbient(),
-                    effect.shouldShowParticles(),
-                    effect.shouldShowIcon(),
-                    ((StatusEffectInstanceAccessor)effect).getHiddenEffect()
-            );
-        }
-        return effect;
     }
 
     @Inject(method = "shouldDisplaySoulSpeedEffects", at = @At("HEAD"), cancellable = true)
@@ -203,5 +206,20 @@ public abstract class LivingEntityMixin extends Entity {
             }
             this.updateVelocity((float)bunnyHopPower.increasePerTick * bunnyHopPower.getValue(), movementInput);
         }
+    }
+
+    @Override
+    public HashMap<Entity, Integer> getHits() {
+        return this.hitsHashmap;
+    }
+
+    @Override
+    public void addToHits(Entity entity, int value) {
+        this.hitsHashmap.put(entity, hitsHashmap.containsKey(entity) ? hitsHashmap.get(entity) + value: value);
+    }
+
+    @Override
+    public void setHits(Entity entity, int value) {
+        this.hitsHashmap.put(entity, value);
     }
 }

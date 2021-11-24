@@ -2,6 +2,7 @@ package io.github.merchantpug.apugli;
 
 import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.merchantpug.apugli.registry.*;
+import io.github.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
 import io.github.merchantpug.apugli.registry.action.ApugliEntityActions;
 import io.github.merchantpug.apugli.registry.condition.*;
@@ -28,6 +29,7 @@ public class Apugli implements ModInitializer {
 			}
 		});
 		LOGGER.info("Apugli " + VERSION + " has initialized. Powering up your powered up game.");
+		ApugliBiEntityActions.register();
 		ApugliBlockActions.register();
 		ApugliEntityActions.register();
 		ApugliBiEntityConditions.register();

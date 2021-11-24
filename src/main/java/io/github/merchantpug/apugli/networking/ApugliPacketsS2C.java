@@ -1,7 +1,10 @@
 package io.github.merchantpug.apugli.networking;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.util.ApugliSerializationHelper;
+import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import net.fabricmc.api.EnvType;
@@ -13,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
@@ -27,7 +31,35 @@ public class ApugliPacketsS2C {
     public static void register() {
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
+            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
         }));
+    }
+
+    private static void onHitsOnTargetSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+        int targetId = packetByteBuf.readInt();
+        int attackerId = packetByteBuf.readInt();
+        HitsOnTargetUtil.PacketType type = HitsOnTargetUtil.PacketType.values()[packetByteBuf.readByte()];
+        int amount = 0;
+        if (type == HitsOnTargetUtil.PacketType.SET) {
+            amount = packetByteBuf.readInt();
+        }
+        int finalAmount = amount;
+
+        minecraftClient.execute(() -> {
+            Entity target = clientPlayNetworkHandler.getWorld().getEntityById(targetId);
+            Entity attacker = clientPlayNetworkHandler.getWorld().getEntityById(attackerId);
+            if (!(target instanceof LivingEntity)) {
+                Apugli.LOGGER.warn("Received unknown target");
+            } else if (!(attacker instanceof LivingEntity)) {
+                Apugli.LOGGER.warn("Received unknown attacker");
+            } else switch (type) {
+                case SET -> ((LivingEntityAccess)target).getHits().put(attacker, finalAmount);
+                case REMOVE -> {
+                    if (!((LivingEntityAccess)target).getHits().containsKey(attacker)) return;
+                    ((LivingEntityAccess)target).getHits().remove(attacker);
+                }
+            }
+        });
     }
 
     private static void onFoodComponentSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {

@@ -1,0 +1,13 @@
+{
+  "type": "apoli:modify_damage_taken",
+  "bientity_condition": {
+    "type": "apugli:hits_on_target",
+    "comparison": "<",
+    "compare_to": 1
+  },
+  "modifier": {
+    "name": "Test damage modifier",
+    "operation": "addition",
+    "value": "2"
+  }
+}

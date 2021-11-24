@@ -2,7 +2,6 @@ package io.github.merchantpug.apugli.registry.action;
 
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.merchantpug.apugli.action.block.BonemealAction;
 import io.github.merchantpug.apugli.action.block.DestroyAction;
 import io.github.merchantpug.apugli.action.block.LightUpAction;
 import net.minecraft.util.math.BlockPos;
@@ -13,7 +12,6 @@ import org.apache.commons.lang3.tuple.Triple;
 
 public class ApugliBlockActions {
     public static void register() {
-        register(BonemealAction.getFactory());
         register(DestroyAction.getFactory());
         register(LightUpAction.getFactory());
     }
