@@ -6,6 +6,7 @@
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
     "AnimalEntityMixin",
+    "AnvilScreenHandlerMixin",
     "BeehiveBlockEntityMixin",
     "BeehiveBlockMixin",
     "BlockItemMixin",

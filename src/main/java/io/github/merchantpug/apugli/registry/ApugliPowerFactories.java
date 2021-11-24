@@ -12,6 +12,7 @@ public class ApugliPowerFactories {
         register(ActionOnBlockPlacedPower.getFactory());
         register(ActionOnEquipPower.getFactory());
         register(ActionOnBoneMealPower.getFactory());
+        register(AllowAnvilEnchantPower.getFactory());
         register(BunnyHopPower.getFactory());
         register(CustomFootstepPower.getFactory());
         register(CustomDeathSoundPower.getFactory());
