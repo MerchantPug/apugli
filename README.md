@@ -1,4 +1,5 @@
-# Apugli README
+# Apugli
+![https://jitpack.io/#MerchantPug/apugli](https://img.shields.io/jitpack/v/github/MerchantPug/apugli?style=for-the-badge) ![https://github.com/MerchantPug/apugli/issues](https://img.shields.io/github/issues/MerchantPug/apugli?color=yellow&style=for-the-badge) ![](https://img.shields.io/github/issues-pr/MerchantPug/apugli?color=lime&style=for-the-badge) ![https://github.com/MerchantPug/apugli/blob/master/LICENSE](https://img.shields.io/github/license/MerchantPug/apugli?style=for-the-badge)
 
 This is the Apugli repository where the source code for the Apugli Apoli addon is hosted. You may more commonly know this as the TooManyOrigins library for its power types and conditions, either way you can download the .jar from the releases page as a standalone file.
 
