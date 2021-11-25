@@ -3,7 +3,7 @@ package io.github.merchantpug.apugli.networking;
 import io.github.apace100.apoli.Apoli;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
-import io.github.merchantpug.apugli.util.ApugliSerializationHelper;
+import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
@@ -76,7 +76,7 @@ public class ApugliPacketsS2C {
             hasUseAction = packetByteBuf.readBoolean();
             hasReturnStack = packetByteBuf.readBoolean();
             hasSoundEvent = packetByteBuf.readBoolean();
-            foodComponent = ApugliSerializationHelper.readFoodComponent(packetByteBuf);
+            foodComponent = ApugliDataTypes.FOOD_COMPONENT.receive(packetByteBuf);
             if (hasUseAction) {
                 useAction = UseAction.values()[packetByteBuf.readByte()];
             }

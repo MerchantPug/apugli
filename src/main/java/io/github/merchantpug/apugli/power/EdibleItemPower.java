@@ -11,7 +11,6 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
-import io.github.merchantpug.apugli.util.ApugliSerializationHelper;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
 import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import io.github.merchantpug.nibbles.access.ItemStackAccess;
@@ -23,7 +22,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.FoodComponents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -155,7 +153,7 @@ public class EdibleItemPower extends Power {
             buf.writeBoolean(useAction != null);
             buf.writeBoolean(returnStack != null);
             buf.writeBoolean(sound != null);
-            ApugliSerializationHelper.writeFoodComponent(buf, foodComponent);
+            ApugliDataTypes.FOOD_COMPONENT.send(buf, foodComponent);
             if (useAction != null) {
                 buf.writeByte(type.ordinal());
             }
