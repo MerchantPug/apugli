@@ -1,0 +1,12 @@
+{
+  "type": "apoli:modify_damage_taken",
+  "bientity_condition": {
+    "type": "apugli:rotation",
+    "comparison": ">",
+    "compare_to": 0
+  },
+  "modifier": {
+    "value": 9999,
+    "operation": "addition"
+  }
+}
