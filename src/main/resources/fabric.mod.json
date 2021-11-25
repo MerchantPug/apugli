@@ -38,6 +38,6 @@
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16",
-    "apoli": ">=2.0.1"
+    "apoli": ">=2.1.0-beta.1"
   }
 }
