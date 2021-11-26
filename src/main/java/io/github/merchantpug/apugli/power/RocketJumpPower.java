@@ -96,8 +96,16 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
                 BlockHitResult blockHitResult = entity.world.raycast(context);
 
-                double entityReach = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : distance * distance;
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+                double baseEntityAttackRange = (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) ? 6.0D : 3.0D;
+                double entityAttackRange = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getAttackRange(entity, baseEntityAttackRange) : baseEntityAttackRange;
+                double entityDistance = !Double.isNaN(this.distance) ? this.distance : entityAttackRange;
+                Vec3d entityLookVector = entity.getRotationVec(0).multiply(entityDistance);
+                Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
+                Box entityBox = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
+
+                double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : entityDistance * entityDistance;
+                double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
+                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 
                 HitResult.Type blockHitResultType = blockHitResult.getType();
                 HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;

@@ -1,0 +1,24 @@
+{
+  "type": "apugli:rocket_jump",
+  "cooldown": 5,
+  "hud_render": {
+    "should_render": false
+  },
+  "source": {
+    "name": "overheat",
+    "bypasses_armor": "true",
+    "fire": "true",
+    "unblockable": "true"
+  },
+  "key": {
+    "key": "key.use",
+    "continuous": false
+  },
+  "modifier": {
+    "operation": "multiply_base",
+    "value": 1.5
+  },
+  "amount": 2.0,
+  "use_charged": true,
+  "speed": 1.0
+}
