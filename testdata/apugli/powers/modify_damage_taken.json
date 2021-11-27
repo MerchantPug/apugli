@@ -8,6 +8,6 @@
   "modifier": {
     "name": "Test damage modifier",
     "operation": "addition",
-    "value": "2"
+    "value": 2
   }
 }
