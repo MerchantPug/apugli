@@ -27,7 +27,7 @@ public class ItemStackMixin implements ItemStackAccess {
         if (this.getEntity() == null) this.setEntity(entity);
     }
 
-    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setCooldown(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setBobbingAnimationTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     private void copyEntity(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
         if (this.getEntity() != null) {
             ((ItemStackAccess) (Object) itemStack).setEntity(this.getEntity());

@@ -1,6 +1,5 @@
 package io.github.merchantpug.apugli.action.block;
 
-import draylar.fabricfurnaces.block.FabricFurnaceBlock;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -37,7 +36,7 @@ public class LightUpAction {
         if (!data.isPresent("burn_time")) return;
         BlockState state = block.getLeft().getBlockState(block.getMiddle());
         BlockEntity entity = block.getLeft().getBlockEntity(block.getMiddle());
-        if (!(state.getBlock() instanceof AbstractFurnaceBlock) && FabricLoader.getInstance().isModLoaded("fabric-furnaces") && !(state.getBlock() instanceof FabricFurnaceBlock)) return;
+        if (!(state.getBlock() instanceof AbstractFurnaceBlock)) return;
         if (!(entity instanceof AbstractFurnaceBlockEntity)) return;
         block.getLeft().setBlockState(block.getMiddle(), state.with(LIT, true).with(LIT, true), 2);
         spawnParticles(data, block);

@@ -35,9 +35,9 @@
   },
   "depends": {
     "fabricloader": ">=0.11.3",
-    "fabric": "*",
-    "minecraft": "1.17.x",
-    "java": ">=16",
+    "fabric": ">=0.43.0",
+    "minecraft": "1.18.x",
+    "java": ">=17",
     "apoli": ">=2.1.0-beta.1"
   }
 }

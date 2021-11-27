@@ -44,7 +44,7 @@ public class FireProjectileAction {
 
             ProjectileEntity projectile = (ProjectileEntity) firedEntity;
             projectile.setOwner(entity);
-            projectile.setProperties(entity, entity.getPitch(), entity.getYaw(), 0.0F, data.getFloat("speed"), data.getFloat("divergence"));
+            projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0.0F, data.getFloat("speed"), data.getFloat("divergence"));
         } else {
             float f = -MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
             float g = -MathHelper.sin(entity.getPitch() * 0.017453292F);

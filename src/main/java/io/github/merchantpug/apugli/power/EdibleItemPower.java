@@ -45,7 +45,7 @@ public class EdibleItemPower extends Power {
         return new PowerFactory<EdibleItemPower>(Apugli.identifier("edible_item"),
                 new SerializableData()
                         .add("item_condition", ApoliDataTypes.ITEM_CONDITION)
-                        .add("food_component", ApugliDataTypes.FOOD_COMPONENT)
+                        .add("food_component", SerializableDataTypes.FOOD_COMPONENT)
                         .add("use_action", SerializableDataTypes.USE_ACTION, null)
                         .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
                         .add("sound", SerializableDataTypes.SOUND_EVENT, null)
@@ -82,12 +82,12 @@ public class EdibleItemPower extends Power {
             if (mainhandStack != ItemStack.EMPTY) {
                 if (this.isActive()) {
                     if (this.predicate.test(mainhandStack)) {
-                        ItemStackFoodComponentAPI.setNibbles(mainhandStack, foodComponent, useAction, returnStack, sound);
+                        ItemStackFoodComponentAPI.setStackFood(mainhandStack, foodComponent, useAction, returnStack, sound);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.MAINHAND, null, 0);
                     }
                 } else {
                     if (this.predicate.test(mainhandStack) && ((ItemStackAccess)(Object)mainhandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeFoodComponent(mainhandStack);
+                        ItemStackFoodComponentAPI.removeStackFood(mainhandStack);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.MAINHAND, null, 0);
                     }
                 }
@@ -96,12 +96,12 @@ public class EdibleItemPower extends Power {
             if (offhandStack != ItemStack.EMPTY) {
                 if (this.isActive()) {
                     if (this.predicate.test(offhandStack)) {
-                        ItemStackFoodComponentAPI.setNibbles(offhandStack, foodComponent, useAction, returnStack, sound);
+                        ItemStackFoodComponentAPI.setStackFood(offhandStack, foodComponent, useAction, returnStack, sound);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.OFFHAND, null, 0);
                     }
                 } else {
                     if (this.predicate.test(offhandStack) && ((ItemStackAccess)(Object)mainhandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeFoodComponent(offhandStack);
+                        ItemStackFoodComponentAPI.removeStackFood(offhandStack);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.OFFHAND, null, 0);
                     }
                 }
@@ -125,20 +125,20 @@ public class EdibleItemPower extends Power {
             for (int i = 0; i < ((PlayerEntity) entity).getInventory().main.size(); i++) {
                 ItemStack itemStack = ((PlayerEntity)entity).getInventory().main.get(i);
                 if (predicate.test(itemStack) && ((ItemStackAccess)(Object)itemStack).getItemStackFoodComponent() == foodComponent) {
-                    ItemStackFoodComponentAPI.removeFoodComponent(itemStack);
+                    ItemStackFoodComponentAPI.removeStackFood(itemStack);
                     this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, null, StackFoodComponentUtil.InventoryLocation.MAIN, i);
                 }
             }
             for (int i = 0; i < ((PlayerEntity) entity).getInventory().armor.size(); i++) {
                 ItemStack armorStack = ((PlayerEntity) entity).getInventory().getArmorStack(i);
                 if (predicate.test(armorStack) && ((ItemStackAccess)(Object)armorStack).getItemStackFoodComponent() == foodComponent) {
-                    ItemStackFoodComponentAPI.removeFoodComponent(armorStack);
+                    ItemStackFoodComponentAPI.removeStackFood(armorStack);
                     this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, null, StackFoodComponentUtil.InventoryLocation.ARMOR, i);
                 }
             }
             ItemStack offHandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
             if (predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
-                ItemStackFoodComponentAPI.removeFoodComponent(offHandStack);
+                ItemStackFoodComponentAPI.removeStackFood(offHandStack);
                 this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.OFFHAND, null, 0);
             }
         }
@@ -153,7 +153,7 @@ public class EdibleItemPower extends Power {
             buf.writeBoolean(useAction != null);
             buf.writeBoolean(returnStack != null);
             buf.writeBoolean(sound != null);
-            ApugliDataTypes.FOOD_COMPONENT.send(buf, foodComponent);
+            SerializableDataTypes.FOOD_COMPONENT.send(buf, foodComponent);
             if (useAction != null) {
                 buf.writeByte(type.ordinal());
             }

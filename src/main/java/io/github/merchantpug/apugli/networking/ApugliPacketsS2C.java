@@ -1,6 +1,7 @@
 package io.github.merchantpug.apugli.networking;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
@@ -76,7 +77,7 @@ public class ApugliPacketsS2C {
             hasUseAction = packetByteBuf.readBoolean();
             hasReturnStack = packetByteBuf.readBoolean();
             hasSoundEvent = packetByteBuf.readBoolean();
-            foodComponent = ApugliDataTypes.FOOD_COMPONENT.receive(packetByteBuf);
+            foodComponent = SerializableDataTypes.FOOD_COMPONENT.receive(packetByteBuf);
             if (hasUseAction) {
                 useAction = UseAction.values()[packetByteBuf.readByte()];
             }
@@ -117,8 +118,8 @@ public class ApugliPacketsS2C {
                     EquipmentSlot equipmentSlot = EquipmentSlot.byName(finalEquipmentSlotId);
                     ItemStack stack = ((PlayerEntity)entity).getEquippedStack(equipmentSlot);
                     switch (foodComponentAction) {
-                        case ADD -> ItemStackFoodComponentAPI.setNibbles(stack, finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                        case REMOVE -> ItemStackFoodComponentAPI.removeNibbles(stack);
+                        case ADD -> ItemStackFoodComponentAPI.setStackFood(stack, finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
+                        case REMOVE -> ItemStackFoodComponentAPI.removeStackFood(stack);
                     }
                 }
                 if (usesInventoryIndex) {
@@ -130,8 +131,8 @@ public class ApugliPacketsS2C {
                         default -> throw new IllegalStateException("Unexpected value: " + finalInventoryLocation);
                     }
                     switch (foodComponentAction) {
-                        case ADD -> ItemStackFoodComponentAPI.setNibbles(inventory.get(finalInventoryIndex), finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                        case REMOVE -> ItemStackFoodComponentAPI.removeNibbles(inventory.get(finalInventoryIndex));
+                        case ADD -> ItemStackFoodComponentAPI.setStackFood(inventory.get(finalInventoryIndex), finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
+                        case REMOVE -> ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
                     }
                 }
             }
