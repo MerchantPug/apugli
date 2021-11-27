@@ -25,7 +25,7 @@ public class DropItemAction {
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(Apugli.identifier("drop_item"), new SerializableData()
                 .add("hand", SerializableDataTypes.HAND),
-                SwingHandAction::action
+                DropItemAction::action
         );
     }
 }
