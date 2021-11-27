@@ -13,6 +13,7 @@ public class ApugliEntityActions {
         register(FireProjectileAction.getFactory());
         register(RaycastAction.getFactory());
         register(SetNoGravityAction.getFactory());
+        register(SpawnItemAction.getFactory());
         register(SwingHandAction.getFactory());
         register(ZombifyVillagerAction.getFactory());
     }
