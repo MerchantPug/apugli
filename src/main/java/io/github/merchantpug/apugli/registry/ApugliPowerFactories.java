@@ -24,6 +24,7 @@ public class ApugliPowerFactories {
         register(HoverPower.getFactory());
         register(Power.createSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
         register(ModifyBlockPlacedPower.getFactory());
+        register(ModifyBreedingCooldownPower.getFactory());
         register(ModifyEnchantmentDamageDealtPower.getFactory());
         register(ModifyEnchantmentDamageTakenPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
