@@ -16,17 +16,15 @@ import java.util.List;
 
 public class ForceParticleRenderPower extends Power {
     private final List<ParticleEffect> particles = new ArrayList<>();
-    public final ParticlesMode particlesMode;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ForceParticleRenderPower>(Apugli.identifier("force_particle_render"),
                 new SerializableData()
                         .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
-                        .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE), null)
-                        .add("particles_mode", SerializableDataType.enumValue(ParticlesMode.class), ParticlesMode.MINIMAL),
-                data ->
+                        .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE), null),
+                        data ->
                         (type, entity) -> {
-                            ForceParticleRenderPower power = new ForceParticleRenderPower(type, entity, (ParticlesMode)data.get("particles_mode"));
+                            ForceParticleRenderPower power = new ForceParticleRenderPower(type, entity);
                             if(data.isPresent("particle")) {
                                 power.addParticle((ParticleEffect)data.get("particle"));
                             }
@@ -46,8 +44,7 @@ public class ForceParticleRenderPower extends Power {
         this.particles.add(particle);
     }
 
-    public ForceParticleRenderPower(PowerType<?> type, LivingEntity entity, ParticlesMode particlesMode) {
+    public ForceParticleRenderPower(PowerType<?> type, LivingEntity entity) {
         super(type, entity);
-        this.particlesMode = particlesMode;
     }
 }

@@ -4,6 +4,5 @@
     "minecraft:large_smoke",
     "minecraft:campfire_cosy_smoke",
     "minecraft:campfire_signal_smoke"
-  ],
-  "particles_mode": "DECREASED"
+  ]
 }

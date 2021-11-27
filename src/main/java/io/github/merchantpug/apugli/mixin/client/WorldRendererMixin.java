@@ -44,19 +44,6 @@ public class WorldRendererMixin {
         this.particleZ = z;
     }
 
-    @ModifyVariable(method = "getRandomParticleSpawnChance", at = @At(value = "STORE", ordinal = 0))
-    private ParticlesMode modifyParticlesModeWithPower(ParticlesMode particlesMode) {
-        List<ForceParticleRenderPower> powerList = PowerHolderComponent.getPowers(this.client.getCameraEntity(), ForceParticleRenderPower.class)
-                .stream()
-                .filter(power -> power.doesApply(particleParameters) && client.gameRenderer.getCamera().getPos().squaredDistanceTo(particleX, particleY, particleZ) <= 1024.0D)
-                .sorted(Comparator.comparingInt(power -> power.particlesMode.getId()))
-                .collect(Collectors.toList());
-        if (powerList.isEmpty() || particlesMode == ParticlesMode.ALL || particlesMode == ParticlesMode.DECREASED && powerList.stream().allMatch(power -> power.particlesMode == ParticlesMode.MINIMAL)) {
-            return particlesMode;
-        }
-        return powerList.get(0).particlesMode;
-    }
-
     @ModifyArg(method = "spawnParticle(Lnet/minecraft/particle/ParticleEffect;ZZDDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;getRandomParticleSpawnChance(Z)Lnet/minecraft/client/option/ParticlesMode;"))
     private boolean forceParticleSpawn(boolean canSpawnOnMinimal) {
         if (PowerHolderComponent.getPowers(this.client.getCameraEntity(), ForceParticleRenderPower.class).stream().anyMatch(power -> power.doesApply(particleParameters) && client.gameRenderer.getCamera().getPos().squaredDistanceTo(particleX, particleY, particleZ) <= 1024.0D)) {
