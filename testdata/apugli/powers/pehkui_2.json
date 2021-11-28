@@ -1,0 +1,11 @@
+{
+  "type": "apugli:modify_scale",
+  "scales": [
+    "pehkui:base"
+  ],
+  "modifier": {
+    "name": "Test scale modifier",
+    "operation": "MULTIPLY_BASE",
+    "value": -0.5
+  }
+}

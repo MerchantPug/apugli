@@ -12,6 +12,7 @@ public class ApugliPowerFactories {
         register(ActionOnBlockPlacedPower.getFactory());
         register(ActionOnEquipPower.getFactory());
         register(ActionOnBoneMealPower.getFactory());
+        register(Power.createSimpleFactory(AerialAffinityPower::new, Apugli.identifier("aerial_affinity")));
         register(AllowAnvilEnchantPower.getFactory());
         register(BunnyHopPower.getFactory());
         register(CustomFootstepPower.getFactory());
@@ -29,6 +30,8 @@ public class ApugliPowerFactories {
         register(ModifyEnchantmentDamageTakenPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
+        // TODO Uncomment oUT ModifyScalePower
+        // register(ModifyScalePower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
         register(Power.createSimpleFactory(PreventBeeAngerPower::new, Apugli.identifier("prevent_bee_anger")));
         register(PreventBreedingPower.getFactory());
