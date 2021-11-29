@@ -13,8 +13,4 @@ public class ApugliDataTypes {
             SerializableDataType.enumValue(PlayerModelType.class);
     public static final SerializableDataType<BipedEntityModel.ArmPose> ARM_POSE =
             SerializableDataType.enumValue(BipedEntityModel.ArmPose.class);
-
-    public static final SerializableDataType<List<Block>> BLOCKS = SerializableDataType.list(SerializableDataTypes.BLOCK);
-
-    public static final SerializableDataType<List<BlockState>> BLOCK_STATES = SerializableDataType.list(SerializableDataTypes.BLOCK_STATE);
 }

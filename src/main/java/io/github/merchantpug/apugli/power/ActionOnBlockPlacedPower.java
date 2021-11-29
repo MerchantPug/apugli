@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
@@ -26,10 +27,6 @@ public class ActionOnBlockPlacedPower extends Power {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ActionOnBlockPlacedPower>(Apugli.identifier("action_on_block_placed"),
                 new SerializableData()
-                        .add("block", SerializableDataTypes.BLOCK, null)
-                        .add("block_state", SerializableDataTypes.BLOCK_STATE, null)
-                        .add("blocks", ApugliDataTypes.BLOCKS, null)
-                        .add("block_states", ApugliDataTypes.BLOCK_STATES, null)
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
                 data ->

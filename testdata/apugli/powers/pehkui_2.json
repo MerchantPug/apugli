@@ -7,5 +7,9 @@
     "name": "Test scale modifier",
     "operation": "MULTIPLY_BASE",
     "value": -0.5
+  },
+  "condition": {
+    "type": "apoli:status_effect",
+    "effect": "minecraft:resistance"
   }
 }

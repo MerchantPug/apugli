@@ -12,5 +12,9 @@
       "operation": "MULTIPLY_BASE",
       "value": 2
     }
-  ]
+  ],
+  "condition": {
+    "type": "apoli:status_effect",
+    "effect": "minecraft:speed"
+  }
 }
