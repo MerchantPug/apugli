@@ -11,6 +11,4 @@ import java.util.List;
 public class ApugliDataTypes {
     public static final SerializableDataType<PlayerModelType> PLAYER_MODEL_TYPE =
             SerializableDataType.enumValue(PlayerModelType.class);
-    public static final SerializableDataType<BipedEntityModel.ArmPose> ARM_POSE =
-            SerializableDataType.enumValue(BipedEntityModel.ArmPose.class);
 }

@@ -18,7 +18,6 @@ public class ModifyEquippedItemRenderPower extends Power {
     public final float scale;
     private final boolean override;
     private final boolean mergeWithHeld;
-    public final BipedEntityModel.ArmPose armPose;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ModifyEquippedItemRenderPower>(Apugli.identifier("modify_equipped_item_render"),
@@ -27,22 +26,20 @@ public class ModifyEquippedItemRenderPower extends Power {
                         .add("stack", SerializableDataTypes.ITEM_STACK)
                         .add("scale", SerializableDataTypes.FLOAT, 1.0F)
                         .add("override", SerializableDataTypes.BOOLEAN, false)
-                        .add("merge_with_held", SerializableDataTypes.BOOLEAN, false)
-                        .add("arm_pose", ApugliDataTypes.ARM_POSE, null),
+                        .add("merge_with_held", SerializableDataTypes.BOOLEAN, false),
                 data ->
                         (type, entity) ->
-                                new ModifyEquippedItemRenderPower(type, entity, (EquipmentSlot)data.get("equipment_slot"), (ItemStack)data.get("stack"), data.getFloat("scale"), data.getBoolean("override"), data.getBoolean("merge_with_held"), (BipedEntityModel.ArmPose)data.get("arm_pose")))
+                                new ModifyEquippedItemRenderPower(type, entity, (EquipmentSlot)data.get("equipment_slot"), (ItemStack)data.get("stack"), data.getFloat("scale"), data.getBoolean("override"), data.getBoolean("merge_with_held")))
                 .allowCondition();
     }
 
-    public ModifyEquippedItemRenderPower(PowerType<?> type, LivingEntity entity, EquipmentSlot slot, ItemStack stack, float scale, boolean override, boolean mergeWithHeld, BipedEntityModel.ArmPose armPose) {
+    public ModifyEquippedItemRenderPower(PowerType<?> type, LivingEntity entity, EquipmentSlot slot, ItemStack stack, float scale, boolean override, boolean mergeWithHeld) {
         super(type, entity);
         this.slot = slot;
         this.stack = stack;
         this.scale = scale;
         this.override = override;
         this.mergeWithHeld = mergeWithHeld;
-        this.armPose = armPose;
     }
 
     public boolean shouldOverride() {

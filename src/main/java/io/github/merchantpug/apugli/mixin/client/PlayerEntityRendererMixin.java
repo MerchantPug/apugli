@@ -61,9 +61,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)
     private static void setArmPoseWhenModifiedItem(AbstractClientPlayerEntity player, Hand hand, CallbackInfoReturnable<BipedEntityModel.ArmPose> cir) {
-        PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).forEach(power -> {
-            if (power.armPose != null && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND)) cir.setReturnValue(power.armPose);
-        });
         if (PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.stack.isEmpty()))) cir.setReturnValue(BipedEntityModel.ArmPose.EMPTY);
     }
 }
