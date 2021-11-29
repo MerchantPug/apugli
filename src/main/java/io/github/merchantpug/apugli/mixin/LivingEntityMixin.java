@@ -192,14 +192,16 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3d movementInput, CallbackInfo ci) {
-        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
+        if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
-            if (this.apugli_framesOnGround <= 4) {
-                if (this.apugli_framesOnGround == 0) {
-                    if (this.age % bunnyHopPower.tickRate == 0) {
-                        if (bunnyHopPower.getValue() < bunnyHopPower.getMax()) {
-                            bunnyHopPower.increment();
-                            PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
+            if (this.world.isClient) {
+                if (this.apugli_framesOnGround <= 4) {
+                    if (this.apugli_framesOnGround == 0) {
+                        if (this.age % bunnyHopPower.tickRate == 0) {
+                            if (bunnyHopPower.getValue() < bunnyHopPower.getMax()) {
+                                bunnyHopPower.increment();
+                                PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
+                            }
                         }
                     }
                 }
