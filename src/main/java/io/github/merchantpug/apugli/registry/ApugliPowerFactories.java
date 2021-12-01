@@ -30,7 +30,6 @@ public class ApugliPowerFactories {
         register(ModifyEnchantmentDamageTakenPower.getFactory());
         register(ModifyEnchantmentLevelPower.getFactory());
         register(ModifyEquippedItemRenderPower.getFactory());
-        register(ModifyScalePower.getFactory());
         register(ModifySoulSpeedPower.getFactory());
         register(Power.createSimpleFactory(PreventBeeAngerPower::new, Apugli.identifier("prevent_bee_anger")));
         register(PreventBreedingPower.getFactory());
