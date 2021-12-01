@@ -127,7 +127,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
     }
 
     private void handleRocketJump(HitResult hitResult, boolean isCharged) {
-        double speed = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? modifyCharged(entity, RocketJumpPower.class, this.speed) : this.speed;
+        double speed = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? AttributeUtil.sortAndApplyModifiers(modifiers, this.speed) : this.speed;
         float e = isCharged && this.useCharged ? 2.0F : 1.5F;
         if (this.source != null && this.amount != 0.0F) entity.damage(this.source, this.amount);
         float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
@@ -157,11 +157,5 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
     public List<EntityAttributeModifier> getChargedModifiers() {
         return modifiers;
-    }
-
-    private static <T extends RocketJumpPower> double modifyCharged(Entity entity, Class<T> powerClass, double baseValue) {
-        List<EntityAttributeModifier> modifiers = PowerHolderComponent.KEY.get(entity).getPowers(powerClass).stream()
-                .flatMap(p -> p.getChargedModifiers().stream()).collect(Collectors.toList());
-        return (float) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
     }
 }
