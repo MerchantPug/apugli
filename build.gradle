@@ -58,8 +58,6 @@ dependencies {
 	include "com.github.MerchantPug:nibbles:${project.nibbles_version}"
 
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
-
-	modImplementation "com.github.Virtuoel:Pehkui:${project.pehkui_version}"
 }
 
 processResources {
