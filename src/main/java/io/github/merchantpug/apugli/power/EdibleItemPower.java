@@ -78,30 +78,30 @@ public class EdibleItemPower extends Power {
     @Override
     public void tick() {
         if (entity.age % tickRate == 0) {
-            ItemStack mainhandStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
-            if (mainhandStack != ItemStack.EMPTY) {
+            ItemStack mainHandStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
+            if (mainHandStack != ItemStack.EMPTY) {
                 if (this.isActive()) {
-                    if (this.predicate.test(mainhandStack)) {
-                        ItemStackFoodComponentAPI.setStackFood(mainhandStack, foodComponent, useAction, returnStack, sound);
+                    if (this.predicate.test(mainHandStack) && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() != foodComponent) {
+                        ItemStackFoodComponentAPI.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.MAINHAND, null, 0);
                     }
                 } else {
-                    if (this.predicate.test(mainhandStack) && ((ItemStackAccess)(Object)mainhandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeStackFood(mainhandStack);
+                    if (this.predicate.test(mainHandStack) && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == foodComponent) {
+                        ItemStackFoodComponentAPI.removeStackFood(mainHandStack);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.MAINHAND, null, 0);
                     }
                 }
             }
-            ItemStack offhandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
-            if (offhandStack != ItemStack.EMPTY) {
+            ItemStack offHandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
+            if (offHandStack != ItemStack.EMPTY) {
                 if (this.isActive()) {
-                    if (this.predicate.test(offhandStack)) {
-                        ItemStackFoodComponentAPI.setStackFood(offhandStack, foodComponent, useAction, returnStack, sound);
+                    if (this.predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() != foodComponent) {
+                        ItemStackFoodComponentAPI.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.OFFHAND, null, 0);
                     }
                 } else {
-                    if (this.predicate.test(offhandStack) && ((ItemStackAccess)(Object)mainhandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeStackFood(offhandStack);
+                    if (this.predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
+                        ItemStackFoodComponentAPI.removeStackFood(offHandStack);
                         this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.OFFHAND, null, 0);
                     }
                 }

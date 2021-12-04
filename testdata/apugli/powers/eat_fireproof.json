@@ -5,7 +5,7 @@
   },
   "food_component": {
     "hunger": 1,
-    "saturation": 1.9,
+    "saturation": 0.2,
     "always_edible": true
   }
 }
