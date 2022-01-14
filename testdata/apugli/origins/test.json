@@ -1,0 +1,10 @@
+{
+  "powers": [
+    "apugli:action_on_block_placed",
+    "apugli:modify_block_placed"
+  ],
+  "icon": {
+    "item": "minecraft:diamond"
+  },
+  "impact": 0
+}

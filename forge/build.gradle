@@ -4,6 +4,7 @@ plugins {
 
 configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    dev
 }
 
 architectury {
@@ -13,7 +14,12 @@ architectury {
 
 loom {
     useFabricMixin = true
-    mixinConfigs = ["mixin.origins_power_expansion.common.json", "mixin.origins_power_expansion.forge.json"]
+    mixinConfigs = ["apugli.mixins.json", "apugli.mixins.forge.json"]
+    launches {
+        client {
+            property 'mixin.debug', 'true'
+        }
+    }
 }
 
 dependencies {
@@ -22,7 +28,7 @@ dependencies {
     modApi "me.shedaniel:architectury-forge:${rootProject.architectury_version}"
     modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.clothconfig_version}"
     modApi "top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}"
-    modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5-forge', version: "0.7.3.9"
+    modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5-forge', version: "${rootProject.origins_architectury_version}"
 
     implementation(project(path: ":common")) {
         transitive = false
@@ -65,9 +71,9 @@ java {
 }
 
 sourcesJar {
-    def commonSources = project(":common").sourcesJar
+    def commonSources = project(":common").remapSourcesJar
     dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
+    from zipTree(commonSources.output)
 }
 
 publishing {

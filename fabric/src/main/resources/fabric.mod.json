@@ -1,38 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "origins_power_expansion",
+  "id": "apugli",
   "version": "${version}",
-  "name": "OriginsPowerExpansion",
-  "description": "OriginsPowerExpansion",
+  "name": "Apugli",
+  "description": "Pug's extension to Origins for powers.",
   "authors": [
-    "Jarva"
+    "Pug"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/MerchantPug/apugli"
   },
   "license": "All Rights Reserved",
-  "icon": "assets/origins_power_expansion/icon.png",
+  "icon": "assets/apugli/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.jarva.origins_power_expansion.fabric.OriginsPowerExpansionFabric"
+      "io.github.merchantpug.apugli.fabric.ApugliFabric"
     ],
     "client": [
-      "me.jarva.origins_power_expansion.fabric.OriginsPowerExpansionFabricClient"
+      "io.github.merchantpug.apugli.fabric.ApugliFabricClient"
     ]
   },
   "mixins": [
-    "mixin.origins_power_expansion.common.json",
-    "mixin.origins_power_expansion.fabric.json"
+    "apugli.mixins.json",
+    "apugli.mixins.fabric.json"
   ],
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "minecraft": ">=1.16.4",
-    "architectury": ">=1.1.55"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "architectury": ">=1.10.142",
+    "origins": ">=0.7.3"
   }
 }

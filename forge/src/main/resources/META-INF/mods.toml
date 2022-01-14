@@ -1,42 +1,42 @@
 modLoader = "javafml"
 loaderVersion = "[35,)"
 #issueTrackerURL = ""
-license = "All Rights Reserved"
+license = "MIT"
 
 [[mods]]
-modId = "origins_power_expansion"
+modId = "apugli"
 version = "${version}"
-displayName = "OriginsPowerExpansion"
-authors = "Jarva"
+displayName = "Apugli"
+authors = "Pug"
 description = '''
-Custom content for OriginsPowerExpansion
+Pug's extension to Origins for powers.
 '''
 #logoFile = ""
 
-[[dependencies.origins_power_expansion]]
+[[dependencies.apugli]]
 modId = "forge"
 mandatory = true
 versionRange = "[35,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.origins_power_expansion]]
+[[dependencies.apugli]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.16.2,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.origins_power_expansion]]
+[[dependencies.apugli]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.1.55,)"
-ordering = "AFTER"
+versionRange = "[1.10.140,)"
+ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.origins_power_expansion]]
+[[dependencies.apugli]]
 modId = "origins"
 mandatory = true
-versionRange = "[0.7.3.8,)"
+versionRange = "[0.7.3.9,)"
 ordering = "AFTER"
 side = "BOTH"

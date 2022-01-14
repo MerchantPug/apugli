@@ -1,7 +1,0 @@
-{
-  "type": "origins_power_expansion:creative_flight",
-  "modifier": {
-    "operation": "multiply_total",
-    "value": 10
-  }
-}

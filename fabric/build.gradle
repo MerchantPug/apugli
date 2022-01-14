@@ -16,7 +16,7 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
-    modApi group: 'com.github.apace100', name: 'origins-fabric', version: "v0.7.3"
+    modApi group: 'com.github.apace100', name: 'origins-fabric', version: "${rootProject.origins_fabric_version}"
 
     implementation(project(path: ":common")) {
         transitive = false

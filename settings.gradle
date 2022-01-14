@@ -11,4 +11,4 @@ include("common")
 include("fabric")
 include("forge")
 
-rootProject.name = "origins_power_expansion"
+rootProject.name = "apugli"
