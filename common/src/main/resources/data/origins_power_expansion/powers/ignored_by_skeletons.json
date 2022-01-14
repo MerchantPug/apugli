@@ -1,0 +1,21 @@
+{
+  "type": "origins_power_expansion:mobs_ignore",
+  "groups": [
+    "undead",
+    "arthropod"
+  ],
+  "mobs":  [
+    "minecraft:piglin",
+    "minecraft:piglin_brute",
+    "minecraft:ghast",
+    "minecraft:wither",
+    "minecraft:wither_skeleton",
+    "minecraft:zoglin",
+    "minecraft:hoglin",
+    "minecraft:magma_cube",
+    "minecraft:skeleton",
+    "minecraft:enderman",
+    "minecraft:zombified_piglin",
+    "minecraft:blaze"
+  ]
+}

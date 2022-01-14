@@ -1,0 +1,27 @@
+{
+  "type": "origins_power_expansion:fire_custom_projectile",
+  "cooldown": 30,
+  "hud_render": {
+    "bar_index": 6
+  },
+  "sound": "minecraft:entity.ender_pearl.throw",
+  "speed": 1.5,
+  "divergence": 1,
+  "custom_item": "minecraft:cobweb",
+  "key": {
+    "key": "key.origins.primary_active",
+    "continuous": false
+  },
+  "hit_entity_action": {
+    "type": "origins_power_expansion:area_of_effect",
+    "include_self": true,
+    "action": {
+      "type": "origins:set_on_fire",
+      "duration": 5
+    }
+  },
+  "hit_block_action": {
+    "type": "origins:add_block",
+    "block": "origins:temporary_cobweb"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "origins_power_expansion",
+  "version": "${version}",
+  "name": "OriginsPowerExpansion",
+  "description": "OriginsPowerExpansion",
+  "authors": [
+    "Jarva"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "All Rights Reserved",
+  "icon": "assets/origins_power_expansion/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.jarva.origins_power_expansion.fabric.OriginsPowerExpansionFabric"
+    ],
+    "client": [
+      "me.jarva.origins_power_expansion.fabric.OriginsPowerExpansionFabricClient"
+    ]
+  },
+  "mixins": [
+    "mixin.origins_power_expansion.common.json",
+    "mixin.origins_power_expansion.fabric.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": ">=1.16.4",
+    "architectury": ">=1.1.55"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

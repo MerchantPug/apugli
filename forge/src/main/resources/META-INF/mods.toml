@@ -1,0 +1,42 @@
+modLoader = "javafml"
+loaderVersion = "[35,)"
+#issueTrackerURL = ""
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "origins_power_expansion"
+version = "${version}"
+displayName = "OriginsPowerExpansion"
+authors = "Jarva"
+description = '''
+Custom content for OriginsPowerExpansion
+'''
+#logoFile = ""
+
+[[dependencies.origins_power_expansion]]
+modId = "forge"
+mandatory = true
+versionRange = "[35,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.origins_power_expansion]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.origins_power_expansion]]
+modId = "architectury"
+mandatory = true
+versionRange = "[1.1.55,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.origins_power_expansion]]
+modId = "origins"
+mandatory = true
+versionRange = "[0.7.3.8,)"
+ordering = "AFTER"
+side = "BOTH"

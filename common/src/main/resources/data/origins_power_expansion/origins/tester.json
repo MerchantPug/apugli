@@ -1,0 +1,15 @@
+{
+  "powers": [
+    "origins_power_expansion:throw_force_ball",
+    "origins_power_expansion:creative_flight",
+    "origins_power_expansion:ignored_by_skeletons",
+    "origins:fire_immunity",
+    "origins_power_expansion:custom_footstep"
+  ],
+  "icon": {
+    "item": "minecraft:stick"
+  },
+  "impact": 1,
+  "name": "Tester",
+  "description": "A testing origin for testing things"
+}
