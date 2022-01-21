@@ -1,0 +1,19 @@
+{
+  "type": "origins:multiple",
+  "mainhand_air": {
+    "type": "ope:modify_equipped_item_render",
+    "equipment_slot": "MAINHAND",
+    "stack": {
+      "item": "minecraft:air"
+    },
+    "override": true
+  },
+  "offhand_air": {
+    "type": "ope:modify_equipped_item_render",
+    "equipment_slot": "OFFHAND",
+    "stack": {
+      "item": "minecraft:air"
+    },
+    "override": true
+  }
+}

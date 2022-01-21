@@ -1,0 +1,14 @@
+{
+  "powers": [
+    "apugli:air",
+    "apugli:pug_skin",
+    "apugli:damage_helmet_when_in_sun",
+    "apugli:burn_timer",
+    "apugli:overheat"
+  ],
+  "icon": {
+    "item": "minecraft:emerald"
+  },
+  "impact": 0,
+  "order": 40
+}

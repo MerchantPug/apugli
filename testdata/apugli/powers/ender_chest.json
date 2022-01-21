@@ -1,0 +1,13 @@
+{
+  "type": "origins:active_self",
+  "entity_action": {
+    "type": "ope:ender_chest"
+  },
+  "cooldown": 20,
+  "hud_render": {
+    "should_render": false
+  },
+  "key": {
+    "key": "key.saveToolbarActivator"
+  }
+}

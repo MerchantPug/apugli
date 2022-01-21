@@ -1,14 +1,18 @@
 plugins {
-    id "architectury-plugin" version "3.2-SNAPSHOT"
-    id "dev.architectury.loom" version "0.7.2-SNAPSHOT" apply false
+    id "java"
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "forgified-fabric-loom" version "0.7.3-SNAPSHOT" apply false
+    id "maven-publish"
 }
 
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
 subprojects {
-    apply plugin: "dev.architectury.loom"
+    apply plugin: "forgified-fabric-loom"
 
     loom {
         // Be quiet about the Mojang mappings license
@@ -28,6 +32,12 @@ allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
+    }
 
     archivesBaseName = rootProject.archives_base_name
     version = rootProject.mod_version
@@ -61,6 +71,7 @@ allprojects {
         def environment = System.getenv("ENVIRONMENT");
         if (environment != "production") {
             from(rootProject.rootDir.absolutePath + "/testdata") { into 'data' }
+            from(rootProject.rootDir.absolutePath + "/testassets") { into 'assets' }
         }
     }
 

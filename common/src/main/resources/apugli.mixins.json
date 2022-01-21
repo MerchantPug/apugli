@@ -3,6 +3,40 @@
   "minVersion": "0.8",
   "package": "io.github.merchantpug.apugli.mixin",
   "mixins": [
-    "BlockItemMixin"
+    "AbstractFurnaceBlockEntityAccessor",
+    "AnvilScreenHandlerMixin",
+    "BlockItemMixin",
+    "BoneMealItemMixin",
+    "BrewingStandBlockEntityAccessor",
+    "BucketItemAccessor",
+    "CooldownPowerAccessor",
+    "EnchantmentHelperMixin",
+    "EntityMixin",
+    "HungerManagerMixin",
+    "ItemAccessor",
+    "ItemConditionsMixin",
+    "ItemPredicateMixin",
+    "ItemStackMixin",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
+    "MobEntityMixin",
+    "PlayerEntityMixin",
+    "PlayerInventoryMixin",
+    "ServerPlayerEntityAccessor",
+    "StatusEffectInstanceMixin",
+    "StatusEffectMixin"
+  ],
+  "client": [
+    "client.AbstractClientPlayerEntityMixin",
+    "client.ArmorFeatureRendererMixin",
+    "client.ClientPlayerEntityAccessor",
+    "client.GameRendererMixin",
+    "client.HeldItemFeatureRendererMixin",
+    "client.HeldItemRendererMixin",
+    "client.LivingEntityRendererMixin",
+    "client.ParticleManagerAccessor",
+    "client.ParticleManagerMixin",
+    "client.ParticleMixin",
+    "client.PlayerEntityRendererMixin"
   ]
 }

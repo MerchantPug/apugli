@@ -31,5 +31,8 @@
     "minecraft": ">=1.16.4",
     "architectury": ">=1.10.142",
     "origins": ">=0.7.3"
+  },
+  "breaks": {
+    "origins-power-expansion": "*"
   }
 }

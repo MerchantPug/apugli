@@ -1,6 +1,7 @@
 {
   "replace": false,
   "origins": [
-    "apugli:test"
+    "apugli:test",
+    "apugli:test2"
   ]
 }

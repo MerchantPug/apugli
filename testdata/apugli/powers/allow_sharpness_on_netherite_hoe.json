@@ -1,0 +1,14 @@
+{
+  "type": "ope:allow_anvil_enchant",
+  "enchantments": [
+    "minecraft:sharpness",
+    "minecraft:smite",
+    "minecraft:bane_of_arthropods"
+  ],
+  "item_condition": {
+    "type": "origins:ingredient",
+    "ingredient": {
+      "item": "minecraft:netherite_hoe"
+    }
+  }
+}

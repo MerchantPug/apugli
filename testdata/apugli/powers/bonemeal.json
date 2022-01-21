@@ -1,0 +1,43 @@
+{
+  "type": "ope:action_on_bonemeal",
+  "block_action": {
+    "type": "origins:and",
+    "actions": [
+      {
+        "type": "origins:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "z": 1
+      },
+      {
+        "type": "origins:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "z": -1
+      },
+      {
+        "type": "origins:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "x": 1
+      },
+      {
+        "type": "origins:offset",
+        "action": {
+          "type": "apugli:bonemeal"
+        },
+        "x": -1
+      }
+    ]
+  },
+  "condition": {
+  "type": "ope:raycast",
+  "block_condition": {
+    "type": "origins:block",
+    "block": "minecraft:grass_block"
+  }
+}
+}

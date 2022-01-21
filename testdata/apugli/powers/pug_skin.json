@@ -1,0 +1,5 @@
+{
+  "type": "apugli:set_texture",
+  "texture_location": "apugli:textures/merchantpug.png",
+  "player_model": "slim"
+}

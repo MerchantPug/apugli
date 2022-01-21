@@ -1,5 +1,0 @@
-{
-    "death.attack.jumpExplosion": "%1$s이(가) 폭발했습니다",
-    "death.attack.jumpExplosion.player": "%1$s이(가) %2$s에 의해 폭파되었습니다",
-    "death.attack.jumpExplosion.player.item": "%1$s이(가) %3$s을(를) 사용하여 %2$s에 의해 폭파되었습니다"
- }

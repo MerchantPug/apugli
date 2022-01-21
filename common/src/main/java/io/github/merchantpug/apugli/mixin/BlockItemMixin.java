@@ -1,6 +1,7 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.origins.component.OriginComponent;
+import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.powers.ActionOnBlockPlacedPower;
 import io.github.merchantpug.apugli.powers.ModifyBlockPlacedPower;
 import net.minecraft.block.Block;
@@ -8,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Mixin(BlockItem.class)
 public class BlockItemMixin extends Item {
+    @Unique int randomisedBlockId;
 
     public BlockItemMixin(Settings settings) {
         super(settings);
@@ -38,7 +41,10 @@ public class BlockItemMixin extends Item {
         int random = new Random(powers.get(0).getSeed()).nextInt(blockStates.size());
         BlockState blockState = blockStates.get(random);
 
+        this.randomisedBlockId = random;
+
         powers.get(0).generateSeed();
+
         cir.setReturnValue(context.getWorld().setBlockState(context.getBlockPos(), blockState, 11));
     }
 
@@ -53,16 +59,21 @@ public class BlockItemMixin extends Item {
                 .collect(Collectors.toList());
         if (powers.isEmpty() || blockStates.isEmpty()) return;
 
-        int random = new Random(powers.get(0).getSeed()).nextInt(blockStates.size());
-        int powerIndex = 0;
+        int blockStateIndex = 0;
+        int previousBlockStateIndex = 0;
         for (ModifyBlockPlacedPower power : powers) {
-            if (powerIndex < powers.size()) {
-                if (powerIndex == random) {
-                    power.executeAction(Optional.ofNullable(context.getBlockPos()));
-                    break;
-                } else if (powerIndex < power.getBlockStates().size()) {
-                    powerIndex++;
-                }
+            while (blockStateIndex < previousBlockStateIndex + power.getBlockStates().size() && blockStateIndex != randomisedBlockId) {
+                blockStateIndex++;
+            }
+
+            if (blockStateIndex == previousBlockStateIndex + power.getBlockStates().size()) {
+                previousBlockStateIndex = blockStateIndex;
+                continue;
+            }
+
+            if (blockStateIndex == randomisedBlockId) {
+                power.executeAction(Optional.ofNullable(context.getBlockPos()));
+                break;
             }
         }
     }

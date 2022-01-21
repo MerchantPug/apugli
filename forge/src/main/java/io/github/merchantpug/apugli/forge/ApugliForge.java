@@ -1,17 +1,27 @@
 package io.github.merchantpug.apugli.forge;
 
+import io.github.apace100.origins.Origins;
 import io.github.merchantpug.apugli.Apugli;
 import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.JarVersionLookupHandler;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 
-@Mod(Apugli.MOD_ID)
+@Mod(Apugli.MODID)
 public class ApugliForge {
+    public static String VERSION = "";
+
     public ApugliForge() {
         // Submit our event bus to let architectury register our content on the right time
-        EventBuses.registerModEventBus(Apugli.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
+        EventBuses.registerModEventBus(Apugli.MODID, FMLJavaModLoadingContext.get().getModEventBus());
+
+        ArtifactVersion version = ModLoadingContext.get().getActiveContainer().getModInfo().getVersion();
+        Origins.VERSION = version.toString();
+
         Apugli.init();
 
         // Run our client code when appropriate

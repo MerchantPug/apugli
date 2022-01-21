@@ -5,11 +5,12 @@ license = "MIT"
 
 [[mods]]
 modId = "apugli"
+logoFile="apugli_icon.png"
 version = "${version}"
 displayName = "Apugli"
 authors = "Pug"
 description = '''
-Pug's extension to Origins for powers.
+Pug's extension to Origins for data driven content.
 '''
 #logoFile = ""
 

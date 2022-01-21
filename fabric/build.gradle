@@ -6,6 +6,10 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
 }
 
+loom {
+    accessWidener = file("src/main/resources/apugli.accessWidener")
+}
+
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -59,7 +63,7 @@ java {
 sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
+    exclude 'apugli.accessWidener'
 }
 
 publishing {

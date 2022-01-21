@@ -9,6 +9,7 @@ import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import io.github.merchantpug.apugli.util.BackportedDataTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,9 +37,9 @@ public class ModifyBlockPlacedPower extends Power {
         return new PowerFactory<ModifyBlockPlacedPower>(Apugli.identifier("modify_block_placed"),
                 new SerializableData()
                         .add("block", SerializableDataType.BLOCK, null)
-                        .add("block_state", ApugliDataTypes.BLOCK_STATE, null)
+                        .add("block_state", BackportedDataTypes.BLOCK_STATE, null)
                         .add("blocks", SerializableDataType.list(SerializableDataType.BLOCK), null)
-                        .add("block_states", SerializableDataType.list(ApugliDataTypes.BLOCK_STATE), null)
+                        .add("block_states", SerializableDataType.list(BackportedDataTypes.BLOCK_STATE), null)
                         .add("block_action", SerializableDataType.BLOCK_ACTION, null)
                         .add("item_condition", SerializableDataType.ITEM_CONDITION),
                 data ->

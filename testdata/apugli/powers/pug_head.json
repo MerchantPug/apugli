@@ -1,0 +1,8 @@
+{
+  "type": "apugli:modify_equipped_item_render",
+  "equipment_slot": "MAINHAND",
+  "stack": {
+    "item": "minecraft:player_head",
+    "tag": "{SkullOwner:MerchantPug}"
+  }
+}
