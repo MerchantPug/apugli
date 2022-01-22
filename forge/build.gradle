@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 configurations {
@@ -13,14 +13,15 @@ architectury {
 }
 
 loom {
-    useFabricMixin = true
-    mixinConfigs = [
-            "apugli.mixins.json",
-            "apugli.mixins.forge.json"
-    ]
-    launches {
-        client {
-            property 'mixin.debug', 'true'
+    forge {
+        mixinConfigs = [
+                "apugli.mixins.json",
+                "apugli.mixins.forge.json"
+        ]
+        launches {
+            client {
+                property 'mixin.debug', 'true'
+            }
         }
     }
 }

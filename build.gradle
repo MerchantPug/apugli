@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "forgified-fabric-loom" version "0.7.3-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "0.10.0-SNAPSHOT" apply false
     id "maven-publish"
 }
 
@@ -12,7 +12,7 @@ architectury {
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 subprojects {
-    apply plugin: "forgified-fabric-loom"
+    apply plugin: "dev.architectury.loom"
 
     loom {
         // Be quiet about the Mojang mappings license
