@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "id": "apugli-common",
+  "version": "${version}",
+  "accessWidener": "apugli.accessWidener"
+}

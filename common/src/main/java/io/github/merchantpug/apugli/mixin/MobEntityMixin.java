@@ -17,7 +17,6 @@ import java.util.List;
 public abstract class MobEntityMixin extends LivingEntity {
     protected MobEntityMixin(EntityType<? extends LivingEntity> type, World level) {
         super(type, level);
-        throw new AssertionError("MobMixin constructor called.");
     }
 
     @ModifyVariable(method = "setTarget", at = @At("HEAD"))

@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 public class ApugliEntityConditions {
     public static void register() {
         register(CanHaveEffectCondition.getFactory());
+        register(CompareResourceCondition.getFactory());
         register(EntityInRadiusCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());
         register(ParticleInRadiusCondition.getFactory());

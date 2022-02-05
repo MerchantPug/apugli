@@ -8,7 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Mixin(BlockItem.class)
 public class BlockItemMixin extends Item {
-    @Unique int randomisedBlockId;
+    @Unique Pair<ModifyBlockPlacedPower, BlockState> pair;
 
     public BlockItemMixin(Settings settings) {
         super(settings);
@@ -33,15 +36,19 @@ public class BlockItemMixin extends Item {
                 .stream()
                 .filter(power -> power.itemCondition.test(context.getStack()))
                 .collect(Collectors.toList());
-        List<BlockState> blockStates = powers.stream()
-                .flatMap(power -> power.getBlockStates().stream())
-                .collect(Collectors.toList());
-        if (powers.isEmpty() || blockStates.isEmpty()) return;
+        List<Pair<ModifyBlockPlacedPower, BlockState>> pairs = new ArrayList<>();
+        for (ModifyBlockPlacedPower modifyBlockPlacedPower : powers) {
+            modifyBlockPlacedPower.getBlockStates().forEach(blockState -> {
+                pairs.add(new Pair<>(modifyBlockPlacedPower, blockState));
+            });
+        }
 
-        int random = new Random(powers.get(0).getSeed()).nextInt(blockStates.size());
-        BlockState blockState = blockStates.get(random);
+        if (powers.isEmpty() || pairs.isEmpty()) return;
 
-        this.randomisedBlockId = random;
+        int random = new Random(powers.get(0).getSeed()).nextInt(pairs.size());
+        BlockState blockState = pairs.get(random).getRight();
+
+        this.pair = pairs.get(random);
 
         powers.get(0).generateSeed();
 
@@ -50,31 +57,8 @@ public class BlockItemMixin extends Item {
 
     @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemPlacementContext;getBlockPos()Lnet/minecraft/util/math/BlockPos;"))
     private void executeActionAfterPlaced(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir) {
-        List<ModifyBlockPlacedPower> powers = OriginComponent.getPowers(context.getPlayer(), ModifyBlockPlacedPower.class)
-                .stream()
-                .filter(power -> power.itemCondition.test(context.getStack()))
-                .collect(Collectors.toList());
-        List<BlockState> blockStates = powers.stream()
-                .flatMap(power -> power.getBlockStates().stream())
-                .collect(Collectors.toList());
-        if (powers.isEmpty() || blockStates.isEmpty()) return;
-
-        int blockStateIndex = 0;
-        int previousBlockStateIndex = 0;
-        for (ModifyBlockPlacedPower power : powers) {
-            while (blockStateIndex < previousBlockStateIndex + power.getBlockStates().size() && blockStateIndex != randomisedBlockId) {
-                blockStateIndex++;
-            }
-
-            if (blockStateIndex == previousBlockStateIndex + power.getBlockStates().size()) {
-                previousBlockStateIndex = blockStateIndex;
-                continue;
-            }
-
-            if (blockStateIndex == randomisedBlockId) {
-                power.executeAction(Optional.ofNullable(context.getBlockPos()));
-                break;
-            }
-        }
+        if (this.pair == null) return;
+        this.pair.getLeft().executeAction(Optional.ofNullable(context.getBlockPos()));
+        this.pair = null;
     }
 }

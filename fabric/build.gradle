@@ -15,7 +15,14 @@ architectury {
     fabric()
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.terraformersmc.com/' }
+}
+
 dependencies {
+    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
@@ -61,9 +68,10 @@ java {
 }
 
 sourcesJar {
-    def commonSources = project(":common").sourcesJar
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    def commonSources = project(":common").remapSourcesJar
     dependsOn commonSources
-    exclude 'apugli.accessWidener'
+    from zipTree(commonSources.output)
 }
 
 publishing {

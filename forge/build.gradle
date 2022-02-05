@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
 configurations {
@@ -13,20 +13,33 @@ architectury {
 }
 
 loom {
-    forge {
-        mixinConfigs = [
-                "apugli.mixins.json",
-                "apugli.mixins.forge.json"
-        ]
-        launches {
-            client {
-                property 'mixin.debug', 'true'
-            }
+    useFabricMixin = true
+    mixinConfig "apugli.mixins.json"
+    mixinConfig "apugli.mixins.forge.json"
+
+    launches {
+        client {
+            property 'mixin.debug', 'true'
         }
     }
 }
 
+repositories {
+    maven { url 'https://maven.theillusivec4.top' }
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+if (rootProject.file("run/log4j.xml").exists())
+    loom.log4jConfigs.from(rootProject.file("run/log4j.xml"))
+
 dependencies {
+    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-forge:${rootProject.architectury_version}"
@@ -52,10 +65,9 @@ processResources {
         expand "version": project.version
     }
 }
-
 shadowJar {
     exclude "fabric.mod.json"
-    exclude "apugli.accessWidener"
+    exclude "origins.accessWidener"
 
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"

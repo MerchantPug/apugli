@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[35,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/MerchantPug/apugli/issues"
 license = "MIT"
 
 [[mods]]
@@ -9,10 +9,10 @@ logoFile="apugli_icon.png"
 version = "${version}"
 displayName = "Apugli"
 authors = "Pug"
+displayURL="https://github.com/MerchantPug/apugli"
 description = '''
 Pug's extension to Origins for data driven content.
 '''
-#logoFile = ""
 
 [[dependencies.apugli]]
 modId = "forge"
@@ -31,7 +31,7 @@ side = "BOTH"
 [[dependencies.apugli]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.1.55,)"
+versionRange = "[1.10.140,)"
 ordering = "NONE"
 side = "BOTH"
 

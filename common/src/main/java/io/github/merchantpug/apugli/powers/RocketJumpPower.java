@@ -13,6 +13,7 @@ import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.registry.ApugliDamageSources;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +53,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                         .add("charged_modifier", SerializableDataType.ATTRIBUTE_MODIFIER, null)
                         .add("charged_modifiers", SerializableDataType.ATTRIBUTE_MODIFIERS, null)
                         .add("hud_render", SerializableDataType.HUD_RENDER)
-                        .add("key", SerializableDataType.KEY, new Active.Key()),
+                        .add("key", SerializableDataType.BACKWARDS_COMPATIBLE_KEY, new Active.Key()),
                 (data) ->
                         (type, player) ->  {
                             RocketJumpPower power = new RocketJumpPower(type, player, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("speed"), data.getBoolean("use_charged"));
@@ -82,7 +83,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
         if (canUse()) {
             if (!player.world.isClient()) {
                 double baseReach = player.abilities.creativeMode ? 5.0D : 4.5D;
-                double reach = this.getReach(player, baseReach);
+                double reach = getReach(player, baseReach);
                 double distance = !Double.isNaN(this.distance) ? this.distance : reach;
                 Vec3d eyePosition = player.getCameraPosVec(0);
                 Vec3d lookVector = player.getRotationVec(0).multiply(distance);
@@ -92,7 +93,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 BlockHitResult blockHitResult = player.world.raycast(context);
 
                 double baseEntityAttackRange = player.abilities.creativeMode ? 6.0D : 3.0D;
-                double entityAttackRange = this.getAttackRange(player, baseEntityAttackRange);
+                double entityAttackRange = getAttackRange(player, baseEntityAttackRange);
                 double entityDistance = !Double.isNaN(this.distance) ? this.distance : entityAttackRange;
                 Vec3d entityLookVector = player.getRotationVec(0).multiply(entityDistance);
                 Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
@@ -104,9 +105,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
                 HitResult.Type blockHitResultType = blockHitResult.getType();
                 HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
-                boolean tmoCharged = FabricLoader.getInstance().isModLoaded("toomanyorigins") && player.hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-                boolean cursedCharged = FabricLoader.getInstance().isModLoaded("cursedorigins") && player.hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
-                boolean isCharged = tmoCharged || cursedCharged;
+                boolean isCharged = isCharged(player);
 
                 if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
@@ -128,6 +127,11 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
     @ExpectPlatform
     public static double getAttackRange(Entity entity, double baseReach) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean isCharged(LivingEntity entity) {
         throw new AssertionError();
     }
 

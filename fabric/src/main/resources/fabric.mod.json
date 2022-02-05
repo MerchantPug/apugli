@@ -10,7 +10,7 @@
   "contact": {
     "sources": "https://github.com/MerchantPug/apugli"
   },
-  "license": "All Rights Reserved",
+  "license": "MIT",
   "icon": "assets/apugli/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -21,15 +21,21 @@
       "io.github.merchantpug.apugli.fabric.ApugliFabricClient"
     ]
   },
+  "accessWidener": "apugli.accessWidener",
   "mixins": [
     "apugli.mixins.json",
     "apugli.mixins.fabric.json"
   ],
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    }
+  },
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "minecraft": ">=1.16.4",
-    "architectury": ">=1.1.55",
+    "architectury": ">=1.10.142",
     "origins": ">=0.7.3"
   },
   "breaks": {

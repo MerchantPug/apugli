@@ -4,7 +4,10 @@
   "package": "io.github.merchantpug.apugli.mixin",
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
+    "AnimalEntityMixin",
     "AnvilScreenHandlerMixin",
+    "BeehiveBlockEntityMixin",
+    "BeehiveBlockMixin",
     "BlockItemMixin",
     "BoneMealItemMixin",
     "BrewingStandBlockEntityAccessor",
@@ -12,6 +15,7 @@
     "CooldownPowerAccessor",
     "EnchantmentHelperMixin",
     "EntityMixin",
+    "ExplosionMixin",
     "HungerManagerMixin",
     "ItemAccessor",
     "ItemConditionsMixin",
@@ -24,12 +28,15 @@
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectInstanceMixin",
-    "StatusEffectMixin"
+    "StatusEffectMixin",
+    "TemptGoalMixin"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.ArmorFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
+    "client.ClientWorldMixin",
+    "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.HeldItemFeatureRendererMixin",
     "client.HeldItemRendererMixin",
@@ -37,6 +44,7 @@
     "client.ParticleManagerAccessor",
     "client.ParticleManagerMixin",
     "client.ParticleMixin",
-    "client.PlayerEntityRendererMixin"
+    "client.PlayerEntityRendererMixin",
+    "client.WorldRendererMixin"
   ]
 }

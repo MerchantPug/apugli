@@ -10,9 +10,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Item.class)
 public interface ItemAccessor {
-    @SuppressWarnings("InvokerTarget")
     @Invoker
-    static BlockHitResult callRaycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
+    static BlockHitResult callRaycast(World world, PlayerEntity playerEntity, RaycastContext.FluidHandling fluidHandling) {
         throw new IllegalStateException();
     }
 }

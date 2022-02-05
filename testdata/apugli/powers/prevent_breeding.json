@@ -1,0 +1,12 @@
+{
+  "type": "apugli:prevent_breeding",
+  "target_action": {
+    "type": "origins:extinguish"
+  },
+  "self_action": {
+    "type": "origins:feed",
+    "food": 4,
+    "saturation": 2
+  },
+  "prevent_follow": false
+}

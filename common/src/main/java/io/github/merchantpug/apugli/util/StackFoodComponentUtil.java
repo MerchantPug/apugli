@@ -4,8 +4,4 @@ public class StackFoodComponentUtil {
     public enum InventoryLocation {
         MAIN, ARMOR, OFFHAND
     }
-
-    public enum FoodComponentAction {
-        ADD, REMOVE
-    }
 }

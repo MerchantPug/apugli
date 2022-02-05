@@ -1,6 +1,8 @@
 package io.github.merchantpug.apugli.mixin;
 
+import io.github.apace100.origins.component.OriginComponent;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
+import io.github.merchantpug.apugli.powers.EdibleItemPower;
 import io.github.merchantpug.apugli.powers.ModifyEnchantmentLevelPower;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -57,6 +59,26 @@ public abstract class ItemStackMixin implements ItemStackAccess {
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    @Inject(method = "finishUsing", at = @At("HEAD"))
+    private void executeEntityActions(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+        if(user != null) {
+            OriginComponent.getPowers(user, EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
+        }
+    }
+
+    @Unique
+    private boolean shouldUpdateClientside = true;
+
+    @Override
+    public boolean shouldUpdateClientside() {
+        return shouldUpdateClientside;
+    }
+
+    @Override
+    public void setShouldUpdateClientside(boolean value) {
+        shouldUpdateClientside = value;
     }
 
     @Unique

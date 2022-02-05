@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.content.damage;
+package io.github.merchantpug.apugli.content;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;

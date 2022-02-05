@@ -21,43 +21,16 @@ import net.minecraft.util.registry.Registry;
 public class ApugliPacketsS2C {
     @Environment(EnvType.CLIENT)
     public static void register() {
-        NetworkManager.registerReceiver(NetworkManager.s2c(), ApugliPackets.SYNC_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
+        NetworkManager.registerReceiver(NetworkManager.s2c(), ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
     }
 
     private static void onFoodComponentSync(PacketByteBuf packetByteBuf, NetworkManager.PacketContext context) {
         int targetId = packetByteBuf.readInt();
-        StackFoodComponentUtil.FoodComponentAction foodComponentAction = StackFoodComponentUtil.FoodComponentAction.values()[packetByteBuf.readByte()];
-        FoodComponent foodComponent = null;
-        boolean hasUseAction;
-        UseAction useAction = null;
-        boolean hasReturnStack;
-        ItemStack returnStack = null;
-        boolean hasSoundEvent;
-        Identifier soundEventId = null;
-        if (foodComponentAction == StackFoodComponentUtil.FoodComponentAction.ADD) {
-            hasUseAction = packetByteBuf.readBoolean();
-            hasReturnStack = packetByteBuf.readBoolean();
-            hasSoundEvent = packetByteBuf.readBoolean();
-            foodComponent = BackportedDataTypes.FOOD_COMPONENT.receive(packetByteBuf);
-            if (hasUseAction) {
-                useAction = UseAction.values()[packetByteBuf.readByte()];
-            }
-            if (hasReturnStack) {
-                returnStack = packetByteBuf.readItemStack();
-            }
-            if (hasSoundEvent) {
-                soundEventId = packetByteBuf.readIdentifier();
-            }
-        }
-        FoodComponent finalFoodComponent = foodComponent;
-        UseAction finalUseAction = useAction;
-        ItemStack finalReturnStack = returnStack;
-        Identifier finalSoundEventId = soundEventId;
 
         boolean usesEquipmentSlot = packetByteBuf.readBoolean();
         String equipmentSlotId = "";
         if (usesEquipmentSlot) {
-            equipmentSlotId = packetByteBuf.readString(32767);
+            equipmentSlotId = packetByteBuf.readString(Short.MAX_VALUE);
         }
         String finalEquipmentSlotId = equipmentSlotId;
 
@@ -70,22 +43,16 @@ public class ApugliPacketsS2C {
         }
         StackFoodComponentUtil.InventoryLocation finalInventoryLocation = inventoryLocation;
         int finalInventoryIndex = inventoryIndex;
+
         context.queue(() -> {
             Entity entity = context.getPlayer().getEntityWorld().getEntityById(targetId);
             if (!(entity instanceof PlayerEntity)) {
                 Apugli.LOGGER.warn("Received unknown target");
-            } else {
+            }  else {
                 if (usesEquipmentSlot) {
                     EquipmentSlot equipmentSlot = EquipmentSlot.byName(finalEquipmentSlotId);
                     ItemStack stack = ((PlayerEntity)entity).getEquippedStack(equipmentSlot);
-                    switch (foodComponentAction) {
-                        case ADD:
-                            ItemStackFoodComponentAPI.setStackFood(stack, finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                            break;
-                        case REMOVE:
-                            ItemStackFoodComponentAPI.removeStackFood(stack);
-                            break;
-                    }
+                    ItemStackFoodComponentAPI.removeStackFood(stack);
                 }
                 if (usesInventoryIndex) {
                     DefaultedList<ItemStack> inventory;
@@ -102,15 +69,7 @@ public class ApugliPacketsS2C {
                         default:
                             throw new IllegalStateException("Unexpected value: " + finalInventoryLocation);
                     }
-                    switch (foodComponentAction) {
-                        case ADD:
-                            ItemStackFoodComponentAPI.setStackFood(inventory.get(finalInventoryIndex), finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                            break;
-                        case REMOVE:
-                            ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
-                            break;
-
-                    }
+                    ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
                 }
             }
         });

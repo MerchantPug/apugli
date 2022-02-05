@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli;
 
 import io.github.merchantpug.apugli.registry.ApugliPowerFactories;
-import io.github.merchantpug.apugli.registry.ApugliStatusEffects;
 import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
 import io.github.merchantpug.apugli.registry.action.ApugliEntityActions;
 import io.github.merchantpug.apugli.registry.action.ApugliItemActions;
@@ -31,8 +30,6 @@ public class Apugli {
         ApugliEntityConditions.register();
 
         ApugliPowerFactories.register();
-
-        ApugliStatusEffects.register();
 
         ApugliNamespaceAlias.addAlias("ope");
     }

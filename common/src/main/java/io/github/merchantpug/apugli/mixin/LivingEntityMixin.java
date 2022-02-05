@@ -6,12 +6,15 @@ import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.HiddenEffectStatus;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.powers.*;
+import io.github.merchantpug.apugli.util.ModComponents;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -39,7 +43,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow protected abstract boolean isOnSoulSpeedBlock();
 
-    @Shadow public abstract float getHealth();
+    @Shadow public abstract ItemStack getMainHandStack();
+
+    @Shadow public abstract ItemStack getOffHandStack();
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -82,6 +88,51 @@ public abstract class LivingEntityMixin extends Entity {
             );
         }
         return effect;
+    }
+
+    @Unique private boolean hasModifiedDamage;
+
+    @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
+    private float modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
+        float[] additionalValue = {0.0F};
+        LivingEntity thisAsLiving = (LivingEntity)(Object)this;
+
+        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity && !source.isProjectile()) {
+            List<ModifyEnchantmentDamageDealtPower> damageDealtPowers = OriginComponent.getPowers(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class).stream().filter(p -> p.doesApply(source, amount, thisAsLiving)).collect(Collectors.toList());
+
+            damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
+
+            for (ModifyEnchantmentDamageDealtPower power : damageDealtPowers) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                    additionalValue[0] = OriginComponent.modify(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class,
+                            additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(thisAsLiving));
+                }
+            }
+        }
+
+        List<ModifyEnchantmentDamageTakenPower> damageTakenPowers = OriginComponent.getPowers(this, ModifyEnchantmentDamageTakenPower.class).stream().filter(p -> p.doesApply(source, amount)).collect(Collectors.toList());
+
+        damageTakenPowers.forEach(power -> additionalValue[0] += power.baseValue);
+
+        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
+            for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                    additionalValue[0] = OriginComponent.modify(this, ModifyEnchantmentDamageTakenPower.class,
+                            additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(source.getAttacker()));
+                }
+            }
+        }
+
+        hasModifiedDamage = originalValue +  additionalValue[0] != originalValue;
+
+        return originalValue + additionalValue[0];
+    }
+
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
+    private void preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if(hasModifiedDamage && amount == 0.0F) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "shouldDisplaySoulSpeedEffects", at = @At("HEAD"), cancellable = true)
@@ -148,6 +199,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (this.isDead() || !((LivingEntity)(Object)this instanceof PlayerEntity)) return;
+        ModComponents.getOriginComponent((PlayerEntity)(Object) this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (OriginComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             Apugli.LOGGER.info("Frames on Ground: " + framesOnGround);
             BunnyHopPower bunnyHopPower = OriginComponent.getPowers(this, BunnyHopPower.class).get(0);

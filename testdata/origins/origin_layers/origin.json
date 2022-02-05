@@ -2,6 +2,7 @@
   "replace": false,
   "origins": [
     "apugli:test",
-    "apugli:test2"
+    "apugli:test2",
+    "apugli:test3"
   ]
 }

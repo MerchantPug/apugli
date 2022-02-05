@@ -1,0 +1,18 @@
+{
+  "powers": [
+    "apugli:placed_block_one",
+    "apugli:placed_block_two",
+    "apugli:bert",
+    "apugli:death_sound_pig",
+    "apugli:footstep_sound_pig",
+    "apugli:hover",
+    "apugli:modified_smite_damage_dealt",
+    "apugli:modified_smite_damage_taken",
+    "apugli:prevent_bee_anger"
+  ],
+  "icon": {
+    "item": "minecraft:emerald"
+  },
+  "impact": 0,
+  "order": 40
+}

@@ -7,7 +7,12 @@ dependencies {
     modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5', version: "${rootProject.origins_architectury_version}"
 
     minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-    loom.officialMojangMappings()
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+}
+
+loom {
+    accessWidener = file("src/main/resources/apugli.accessWidener")
+    mixinConfigs = ["apugli.mixins.json"]
 }
 
 architectury {

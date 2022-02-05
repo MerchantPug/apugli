@@ -8,7 +8,6 @@ import io.github.apace100.origins.power.factory.condition.ConditionFactory;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.merchantpug.apugli.util.BackportedDataTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

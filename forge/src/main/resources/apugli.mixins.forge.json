@@ -4,6 +4,7 @@
   "package": "io.github.merchantpug.apugli.mixin.forge",
   "mixins": [
     "ActionTypeMixin",
+    "AnimalEntityMixin",
     "ConditionTypeMixin",
     "PowerTypesMixin"
   ]

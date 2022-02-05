@@ -1,11 +1,12 @@
 {
   "powers": [
     "apugli:pug_head",
-    "apugli:pug_skin",
     "apugli:bonemeal",
     "apugli:allow_sharpness_on_netherite_hoe",
     "apugli:ender_chest",
-    "apugli:enchanto"
+    "apugli:enchanto",
+    "apugli:prevent_breeding",
+    "apugli:label"
   ],
   "icon": {
     "item": "minecraft:diamond"

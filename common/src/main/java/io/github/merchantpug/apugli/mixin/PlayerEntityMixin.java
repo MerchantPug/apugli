@@ -29,7 +29,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Redirect(method = {"Lnet/minecraft/entity/player/PlayerEntity;getDigSpeed(Lnet/minecraft/block/BlockState;)F","Lnet/minecraft/entity/player/PlayerEntity;getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), remap = false)
+    @Redirect(method = {"Lnet/minecraft/entity/player/PlayerEntity;getDigSpeed(Lnet/minecraft/block/BlockState;)F","Lnet/minecraft/entity/player/PlayerEntity;getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD))
     private boolean hasAirAffinity(PlayerEntity instance) {
         return OriginComponent.hasPower(instance, AerialAffinityPower.class) || instance.isOnGround();
     }

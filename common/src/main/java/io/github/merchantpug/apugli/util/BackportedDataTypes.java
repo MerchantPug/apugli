@@ -34,6 +34,7 @@ import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.util.Hand;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -167,4 +168,6 @@ public class BackportedDataTypes {
                 }
                 return inst;
             });
+
+    public static final SerializableDataType<Hand> HAND = SerializableDataType.enumValue(Hand.class);
 }

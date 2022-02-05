@@ -23,14 +23,14 @@ public class MobsIgnorePower extends Power {
     }
 
     public boolean shouldIgnore(LivingEntity mob) {
-        return this.mobCondition.test(mob);
+        return this.mobCondition == null || this.mobCondition.test(mob);
     }
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<MobsIgnorePower>(
                 Apugli.identifier("mobs_ignore"),
                 new SerializableData()
-                        .add("mob_condition", SerializableDataType.ENTITY_CONDITION),
+                        .add("mob_condition", SerializableDataType.ENTITY_CONDITION, null),
                 data -> (type, player) -> new MobsIgnorePower(type, player, data.get("mob_condition")))
                 .allowCondition();
     }
