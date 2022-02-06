@@ -201,7 +201,6 @@ public abstract class LivingEntityMixin extends Entity {
         if (this.isDead() || !((LivingEntity)(Object)this instanceof PlayerEntity)) return;
         ModComponents.getOriginComponent((PlayerEntity)(Object) this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (OriginComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
-            Apugli.LOGGER.info("Frames on Ground: " + framesOnGround);
             BunnyHopPower bunnyHopPower = OriginComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (framesOnGround > 4) {
                 bunnyHopPower.setValue(0);
@@ -226,7 +225,6 @@ public abstract class LivingEntityMixin extends Entity {
                 bunnyHopPower.increment();
                 OriginComponent.sync((PlayerEntity)(Object)this);
             }
-            Apugli.LOGGER.info(bunnyHopPower.getValue());
             this.updateVelocity((float)bunnyHopPower.increasePerTick * bunnyHopPower.getValue(), movementInput);
         }
     }
