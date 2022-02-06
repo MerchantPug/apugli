@@ -26,7 +26,7 @@ public class PreventBreedingPower extends Power {
                 new SerializableData()
                         .add("target_condition", SerializableDataType.ENTITY_CONDITION, null)
                         .add("target_action", SerializableDataType.ENTITY_ACTION, null)
-                        .add("self_action", SerializableDataType.ENTITY_ACTION)
+                        .add("self_action", SerializableDataType.ENTITY_ACTION, null)
                         .add("prevent_follow", SerializableDataType.BOOLEAN, true),
                 data ->
                         (type, player) ->

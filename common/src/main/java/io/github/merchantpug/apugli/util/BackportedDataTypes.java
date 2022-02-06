@@ -24,6 +24,7 @@ SOFTWARE.
 
 package io.github.merchantpug.apugli.util;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -35,6 +36,8 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -97,6 +100,29 @@ public class BackportedDataTypes {
                 }
                 throw new RuntimeException("Expected either a string with a parameter-less particle effect, or an object.");
             });
+
+    public static final SerializableDataType<Vec3d> VECTOR = new SerializableDataType<>(Vec3d.class,
+            (packetByteBuf, vector3d) -> {
+                packetByteBuf.writeDouble(vector3d.x);
+                packetByteBuf.writeDouble(vector3d.y);
+                packetByteBuf.writeDouble(vector3d.z);
+            },
+            (packetByteBuf -> new Vec3d(
+                    packetByteBuf.readDouble(),
+                    packetByteBuf.readDouble(),
+                    packetByteBuf.readDouble())),
+            (jsonElement -> {
+                if(jsonElement.isJsonObject()) {
+                    JsonObject jo = jsonElement.getAsJsonObject();
+                    return new Vec3d(
+                            JsonHelper.getFloat(jo, "x", 0),
+                            JsonHelper.getFloat(jo, "y", 0),
+                            JsonHelper.getFloat(jo, "z", 0)
+                    );
+                } else {
+                    throw new JsonParseException("Expected an object with x, y, and z fields.");
+                }
+            }));
 
     public static final SerializableDataType<StatusEffectChance> STATUS_EFFECT_CHANCE =
             SerializableDataType.compound(StatusEffectChance.class, new SerializableData()
