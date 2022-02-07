@@ -21,7 +21,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Redirect(method = "getBlockBreakingSpeed", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), remap = false)
     private boolean hasAirAffinity(PlayerEntity instance) {
-        Apugli.LOGGER.info("Hi");
         return OriginComponent.hasPower(instance, AerialAffinityPower.class) || instance.isOnGround();
     }
 }
