@@ -1,14 +1,21 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+configurations {
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    dev
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
 }
 
 loom {
-    forge {
-        mixinConfigs = [
-                "apugli.mixins.json",
-                "apugli.forge.mixins.json"
-        ]
-    }
+    useFabricMixin = true
+    mixinConfig "origins.mixins.json"
+    mixinConfig "origins.forge.mixins.json"
 
     launches {
         client {
@@ -17,18 +24,8 @@ loom {
     }
 }
 
-architectury {
-    platformSetupLoomIde()
-    forge()
-}
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
-}
+if (rootProject.file("run/log4j.xml").exists())
+    loom.log4jConfigs.from(rootProject.file("run/log4j.xml"))
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
@@ -38,8 +35,15 @@ dependencies {
     modApi "top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}"
     modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5-forge', version: "${rootProject.origins_architectury_version}"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    implementation(project(path: ":common")) {
+        transitive = false
+    }
+    developmentForge(project(path: ":common")) {
+        transitive = false
+    }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
+        transitive = false
+    }
 }
 
 processResources {
@@ -61,24 +65,34 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    classifier "forge"
 }
 
 jar {
     classifier "dev"
 }
 
+java {
+    withSourcesJar()
+}
+
 sourcesJar {
-    def commonSources = project(":common").sourcesJar
+    def commonSources = project(":common").remapSourcesJar
     dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
+    from zipTree(commonSources.output)
 }
 
 publishing {
     publications {
         mavenForge(MavenPublication) {
             artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                classifier null
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
         }
     }
 
@@ -87,4 +101,3 @@ publishing {
         // Add repositories to publish to here.
     }
 }
-

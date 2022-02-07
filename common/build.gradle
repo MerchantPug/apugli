@@ -8,26 +8,26 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/apugli.accessWidener")
+    accessWidener = file("src/main/resources/apugli.accessWidener")
 }
 
 architectury {
     common()
 }
 
-configurations {
-    dev
-}
-
-artifacts {
-    dev(jar)
+java {
+    withSourcesJar()
 }
 
 publishing {
     publications {
         mavenCommon(MavenPublication) {
             artifactId = rootProject.archives_base_name
-            from components.java
+            // add all the jars that should be included when publishing to maven
+            artifact remapJar
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
         }
     }
 

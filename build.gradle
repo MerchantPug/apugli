@@ -1,6 +1,8 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "0.10.0-SNAPSHOT" apply false
+    id "java"
+    id "architectury-plugin" version "3.2-SNAPSHOT"
+    id "forgified-fabric-loom" version "0.7.0-SNAPSHOT" apply false
+    id "maven-publish"
 }
 
 architectury {
@@ -8,8 +10,11 @@ architectury {
 }
 
 subprojects {
-    apply plugin: "dev.architectury.loom"
+    apply plugin: "forgified-fabric-loom"
 
+    loom {
+        silentMojangMappingsLicense()
+    }
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         // The following line declares the mojmap mappings, you may use other mappings as well
@@ -35,12 +40,6 @@ allprojects {
         maven { url 'https://maven.theillusivec4.top' }
         maven { url 'https://maven.terraformersmc.com/' }
         maven { url 'https://jitpack.io' }
-        maven {
-            url "https://www.cursemaven.com"
-            content {
-                includeGroup "curse.maven"
-            }
-        }
         flatDir {
             dir rootProject.file('libs')
         }
