@@ -5,33 +5,29 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
     modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5', version: "${rootProject.origins_architectury_version}"
-
-    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
 }
 
 loom {
-    accessWidener = file("src/main/resources/apugli.accessWidener")
-    mixinConfigs = ["apugli.mixins.json"]
+    accessWidenerPath = file("src/main/resources/apugli.accessWidener")
 }
 
 architectury {
     common()
 }
 
-java {
-    withSourcesJar()
+configurations {
+    dev
+}
+
+artifacts {
+    dev(jar)
 }
 
 publishing {
     publications {
         mavenCommon(MavenPublication) {
             artifactId = rootProject.archives_base_name
-            // add all the jars that should be included when publishing to maven
-            artifact remapJar
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
+            from components.java
         }
     }
 

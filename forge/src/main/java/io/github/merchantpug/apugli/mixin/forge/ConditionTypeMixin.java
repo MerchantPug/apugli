@@ -20,6 +20,7 @@ public class ConditionTypeMixin<T> {
 
     @ModifyArg(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;", at = @At(value = "INVOKE", target = "Lme/shedaniel/architectury/registry/Registry;get(Lnet/minecraft/util/Identifier;)Ljava/lang/Object;"))
     private Identifier resolveAlias(Identifier id) {
+        if (id == null) return null;
         if (!conditionRegistry.contains(id) && ApugliNamespaceAlias.isAlias(id)) {
             return ApugliNamespaceAlias.resolveAlias(id);
         }

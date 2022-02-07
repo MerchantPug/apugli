@@ -1,13 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-}
-
-configurations {
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-}
-
-loom {
-    accessWidener = file("src/main/resources/apugli.accessWidener")
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 architectury {
@@ -15,29 +7,30 @@ architectury {
     fabric()
 }
 
-repositories {
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.terraformersmc.com/' }
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/apugli.accessWidener")
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
-    modApi group: 'com.github.apace100', name: 'origins-fabric', version: "${rootProject.origins_fabric_version}"
+    modImplementation group: 'com.github.apace100', name: 'origins-fabric', version: "${rootProject.origins_fabric_version}"
 
-    implementation(project(path: ":common")) {
-        transitive = false
-    }
-    developmentFabric(project(path: ":common")) {
-        transitive = false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
-        transitive = false
-    }
+    modImplementation group: 'com.github.MerchantPug.apugli', name: 'Apugli-1.16.5-fabric', version: "${rootProject.apugli_version}"
+    include group: 'com.github.MerchantPug.apugli', name: 'Apugli-1.16.5-fabric', version: "${rootProject.apugli_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive = false }
 }
 
 processResources {
@@ -56,35 +49,30 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier "fabric"
+    classifier null
 }
 
 jar {
     classifier "dev"
 }
 
-java {
-    withSourcesJar()
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
 }
 
-sourcesJar {
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-    def commonSources = project(":common").remapSourcesJar
-    dependsOn commonSources
-    from zipTree(commonSources.output)
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
 }
 
 publishing {
     publications {
         mavenFabric(MavenPublication) {
             artifactId = rootProject.archives_base_name + "-" + project.name
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                classifier null
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
+            from components.java
         }
     }
 

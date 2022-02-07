@@ -1,6 +1,5 @@
 package io.github.merchantpug.apugli.forge;
 
-import io.github.apace100.origins.Origins;
 import io.github.merchantpug.apugli.Apugli;
 import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.minecraftforge.api.distmarker.Dist;

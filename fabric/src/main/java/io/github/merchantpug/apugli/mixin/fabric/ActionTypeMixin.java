@@ -19,6 +19,7 @@ public class ActionTypeMixin<T> {
 
     @ModifyArg(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/action/ActionFactory$Instance;", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/Registry;getOrEmpty(Lnet/minecraft/util/Identifier;)Ljava/util/Optional;"))
     private Identifier resolveAlias(@Nullable Identifier id) {
+        if (id == null) return null;
         if (!actionFactoryRegistry.containsId(id) && ApugliNamespaceAlias.isAlias(id)) {
             return ApugliNamespaceAlias.resolveAlias(id);
         }
