@@ -4,10 +4,10 @@
   "package": "io.github.merchantpug.apugli.mixin.fabric",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ActionTypeMixin",
+    "io.github.merchantpug.apugli.mixin.ActionTypeMixin",
     "AnimalEntityMixin",
-    "ConditionTypeMixin",
+    "io.github.merchantpug.apugli.mixin.ConditionTypeMixin",
     "PlayerEntityMixin",
-    "PowerTypesMixin"
+    "io.github.merchantpug.apugli.mixin.PowerTypesMixin"
   ]
 }

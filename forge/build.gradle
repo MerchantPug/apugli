@@ -14,8 +14,8 @@ architectury {
 
 loom {
     useFabricMixin = true
-    mixinConfig "origins.mixins.json"
-    mixinConfig "origins.forge.mixins.json"
+    mixinConfig "apugli.mixins.json"
+    mixinConfig "apugli.forge.mixins.json"
 
     launches {
         client {

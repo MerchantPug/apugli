@@ -18,6 +18,7 @@ repositories {
 
 loom {
     accessWidener = file("src/main/resources/apugli.accessWidener")
+    mixinConfigs = ["apugli.mixins.json", "apugli.fabric.mixins.json"]
 }
 
 dependencies {

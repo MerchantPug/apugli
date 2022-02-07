@@ -24,7 +24,7 @@
   "accessWidener": "apugli.accessWidener",
   "mixins": [
     "apugli.mixins.json",
-    "apugli.mixins.fabric.json"
+    "apugli.fabric.mixins.json",
   ],
   "custom": {
     "modmenu": {

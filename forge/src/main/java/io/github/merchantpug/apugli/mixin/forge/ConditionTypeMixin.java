@@ -14,11 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
 
-@Mixin(value = ConditionType.class, remap = false)
+@Mixin(value = ConditionType.class)
 public class ConditionTypeMixin<T> {
     @Shadow @Final private Registry<ConditionFactory<T>> conditionRegistry;
 
-    @ModifyArg(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;", at = @At(value = "INVOKE", target = "Lme/shedaniel/architectury/registry/Registry;get(Lnet/minecraft/util/Identifier;)Ljava/lang/Object;"))
+    @ModifyArg(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;", at = @At(value = "INVOKE", target = "Lme/shedaniel/architectury/registry/Registry;get(Lnet/minecraft/util/Identifier;)Ljava/lang/Object;"), remap = false)
     private Identifier resolveAlias(Identifier id) {
         if (id == null) return null;
         if (!conditionRegistry.contains(id) && ApugliNamespaceAlias.isAlias(id)) {

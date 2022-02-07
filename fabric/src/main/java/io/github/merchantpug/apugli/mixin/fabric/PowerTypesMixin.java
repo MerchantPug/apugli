@@ -17,7 +17,7 @@ public abstract class PowerTypesMixin extends MultiJsonDataLoader {
         super(gson, dataType);
     }
 
-    @ModifyArg(method = "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/Registry;getOrEmpty(Lnet/minecraft/util/Identifier;)Ljava/util/Optional;"))
+    @ModifyArg(method = "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/Registry;getOrEmpty(Lnet/minecraft/util/Identifier;)Ljava/util/Optional;"), remap = false)
     private Identifier resolveAlias(Identifier value) {
         if (!ModRegistries.POWER_FACTORY.getOrEmpty(value).isPresent() && ApugliNamespaceAlias.isAlias(value)) {
             return ApugliNamespaceAlias.resolveAlias(value);
