@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.merchantpug.apugli.mixin.fabric",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ActionTypeMixin",
+    "ConditionTypeMixin",
+    "PowerTypesMixin"
+  ],
+  "refmap": "Apugli-1.16.5-origins-fabric-refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

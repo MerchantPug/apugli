@@ -25,6 +25,7 @@
   "mixins": [
     "apugli.mixins.json",
     "apugli.fabric.mixins.json",
+    "apugli.origins.fabric.mixins.json"
   ],
   "custom": {
     "modmenu": {

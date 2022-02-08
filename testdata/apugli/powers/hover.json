@@ -51,7 +51,7 @@
   "sync_values": {
     "type": "origins:action_over_time",
     "entity_action": {
-      "type": "apugli:resource_transfer",
+      "type": "ope:resource_transfer",
       "resource": "*:*_inactive",
       "provider": "*:*_active"
     },

@@ -43,10 +43,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow protected abstract boolean isOnSoulSpeedBlock();
 
-    @Shadow public abstract ItemStack getMainHandStack();
-
-    @Shadow public abstract ItemStack getOffHandStack();
-
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }

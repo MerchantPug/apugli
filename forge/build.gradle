@@ -16,6 +16,7 @@ loom {
     useFabricMixin = true
     mixinConfig "apugli.mixins.json"
     mixinConfig "apugli.forge.mixins.json"
+    mixinConfig "apugli.origins.forge.mixins.json"
 
     launches {
         client {

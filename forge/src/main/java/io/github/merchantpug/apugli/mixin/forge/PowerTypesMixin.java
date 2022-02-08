@@ -9,16 +9,17 @@ import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
-@Mixin(value = PowerTypes.class)
+@Mixin(value = PowerTypes.class, remap = false)
 public abstract class PowerTypesMixin extends MultiJsonDataLoader {
     public PowerTypesMixin(Gson gson, String dataType) {
         super(gson,  dataType);
     }
 
-    @ModifyArg(method = "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;", at = @At(value = "INVOKE", target = "Lme/shedaniel/architectury/registry/Registry;get(Lnet/minecraft/util/Identifier;)Ljava/lang/Object;"), remap = false)
+    @ModifyVariable(method = "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"), ordinal = 1, remap = false)
     private Identifier resolveAlias(Identifier value) {
         if (!Optional.ofNullable(ModRegistries.POWER_FACTORY.get(value)).isPresent() && ApugliNamespaceAlias.isAlias(value)) {
             return ApugliNamespaceAlias.resolveAlias(value);
