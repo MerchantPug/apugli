@@ -18,7 +18,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Redirect(method = "getDigSpeed", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD))
+    @Redirect(method = "getDigSpeed", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), remap = false)
     private boolean hasAirAffinity(PlayerEntity instance) {
         return OriginComponent.hasPower(instance, AerialAffinityPower.class) || instance.isOnGround();
     }
