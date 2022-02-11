@@ -34,10 +34,10 @@
     ]
   },
   "condition": {
-  "type": "ope:raycast",
-  "block_condition": {
-    "type": "origins:block",
-    "block": "minecraft:grass_block"
+    "type": "ope:raycast",
+    "block_condition": {
+      "type": "origins:block",
+      "block": "minecraft:grass_block"
+    }
   }
-}
 }
