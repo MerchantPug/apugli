@@ -9,6 +9,6 @@
     "always_edible": true
   },
   "condition": {
-    "type": "apoli:exposed_to_sun"
+    "type": "apoli:daytime"
   }
 }
