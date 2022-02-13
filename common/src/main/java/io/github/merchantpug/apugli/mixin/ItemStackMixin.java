@@ -113,10 +113,12 @@ public abstract class ItemStackMixin implements ItemStackAccess {
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+        if (!(user instanceof PlayerEntity)) return;
         if (this.isItemStackFood()) {
+            OriginComponent.getPowers(user, EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
             ItemStack itemStack = user.eatFood(world, (ItemStack)(Object)this);
             if (this.getReturnStack() != null) {
-                cir.setReturnValue(user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode ? itemStack : this.getReturnStack());
+                cir.setReturnValue(((PlayerEntity)user).abilities.creativeMode ? itemStack : this.getReturnStack());
             } else {
                 cir.setReturnValue(itemStack);
             }
