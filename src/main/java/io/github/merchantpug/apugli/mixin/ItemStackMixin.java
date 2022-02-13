@@ -106,6 +106,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (this.isItemStackFood()) {
+            PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
             ItemStack itemStack = user.eatFood(world, (ItemStack)(Object)this);
             if (this.getReturnStack() != null) {
                 cir.setReturnValue(user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : this.getReturnStack());
@@ -195,12 +196,5 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Override
     public void setStackEatSound(SoundEvent sound) {
         this.eatSound = sound;
-    }
-
-    @Inject(method = "finishUsing", at = @At("HEAD"))
-    private void executeEntityActions(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        if(user != null) {
-            PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
-        }
     }
 }
