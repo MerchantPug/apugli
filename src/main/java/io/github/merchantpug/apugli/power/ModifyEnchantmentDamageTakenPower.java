@@ -38,8 +38,7 @@ public class ModifyEnchantmentDamageTakenPower extends ValueModifyingPower {
     }
 
     public boolean doesApply(DamageSource source, float damageAmount) {
-        if (!(entity instanceof LivingEntity)) return false;
-        return source.getAttacker() != null && damageCondition.test(new Pair(source, damageAmount)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(source.getAttacker(), entity))) && EnchantmentHelper.getLevel(enchantment, entity.getEquippedStack(EquipmentSlot.MAINHAND)) != 0;
+        return source.getAttacker() != null && source.getAttacker() instanceof LivingEntity && damageCondition.test(new Pair(source, damageAmount)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(source.getAttacker(), entity))) && EnchantmentHelper.getLevel(enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) != 0;
     }
 
     public void setBiEntityAction(Consumer<Pair<Entity, Entity>> biEntityAction) {

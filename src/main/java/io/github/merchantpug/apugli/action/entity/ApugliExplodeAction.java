@@ -44,7 +44,7 @@ public class ApugliExplodeAction {
     }
 
     private static float applyChargedModifiers(SerializableData.Instance data, Entity entity) {
-        if (!data.getBoolean("use_charged")) return data.getFloat("speed");
+        if (!data.getBoolean("use_charged")) return data.getFloat("power");
         boolean tmoCharged;
         boolean cursedCharged;
         List<EntityAttributeModifier> chargedModifiers = new ArrayList<>();

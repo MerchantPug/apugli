@@ -1,13 +1,12 @@
 package io.github.merchantpug.apugli.registry;
 
-import io.github.apace100.calio.mixin.DamageSourceAccessor;
-import net.minecraft.entity.Entity;
+import io.github.merchantpug.apugli.content.JumpExplosionDamageSource;
+import io.github.merchantpug.apugli.content.JumpExplosionPlayerDamageSource;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 
 public class ApugliDamageSources {
     public static DamageSource jumpExplosion(LivingEntity attacker) {
-        return attacker != null ? (new EntityDamageSource("jumpExplosion.player", attacker)).setExplosive() : ((DamageSourceAccessor.createDamageSource("jumpExplosion")).setExplosive());
+        return attacker != null ? new JumpExplosionPlayerDamageSource(attacker) : new JumpExplosionDamageSource();
     }
 }

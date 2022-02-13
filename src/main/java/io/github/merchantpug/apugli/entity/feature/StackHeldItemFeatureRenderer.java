@@ -38,8 +38,7 @@ public class StackHeldItemFeatureRenderer<T extends LivingEntity, M extends Enti
             if (power.slot == EquipmentSlot.MAINHAND) {
                 rightHandStack = power.stack;
             }
-        }
-        if (!bl) {
+        } else {
             if (power.slot == EquipmentSlot.MAINHAND) {
                 leftHandStack = power.stack;
             }
@@ -61,9 +60,9 @@ public class StackHeldItemFeatureRenderer<T extends LivingEntity, M extends Enti
         }
     }
 
-    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean shouldRenderEquipped, boolean shouldMergeWithHeld) {
+    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean shouldOverride, boolean shouldMergeWithHeld) {
         boolean isMainArm = entity.getMainArm() == arm;
-        if (!stack.isEmpty() && (!shouldRenderEquipped || ((entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || shouldMergeWithHeld) && isMainArm || (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() || shouldMergeWithHeld) && !isMainArm))) {
+        if (!stack.isEmpty() && (shouldOverride || ((entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || shouldMergeWithHeld) && isMainArm || (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() || shouldMergeWithHeld) && !isMainArm))) {
             matrices.push();
             (this.getContextModel()).setArmAngle(arm, matrices);
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));

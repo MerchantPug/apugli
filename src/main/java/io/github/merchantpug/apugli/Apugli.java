@@ -5,6 +5,7 @@ import io.github.merchantpug.apugli.registry.*;
 import io.github.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
 import io.github.merchantpug.apugli.registry.action.ApugliEntityActions;
+import io.github.merchantpug.apugli.registry.action.ApugliItemActions;
 import io.github.merchantpug.apugli.registry.condition.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -32,9 +33,12 @@ public class Apugli implements ModInitializer {
 		ApugliBiEntityActions.register();
 		ApugliBlockActions.register();
 		ApugliEntityActions.register();
+		ApugliItemActions.register();
+
 		ApugliBiEntityConditions.register();
 		ApugliBlockConditions.register();
 		ApugliDamageConditions.register();
+
 		ApugliEntityConditions.register();
 		ApugliPowerFactories.register();
 

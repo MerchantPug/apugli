@@ -11,6 +11,7 @@ public class ApugliPowerFactories {
     public static void register() {
         register(ActionOnBlockPlacedPower.getFactory());
         register(ActionOnEquipPower.getFactory());
+        register(ActionOnDurabilityChange.getFactory());
         register(ActionOnBoneMealPower.getFactory());
         register(Power.createSimpleFactory(AerialAffinityPower::new, Apugli.identifier("aerial_affinity")));
         register(AllowAnvilEnchantPower.getFactory());

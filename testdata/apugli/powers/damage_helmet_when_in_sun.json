@@ -1,0 +1,15 @@
+{
+  "type": "apoli:action_over_time",
+  "entity_action": {
+    "type": "apoli:equipped_item_action",
+    "equipment_slot": "head",
+    "action": {
+      "type": "apugli:damage"
+    }
+  },
+  "interval": 1,
+  "condition": {
+    "type": "apoli:exposed_to_sun"
+  },
+  "hidden": true
+}

@@ -1,4 +1,10 @@
 {
   "type": "ope:custom_footstep",
-  "sound": "minecraft:entity.pig.step"
+  "sounds": [
+    {
+      "sound": "minecraft:entity.pig.step",
+      "weight": 5
+    },
+    "minecraft:entity.pig.hurt"
+  ]
 }

@@ -39,7 +39,6 @@ public class RaycastAction {
         Vec3d eyePosition = entity.getCameraPosVec(0);
         Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
         Vec3d traceEnd = eyePosition.add(lookVector);
-        Box box = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
         RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
         BlockHitResult blockHitResult = entity.world.raycast(context);
@@ -62,7 +61,7 @@ public class RaycastAction {
         createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
 
         if (data.getBoolean("pierce")) {
-            List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, box, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+            List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
             RaycastAction.handlePierce(data, entity, list);
             return;
         }

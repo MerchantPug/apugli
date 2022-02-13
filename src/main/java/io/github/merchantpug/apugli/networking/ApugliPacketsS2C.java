@@ -1,13 +1,10 @@
 package io.github.merchantpug.apugli.networking;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentAPI;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
-import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -19,19 +16,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 public class ApugliPacketsS2C {
     @Environment(EnvType.CLIENT)
     public static void register() {
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
-            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
+            ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
         }));
     }
@@ -65,33 +58,6 @@ public class ApugliPacketsS2C {
 
     private static void onFoodComponentSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         int targetId = packetByteBuf.readInt();
-        StackFoodComponentUtil.FoodComponentAction foodComponentAction = StackFoodComponentUtil.FoodComponentAction.values()[packetByteBuf.readByte()];
-        FoodComponent foodComponent = null;
-        boolean hasUseAction;
-        UseAction useAction = null;
-        boolean hasReturnStack;
-        ItemStack returnStack = null;
-        boolean hasSoundEvent;
-        Identifier soundEventId = null;
-        if (foodComponentAction == StackFoodComponentUtil.FoodComponentAction.ADD) {
-            hasUseAction = packetByteBuf.readBoolean();
-            hasReturnStack = packetByteBuf.readBoolean();
-            hasSoundEvent = packetByteBuf.readBoolean();
-            foodComponent = SerializableDataTypes.FOOD_COMPONENT.receive(packetByteBuf);
-            if (hasUseAction) {
-                useAction = UseAction.values()[packetByteBuf.readByte()];
-            }
-            if (hasReturnStack) {
-                returnStack = packetByteBuf.readItemStack();
-            }
-            if (hasSoundEvent) {
-                soundEventId = packetByteBuf.readIdentifier();
-            }
-        }
-        FoodComponent finalFoodComponent = foodComponent;
-        UseAction finalUseAction = useAction;
-        ItemStack finalReturnStack = returnStack;
-        Identifier finalSoundEventId = soundEventId;
 
         boolean usesEquipmentSlot = packetByteBuf.readBoolean();
         String equipmentSlotId = "";
@@ -109,18 +75,16 @@ public class ApugliPacketsS2C {
         }
         StackFoodComponentUtil.InventoryLocation finalInventoryLocation = inventoryLocation;
         int finalInventoryIndex = inventoryIndex;
+
         minecraftClient.execute(() -> {
             Entity entity = clientPlayNetworkHandler.getWorld().getEntityById(targetId);
             if (!(entity instanceof PlayerEntity)) {
-                Apoli.LOGGER.warn("Received unknown target");
+                Apugli.LOGGER.warn("Received unknown target");
             } else {
                 if (usesEquipmentSlot) {
                     EquipmentSlot equipmentSlot = EquipmentSlot.byName(finalEquipmentSlotId);
                     ItemStack stack = ((PlayerEntity)entity).getEquippedStack(equipmentSlot);
-                    switch (foodComponentAction) {
-                        case ADD -> ItemStackFoodComponentAPI.setStackFood(stack, finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                        case REMOVE -> ItemStackFoodComponentAPI.removeStackFood(stack);
-                    }
+                    ItemStackFoodComponentAPI.removeStackFood(stack);
                 }
                 if (usesInventoryIndex) {
                     DefaultedList<ItemStack> inventory;
@@ -130,10 +94,7 @@ public class ApugliPacketsS2C {
                         case OFFHAND -> inventory = ((PlayerEntity) entity).getInventory().offHand;
                         default -> throw new IllegalStateException("Unexpected value: " + finalInventoryLocation);
                     }
-                    switch (foodComponentAction) {
-                        case ADD -> ItemStackFoodComponentAPI.setStackFood(inventory.get(finalInventoryIndex), finalFoodComponent, finalUseAction, finalReturnStack, Registry.SOUND_EVENT.get(finalSoundEventId));
-                        case REMOVE -> ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
-                    }
+                    ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
                 }
             }
         });

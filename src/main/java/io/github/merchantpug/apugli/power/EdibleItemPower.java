@@ -10,10 +10,9 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.networking.ApugliPackets;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
-import io.github.merchantpug.nibbles.ItemStackFoodComponentAPI;
-import io.github.merchantpug.nibbles.access.ItemStackAccess;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentAPI;
+import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -72,38 +71,27 @@ public class EdibleItemPower extends Power {
         this.sound = sound;
         this.entityActionWhenEaten = entityActionWhenEaten;
         this.tickRate = tickRate;
-        this.setTicking(true);
     }
 
-    @Override
-    public void tick() {
+    // This method will exist as long as the tick() method only functions serverside, I'd be sending a million packets which have desync otherwise
+    public void tempTick() {
+        ItemStack mainHandStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
+        ItemStack offHandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
         if (entity.age % tickRate == 0) {
-            ItemStack mainHandStack = entity.getEquippedStack(EquipmentSlot.MAINHAND);
             if (mainHandStack != ItemStack.EMPTY) {
-                if (this.isActive()) {
-                    if (this.predicate.test(mainHandStack) && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() != foodComponent) {
-                        ItemStackFoodComponentAPI.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
-                        this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.MAINHAND, null, 0);
-                    }
-                } else {
-                    if (this.predicate.test(mainHandStack) && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeStackFood(mainHandStack);
-                        this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.MAINHAND, null, 0);
-                    }
+                if (this.predicate.test(mainHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood()) {
+                    ItemStackFoodComponentAPI.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
+                }
+                if (this.predicate.test(mainHandStack) && !this.isActive() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == foodComponent) {
+                    ItemStackFoodComponentAPI.removeStackFood(mainHandStack);
                 }
             }
-            ItemStack offHandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
             if (offHandStack != ItemStack.EMPTY) {
-                if (this.isActive()) {
-                    if (this.predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() != foodComponent) {
-                        ItemStackFoodComponentAPI.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
-                        this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.ADD, EquipmentSlot.OFFHAND, null, 0);
-                    }
-                } else {
-                    if (this.predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
-                        ItemStackFoodComponentAPI.removeStackFood(offHandStack);
-                        this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.OFFHAND, null, 0);
-                    }
+                if (this.predicate.test(offHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood()) {
+                    ItemStackFoodComponentAPI.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
+                }
+                if (this.predicate.test(offHandStack) && !this.isActive() && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
+                    ItemStackFoodComponentAPI.removeStackFood(offHandStack);
                 }
             }
         }
@@ -126,44 +114,28 @@ public class EdibleItemPower extends Power {
                 ItemStack itemStack = ((PlayerEntity)entity).getInventory().main.get(i);
                 if (predicate.test(itemStack) && ((ItemStackAccess)(Object)itemStack).getItemStackFoodComponent() == foodComponent) {
                     ItemStackFoodComponentAPI.removeStackFood(itemStack);
-                    this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, null, StackFoodComponentUtil.InventoryLocation.MAIN, i);
+                    this.sendFoodComponentRemovePacket(null, StackFoodComponentUtil.InventoryLocation.MAIN, i);
                 }
             }
             for (int i = 0; i < ((PlayerEntity) entity).getInventory().armor.size(); i++) {
                 ItemStack armorStack = ((PlayerEntity) entity).getInventory().getArmorStack(i);
                 if (predicate.test(armorStack) && ((ItemStackAccess)(Object)armorStack).getItemStackFoodComponent() == foodComponent) {
                     ItemStackFoodComponentAPI.removeStackFood(armorStack);
-                    this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, null, StackFoodComponentUtil.InventoryLocation.ARMOR, i);
+                    this.sendFoodComponentRemovePacket(null, StackFoodComponentUtil.InventoryLocation.ARMOR, i);
                 }
             }
             ItemStack offHandStack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
             if (predicate.test(offHandStack) && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
                 ItemStackFoodComponentAPI.removeStackFood(offHandStack);
-                this.sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction.REMOVE, EquipmentSlot.OFFHAND, null, 0);
+                this.sendFoodComponentRemovePacket(EquipmentSlot.OFFHAND, null, 0);
             }
         }
     }
 
-    public void sendFoodComponentSyncPacket(StackFoodComponentUtil.FoodComponentAction type, @Nullable EquipmentSlot equipmentSlot, @Nullable StackFoodComponentUtil.InventoryLocation inventoryLocation, int inventoryIndex) {
+    public void sendFoodComponentRemovePacket(@Nullable EquipmentSlot equipmentSlot, @Nullable StackFoodComponentUtil.InventoryLocation inventoryLocation, int inventoryIndex) {
         if (entity.world.isClient()) return;
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeInt(entity.getId());
-        buf.writeByte(type.ordinal());
-        if (type == StackFoodComponentUtil.FoodComponentAction.ADD) {
-            buf.writeBoolean(useAction != null);
-            buf.writeBoolean(returnStack != null);
-            buf.writeBoolean(sound != null);
-            SerializableDataTypes.FOOD_COMPONENT.send(buf, foodComponent);
-            if (useAction != null) {
-                buf.writeByte(type.ordinal());
-            }
-            if (returnStack != null) {
-                buf.writeItemStack(returnStack);
-            }
-            if (sound != null) {
-                buf.writeIdentifier(sound.getId());
-            }
-        }
         buf.writeBoolean(equipmentSlot != null);
         if (equipmentSlot != null) {
             buf.writeString(equipmentSlot.getName(), PacketByteBuf.DEFAULT_MAX_STRING_LENGTH);
@@ -176,9 +148,9 @@ public class EdibleItemPower extends Power {
         }
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(entity)) {
-            ServerPlayNetworking.send(player, ApugliPackets.SYNC_STACK_FOOD_COMPONENT, buf);
+            ServerPlayNetworking.send(player, ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, buf);
         }
         if (!(entity instanceof ServerPlayerEntity)) return;
-        ServerPlayNetworking.send((ServerPlayerEntity)entity, ApugliPackets.SYNC_STACK_FOOD_COMPONENT, buf);
+        ServerPlayNetworking.send((ServerPlayerEntity)entity, ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, buf);
     }
 }

@@ -54,9 +54,6 @@ dependencies {
 
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 
-	modImplementation "com.github.MerchantPug:nibbles:${project.nibbles_version}"
-	include "com.github.MerchantPug:nibbles:${project.nibbles_version}"
-
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
 }
 
@@ -70,6 +67,7 @@ processResources {
 	def environment = System.getenv("ENVIRONMENT")
 	if (environment != "production") {
 		from(rootProject.rootDir.absolutePath + "/testdata") { into 'data' }
+		from(rootProject.rootDir.absolutePath + "/testassets") { into 'assets'}
 	}
 }
 

@@ -3,6 +3,7 @@ package io.github.merchantpug.apugli.registry.action;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.merchantpug.apugli.action.entity.*;
+import io.github.merchantpug.apugli.condition.entity.CompareResourceCondition;
 import net.minecraft.entity.*;
 import net.minecraft.util.registry.Registry;
 
@@ -12,9 +13,9 @@ public class ApugliEntityActions {
         register(DropItemAction.getFactory());
         register(FireProjectileAction.getFactory());
         register(RaycastAction.getFactory());
+        register(ResourceTransferAction.getFactory());
         register(SetNoGravityAction.getFactory());
         register(SpawnItemAction.getFactory());
-        register(SwingHandAction.getFactory());
         register(ZombifyVillagerAction.getFactory());
     }
 

@@ -20,7 +20,7 @@ public class ForceParticleRenderPower extends Power {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ForceParticleRenderPower>(Apugli.identifier("force_particle_render"),
                 new SerializableData()
-                        .add("particle", SerializableDataTypes.PARTICLE_TYPE, null)
+                        .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
                         .add("particles", SerializableDataType.list(SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE), null),
                         data ->
                         (type, entity) -> {
