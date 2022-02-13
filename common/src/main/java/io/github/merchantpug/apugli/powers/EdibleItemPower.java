@@ -81,7 +81,7 @@ public class EdibleItemPower extends Power {
         ItemStack offHandStack = player.getEquippedStack(EquipmentSlot.OFFHAND);
         if (player.age % tickRate == 0) {
             if (mainHandStack != ItemStack.EMPTY) {
-                if (this.predicate.test(mainHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood()) {
+                if (this.predicate.test(mainHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == null) {
                     ItemStackFoodComponentAPI.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
                 }
                 if (this.predicate.test(mainHandStack) && !this.isActive() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == foodComponent) {
@@ -89,7 +89,7 @@ public class EdibleItemPower extends Power {
                 }
             }
             if (offHandStack != ItemStack.EMPTY) {
-                if (this.predicate.test(offHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood()) {
+                if (this.predicate.test(offHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == null) {
                     ItemStackFoodComponentAPI.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
                 }
                 if (this.predicate.test(offHandStack) && !this.isActive() && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {

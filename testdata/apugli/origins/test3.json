@@ -8,7 +8,8 @@
     "apugli:hover",
     "apugli:modified_smite_damage_dealt",
     "apugli:modified_smite_damage_taken",
-    "apugli:prevent_bee_anger"
+    "apugli:prevent_bee_anger",
+    "apugli:action_on_durability_change"
   ],
   "icon": {
     "item": "minecraft:emerald"

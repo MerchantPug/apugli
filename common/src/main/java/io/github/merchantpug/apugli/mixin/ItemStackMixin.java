@@ -2,6 +2,7 @@ package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
+import io.github.merchantpug.apugli.powers.ActionOnDurabilityChange;
 import io.github.merchantpug.apugli.powers.EdibleItemPower;
 import io.github.merchantpug.apugli.powers.ModifyEnchantmentLevelPower;
 import net.minecraft.enchantment.Enchantment;
@@ -13,6 +14,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -29,6 +31,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Random;
+import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ItemStackAccess {
@@ -68,17 +73,14 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         }
     }
 
-    @Unique
-    private boolean shouldUpdateClientside = true;
-
-    @Override
-    public boolean shouldUpdateClientside() {
-        return shouldUpdateClientside;
+    @Inject(method = "damage(ILjava/util/Random;Lnet/minecraft/server/network/ServerPlayerEntity;)Z", at = @At(value = "RETURN", ordinal = 2))
+    private void executeActionOnDurabilityDecrease(int amount, Random random, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        OriginComponent.getPowers(player, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChange::executeDecreaseAction);
     }
 
-    @Override
-    public void setShouldUpdateClientside(boolean value) {
-        shouldUpdateClientside = value;
+    @Inject(method = "damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
+    private <T extends LivingEntity> void executeActionBroken(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
+        OriginComponent.getPowers(entity, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChange::executeBreakAction);
     }
 
     @Unique

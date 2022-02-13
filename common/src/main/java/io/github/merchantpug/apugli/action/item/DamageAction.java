@@ -23,11 +23,13 @@ SOFTWARE.
 
 package io.github.merchantpug.apugli.action.item;
 
+import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.power.factory.action.ActionFactory;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
+import io.github.merchantpug.apugli.powers.ActionOnDurabilityChange;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.UnbreakingEnchantment;
@@ -57,11 +59,10 @@ public class DamageAction {
             }
         }
         int newDamage = itemStack.getDamage() + damage;
-        itemStack.setDamage(newDamage);
+        LivingEntity stackHolder = (LivingEntity)((ItemStackAccess)(Object)itemStack).getEntity();
         if (newDamage >= itemStack.getMaxDamage()) {
-            LivingEntity stackHolder = (LivingEntity)((ItemStackAccess)(Object)itemStack).getEntity();
-
             if (stackHolder != null) {
+                OriginComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(itemStack)).forEach(ActionOnDurabilityChange::executeBreakAction);
                 EquipmentSlot equipmentSlot = null;
                 for (EquipmentSlot slotValue : EquipmentSlot.values()) {
                     ItemStack stack = stackHolder.getEquippedStack(slotValue);
@@ -78,6 +79,11 @@ public class DamageAction {
             }
             itemStack.decrement(1);
             itemStack.setDamage(0);
+        } else {
+            itemStack.setDamage(newDamage);
+            if (stackHolder != null) {
+                OriginComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(itemStack)).forEach(ActionOnDurabilityChange::executeDecreaseAction);
+            }
         }
     }
 

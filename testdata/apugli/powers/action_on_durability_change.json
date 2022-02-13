@@ -1,0 +1,25 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "slot": "mainhand",
+  "item_condition": {
+    "type": "origins:ingredient",
+    "ingredient": {
+      "item": "minecraft:netherite_shovel"
+    }
+  },
+  "increase_action": {
+    "type": "apugli:explode",
+    "power": 5,
+    "destruction_type": "none",
+    "damage_self": false,
+    "create_fire": false
+  },
+  "decrease_action": {
+    "type": "origins:play_sound",
+    "sound": "minecraft:entity.chicken.egg"
+  },
+  "break_action": {
+    "type": "origins:set_on_fire",
+    "duration": 5
+  }
+}

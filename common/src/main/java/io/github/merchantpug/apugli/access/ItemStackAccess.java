@@ -27,7 +27,4 @@ public interface ItemStackAccess {
     SoundEvent getStackEatSound();
 
     void setStackEatSound(SoundEvent sound);
-
-    boolean shouldUpdateClientside();
-    void setShouldUpdateClientside(boolean value);
 }
