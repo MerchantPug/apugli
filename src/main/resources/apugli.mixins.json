@@ -17,6 +17,7 @@
     "EntityMixin",
     "ExperienceOrbEntityMixin",
     "ExplosionMixin",
+    "HungerManagerMixin",
     "ItemAccessor",
     "ItemConditionsMixin",
     "ItemPredicateMixin",
