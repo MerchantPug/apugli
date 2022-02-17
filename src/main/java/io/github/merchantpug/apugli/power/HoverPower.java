@@ -45,7 +45,7 @@ public class HoverPower extends ResourcePower implements Active {
                         .add("time_until_recharge", SerializableDataTypes.INT, 10)
                         .add("recharge_amount", SerializableDataTypes.INT, 2)
                         .add("recharge_while_inactive", SerializableDataTypes.BOOLEAN, false)
-                        .add("recharge_rate", SerializableDataTypes.INT, 2)
+                        .add("recharge_rate", SerializableDataTypes.INT, 1)
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 data ->
                         (type, entity) -> {
