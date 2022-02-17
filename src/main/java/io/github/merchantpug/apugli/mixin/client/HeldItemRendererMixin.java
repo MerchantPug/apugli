@@ -33,36 +33,40 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void renderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light);
 
-    @Shadow private float prevEquipProgressMainHand;
-
-    @Shadow private float equipProgressMainHand;
-
     @Redirect(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 0))
     private void renderModifiedItemFirstPersonMainhand(HeldItemRenderer instance, AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().filter(power -> power.slot == EquipmentSlot.MAINHAND).collect(Collectors.toList());
-        modifyEquippedItemRenderPowers.forEach(power -> {
-            if ((this.mainHand.isEmpty() && !power.shouldOverride() && !power.stack.isEmpty() || power.shouldOverride())) {
-                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
-            }
-        });
-        if (modifyEquippedItemRenderPowers.stream().allMatch(power -> power.stack.isEmpty() && !power.shouldOverride()) && this.mainHand.isEmpty() && !player.isInvisible()) {
-            this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, ItemStack.EMPTY, equipProgress, matrices, vertexConsumers, light);
-        }
-        if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.mainHand.isEmpty()) {
+        if (modifyEquippedItemRenderPowers.size() == 0) {
             this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+        } else {
+            modifyEquippedItemRenderPowers.forEach(power -> {
+                if (this.mainHand.isEmpty() && !power.shouldOverride() && !power.stack.isEmpty() || power.shouldOverride()) {
+                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                }
+            });
+            if (modifyEquippedItemRenderPowers.stream().allMatch(power -> power.stack.isEmpty() && !power.shouldOverride()) && this.mainHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, ItemStack.EMPTY, equipProgress, matrices, vertexConsumers, light);
+            }
+            if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.mainHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+            }
         }
     }
 
     @Redirect(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 1))
     private void renderModifiedItemFirstPersonOffhand(HeldItemRenderer instance, AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().filter(power -> power.slot == EquipmentSlot.OFFHAND).collect(Collectors.toList());
-        modifyEquippedItemRenderPowers.forEach(power -> {
-            if ((this.offHand.isEmpty() && !power.shouldOverride() || power.shouldOverride()) && !power.stack.isEmpty()) {
-                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
-            }
-        });
-        if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.offHand.isEmpty()) {
+        if (modifyEquippedItemRenderPowers.size() == 0) {
             this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+        } else {
+            modifyEquippedItemRenderPowers.forEach(power -> {
+                if ((this.offHand.isEmpty() && !power.shouldOverride() || power.shouldOverride()) && !power.stack.isEmpty()) {
+                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                }
+            });
+            if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.offHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+            }
         }
     }
 }
