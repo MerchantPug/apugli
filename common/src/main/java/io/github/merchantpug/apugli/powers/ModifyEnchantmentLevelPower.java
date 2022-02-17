@@ -101,11 +101,17 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
                 Apugli.identifier("modify_enchantment_level"),
                 new SerializableData()
                         .add("enchantment", SerializableDataType.ENCHANTMENT)
-                        .add("modifier", SerializableDataType.ATTRIBUTE_MODIFIER),
+                        .add("modifier", SerializableDataType.ATTRIBUTE_MODIFIER, null)
+                        .add("modifiers", SerializableDataType.ATTRIBUTE_MODIFIERS, null),
                 data -> (type, player) -> {
-                    ModifyEnchantmentLevelPower modifyEnchantmentLevelPower = new ModifyEnchantmentLevelPower(type, player, (Enchantment) data.get("enchantment"));
-                    modifyEnchantmentLevelPower.addModifier((EntityAttributeModifier) data.get("modifier"));
-                    return modifyEnchantmentLevelPower;
+                    ModifyEnchantmentLevelPower power = new ModifyEnchantmentLevelPower(type, player, (Enchantment) data.get("enchantment"));
+                    if (data.isPresent("modifier")) {
+                        power.addModifier((EntityAttributeModifier) data.get("modifier"));
+                    }
+                    if (data.isPresent("modifiers")) {
+                        ((List<EntityAttributeModifier>)data.get("modifiers")).forEach(power::addModifier);
+                    }
+                    return power;
                 })
                 .allowCondition();
     }

@@ -45,7 +45,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package io.github.merchantpug.apugli.registry;
+package io.github.merchantpug.apugli.registry.forge;
 
 import io.github.apace100.origins.power.factory.PowerFactory;
 import io.github.apace100.origins.power.factory.action.ActionFactory;
