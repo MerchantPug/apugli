@@ -17,7 +17,7 @@ public class ConditionTypeMixin<T> {
 
     @ModifyVariable(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;", at = @At(value = "STORE", target = "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"), remap = false)
     private Identifier resolveAlias(Identifier id) {
-        if (!this.conditionRegistry.containsId(id) && ApugliNamespaceAlias.isAlias(id)) {
+        if (!this.conditionRegistry.getOrEmpty(id).isPresent() && ApugliNamespaceAlias.isAlias(id)) {
             return ApugliNamespaceAlias.resolveAlias(id);
         }
         return id;

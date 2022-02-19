@@ -18,7 +18,7 @@ public class ActionTypeMixin<T> {
 
     @ModifyVariable(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/action/ActionFactory$Instance;", at = @At(value = "STORE", target = "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;"), remap = false)
     private Identifier resolveAlias(Identifier id) {
-        if (!actionFactoryRegistry.containsId(id) && ApugliNamespaceAlias.isAlias(id)) {
+        if (!actionFactoryRegistry.getOrEmpty(id).isPresent() && ApugliNamespaceAlias.isAlias(id)) {
             return ApugliNamespaceAlias.resolveAlias(id);
         }
         return id;
