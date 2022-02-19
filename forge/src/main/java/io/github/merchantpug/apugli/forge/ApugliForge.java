@@ -22,6 +22,6 @@ public class ApugliForge {
         Apugli.init();
 
         // Run our client code when appropriate
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ApugliForgeClient::initialize);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ApugliForgeClient::initialize);
     }
 }
