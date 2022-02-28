@@ -42,6 +42,8 @@ public class Apugli implements ModInitializer {
 		ApugliEntityConditions.register();
 		ApugliPowerFactories.register();
 
+		MobBehaviors.register();
+
 		NamespaceAlias.addAlias("ope", MODID);
 	}
 

@@ -1,0 +1,17 @@
+{
+  "type": "apugli:modify_mob_behavior",
+  "entity_condition": {
+    "type": "apoli:entity_type",
+    "entity_type": "minecraft:zombie"
+  },
+  "bientity_condition": {
+    "type": "apoli:attacker"
+  },
+  "behavior": {
+    "type": "apugli:flee",
+    "priority": 0,
+    "distance": 6.0,
+    "slow_speed": 1.0,
+    "fast_speed": 1.2
+  }
+}

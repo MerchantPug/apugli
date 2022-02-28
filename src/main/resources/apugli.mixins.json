@@ -24,6 +24,7 @@
     "ItemStackMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
+    "MobEntityAccessor",
     "MobEntityMixin",
     "ModifyDamageTakenPowerAccessor",
     "PlayerEntityMixin",
