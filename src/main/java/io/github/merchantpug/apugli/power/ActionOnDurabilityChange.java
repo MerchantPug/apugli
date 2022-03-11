@@ -51,7 +51,6 @@ public class ActionOnDurabilityChange extends Power {
         return new PowerFactory<ActionOnDurabilityChange>(
                 Apugli.identifier("action_on_durability_change"),
                 new SerializableData()
-                        .add("slot", SerializableDataTypes.EQUIPMENT_SLOT)
                         .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                         .add("increase_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("decrease_action", ApoliDataTypes.ENTITY_ACTION, null)

@@ -6,8 +6,6 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -22,7 +20,7 @@ public class ModifyEquippedItemRenderPower extends Power {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ModifyEquippedItemRenderPower>(Apugli.identifier("modify_equipped_item_render"),
                 new SerializableData()
-                        .add("equipment_slot", SerializableDataTypes.EQUIPMENT_SLOT)
+                        .add("slot", SerializableDataTypes.EQUIPMENT_SLOT)
                         .add("stack", SerializableDataTypes.ITEM_STACK)
                         .add("scale", SerializableDataTypes.FLOAT, 1.0F)
                         .add("override", SerializableDataTypes.BOOLEAN, false)

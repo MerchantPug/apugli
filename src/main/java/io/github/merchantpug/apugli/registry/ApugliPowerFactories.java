@@ -10,14 +10,14 @@ import net.minecraft.util.registry.Registry;
 public class ApugliPowerFactories {
     public static void register() {
         register(ActionOnBlockPlacedPower.getFactory());
-        register(ActionOnEquipPower.getFactory());
-        register(ActionOnDurabilityChange.getFactory());
         register(ActionOnBoneMealPower.getFactory());
+        register(ActionOnDurabilityChange.getFactory());
+        register(ActionOnEquipPower.getFactory());
         register(Power.createSimpleFactory(AerialAffinityPower::new, Apugli.identifier("aerial_affinity")));
         register(AllowAnvilEnchantPower.getFactory());
         register(BunnyHopPower.getFactory());
-        register(CustomFootstepPower.getFactory());
         register(CustomDeathSoundPower.getFactory());
+        register(CustomFootstepPower.getFactory());
         register(CustomHurtSoundPower.getFactory());
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
@@ -25,6 +25,7 @@ public class ApugliPowerFactories {
         register(ForceParticleRenderPower.getFactory());
         register(HoverPower.getFactory());
         register(Power.createSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
+        register(MobsIgnorePower.getFactory());
         register(ModifyBlockPlacedPower.getFactory());
         register(ModifyBreedingCooldownPower.getFactory());
         register(ModifyEnchantmentDamageDealtPower.getFactory());
@@ -34,8 +35,8 @@ public class ApugliPowerFactories {
         register(ModifySoulSpeedPower.getFactory());
         register(Power.createSimpleFactory(PreventBeeAngerPower::new, Apugli.identifier("prevent_bee_anger")));
         register(PreventBreedingPower.getFactory());
-        register(PreventSoundPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
+        register(PreventSoundPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetTexturePower.getFactory());
     }
