@@ -27,7 +27,7 @@ public class ModifyEquippedItemRenderPower extends Power {
                         .add("merge_with_held", SerializableDataTypes.BOOLEAN, false),
                 data ->
                         (type, entity) ->
-                                new ModifyEquippedItemRenderPower(type, entity, (EquipmentSlot)data.get("equipment_slot"), (ItemStack)data.get("stack"), data.getFloat("scale"), data.getBoolean("override"), data.getBoolean("merge_with_held")))
+                                new ModifyEquippedItemRenderPower(type, entity, (EquipmentSlot)data.get("slot"), (ItemStack)data.get("stack"), data.getFloat("scale"), data.getBoolean("override"), data.getBoolean("merge_with_held")))
                 .allowCondition();
     }
 
