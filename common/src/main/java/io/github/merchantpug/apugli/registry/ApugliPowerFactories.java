@@ -47,6 +47,7 @@ public class ApugliPowerFactories {
         register(getSimpleFactory(PreventBeeAngerPower::new, Apugli.identifier("prevent_bee_anger")));
         register(PreventBreedingPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
+        register(PreventShaderTogglePower.getFactory());
         register(PreventSoundPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetTexturePower.getFactory());

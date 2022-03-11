@@ -2,7 +2,7 @@
   "type": "origins:multiple",
   "mainhand_air": {
     "type": "ope:modify_equipped_item_render",
-    "equipment_slot": "MAINHAND",
+    "slot": "MAINHAND",
     "stack": {
       "item": "minecraft:air"
     },
@@ -10,7 +10,7 @@
   },
   "offhand_air": {
     "type": "ope:modify_equipped_item_render",
-    "equipment_slot": "OFFHAND",
+    "slot": "OFFHAND",
     "stack": {
       "item": "minecraft:air"
     },

@@ -8,7 +8,7 @@ modId = "apugli"
 logoFile="apugli_icon.png"
 version = "${version}"
 displayName = "Apugli"
-authors = "Pug"
+authors = "MerchantPug"
 displayURL="https://github.com/MerchantPug/apugli"
 description = '''
 Pug's extension to Origins for data driven content.

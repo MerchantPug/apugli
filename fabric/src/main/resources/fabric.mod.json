@@ -5,7 +5,7 @@
   "name": "Apugli",
   "description": "Pug's extension to Origins for powers.",
   "authors": [
-    "Pug"
+    "MerchantPug"
   ],
   "contact": {
     "sources": "https://github.com/MerchantPug/apugli"
@@ -19,6 +19,9 @@
     ],
     "client": [
       "io.github.merchantpug.apugli.fabric.ApugliFabricClient"
+    ],
+    "modmenu": [
+      "io.github.merchantpug.apugli.fabric.integration.ApugliModMenuIntegration"
     ]
   },
   "accessWidener": "apugli.accessWidener",

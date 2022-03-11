@@ -20,7 +20,7 @@ public class ModifyEquippedItemRenderPower extends Power {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<ModifyEquippedItemRenderPower>(Apugli.identifier("modify_equipped_item_render"),
                 new SerializableData()
-                        .add("equipment_slot", SerializableDataType.EQUIPMENT_SLOT)
+                        .add("slot", SerializableDataType.EQUIPMENT_SLOT)
                         .add("stack", SerializableDataType.ITEM_STACK)
                         .add("scale", SerializableDataType.FLOAT, 1.0F)
                         .add("override", SerializableDataType.BOOLEAN, false)
