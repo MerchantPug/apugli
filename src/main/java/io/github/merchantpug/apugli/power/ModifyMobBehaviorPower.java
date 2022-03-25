@@ -50,7 +50,6 @@ public class ModifyMobBehaviorPower extends Power {
     }
 
     public boolean doesApply(Entity e) {
-        if (entity.world.isClient) return false;
         return (entityCondition == null || entityCondition.test(e)) && (bientityCondition == null || bientityCondition.test(new Pair<>(entity, e)));
     }
 
@@ -75,7 +74,7 @@ public class ModifyMobBehaviorPower extends Power {
             }
             this.mobBehavior.removeGoals(mob);
         }
-        modifiedEntities.removeIf(mob -> !this.doesApply(mob) || !this.isActive());
+        modifiedEntities.removeIf(mob -> !mobBehavior.hasAppliedGoals(mob) && (!this.doesApply(mob) || !this.isActive()));
     }
 
     @Override
@@ -85,7 +84,6 @@ public class ModifyMobBehaviorPower extends Power {
             this.mobBehavior.initGoals(mob);
             this.modifiedEntities.add(mob);
         });
-        MobBehaviorUtil.powerMap.add(this);
     }
 
     @Override
@@ -101,7 +99,6 @@ public class ModifyMobBehaviorPower extends Power {
             }
             this.mobBehavior.removeGoals(mob);
         }
-        MobBehaviorUtil.powerMap.remove(this);
     }
 
     public void addMobPredicate(Predicate<LivingEntity> predicate) {

@@ -51,10 +51,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow protected abstract void initDataTracker();
 
-    @Shadow public abstract ItemStack getOffHandStack();
-
-    @Shadow public abstract ItemStack getMainHandStack();
-
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }

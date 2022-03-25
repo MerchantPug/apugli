@@ -43,7 +43,7 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
 
     @Inject(method = "interactMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;", shift = At.Shift.BY, by = 2), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     private void preventMobBreeding(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir, ItemStack itemStack) {
-        List<PreventBreedingPower> preventBreedingPowerList = PowerHolderComponent.getPowers(player, PreventBreedingPower.class).stream().filter(power -> power.doesApply(this)).collect(Collectors.toList());
+        List<PreventBreedingPower> preventBreedingPowerList = PowerHolderComponent.getPowers(player, PreventBreedingPower.class).stream().filter(power -> power.doesApply(this)).toList();
         if (preventBreedingPowerList.isEmpty()) return;
         if (this.isBreedingItem(itemStack)) {
             int i = this.getBreedingAge();
