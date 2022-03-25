@@ -1,0 +1,19 @@
+{
+  "type": "apugli:edible_item",
+  "item_condition": {
+    "type": "origins:ingredient",
+    "ingredient": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "food_component": {
+    "hunger": 4,
+    "saturation": 1,
+    "meat": true
+  },
+  "use_action": "drink",
+  "return_stack": {
+    "item": "minecraft:bucket",
+    "amount": 1
+  }
+}

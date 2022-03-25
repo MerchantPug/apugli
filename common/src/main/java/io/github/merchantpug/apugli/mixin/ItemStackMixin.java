@@ -92,25 +92,6 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Unique
     protected SoundEvent eatSound;
 
-    @Inject(method = "use", at = @At("HEAD"), cancellable = true)
-    private void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (this.isItemStackFood()) {
-            ItemStack itemStack = user.getStackInHand(hand);
-            if (user.canConsume(this.getItemStackFoodComponent().isAlwaysEdible())) {
-                user.setCurrentHand(hand);
-                cir.setReturnValue(TypedActionResult.consume(itemStack));
-                if (this.getItem() instanceof BucketItem) {
-                    BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, ((BucketItemAccessor)this.getItem()).getFluid() == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
-                    if (blockHitResult.getType() == HitResult.Type.BLOCK) {
-                        cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
-                    }
-                }
-            } else {
-                cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
-            }
-        }
-    }
-
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (!(user instanceof PlayerEntity)) return;

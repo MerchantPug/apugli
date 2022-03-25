@@ -1,4 +1,4 @@
-package io.github.merchantpug.apugli.mixin;
+package io.github.merchantpug.apugli.mixin.fabric;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;

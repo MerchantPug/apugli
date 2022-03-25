@@ -13,7 +13,6 @@
     "BlockItemMixin",
     "BoneMealItemMixin",
     "BrewingStandBlockEntityAccessor",
-    "BucketItemAccessor",
     "CooldownPowerAccessor",
     "EnchantmentHelperMixin",
     "EntityMixin",
