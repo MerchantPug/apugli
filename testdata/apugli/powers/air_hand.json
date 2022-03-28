@@ -1,0 +1,8 @@
+{
+  "type": "apugli:modify_equipped_item_render",
+  "slot": "MAINHAND",
+  "stack": {
+    "item": "minecraft:air"
+  },
+  "override": true
+}

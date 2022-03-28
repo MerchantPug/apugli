@@ -2,6 +2,7 @@ package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.power.*;
@@ -15,6 +16,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
@@ -47,6 +50,10 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Shadow public int maxHurtTime;
 
     @Shadow protected abstract void initDataTracker();
+
+    @Shadow public abstract ItemStack getOffHandStack();
+
+    @Shadow public abstract ItemStack getMainHandStack();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -139,7 +146,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
-    private int replaceLevelOfSouLSpeed(int i) {
+    private int replaceLevelOfSoulSpeed(int i) {
         return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, i);
     }
 
@@ -174,6 +181,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
+        if (this.isDead()) return;
+        PowerHolderComponent.KEY.get(this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (apugli_framesOnGround > 4) {
@@ -192,9 +201,10 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3d movementInput, CallbackInfo ci) {
+        if (this.isDead()) return;
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
-            if (this.world.isClient) {
+            if (!this.world.isClient) {
                 if (this.apugli_framesOnGround <= 4) {
                     if (this.apugli_framesOnGround == 0) {
                         if (this.age % bunnyHopPower.tickRate == 0) {

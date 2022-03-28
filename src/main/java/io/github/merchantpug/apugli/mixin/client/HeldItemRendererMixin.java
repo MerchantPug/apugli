@@ -17,10 +17,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 @Mixin(HeldItemRenderer.class)
@@ -31,36 +33,39 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void renderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light);
 
-    @Shadow private float prevEquipProgressMainHand;
-
-    @Shadow private float equipProgressMainHand;
-
-    @Inject(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void renderModifiedItemFirstPersonMainhand(float tickDelta, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, ClientPlayerEntity player, int light, CallbackInfo ci, float f, Hand hand, float g, HeldItemRenderer.HandRenderType handRenderType, float j, float k) {
-        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class);
-        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.slot == EquipmentSlot.MAINHAND)) {
+    @Redirect(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 0))
+    private void renderModifiedItemFirstPersonMainhand(HeldItemRenderer instance, AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().filter(power -> power.slot == EquipmentSlot.MAINHAND).collect(Collectors.toList());
+        if (modifyEquippedItemRenderPowers.size() == 0) {
+            this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+        } else {
             modifyEquippedItemRenderPowers.forEach(power -> {
-                float handSwingProgress = hand == Hand.MAIN_HAND ? f : 0.0F;
-                float equipProgress = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressMainHand, this.equipProgressMainHand);
-                if (power.slot == EquipmentSlot.MAINHAND && this.mainHand.isEmpty() && !power.shouldOverride() || power.slot == EquipmentSlot.MAINHAND && power.shouldOverride()) this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, handSwingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                if (this.mainHand.isEmpty() && !power.shouldOverride() && !power.stack.isEmpty() || power.shouldOverride()) {
+                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                }
             });
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(ModifyEquippedItemRenderPower::shouldOverride) || this.mainHand.isEmpty() && !modifyEquippedItemRenderPowers.isEmpty()) {
-                vertexConsumers.draw();
-                ci.cancel();
+            if (modifyEquippedItemRenderPowers.stream().allMatch(power -> power.stack.isEmpty() && !power.shouldOverride()) && this.mainHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, Hand.MAIN_HAND, swingProgress, ItemStack.EMPTY, equipProgress, matrices, vertexConsumers, light);
+            }
+            if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.mainHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
             }
         }
     }
 
-    @Inject(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void renderModifiedItemFirstPersonOffhand(float tickDelta, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, ClientPlayerEntity player, int light, CallbackInfo ci, float f, Hand hand, float g, float l, float m) {
-        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class);
-        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.slot == EquipmentSlot.OFFHAND)) {
+    @Redirect(method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderFirstPersonItem(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 1))
+    private void renderModifiedItemFirstPersonOffhand(HeldItemRenderer instance, AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().filter(power -> power.slot == EquipmentSlot.OFFHAND).collect(Collectors.toList());
+        if (modifyEquippedItemRenderPowers.size() == 0) {
+            this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+        } else {
             modifyEquippedItemRenderPowers.forEach(power -> {
-                if (power.slot == EquipmentSlot.OFFHAND && this.offHand.isEmpty() && !power.shouldOverride() || power.slot == EquipmentSlot.OFFHAND && power.shouldOverride()) this.renderFirstPersonItem(player, tickDelta, g, Hand.OFF_HAND, l, power.stack, m, matrices, vertexConsumers, light);
+                if ((this.offHand.isEmpty() && !power.shouldOverride() || power.shouldOverride()) && !power.stack.isEmpty()) {
+                    this.renderFirstPersonItem(player, tickDelta, pitch, Hand.OFF_HAND, swingProgress, power.stack, equipProgress, matrices, vertexConsumers, light);
+                }
             });
-            if (modifyEquippedItemRenderPowers.stream().anyMatch(ModifyEquippedItemRenderPower::shouldOverride) || this.offHand.isEmpty() && !modifyEquippedItemRenderPowers.isEmpty()) {
-                vertexConsumers.draw();
-                ci.cancel();
+            if (modifyEquippedItemRenderPowers.stream().noneMatch(ModifyEquippedItemRenderPower::shouldOverride) && !this.offHand.isEmpty()) {
+                this.renderFirstPersonItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
             }
         }
     }

@@ -21,7 +21,7 @@
             "saturation": 0.6
           },
           {
-            "type": "apugli:swing_hand",
+            "type": "apoli:swing_hand",
             "hand": "MAIN_HAND"
           },
           {
@@ -69,7 +69,7 @@
             "saturation": 0.6
           },
           {
-            "type": "apugli:swing_hand",
+            "type": "apoli:swing_hand",
             "hand": "MAIN_HAND"
           },
           {
@@ -126,7 +126,7 @@
             "saturation": 0.6
           },
           {
-            "type": "apugli:swing_hand",
+            "type": "apoli:swing_hand",
             "hand": "MAIN_HAND"
           },
           {

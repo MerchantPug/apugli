@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.ActionOnEquipPower;
 import io.github.merchantpug.apugli.power.AerialAffinityPower;
 import io.github.merchantpug.apugli.power.CustomDeathSoundPower;
@@ -40,7 +39,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         List<CustomHurtSoundPower> powers = PowerHolderComponent.getPowers(this, CustomHurtSoundPower.class);
         if (powers.isEmpty()) return;
         if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) cir.cancel();
-        powers.forEach(power -> power.playDeathSound(this));
+        powers.forEach(power -> power.playHurtSound(this));
         cir.cancel();
     }
 

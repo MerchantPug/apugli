@@ -1,0 +1,17 @@
+{
+  "type": "apugli:modify_block_placed",
+  "block_states": [
+    "minecraft:cake[bites=1]",
+    "minecraft:cake[bites=4]"
+  ],
+  "block_action": {
+    "type": "apoli:execute_command",
+    "command": "/playsound minecraft:entity.ghast.hurt master @p ~ ~ ~"
+  },
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:campfire"
+    }
+  }
+}

@@ -22,7 +22,10 @@ public class HoverPower extends ResourcePower implements Active {
     private Key key;
     private final boolean decreaseWhileUsing;
     private final int tickRate;
+    private final int rechargeAmount;
+    private final int rechargeRate;
     private final int timeUntilRecharge;
+    private final boolean rechargeWhileInactive;
 
     protected boolean isInUse;
     protected long lastUseTime;
@@ -39,7 +42,10 @@ public class HoverPower extends ResourcePower implements Active {
                         .add("max_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("decrease_while_using", SerializableDataTypes.BOOLEAN, true)
                         .add("tick_rate", SerializableDataTypes.INT, 1)
-                        .add("time_until_recharge", SerializableDataTypes.INT, 15)
+                        .add("time_until_recharge", SerializableDataTypes.INT, 10)
+                        .add("recharge_amount", SerializableDataTypes.INT, 2)
+                        .add("recharge_while_inactive", SerializableDataTypes.BOOLEAN, false)
+                        .add("recharge_rate", SerializableDataTypes.INT, 1)
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 data ->
                         (type, entity) -> {
@@ -52,7 +58,10 @@ public class HoverPower extends ResourcePower implements Active {
                                         (ActionFactory<Entity>.Instance)data.get("max_action"),
                                         data.getBoolean("decrease_while_using"),
                                         data.getInt("tick_rate"),
-                                        data.getInt("time_until_recharge"));
+                                        data.get("recharge_amount"),
+                                        data.getInt("recharge_rate"),
+                                        data.getInt("time_until_recharge"),
+                                        data.getBoolean("recharge_while_inactive"));
                                 power.setKey((Active.Key)data.get("key"));
                                 return power;
                         })
@@ -70,35 +79,37 @@ public class HoverPower extends ResourcePower implements Active {
             }
             this.lastUseTime = entity.world.getTime();
             this.isInUse = true;
-            PowerHolderComponent.syncPower(entity, this.getType());
         }
     }
 
     @Override
     public void tick() {
+        if (!rechargeWhileInactive && !isActive()) return;
         if (this.lastUseTime != entity.world.getTime()) {
             isInUse = false;
             PowerHolderComponent.syncPower(entity, this.getType());
         }
         if (decreaseWhileUsing && !isInUse && rechargeTimer < timeUntilRecharge) {
-            if (entity.isOnGround()) {
+            if (entity.isOnGround() || entity.hasVehicle()) {
                 rechargeTimer += 1;
             } else {
                 rechargeTimer = 0;
             }
             PowerHolderComponent.syncPower(entity, this.getType());
         }
-        if (rechargeTimer == timeUntilRecharge) {
-            rechargeTimer += 1;
-            this.setValue(this.getMax());
+        if (rechargeTimer == timeUntilRecharge && entity.age % rechargeRate == 0) {
+            if (this.getValue() != this.getMax()) {
+                this.setValue(Math.min(this.getValue() + this.rechargeAmount, this.getMax()));
+            } else {
+                rechargeTimer += 1;
+            }
             PowerHolderComponent.syncPower(entity, this.getType());
         }
     }
 
     public boolean canUse() {
-        return this.getValue() > this.getMin() && isActive() && !entity.isClimbing() && !entity.isSwimming() && !entity.isFallFlying();
+        return this.getValue() > this.getMin() && this.isActive() && !entity.isClimbing() && !entity.isTouchingWater() && !entity.isFallFlying() && !entity.hasVehicle();
     }
-
 
     @Override
     public NbtElement toTag() {
@@ -129,11 +140,14 @@ public class HoverPower extends ResourcePower implements Active {
         this.key = key;
     }
 
-    public HoverPower(PowerType<?> type, LivingEntity entity, HudRender hudRender, int startValue, int min, int max, Consumer<Entity> actionOnMin, Consumer<Entity> actionOnMax, boolean decreaseWhileUsing, int tickRate, int timeUntilRecharge) {
+    public HoverPower(PowerType<?> type, LivingEntity entity, HudRender hudRender, int startValue, int min, int max, Consumer<Entity> actionOnMin, Consumer<Entity> actionOnMax, boolean decreaseWhileUsing, int tickRate, int rechargeAmount, int rechargeRate, int timeUntilRecharge, boolean rechargeWhileInactive) {
         super(type, entity, hudRender, startValue, min, max, actionOnMin, actionOnMax);
         this.decreaseWhileUsing = decreaseWhileUsing;
         this.tickRate = tickRate;
+        this.rechargeAmount = rechargeAmount;
+        this.rechargeRate = rechargeRate;
         this.timeUntilRecharge = timeUntilRecharge;
-        this.setTicking();
+        this.rechargeWhileInactive = rechargeWhileInactive;
+        this.setTicking(true);
     }
 }

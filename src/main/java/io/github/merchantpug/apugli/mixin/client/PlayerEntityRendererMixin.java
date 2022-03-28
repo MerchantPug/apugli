@@ -61,6 +61,16 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)
     private static void setArmPoseWhenModifiedItem(AbstractClientPlayerEntity player, Hand hand, CallbackInfoReturnable<BipedEntityModel.ArmPose> cir) {
-        if (PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class).stream().anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.stack.isEmpty()))) cir.setReturnValue(BipedEntityModel.ArmPose.EMPTY);
+        if (PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class)
+                .stream()
+                .anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.shouldOverride() && !power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.shouldOverride() && !power.stack.isEmpty()))) {
+            cir.setReturnValue(BipedEntityModel.ArmPose.ITEM);
+        }
+
+        if (PowerHolderComponent.getPowers(player, ModifyEquippedItemRenderPower.class)
+                .stream()
+                .anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.stack.isEmpty()))) {
+            cir.setReturnValue(BipedEntityModel.ArmPose.EMPTY);
+        }
     }
 }

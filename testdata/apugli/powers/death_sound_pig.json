@@ -1,4 +1,10 @@
 {
   "type": "ope:custom_death_sound",
-  "sound": "minecraft:entity.pig.death"
+  "sounds": [
+    {
+      "sound": "minecraft:entity.pig.death",
+      "weight": 5
+    },
+    "minecraft:entity.pig.hurt"
+  ]
 }

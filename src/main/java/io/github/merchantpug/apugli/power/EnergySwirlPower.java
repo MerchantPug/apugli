@@ -6,8 +6,6 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.merchantpug.apugli.Apugli;
-import io.github.merchantpug.apugli.util.ApugliDataTypes;
-import io.github.merchantpug.apugli.util.PlayerModelType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 

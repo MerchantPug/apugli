@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BeehiveBlockEntity.class)
 public class BeehiveBlockEntityMixin {
-    @Inject(method = "angerBees", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BeehiveBlockEntity;tryReleaseBee(Lnet/minecraft/block/BlockState;Lnet/minecraft/block/entity/BeehiveBlockEntity$BeeState;)Ljava/util/List;", shift = At.Shift.AFTER), cancellable = true)
+    @Inject(method = "angerBees", at = @At(value = "HEAD"), cancellable = true)
     private void dontAngerBees(PlayerEntity player, BlockState state, BeehiveBlockEntity.BeeState beeState, CallbackInfo ci) {
         if (PowerHolderComponent.hasPower(player, PreventBeeAngerPower.class)) {
             ci.cancel();

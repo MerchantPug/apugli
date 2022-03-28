@@ -1,6 +1,6 @@
 package io.github.merchantpug.apugli.mixin;
+
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.power.AllowAnvilEnchantPower;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;

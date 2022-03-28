@@ -2,7 +2,7 @@ package io.github.merchantpug.apugli.mixin;
 
 import io.github.apace100.apoli.power.factory.condition.ItemConditions;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.merchantpug.nibbles.access.ItemStackAccess;
+import io.github.merchantpug.apugli.access.ItemStackAccess;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

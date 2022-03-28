@@ -59,11 +59,10 @@ public class ModifyEnchantmentDamageDealtPower extends ValueModifyingPower {
                         .add("base_value", SerializableDataTypes.FLOAT)
                         .add("damage_condition", ApoliDataTypes.DAMAGE_CONDITION, null)
                         .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
+                        .add("target_condition", ApoliDataTypes.ENTITY_CONDITION, null)
                         .add("modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
                         .add("modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
-                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
-                        .add("self_action", ApoliDataTypes.ENTITY_ACTION, null)
-                        .add("attacker_action", ApoliDataTypes.ENTITY_ACTION, null),
+                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null),
                 data ->
                         (type, player) -> {
                             ModifyEnchantmentDamageDealtPower power = new ModifyEnchantmentDamageDealtPower(type, player,
