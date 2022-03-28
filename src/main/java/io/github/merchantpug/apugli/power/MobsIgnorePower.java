@@ -8,7 +8,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.merchantpug.apugli.Apugli;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import oshi.util.tuples.Pair;
+import net.minecraft.util.Pair;
 
 import java.util.function.Predicate;
 
