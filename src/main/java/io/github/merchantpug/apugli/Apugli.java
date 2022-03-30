@@ -1,6 +1,8 @@
 package io.github.merchantpug.apugli;
 
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.merchantpug.apugli.networking.ApugliPacketsC2S;
 import io.github.merchantpug.apugli.registry.*;
 import io.github.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import io.github.merchantpug.apugli.registry.action.ApugliBlockActions;
@@ -13,10 +15,14 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
 	public static final Logger LOGGER = LogManager.getLogger(Apugli.class);
 	public static String VERSION = "";
+	public static Set<Active.Key> currentlyUsedKeys = new HashSet<>();
 
 	@Override
 	public void onInitialize() {
@@ -41,6 +47,8 @@ public class Apugli implements ModInitializer {
 
 		ApugliEntityConditions.register();
 		ApugliPowerFactories.register();
+
+		ApugliPacketsC2S.register();
 
 		NamespaceAlias.addAlias("ope", MODID);
 	}

@@ -2,6 +2,8 @@ package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;
+import io.github.merchantpug.apugli.entity.feature.EntityTextureOverlayFeatureRenderer;
+import io.github.merchantpug.apugli.power.EntityTextureOverlayPower;
 import io.github.merchantpug.apugli.power.SetTexturePower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,7 +35,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void construct(EntityRendererFactory.Context ctx, M model, float shadowRadius, CallbackInfo ci) {
-        this.addFeature(new EnergySwirlOverlayFeatureRenderer(this));
+        this.addFeature(new EnergySwirlOverlayFeatureRenderer<>(this));
+        this.addFeature(new EntityTextureOverlayFeatureRenderer<>(this));
     }
 
     @ModifyVariable(method = "getRenderLayer", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getTexture(Lnet/minecraft/entity/Entity;)Lnet/minecraft/util/Identifier;"))
