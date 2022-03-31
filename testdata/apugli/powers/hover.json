@@ -89,10 +89,20 @@
     },
     "interval": 1,
     "condition": {
-      "type": "apoli:resource",
-      "resource": "*:*_recharge_condition_resource",
-      "comparison": "==",
-      "compare_to": 10
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apoli:power_active",
+          "power": "*:*_hover",
+          "inverted": true
+        },
+        {
+          "type": "apoli:resource",
+          "resource": "*:*_recharge_condition_resource",
+          "comparison": "==",
+          "compare_to": 10
+        }
+      ]
     }
   },
   "recharge_condition_increase": {

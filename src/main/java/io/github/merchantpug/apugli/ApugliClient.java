@@ -8,6 +8,7 @@ import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.networking.ApugliPacketsC2S;
 import io.github.merchantpug.apugli.networking.ApugliPacketsS2C;
 import io.github.merchantpug.apugli.registry.condition.ApugliEntityConditions;
+import io.github.merchantpug.apugli.util.ApugliClassDataClient;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Hash;
 import net.fabricmc.api.ClientModInitializer;
@@ -32,6 +33,7 @@ public class ApugliClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ApugliPacketsS2C.register();
+		ApugliClassDataClient.registerAll();
 
 		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> keysToCheck.clear()));
 
