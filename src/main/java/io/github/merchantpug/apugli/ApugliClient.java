@@ -14,12 +14,14 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
 public class ApugliClient implements ClientModInitializer {
@@ -30,6 +32,8 @@ public class ApugliClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ApugliPacketsS2C.register();
+
+		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> keysToCheck.clear()));
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
 			if(tick.player != null) {
@@ -56,7 +60,9 @@ public class ApugliClient implements ClientModInitializer {
 				});
 				lastKeyBindingStates = currentKeyBindingStates;
 				if (pressedKeys.size() > 0) {
-					syncActiveKeys(pressedKeys, false);
+					if (!pressedKeys.equals(Apugli.currentlyUsedKeys)) {
+						syncActiveKeys(pressedKeys, false);
+					}
 				} else {
 					syncActiveKeys(pressedKeys, !hasClearedKeySync);
 				}

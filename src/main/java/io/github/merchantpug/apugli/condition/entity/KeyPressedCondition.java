@@ -1,7 +1,6 @@
 package io.github.merchantpug.apugli.condition.entity;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.merchantpug.apugli.Apugli;
@@ -13,7 +12,7 @@ public class KeyPressedCondition {
         if (entity.world.isClient && ApugliClient.keysToCheck.stream().noneMatch(key -> key.equals(data.get("key")))) {
             ApugliClient.keysToCheck.add(data.get("key"));
         }
-        return Apugli.currentlyUsedKeys.stream().anyMatch(key -> key.key.equals(((Active.Key)data.get("key")).key) && key.continuous == ((Active.Key)data.get("key")).continuous);
+        return Apugli.currentlyUsedKeys.stream().anyMatch(key -> key.equals(data.get("key")));
     }
 
     public static ConditionFactory<Entity> getCondition() {
