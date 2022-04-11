@@ -5,12 +5,10 @@ import io.github.merchantpug.apugli.access.MobEntityAccess;
 import io.github.merchantpug.apugli.behavior.MobBehavior;
 import io.github.merchantpug.apugli.power.MobsIgnorePower;
 import io.github.merchantpug.apugli.power.ModifyMobBehaviorPower;
-import io.github.merchantpug.apugli.util.MobBehaviorUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,9 +28,9 @@ public abstract class MobEntityMixin extends LivingEntity implements MobEntityAc
         super(type, level);
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void construct(EntityType entityType, World world, CallbackInfo ci) {
-        MobBehaviorUtil.mobEntityMap.add((MobEntity)(Object)this);
+    @Inject(method = "tickMovement", at = @At("HEAD"))
+    private void pacifyAngerable(CallbackInfo ci) {
+
     }
 
     @ModifyVariable(method = "setTarget", at = @At("HEAD"))
@@ -42,12 +40,9 @@ public abstract class MobEntityMixin extends LivingEntity implements MobEntityAc
         }
 
         List<ModifyMobBehaviorPower> modifyMobBehaviorPowers = PowerHolderComponent.getPowers(target, ModifyMobBehaviorPower.class);
-        boolean shouldMakePassive = modifyMobBehaviorPowers.stream().anyMatch(power -> power.doesApply((MobEntity)(Object)this) && power.getMobBehavior().isPassive((MobEntity)(Object)this, target));
+        boolean shouldMakePassive = modifyMobBehaviorPowers.stream().anyMatch(power -> power.doesApply(target, (MobEntity)(Object)this) && power.getMobBehavior().isPassive((MobEntity)(Object)this, target));
 
         if (shouldMakePassive) {
-            if (this instanceof Angerable) {
-                ((Angerable)this).stopAnger();
-            }
             return null;
         }
 

@@ -18,14 +18,12 @@ public class FleeMobBehavior extends MobBehavior {
     private final float fleeDistance;
     private final double slowSpeed;
     private final double fastSpeed;
-    private final boolean isPassive;
 
-    public FleeMobBehavior(int priority, float fleeDistance, double slowSpeed, double fastSpeed, boolean isPassive) {
+    public FleeMobBehavior(int priority, float fleeDistance, double slowSpeed, double fastSpeed) {
         super(priority);
         this.fleeDistance = fleeDistance;
         this.slowSpeed = slowSpeed;
         this.fastSpeed = fastSpeed;
-        this.isPassive = isPassive;
     }
 
     @Override
@@ -34,21 +32,20 @@ public class FleeMobBehavior extends MobBehavior {
         dataInstance.set("distance", this.fleeDistance);
         dataInstance.set("slow_speed", this.slowSpeed);
         dataInstance.set("fast_speed", this.fastSpeed);
-        dataInstance.set("passive", this.isPassive);
     }
 
     @Override
     public void initGoals(MobEntity mob) {
         if (!(mob instanceof PathAwareEntity)) return;
-        Goal fleeGoal = new FleeEntityGoal<>((PathAwareEntity)mob, LivingEntity.class, fleeDistance, this.slowSpeed, this.fastSpeed, entity ->
-                mobRelatedPredicates.test(mob) && entityRelatedPredicates.test(entity));
+        Goal fleeGoal = new FleeEntityGoal<>((PathAwareEntity) mob, LivingEntity.class, fleeDistance, this.slowSpeed, this.fastSpeed, entity ->
+                mobRelatedPredicates.test(new Pair<>(entity, mob)) && entityRelatedPredicates.test(entity));
         ((MobEntityAccessor)mob).getGoalSelector().add(this.priority, fleeGoal);
         ((MobEntityAccess)mob).getModifiedTargetSelectorGoals().add(new Pair<>(this, fleeGoal));
     }
 
     @Override
     public boolean isPassive(MobEntity mob, LivingEntity target) {
-        return this.isPassive;
+        return true;
     }
 
     public static BehaviorFactory<?> getFactory() {
@@ -57,8 +54,7 @@ public class FleeMobBehavior extends MobBehavior {
                         .add("priority", SerializableDataTypes.INT, 0)
                         .add("distance", SerializableDataTypes.FLOAT)
                         .add("slow_speed", SerializableDataTypes.DOUBLE)
-                        .add("fast_speed", SerializableDataTypes.DOUBLE)
-                        .add("passive", SerializableDataTypes.BOOLEAN, true),
-                data -> new FleeMobBehavior(data.getInt("priority"), data.getFloat("distance"), data.getDouble("slow_speed"), data.getDouble("fast_speed"), data.getBoolean("passive")));
+                        .add("fast_speed", SerializableDataTypes.DOUBLE),
+                data -> new FleeMobBehavior(data.getInt("priority"), data.getFloat("distance"), data.getDouble("slow_speed"), data.getDouble("fast_speed")));
     }
 }

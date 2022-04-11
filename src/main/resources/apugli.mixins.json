@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
+    "AngerableMixin",
     "AnimalEntityMixin",
     "AnvilScreenHandlerMixin",
     "BeehiveBlockEntityAccessor",
@@ -15,6 +16,7 @@
     "BrewingStandBlockEntityAccessor",
     "BucketItemAccessor",
     "EnchantmentHelperMixin",
+    "EndermanEntityTeleportTowardsPlayerGoalMixin",
     "EntityMixin",
     "ExperienceOrbEntityMixin",
     "ExplosionMixin",
@@ -31,6 +33,7 @@
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
+    "ServerWorldAccessor",
     "StatusEffectMixin",
     "TemptGoalMixin"
   ],

@@ -5,20 +5,18 @@ import io.github.merchantpug.apugli.access.MobEntityAccess;
 import io.github.merchantpug.apugli.mixin.MobEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 import java.util.function.Predicate;
 
 public class MobBehavior {
     private BehaviorFactory<?> factory;
 
     protected int priority;
-    protected Predicate<LivingEntity> mobRelatedPredicates;
+    protected Predicate<Pair<LivingEntity, LivingEntity>> mobRelatedPredicates;
     protected Predicate<LivingEntity> entityRelatedPredicates;
 
     @Nullable public LivingEntity entity;
@@ -61,12 +59,12 @@ public class MobBehavior {
 
     }
 
-    public void addMobRelatedPredicate(Predicate<LivingEntity> predicate) {
-        mobRelatedPredicates = predicate;
+    public void addMobRelatedPredicate(Predicate<Pair<LivingEntity, LivingEntity>> predicate) {
+        mobRelatedPredicates = mobRelatedPredicates == null ? predicate : mobRelatedPredicates.and(predicate);
     }
 
     public void addEntityRelatedPredicate(Predicate<LivingEntity> predicate) {
-        entityRelatedPredicates = predicate;
+        entityRelatedPredicates = entityRelatedPredicates == null ? predicate : entityRelatedPredicates.and(predicate);
     }
 
     protected void setToDataInstance(SerializableData.Instance dataInstance) {

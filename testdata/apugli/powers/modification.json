@@ -1,12 +1,20 @@
 {
   "type": "apugli:modify_mob_behavior",
-  "entity_condition": {
-    "type": "apoli:entity_type",
-    "entity_type": "minecraft:creeper"
-  },
   "bientity_condition": {
-    "type": "apoli:attacker",
-    "inverted": true
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apoli:target_condition",
+        "condition": {
+          "type": "apoli:entity_type",
+          "entity_type": "minecraft:creeper"
+        }
+      },
+      {
+        "type": "apoli:attacker",
+        "inverted": true
+      }
+    ]
   },
   "behavior": {
     "type": "apugli:flee",
