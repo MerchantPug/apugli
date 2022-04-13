@@ -1,0 +1,12 @@
+{
+  "powers": [
+    "apugli:footstep_sound_pig",
+    "apugli:death_sound_pig",
+    "apugli:hurt_sound_pig"
+  ],
+  "icon": {
+    "item": "minecraft:music_disc_stal"
+  },
+  "impact": 0,
+  "order": 40
+}

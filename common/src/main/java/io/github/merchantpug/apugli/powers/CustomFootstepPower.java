@@ -7,6 +7,7 @@ import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.util.ApugliDataTypes;
+import io.github.merchantpug.apugli.util.SoundEventPitchVolume;
 import io.github.merchantpug.apugli.util.SoundEventWeight;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,8 +72,11 @@ public class CustomFootstepPower extends Power {
             r -= sounds.get(index).weight;
             if (r <= 0.0) break;
         }
-        SoundEvent footstepSound = sounds.get(index).soundEvent;
 
-        entity.playSound(footstepSound, this.volume, this.pitch);
+        sounds.get(index).soundEventList.forEach(soundEventPitchVolume -> {
+            float volume = Float.isNaN(soundEventPitchVolume.volume) ? this.volume : soundEventPitchVolume.volume;
+            float pitch = Float.isNaN(soundEventPitchVolume.pitch) ? this.pitch : soundEventPitchVolume.pitch;
+            entity.playSound(soundEventPitchVolume.soundEvent, volume, pitch);
+        });
     }
 }

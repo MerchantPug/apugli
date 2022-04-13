@@ -6,7 +6,8 @@
     "apugli:ender_chest",
     "apugli:enchanto",
     "apugli:prevent_breeding",
-    "apugli:label"
+    "apugli:label",
+    "apugli:fire_projectile"
   ],
   "icon": {
     "item": "minecraft:diamond"

@@ -1,8 +1,9 @@
 package io.github.merchantpug.apugli.util;
 
-import net.minecraft.sound.SoundEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SoundEventWeight {
-    public SoundEvent soundEvent;
+    public List<SoundEventPitchVolume> soundEventList = new ArrayList<>();
     public int weight;
 }

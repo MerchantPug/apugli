@@ -37,9 +37,9 @@ public class FireProjectileAction {
         if (firedEntity instanceof ProjectileEntity) {
             if (firedEntity instanceof ExplosiveProjectileEntity) {
                 ExplosiveProjectileEntity abstractHurtingProjectile = (ExplosiveProjectileEntity) firedEntity;
-                abstractHurtingProjectile.posX = rotationVector.x * data.getDouble("speed");
-                abstractHurtingProjectile.posY = rotationVector.y * data.getDouble("speed");
-                abstractHurtingProjectile.posZ = rotationVector.z * data.getDouble("speed");
+                abstractHurtingProjectile.posX = rotationVector.x * data.getFloat("speed");
+                abstractHurtingProjectile.posY = rotationVector.y * data.getFloat("speed");
+                abstractHurtingProjectile.posZ = rotationVector.z * data.getFloat("speed");
             }
 
             ProjectileEntity projectile = (ProjectileEntity) firedEntity;
@@ -52,10 +52,10 @@ public class FireProjectileAction {
 
             Vec3d vec3d = new Vec3d(f, g, h).normalize()
                     .add(
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence"),
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence"),
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence")
-                    ).multiply(data.getDouble("speed"));
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence"),
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence"),
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence")
+                    ).multiply(data.getFloat("speed"));
             firedEntity.setVelocity(vec3d);
             Vec3d entityVelo = entity.getVelocity();
             firedEntity.setVelocity(firedEntity.getVelocity().add(entityVelo.x, entity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
