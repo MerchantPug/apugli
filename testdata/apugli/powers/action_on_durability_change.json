@@ -2,7 +2,10 @@
   "type": "apugli:action_on_durability_change",
   "slot": "mainhand",
   "item_condition": {
-    "type": "apoli:fireproof"
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:golden_hoe"
+    }
   },
   "increase_action": {
     "type": "apoli:explode",
