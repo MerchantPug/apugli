@@ -1,8 +1,0 @@
-{
-  "type": "ope:custom_hurt_sound",
-  "sound": {
-    "sound": "minecraft:entity.pig.hurt",
-    "pitch": 1.0
-  },
-  "pitch": 2.0
-}
