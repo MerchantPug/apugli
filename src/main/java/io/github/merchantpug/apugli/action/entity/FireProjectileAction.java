@@ -35,14 +35,13 @@ public class FireProjectileAction {
         Vec3d spawnPos = entity.getPos().add(0.0D, entity.getStandingEyeHeight(), 0.0D).add(rotationVector);
         firedEntity.refreshPositionAndAngles(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), entity.getPitch(), entity.getYaw());
 
-        if (firedEntity instanceof ProjectileEntity) {
+        if (firedEntity instanceof ProjectileEntity projectile) {
             if (firedEntity instanceof ExplosiveProjectileEntity abstractHurtingProjectile) {
-                abstractHurtingProjectile.powerX = rotationVector.x * data.getDouble("speed");
-                abstractHurtingProjectile.powerY = rotationVector.y * data.getDouble("speed");
-                abstractHurtingProjectile.powerZ = rotationVector.z * data.getDouble("speed");
+                abstractHurtingProjectile.powerX = rotationVector.x * data.getFloat("speed");
+                abstractHurtingProjectile.powerY = rotationVector.y * data.getFloat("speed");
+                abstractHurtingProjectile.powerZ = rotationVector.z * data.getFloat("speed");
             }
 
-            ProjectileEntity projectile = (ProjectileEntity) firedEntity;
             projectile.setOwner(entity);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0.0F, data.getFloat("speed"), data.getFloat("divergence"));
         } else {
@@ -52,10 +51,10 @@ public class FireProjectileAction {
 
             Vec3d vec3d = new Vec3d(f, g, h).normalize()
                     .add(
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence"),
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence"),
-                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getDouble("divergence")
-                    ).multiply(data.getDouble("speed"));
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence"),
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence"),
+                            entity.getRandom().nextGaussian() * 0.007499999832361937D * data.getFloat("divergence")
+                    ).multiply(data.getFloat("speed"));
             firedEntity.setVelocity(vec3d);
             Vec3d entityVelo = entity.getVelocity();
             firedEntity.setVelocity(firedEntity.getVelocity().add(entityVelo.x, entity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));

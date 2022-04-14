@@ -65,7 +65,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         return this.entity;
     }
 
-    @Inject(method = "damage(ILjava/util/Random;Lnet/minecraft/server/network/ServerPlayerEntity;)Z", at = @At(value = "RETURN", ordinal = 2))
+    @Inject(method = "damage(ILjava/util/Random;Lnet/minecraft/server/network/ServerPlayerEntity;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getDamage()I", ordinal = 1))
     private void executeActionOnDurabilityDecrease(int amount, Random random, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         PowerHolderComponent.getPowers(player, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChange::executeDecreaseAction);
     }

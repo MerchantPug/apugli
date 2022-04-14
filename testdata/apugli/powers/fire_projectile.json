@@ -1,0 +1,27 @@
+{
+  "type": "apoli:active_self",
+  "entity_action": {
+    "type": "apoli:and",
+    "actions": [
+      {
+        "type": "apoli:play_sound",
+        "sound": "minecraft:entity.ghast.warn"
+      },
+      {
+        "type": "apoli:delay",
+        "ticks": 15,
+        "action": {
+          "type": "apugli:fire_projectile",
+          "entity_type": "minecraft:fireball"
+        }
+      }
+    ]
+  },
+  "key": {
+    "key": "key.use"
+  },
+  "cooldown": 100,
+  "hud_render": {
+    "should_render": false
+  }
+}
