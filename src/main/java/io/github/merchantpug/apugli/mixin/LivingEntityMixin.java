@@ -182,6 +182,10 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (this.isDead()) return;
+        if (PowerHolderComponent.hasPower(this, HoverPower.class)) {
+            this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
+            this.fallDistance = 0.0F;
+        }
         PowerHolderComponent.KEY.get(this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);

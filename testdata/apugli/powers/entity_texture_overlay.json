@@ -1,0 +1,19 @@
+{
+  "type": "apoli:multiple",
+  "slim": {
+    "type": "apugli:entity_texture_overlay",
+    "texture_location": "apugli:alex.png",
+    "condition": {
+      "type": "apugli:player_model_type",
+      "model_type": "slim"
+    }
+  },
+  "default": {
+    "type": "apugli:entity_texture_overlay",
+    "texture_location": "apugli:steve.png",
+    "condition": {
+      "type": "apugli:player_model_type",
+      "model_type": "default"
+    }
+  }
+}
