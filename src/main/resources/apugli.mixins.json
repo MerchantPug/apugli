@@ -31,14 +31,14 @@
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectMixin",
-    "TemptGoalMixin"
+    "TemptGoalMixin",
+    "client.ArmorFeatureRendererAccessor",
+    "client.HeadFeatureRendererAccessor"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.ApoliClientAccessor",
     "client.ArmorFeatureRendererMixin",
-    "client.ArmorStandEntityRendererMixin",
-    "client.BipedEntityRendererMixin",
     "client.ClientPlayerEntityAccessor",
     "client.ClientWorldMixin",
     "client.EntityRendererMixin",
@@ -46,20 +46,12 @@
     "client.HeadFeatureRendererMixin",
     "client.HeldItemFeatureRendererMixin",
     "client.HeldItemRendererMixin",
-    "client.IllagerEntityRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.ParticleManagerAccessor",
     "client.ParticleManagerMixin",
     "client.ParticleMixin",
-    "client.PiglinEntityRendererMixin",
-    "client.PillagerEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
-    "client.SkeletonEntityRendererMixin",
-    "client.VillagerEntityRendererMixin",
-    "client.WanderingTraderEntityRendererMixin",
-    "client.WorldRendererMixin",
-    "client.ZombieBaseEntityRendererMixin",
-    "client.ZombieVillagerEntityRendererMixin"
+    "client.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

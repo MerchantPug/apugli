@@ -3,7 +3,7 @@
   "slot": "HEAD",
   "stack": {
     "item": "minecraft:player_head",
-    "tag": "{SkullOwner:MerchantPug}"
+    "tag": "{SkullOwner:\"MerchantPug\"}"
   },
   "override": true
 }

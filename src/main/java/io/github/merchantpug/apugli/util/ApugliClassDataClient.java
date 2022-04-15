@@ -13,8 +13,5 @@ public class ApugliClassDataClient {
 
         featureRenderer.addMapping("energy_swirl_power_overlay", EnergySwirlOverlayFeatureRenderer.class);
         featureRenderer.addMapping("entity_texture_overlay", EntityTextureOverlayFeatureRenderer.class);
-        featureRenderer.addMapping("modified_armor", StackArmorFeatureRenderer.class);
-        featureRenderer.addMapping("modified_head", StackHeadFeatureRenderer.class);
-        featureRenderer.addMapping("modified_held_item", StackHeldItemFeatureRenderer.class);
     }
 }
