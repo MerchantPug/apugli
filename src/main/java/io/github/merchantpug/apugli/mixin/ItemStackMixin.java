@@ -5,6 +5,7 @@ import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.power.ActionOnDurabilityChange;
 import io.github.merchantpug.apugli.power.EdibleItemPower;
 import io.github.merchantpug.apugli.power.ModifyEnchantmentLevelPower;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -84,21 +85,26 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Unique
     protected SoundEvent eatSound;
 
+    @Inject(method = "copy", at = @At("RETURN"))
+    private void copyFoodComponent(CallbackInfoReturnable<ItemStack> cir) {
+        if (this.isItemStackFood()) {
+            ItemStackFoodComponentUtil.setStackFood(cir.getReturnValue(), this.stackFoodComponent, this.useAction, this.returnStack, this.eatSound);
+        }
+    }
+
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (this.isItemStackFood()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (user.canConsume(this.getItemStackFoodComponent().isAlwaysEdible())) {
                 user.setCurrentHand(hand);
-                cir.setReturnValue(TypedActionResult.consume(itemStack));
                 if (this.getItem() instanceof BucketItem) {
                     BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, ((BucketItemAccessor)this.getItem()).getFluid() == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
                     if (blockHitResult.getType() == HitResult.Type.BLOCK) {
                         cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
                     }
                 }
-            } else {
-                cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
+                cir.setReturnValue(TypedActionResult.consume(itemStack));
             }
         }
     }
@@ -107,12 +113,10 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (this.isItemStackFood()) {
             PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
-            ItemStack itemStack = user.eatFood(world, (ItemStack)(Object)this);
             if (this.getReturnStack() != null) {
-                cir.setReturnValue(user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : this.getReturnStack());
-            } else {
-                cir.setReturnValue(itemStack);
+                cir.setReturnValue(user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? user.eatFood(world, (ItemStack)(Object)this) : this.getReturnStack());
             }
+            cir.setReturnValue(user.eatFood(world, (ItemStack)(Object)this));
         }
     }
 
@@ -125,15 +129,8 @@ public abstract class ItemStackMixin implements ItemStackAccess {
 
     @Inject(method = "getMaxUseTime", at = @At("HEAD"), cancellable = true)
     private void getMaxUseTime(CallbackInfoReturnable<Integer> cir) {
-        if (isItemStackFood()) {
-            cir.setReturnValue(this.getItemStackFoodComponent().isSnack() ? 16 : 32);
-        }
-    }
-
-    @Inject(method = "isFood", at = @At("HEAD"), cancellable = true)
-    private void isFood(CallbackInfoReturnable<Boolean> cir) {
         if (this.isItemStackFood()) {
-            cir.setReturnValue(true);
+            cir.setReturnValue(this.getItemStackFoodComponent().isSnack() ? 16 : 32);
         }
     }
 

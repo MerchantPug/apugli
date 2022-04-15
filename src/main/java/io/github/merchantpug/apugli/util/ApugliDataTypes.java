@@ -8,9 +8,14 @@ import io.github.merchantpug.apugli.Apugli;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
@@ -20,6 +25,10 @@ import java.util.List;
 public class ApugliDataTypes {
     public static final SerializableDataType<PlayerModelType> PLAYER_MODEL_TYPE =
             SerializableDataType.enumValue(PlayerModelType.class);
+
+    public static final SerializableDataType<TagKey<ConfiguredStructureFeature<?, ?>>> STRUCTURE_TAG = SerializableDataType.tag(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+
+    public static final SerializableDataType<RegistryKey<ConfiguredStructureFeature<?, ?>>> STRUCTURE = SerializableDataType.registryKey(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
 
     public static final SerializableDataType<SoundEventPitchVolume> SOUND_EVENT_PITCH_VOLUME =
             SerializableDataType.compound(SoundEventPitchVolume.class, new SerializableData()

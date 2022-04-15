@@ -50,7 +50,7 @@ public class RaycastAction {
         Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
         Box entityBox = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
-        double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : entityDistance * entityDistance;
+        double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
         double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
         EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 

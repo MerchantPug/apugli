@@ -1,0 +1,35 @@
+{
+  "type": "apoli:multiple",
+  "breaker": {
+    "type": "apoli:modify_food"
+  },
+  "eat": {
+    "type": "apugli:edible_item",
+    "item_condition": {
+      "type": "apoli:ingredient",
+      "ingredient": {
+        "item": "minecraft:stick"
+      }
+    },
+    "food_component": {
+      "hunger": 1,
+      "saturation": 0.5,
+      "meat": false,
+      "always_edible": true,
+      "snack": true,
+      "effect": {
+        "effect": {
+          "effect": "minecraft:slowness",
+          "amplifier": 1,
+          "duration": 80
+        },
+        "chance": 0.8
+      }
+    },
+    "use_action": "eat",
+    "entity_action": {
+      "type": "apoli:execute_command",
+      "command": "say HMMM reusable food source!"
+    }
+  }
+}

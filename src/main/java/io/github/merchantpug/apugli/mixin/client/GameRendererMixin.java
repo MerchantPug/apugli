@@ -20,7 +20,7 @@ public abstract class GameRendererMixin implements SynchronousResourceReloader, 
     @Final
     private MinecraftClient client;
 
-    @ModifyVariable(method = "updateMovementFovMultiplier", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getSpeed()F"))
+    @ModifyVariable(method = "updateFovMultiplier", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getFovMultiplier()F"))
     private float modifyF(float f) {
         if (PowerHolderComponent.hasPower(this.client.getCameraEntity(), BunnyHopPower.class)) {
             f += PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).increasePerTick * PowerHolderComponent.getPowers(this.client.getCameraEntity(), BunnyHopPower.class).get(0).getValue() * 20;

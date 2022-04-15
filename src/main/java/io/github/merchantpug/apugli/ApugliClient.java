@@ -1,16 +1,12 @@
 package io.github.merchantpug.apugli;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.networking.ModPackets;
 import io.github.apace100.apoli.power.Active;
 import io.github.merchantpug.apugli.mixin.client.ApoliClientAccessor;
 import io.github.merchantpug.apugli.networking.ApugliPackets;
-import io.github.merchantpug.apugli.networking.ApugliPacketsC2S;
 import io.github.merchantpug.apugli.networking.ApugliPacketsS2C;
-import io.github.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import io.github.merchantpug.apugli.util.ApugliClassDataClient;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.Hash;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,7 +18,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
 public class ApugliClient implements ClientModInitializer {
@@ -45,8 +40,8 @@ public class ApugliClient implements ClientModInitializer {
 					if(!ApoliClientAccessor.getInitializedKeyBindingMap()) {
 						ApoliClientAccessor.setInitializedKeyBindingMap(true);
 						MinecraftClient client = MinecraftClient.getInstance();
-						for(int i = 0; i < client.options.keysAll.length; i++) {
-							ApoliClientAccessor.getIdToKeyBindingMap().put(client.options.keysAll[i].getTranslationKey(), client.options.keysAll[i]);
+						for(int i = 0; i < client.options.allKeys.length; i++) {
+							ApoliClientAccessor.getIdToKeyBindingMap().put(client.options.allKeys[i].getTranslationKey(), client.options.allKeys[i]);
 						}
 					}
 					KeyBinding keyBinding = ApoliClientAccessor.getIdToKeyBindingMap().get(key.key);

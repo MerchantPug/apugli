@@ -4,9 +4,9 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
-import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.power.*;
 import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -16,9 +16,13 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,7 +35,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
@@ -51,9 +54,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow protected abstract void initDataTracker();
 
-    @Shadow public abstract ItemStack getOffHandStack();
-
-    @Shadow public abstract ItemStack getMainHandStack();
+    @Shadow public abstract SoundEvent getEatSound(ItemStack stack);
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -61,7 +62,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Unique private final HashMap<Entity, Integer> hitsHashmap = new HashMap<>();
 
-    @Inject(method = "damage", at = @At(value = "HEAD"))
+    @Inject(method = "damage", at = @At("HEAD"))
     private void addToHits(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (this.world.isClient || source.getAttacker() == null || source.getAttacker().world.isClient || !(source.getAttacker() instanceof LivingEntity) || this.hurtTime > 0 && this.hurtTime != this.maxHurtTime) return;
         if (this.isDead() && !this.tryUseTotem(source) && hitsHashmap.containsKey(source.getAttacker())) {
@@ -87,7 +88,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
 
             for (ModifyEnchantmentDamageDealtPower power : damageDealtPowers) {
-                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)); i++) {
                     additionalValue[0] = PowerHolderComponent.modify(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class,
                             additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(thisAsLiving));
                 }
@@ -100,7 +101,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
         if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
             for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
-                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)); i++) {
                     additionalValue[0] = PowerHolderComponent.modify(this, ModifyEnchantmentDamageTakenPower.class,
                             additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(source.getAttacker()));
                 }
@@ -110,6 +111,20 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         hasModifiedDamage = originalValue +  additionalValue[0] != originalValue;
 
         return originalValue + additionalValue[0];
+    }
+
+    @Inject(method = "eatFood", at = @At("HEAD"), cancellable = true)
+    private void eatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+        if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
+            world.emitGameEvent(this, GameEvent.EAT, this.getCameraBlockPos());
+            world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
+            ItemStackFoodComponentUtil.applyFoodEffects(stack, world, (LivingEntity)(Object)this);
+            if (!((LivingEntity)(Object)this instanceof PlayerEntity) || !((PlayerEntity)(Object)this).getAbilities().creativeMode) {
+                stack.decrement(1);
+            }
+            this.emitGameEvent(GameEvent.EAT);
+            cir.setReturnValue(stack);
+        }
     }
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)

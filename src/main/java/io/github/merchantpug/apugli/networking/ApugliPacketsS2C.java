@@ -3,7 +3,7 @@ package io.github.merchantpug.apugli.networking;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
-import io.github.merchantpug.apugli.util.ItemStackFoodComponentAPI;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -84,7 +84,7 @@ public class ApugliPacketsS2C {
                 if (usesEquipmentSlot) {
                     EquipmentSlot equipmentSlot = EquipmentSlot.byName(finalEquipmentSlotId);
                     ItemStack stack = ((PlayerEntity)entity).getEquippedStack(equipmentSlot);
-                    ItemStackFoodComponentAPI.removeStackFood(stack);
+                    ItemStackFoodComponentUtil.removeStackFood(stack);
                 }
                 if (usesInventoryIndex) {
                     DefaultedList<ItemStack> inventory;
@@ -94,7 +94,7 @@ public class ApugliPacketsS2C {
                         case OFFHAND -> inventory = ((PlayerEntity) entity).getInventory().offHand;
                         default -> throw new IllegalStateException("Unexpected value: " + finalInventoryLocation);
                     }
-                    ItemStackFoodComponentAPI.removeStackFood(inventory.get(finalInventoryIndex));
+                    ItemStackFoodComponentUtil.removeStackFood(inventory.get(finalInventoryIndex));
                 }
             }
         });

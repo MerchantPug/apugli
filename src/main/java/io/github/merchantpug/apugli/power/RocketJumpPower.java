@@ -91,7 +91,6 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 Vec3d eyePosition = entity.getCameraPosVec(0);
                 Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
                 Vec3d traceEnd = eyePosition.add(lookVector);
-                Box box = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
                 RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
                 BlockHitResult blockHitResult = entity.world.raycast(context);
@@ -103,7 +102,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
                 Box entityBox = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
-                double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : entityDistance * entityDistance;
+                double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
                 double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
                 EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 
