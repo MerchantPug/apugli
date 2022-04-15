@@ -31,18 +31,18 @@
     "PlayerInventoryMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectMixin",
-    "TemptGoalMixin",
-    "client.ArmorFeatureRendererAccessor",
-    "client.HeadFeatureRendererAccessor"
+    "TemptGoalMixin"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.ApoliClientAccessor",
+    "client.ArmorFeatureRendererAccessor",
     "client.ArmorFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
     "client.ClientWorldMixin",
     "client.EntityRendererMixin",
     "client.GameRendererMixin",
+    "client.HeadFeatureRendererAccessor",
     "client.HeadFeatureRendererMixin",
     "client.HeldItemFeatureRendererMixin",
     "client.HeldItemRendererMixin",
