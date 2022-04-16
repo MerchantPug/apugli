@@ -1,36 +1,59 @@
 package io.github.merchantpug.apugli.util;
 
 import com.mojang.authlib.GameProfile;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.mixin.client.ArmorFeatureRendererAccessor;
+import io.github.merchantpug.apugli.mixin.client.ElytraFeatureRendererAccessor;
 import io.github.merchantpug.apugli.mixin.client.HeadFeatureRendererAccessor;
 import io.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3f;
 
 public class ModifyEquippedItemRenderUtils {
+
+    public static void renderElytra(ElytraFeatureRenderer<?, ?> renderer, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, float f, float g, float h, float j, float k, float l) {
+        Object abstractClientPlayerEntity;
+
+        Identifier identifier = entity instanceof AbstractClientPlayerEntity ? (((AbstractClientPlayerEntity)(abstractClientPlayerEntity = (AbstractClientPlayerEntity)entity)).canRenderElytraTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() != null ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() : (((AbstractClientPlayerEntity)abstractClientPlayerEntity).canRenderCapeTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() != null && ((PlayerEntity)abstractClientPlayerEntity).isPartVisible(PlayerModelPart.CAPE) ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() : ((ElytraFeatureRendererAccessor)renderer).getSKIN())) : ((ElytraFeatureRendererAccessor)renderer).getSKIN();
+
+        matrices.push();
+        matrices.translate(0.0, 0.0, 0.125);
+        ((EntityModel)renderer.getContextModel()).copyStateTo(((ElytraFeatureRendererAccessor)renderer).getElytra());
+        ((ElytraFeatureRendererAccessor)renderer).getElytra().setAngles(entity, f, g, j, k, l);
+        abstractClientPlayerEntity = ItemRenderer.getArmorGlintConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(identifier), false, stack.hasGlint());
+        ((ElytraFeatureRendererAccessor)renderer).getElytra().render(matrices, (VertexConsumer)abstractClientPlayerEntity, light, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+        matrices.pop();
+    }
 
     public static void renderArmor(ArmorFeatureRenderer<?, ?, ?> renderer, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, EquipmentSlot armorSlot, int light, BipedEntityModel model) {
         if (stack.getItem() instanceof ArmorItem armorItem) {

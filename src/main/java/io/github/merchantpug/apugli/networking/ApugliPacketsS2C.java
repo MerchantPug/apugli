@@ -1,6 +1,7 @@
 package io.github.merchantpug.apugli.networking;
 
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.ApugliClient;
 import io.github.merchantpug.apugli.access.LivingEntityAccess;
 import io.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
@@ -26,7 +27,14 @@ public class ApugliPacketsS2C {
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
+            ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_KEYS_TO_CHECK, ApugliPacketsS2C::onRemoveKeysToCheck);
         }));
+    }
+
+    private static void onRemoveKeysToCheck(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+        minecraftClient.execute(() -> {
+            ApugliClient.keysToCheck.clear();
+        });
     }
 
     private static void onHitsOnTargetSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {

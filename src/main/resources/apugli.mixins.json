@@ -29,6 +29,7 @@
     "MobEntityMixin",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
+    "PowerHolderComponentImplMixin",
     "ServerPlayerEntityAccessor",
     "StatusEffectMixin",
     "TemptGoalMixin"
@@ -41,6 +42,8 @@
     "client.ClientPlayerEntityAccessor",
     "client.ClientWorldMixin",
     "client.EntityRendererMixin",
+    "client.ElytraFeatureRendererAccessor",
+    "client.ElytraFeatureRendererMixin",
     "client.GameRendererMixin",
     "client.HeadFeatureRendererAccessor",
     "client.HeadFeatureRendererMixin",
