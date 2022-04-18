@@ -91,15 +91,15 @@ String generateHTMLChangelog() {
 				}
 				if (line.startsWith("**") && line.endsWith("**")) {
 					StringBuilder stringBuilder = new StringBuilder(line)
-					stringBuilder.delete(0, 2)
-					stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length())
+					stringBuilder.delete(0, 3)
+					stringBuilder.delete(stringBuilder.length() - 3, stringBuilder.length())
 					newString = stringBuilder.toString()
 					bolded = true
 				}
 				if (line.startsWith("*") && line.endsWith("*")) {
 					StringBuilder stringBuilder = new StringBuilder(line)
-					stringBuilder.delete(0, 1)
-					stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length())
+					stringBuilder.delete(0, 2)
+					stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length())
 					newString = stringBuilder.toString()
 					italicised = true
 				}

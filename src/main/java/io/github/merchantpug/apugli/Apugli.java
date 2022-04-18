@@ -12,17 +12,21 @@ import io.github.merchantpug.apugli.registry.condition.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
 	public static final Logger LOGGER = LogManager.getLogger(Apugli.class);
 	public static String VERSION = "";
-	public static HashSet<Active.Key> currentlyUsedKeys = new HashSet<>();
+	public static HashMap<PlayerEntity, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
 
 	@Override
 	public void onInitialize() {
@@ -54,8 +58,6 @@ public class Apugli implements ModInitializer {
 
 		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> currentlyUsedKeys.clear()));
 	}
-
-
 
 	public static Identifier identifier(String path) {
 		return new Identifier(MODID, path);

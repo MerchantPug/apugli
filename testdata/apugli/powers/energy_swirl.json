@@ -1,5 +1,12 @@
 {
   "type": "apugli:energy_swirl",
   "texture_location": "minecraft:textures/entity/wither/wither_armor.png",
-  "speed": 0.01
+  "speed": 0.01,
+  "condition": {
+    "type": "apugli:key_pressed",
+    "key": {
+      "key": "key.jump",
+      "continuous": true
+    }
+  }
 }

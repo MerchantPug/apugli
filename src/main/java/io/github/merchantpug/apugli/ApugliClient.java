@@ -15,6 +15,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.*;
@@ -57,7 +59,7 @@ public class ApugliClient implements ClientModInitializer {
 				});
 				lastKeyBindingStates = currentKeyBindingStates;
 				if (pressedKeys.size() > 0) {
-					if (!pressedKeys.equals(Apugli.currentlyUsedKeys)) {
+					if (Apugli.currentlyUsedKeys.get(MinecraftClient.getInstance().player) != pressedKeys) {
 						syncActiveKeys(pressedKeys, false);
 					}
 				} else {
@@ -69,20 +71,20 @@ public class ApugliClient implements ClientModInitializer {
 
 	@Environment(EnvType.CLIENT)
 	private void syncActiveKeys(HashSet<Active.Key> keys, boolean nothingPressed) {
+		if (MinecraftClient.getInstance().player == null) return;
+		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 		if (nothingPressed) {
-			PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 			buffer.writeInt(0);
-			Apugli.currentlyUsedKeys.clear();
-			ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS, buffer);
+			buffer.writeInt(MinecraftClient.getInstance().player.getId());
+			ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
 			hasClearedKeySync = true;
 		} else if (keys.size() > 0) {
-			PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 			buffer.writeInt(keys.size());
+			buffer.writeInt(MinecraftClient.getInstance().player.getId());
 			for(Active.Key key : keys) {
 				ApoliDataTypes.KEY.send(buffer, key);
 			}
-			Apugli.currentlyUsedKeys = keys;
-			ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS, buffer);
+			ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
 		}
 	}
 }
