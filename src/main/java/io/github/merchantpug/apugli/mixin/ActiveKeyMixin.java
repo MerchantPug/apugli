@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Objects;
 
-@Mixin(targets = "io.github.apace100.apoli.power.Active$Key", remap = false)
+@Mixin(value = Active.Key.class, remap = false)
 public class ActiveKeyMixin {
     @Shadow public String key;
     @Shadow public boolean continuous;

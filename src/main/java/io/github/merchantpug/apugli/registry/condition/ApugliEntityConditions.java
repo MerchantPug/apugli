@@ -12,7 +12,7 @@ public class ApugliEntityConditions {
         register(CompareResourceCondition.getFactory());
         register(EntityInRadiusCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());
-        register(KeyPressedCondition.getCondition());
+        register(KeyPressedCondition.getFactory());
         register(ParticleInRadiusCondition.getFactory());
         register(PlayerModelTypeCondition.getFactory());
         register(RaycastCondition.getFactory());

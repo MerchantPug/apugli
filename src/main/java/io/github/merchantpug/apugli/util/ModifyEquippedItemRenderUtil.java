@@ -39,12 +39,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3f;
 
-public class ModifyEquippedItemRenderUtils {
+public class ModifyEquippedItemRenderUtil {
 
     public static void renderElytra(ElytraFeatureRenderer<?, ?> renderer, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, float f, float g, float h, float j, float k, float l) {
         Object abstractClientPlayerEntity;
 
-        Identifier identifier = entity instanceof AbstractClientPlayerEntity ? (((AbstractClientPlayerEntity)(abstractClientPlayerEntity = (AbstractClientPlayerEntity)entity)).canRenderElytraTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() != null ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() : (((AbstractClientPlayerEntity)abstractClientPlayerEntity).canRenderCapeTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() != null && ((PlayerEntity)abstractClientPlayerEntity).isPartVisible(PlayerModelPart.CAPE) ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() : ((ElytraFeatureRendererAccessor)renderer).getSKIN())) : ((ElytraFeatureRendererAccessor)renderer).getSKIN();
+        Identifier identifier = entity instanceof AbstractClientPlayerEntity ? (((AbstractClientPlayerEntity)(abstractClientPlayerEntity = (AbstractClientPlayerEntity)entity)).canRenderElytraTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() != null ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getElytraTexture() : (((AbstractClientPlayerEntity)abstractClientPlayerEntity).canRenderCapeTexture() && ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() != null && ((PlayerEntity)abstractClientPlayerEntity).isPartVisible(PlayerModelPart.CAPE) ? ((AbstractClientPlayerEntity)abstractClientPlayerEntity).getCapeTexture() : ElytraFeatureRendererAccessor.getSKIN())) : ElytraFeatureRendererAccessor.getSKIN();
 
         matrices.push();
         matrices.translate(0.0, 0.0, 0.125);
@@ -108,7 +108,7 @@ public class ModifyEquippedItemRenderUtils {
                 RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
                 SkullBlockEntityRenderer.renderSkull((Direction) null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
             } else if (!(item instanceof ArmorItem) || ((ArmorItem) item).getSlotType() != EquipmentSlot.HEAD) {
-                ModifyEquippedItemRenderUtils.translateStackOnHead(matrixStack, bl);
+                ModifyEquippedItemRenderUtil.translateStackOnHead(matrixStack, bl);
                 MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, stack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
             }
             matrixStack.pop();
@@ -152,8 +152,8 @@ public class ModifyEquippedItemRenderUtils {
                 matrixStack.scale(0.5F, 0.5F, 0.5F);
             }
 
-            ModifyEquippedItemRenderUtils.renderItem(renderer, livingEntity, rightHandStack, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
-            ModifyEquippedItemRenderUtils.renderItem(renderer, livingEntity, leftHandStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
+            ModifyEquippedItemRenderUtil.renderItem(renderer, livingEntity, rightHandStack, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
+            ModifyEquippedItemRenderUtil.renderItem(renderer, livingEntity, leftHandStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i, power.shouldOverride(), power.shouldMergeWithHeld());
             matrixStack.pop();
         }
     }

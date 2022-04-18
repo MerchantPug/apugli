@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -61,6 +62,48 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Unique private final HashMap<Entity, Integer> hitsHashmap = new HashMap<>();
+
+    @Redirect(method = "handleStatus", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V", ordinal = 1))
+    private void playHurtSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+        List<CustomHurtSoundPower> powers = PowerHolderComponent.getPowers(instance, CustomHurtSoundPower.class);
+        if (!powers.isEmpty()) {
+            if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) return;
+            powers.forEach(power -> power.playHurtSound(instance));
+            return;
+        }
+        instance.playSound(soundEvent, v, p);
+    }
+
+    @Redirect(method = "handleStatus", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V", ordinal = 2))
+    private void playDeathSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+        List<CustomDeathSoundPower> powers = PowerHolderComponent.getPowers(instance, CustomDeathSoundPower.class);
+        if (!powers.isEmpty()) {
+            if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) return;
+            powers.forEach(power -> power.playDeathSound(instance));
+            return;
+        }
+        instance.playSound(soundEvent, v, p);
+    }
+
+    @Redirect(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V"))
+    private void playDeathSounds(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+        List<CustomDeathSoundPower> powers = PowerHolderComponent.getPowers(instance, CustomDeathSoundPower.class);
+        if (!powers.isEmpty()) {
+            if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) return;
+            powers.forEach(power -> power.playDeathSound(instance));
+            return;
+        }
+        instance.playSound(soundEvent, v, p);
+    }
+
+    @Inject(method = "playHurtSound", at = @At("HEAD"), cancellable = true)
+    private void playHurtSounds(DamageSource source, CallbackInfo ci) {
+        List<CustomHurtSoundPower> powers = PowerHolderComponent.getPowers(this, CustomHurtSoundPower.class);
+        if (powers.isEmpty()) return;
+        if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) ci.cancel();
+        powers.forEach(power -> power.playHurtSound(this));
+        ci.cancel();
+    }
 
     @Inject(method = "damage", at = @At("HEAD"))
     private void addToHits(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {

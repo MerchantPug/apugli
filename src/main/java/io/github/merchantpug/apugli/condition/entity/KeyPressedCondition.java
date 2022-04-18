@@ -15,7 +15,7 @@ public class KeyPressedCondition {
         return Apugli.currentlyUsedKeys.stream().anyMatch(key -> key.equals(data.get("key")));
     }
 
-    public static ConditionFactory<Entity> getCondition() {
+    public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("key_pressed"), new SerializableData()
                 .add("key", ApoliDataTypes.KEY),
                 KeyPressedCondition::condition

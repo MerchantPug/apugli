@@ -114,7 +114,7 @@ public class ApugliDataTypes {
                 if (!jsonElement.isJsonObject()) {
                     throw new RuntimeException("Expected either a string with a parameter-less sound event, or an object.");
                 }
-                if (jsonElement.getAsJsonObject().has("pitch") || jsonElement.getAsJsonObject().has("volume")) {
+                if (jsonElement.getAsJsonObject().get("pitch") != null || jsonElement.getAsJsonObject().get("volume") != null) {
                     SoundEventWeight sew = new SoundEventWeight();
                     sew.soundEventList.add(SOUND_EVENT_OPTIONAL_PITCH_VOLUME.read(jsonElement));
                     sew.weight = 1;

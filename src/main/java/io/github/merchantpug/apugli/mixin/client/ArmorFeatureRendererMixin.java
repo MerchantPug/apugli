@@ -2,7 +2,7 @@ package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
-import io.github.merchantpug.apugli.util.ModifyEquippedItemRenderUtils;
+import io.github.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -11,12 +11,8 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.DyeableArmorItem;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,7 +35,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class);
         modifyEquippedItemRenderPowers.forEach(power -> {
             if (power.slot.getType() == EquipmentSlot.Type.ARMOR) {
-                ModifyEquippedItemRenderUtils.renderArmor((ArmorFeatureRenderer<?, ?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, power.slot, i, this.getArmor(power.slot));
+                ModifyEquippedItemRenderUtil.renderArmor((ArmorFeatureRenderer<?, ?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, power.slot, i, this.getArmor(power.slot));
             }
         });
     }

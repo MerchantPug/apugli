@@ -3,7 +3,6 @@ package io.github.merchantpug.apugli.mixin.client;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;
 import io.github.merchantpug.apugli.entity.feature.EntityTextureOverlayFeatureRenderer;
-import io.github.merchantpug.apugli.power.EntityTextureOverlayPower;
 import io.github.merchantpug.apugli.power.SetTexturePower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

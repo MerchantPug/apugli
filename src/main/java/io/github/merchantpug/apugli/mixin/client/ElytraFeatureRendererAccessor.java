@@ -11,8 +11,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ElytraFeatureRenderer.class)
 public interface ElytraFeatureRendererAccessor<T extends LivingEntity, M extends EntityModel<T>> {
-    @Accessor @Mutable
-    Identifier getSKIN();
+    @Accessor
+    @Mutable
+    static Identifier getSKIN() {
+        throw new AssertionError("");
+    }
 
     @Accessor @Mutable
     ElytraEntityModel<T> getElytra();

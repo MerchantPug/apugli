@@ -12,6 +12,7 @@ import io.github.merchantpug.apugli.util.SoundEventPitchVolume;
 import io.github.merchantpug.apugli.util.SoundEventWeight;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
 import java.util.ArrayList;
@@ -77,7 +78,8 @@ public class CustomDeathSoundPower extends Power {
         sounds.get(index).soundEventList.forEach(soundEventPitchVolume -> {
             float vol = Float.isNaN(soundEventPitchVolume.volume) ? this.volume : soundEventPitchVolume.volume;
             float pit = Float.isNaN(soundEventPitchVolume.pitch) ? this.pitch : soundEventPitchVolume.pitch;
-            entity.playSound(soundEventPitchVolume.soundEvent, vol, (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2f + pit);
+            entity.world.playSound(null, (entity).getX(), (entity).getY(), (entity).getZ(), soundEventPitchVolume.soundEvent,
+                    SoundCategory.PLAYERS, vol, (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2f + pit);
         });
     }
 }

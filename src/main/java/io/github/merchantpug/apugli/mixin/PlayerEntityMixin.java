@@ -34,24 +34,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         return PowerHolderComponent.hasPower(instance, AerialAffinityPower.class) || instance.isOnGround();
     }
 
-    @Inject(method = "getHurtSound", at = @At("HEAD"), cancellable = true)
-    private void modifyHurtSound(CallbackInfoReturnable<SoundEvent> cir) {
-        List<CustomHurtSoundPower> powers = PowerHolderComponent.getPowers(this, CustomHurtSoundPower.class);
-        if (powers.isEmpty()) return;
-        if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) cir.cancel();
-        powers.forEach(power -> power.playHurtSound(this));
-        cir.cancel();
-    }
-
-    @Inject(method = "getDeathSound", at = @At("HEAD"), cancellable = true)
-    private void modifyDeathSound(CallbackInfoReturnable<SoundEvent> cir) {
-        List<CustomDeathSoundPower> powers = PowerHolderComponent.getPowers((LivingEntity)(Object)this, CustomDeathSoundPower.class);
-        if (powers.isEmpty()) return;
-        if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) cir.cancel();
-        powers.forEach(power -> power.playDeathSound((LivingEntity)(Object)this));
-        cir.cancel();
-    }
-
     @Inject(method = "equipStack", at = @At(value = "TAIL"))
     public void equipStack(EquipmentSlot slot, ItemStack stack, CallbackInfo ci) {
         if (slot.getType() != EquipmentSlot.Type.ARMOR && !slot.equals(EquipmentSlot.OFFHAND)) return;

@@ -2,13 +2,11 @@ package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
-import io.github.merchantpug.apugli.util.ModifyEquippedItemRenderUtils;
+import io.github.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ElytraItem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +23,7 @@ public class ElytraFeatureRendererMixin<T extends LivingEntity, M extends Entity
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class);
         modifyEquippedItemRenderPowers.forEach(power -> {
             if (power.stack.getItem() instanceof ElytraItem) {
-                ModifyEquippedItemRenderUtils.renderElytra((ElytraFeatureRenderer<?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, i, f, g, h, j, k, l);
+                ModifyEquippedItemRenderUtil.renderElytra((ElytraFeatureRenderer<?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, i, f, g, h, j, k, l);
             }
         });
     }
