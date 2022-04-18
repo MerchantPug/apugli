@@ -1,0 +1,31 @@
+package io.github.merchantpug.apugli.mixin;
+
+import io.github.apace100.origins.power.Active;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Objects;
+
+@Mixin(value = Active.Key.class, remap = false)
+public class ActiveKeyMixin {
+    @Shadow public String key;
+    @Shadow public boolean continuous;
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this)
+            return true;
+
+        if (!(obj instanceof Active.Key))
+            return false;
+
+        Active.Key otherKey = (Active.Key) obj;
+
+        return otherKey.key.equals(this.key) && otherKey.continuous == this.continuous;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.key, this.continuous);
+    }
+}

@@ -5,6 +5,7 @@ import io.github.apace100.origins.power.factory.condition.ConditionFactory;
 import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
+import io.github.merchantpug.apugli.util.RaycastUtils;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -41,7 +42,9 @@ public class RaycastCondition {
 
         double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : entityDistance * entityDistance;
         double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+
+
+        EntityHitResult entityHitResult = RaycastUtils.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 
         HitResult.Type blockHitResultType = blockHitResult.getType();
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
@@ -50,7 +53,7 @@ public class RaycastCondition {
 
         if (blockHitResultType == HitResult.Type.BLOCK) return RaycastCondition.onHitBlock(data, entity, blockHitResult);
 
-        if (entityHitResultType == HitResult.Type.ENTITY) return RaycastCondition.onHitEntity(data, entity, entityHitResult);
+        if (entityHitResultType == HitResult.Type.ENTITY) return RaycastCondition.onHitEntity(data, entityHitResult);
         return false;
     }
 
@@ -59,7 +62,7 @@ public class RaycastCondition {
         return data.isPresent("block_condition") && ((Predicate<CachedBlockPosition>)data.get("block_condition")).test(blockPosition);
     }
 
-    private static boolean onHitEntity(SerializableData.Instance data, Entity entity, EntityHitResult result) {
+    private static boolean onHitEntity(SerializableData.Instance data, EntityHitResult result) {
         Entity targetEntity = result.getEntity();
         return (!data.isPresent("target_condition") || ((Predicate<Entity>)data.get("target_condition")).test(targetEntity));
     }

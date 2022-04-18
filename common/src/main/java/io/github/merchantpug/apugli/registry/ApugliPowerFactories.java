@@ -30,8 +30,9 @@ public class ApugliPowerFactories {
         register(EdibleItemPower.getFactory());
         register(EffectWhitelistPower.getFactory());
         register(EnergySwirlPower.getFactory());
+        register(EntityTextureOverlayPower.getFactory());
         register(ForceParticleRenderPower.getFactory());
-        register(HoverPower.getFactory());
+        register(getSimpleFactory(HoverPower::new, Apugli.identifier("hover")));
         register(InvertedCooldownPower.getFactory());
         register(getSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
         register(MobsIgnorePower.getFactory());

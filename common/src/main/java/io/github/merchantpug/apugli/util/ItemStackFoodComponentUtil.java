@@ -1,13 +1,29 @@
 package io.github.merchantpug.apugli.util;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.UseAction;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class ItemStackFoodComponentAPI {
+import java.util.List;
+
+public class ItemStackFoodComponentUtil {
+
+    public static void applyFoodEffects(ItemStack stack, World world, LivingEntity targetEntity) {
+        if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
+            List<Pair<StatusEffectInstance, Float>> list = ((ItemStackAccess)(Object)stack).getItemStackFoodComponent().getStatusEffects();
+            for (Pair<StatusEffectInstance, Float> pair : list) {
+                if (world.isClient || pair.getFirst() == null || !(world.random.nextFloat() < pair.getSecond().floatValue())) continue;
+                targetEntity.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
+            }
+        }
+    }
 
     public static void removeStackFood(ItemStack stack) {
         ((ItemStackAccess)(Object)stack).setItemStackFoodComponent(null);

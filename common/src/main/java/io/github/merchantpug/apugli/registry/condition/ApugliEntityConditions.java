@@ -11,9 +11,13 @@ public class ApugliEntityConditions {
         register(CompareResourceCondition.getFactory());
         register(EntityInRadiusCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());
+        register(KeyPressedCondition.getFactory());
         register(ParticleInRadiusCondition.getFactory());
+        register(PlayerModelTypeCondition.getFactory());
         register(RaycastCondition.getFactory());
+        register(RidingCondition.getFactory());
         register(StructureCondition.getFactory());
+        register(VelocityCondition.getFactory());
     }
 
     @ExpectPlatform

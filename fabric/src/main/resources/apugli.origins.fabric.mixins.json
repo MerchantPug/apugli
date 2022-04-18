@@ -6,6 +6,7 @@
   "mixins": [
     "ActionTypeMixin",
     "ConditionTypeMixin",
+    "PlayerOriginComponentMixin",
     "PowerTypesMixin"
   ],
   "refmap": "Apugli-1.16.5-origins-fabric-refmap.json",

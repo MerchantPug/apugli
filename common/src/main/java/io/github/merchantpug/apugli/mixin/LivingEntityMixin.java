@@ -6,6 +6,7 @@ import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.HiddenEffectStatus;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.powers.*;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import io.github.merchantpug.apugli.util.ModComponents;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -19,6 +20,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,23 +46,21 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow protected abstract boolean isOnSoulSpeedBlock();
 
+    @Shadow public abstract SoundEvent getEatSound(ItemStack itemStack);
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
-    @Inject(method = "applyFoodEffects", at = @At("HEAD"), cancellable = true)
-    private void applyFoodEffects(ItemStack stack, World world, LivingEntity targetEntity, CallbackInfo ci) {
+    @Inject(method = "eatFood", at = @At("HEAD"), cancellable = true)
+    private void eatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
-            List<Pair<StatusEffectInstance, Float>> list = ((ItemStackAccess)(Object)stack).getItemStackFoodComponent().getStatusEffects();
-            Iterator var6 = list.iterator();
-
-            while(var6.hasNext()) {
-                Pair<StatusEffectInstance, Float> pair = (Pair)var6.next();
-                if (!world.isClient && pair.getFirst() != null && world.random.nextFloat() < pair.getSecond()) {
-                    targetEntity.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
-                }
+            world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
+            ItemStackFoodComponentUtil.applyFoodEffects(stack, world, (LivingEntity)(Object)this);
+            if (!((LivingEntity)(Object)this instanceof PlayerEntity) || !((PlayerEntity)(Object)this).abilities.creativeMode) {
+                stack.decrement(1);
             }
-            ci.cancel();
+            cir.setReturnValue(stack);
         }
     }
 
@@ -99,7 +100,7 @@ public abstract class LivingEntityMixin extends Entity {
             damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
 
             for (ModifyEnchantmentDamageDealtPower power : damageDealtPowers) {
-                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)); i++) {
                     additionalValue[0] = OriginComponent.modify(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class,
                             additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(thisAsLiving));
                 }
@@ -112,7 +113,7 @@ public abstract class LivingEntityMixin extends Entity {
 
         if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
             for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
-                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)) - 1; i++) {
+                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity)source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)); i++) {
                     additionalValue[0] = OriginComponent.modify(this, ModifyEnchantmentDamageTakenPower.class,
                             additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(source.getAttacker()));
                 }
@@ -195,6 +196,10 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (this.isDead() || !((LivingEntity)(Object)this instanceof PlayerEntity)) return;
+        if (OriginComponent.hasPower(this, HoverPower.class)) {
+            this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
+            this.fallDistance = 0.0F;
+        }
         ModComponents.getOriginComponent((PlayerEntity)(Object) this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (OriginComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = OriginComponent.getPowers(this, BunnyHopPower.class).get(0);

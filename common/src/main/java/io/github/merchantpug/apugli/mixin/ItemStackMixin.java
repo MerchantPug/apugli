@@ -5,6 +5,7 @@ import io.github.merchantpug.apugli.access.ItemStackAccess;
 import io.github.merchantpug.apugli.powers.ActionOnDurabilityChange;
 import io.github.merchantpug.apugli.powers.EdibleItemPower;
 import io.github.merchantpug.apugli.powers.ModifyEnchantmentLevelPower;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -92,17 +93,16 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Unique
     protected SoundEvent eatSound;
 
+
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (!(user instanceof PlayerEntity)) return;
         if (this.isItemStackFood()) {
             OriginComponent.getPowers(user, EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
-            ItemStack itemStack = user.eatFood(world, (ItemStack)(Object)this);
             if (this.getReturnStack() != null) {
-                cir.setReturnValue(((PlayerEntity)user).abilities.creativeMode ? itemStack : this.getReturnStack());
-            } else {
-                cir.setReturnValue(itemStack);
+                cir.setReturnValue(user instanceof PlayerEntity && ((PlayerEntity)user).abilities.creativeMode ? user.eatFood(world, (ItemStack)(Object)this) : this.getReturnStack());
             }
+            cir.setReturnValue(user.eatFood(world, (ItemStack)(Object)this));
         }
     }
 
@@ -120,10 +120,17 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         }
     }
 
-    @Inject(method = "isFood", at = @At("HEAD"), cancellable = true)
-    private void isFood(CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "getMaxUseTime", at = @At("HEAD"), cancellable = true)
+    private void isFood(CallbackInfoReturnable<Integer> cir) {
         if (this.isItemStackFood()) {
-            cir.setReturnValue(true);
+            cir.setReturnValue(this.getItemStackFoodComponent().isSnack() ? 16 : 32);
+        }
+    }
+
+    @Inject(method = "copy", at = @At("RETURN"))
+    private void copyFoodComponent(CallbackInfoReturnable<ItemStack> cir) {
+        if (this.isItemStackFood()) {
+            ItemStackFoodComponentUtil.setStackFood(cir.getReturnValue(), this.stackFoodComponent, this.useAction, this.returnStack, this.eatSound);
         }
     }
 

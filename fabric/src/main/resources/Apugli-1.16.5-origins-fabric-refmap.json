@@ -8,6 +8,9 @@
       "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;": "Lio/github/apace100/origins/power/factory/condition/ConditionType;read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;",
       "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;": "Lnet/minecraft/class_2960;method_12829(Ljava/lang/String;)Lnet/minecraft/class_2960;"
     },
+    "io/github/merchantpug/apugli/mixin/fabric/PlayerOriginComponentMixin": {
+      "setOrigin(Lio/github/apace100/origins/origin/OriginLayer;Lio/github/apace100/origins/origin/Origin;)V": "setOrigin(Lio/github/apace100/origins/origin/OriginLayer;Lio/github/apace100/origins/origin/Origin;)V"
+    },
     "io/github/merchantpug/apugli/mixin/fabric/PowerTypesMixin": {
       "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;": "Lio/github/apace100/origins/power/PowerTypes;readPower(Lnet/minecraft/class_2960;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;",
       "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;": "Lnet/minecraft/class_2960;method_12829(Ljava/lang/String;)Lnet/minecraft/class_2960;"
@@ -22,6 +25,9 @@
       "io/github/merchantpug/apugli/mixin/fabric/ConditionTypeMixin": {
         "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;": "Lio/github/apace100/origins/power/factory/condition/ConditionType;read(Lcom/google/gson/JsonElement;)Lio/github/apace100/origins/power/factory/condition/ConditionFactory$Instance;",
         "Lnet/minecraft/util/Identifier;tryParse(Ljava/lang/String;)Lnet/minecraft/util/Identifier;": "Lnet/minecraft/class_2960;method_12829(Ljava/lang/String;)Lnet/minecraft/class_2960;"
+      },
+      "io/github/merchantpug/apugli/mixin/fabric/PlayerOriginComponentMixin": {
+        "setOrigin(Lio/github/apace100/origins/origin/OriginLayer;Lio/github/apace100/origins/origin/Origin;)V": "setOrigin(Lio/github/apace100/origins/origin/OriginLayer;Lio/github/apace100/origins/origin/Origin;)V"
       },
       "io/github/merchantpug/apugli/mixin/fabric/PowerTypesMixin": {
         "readPower(Lnet/minecraft/util/Identifier;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;": "Lio/github/apace100/origins/power/PowerTypes;readPower(Lnet/minecraft/class_2960;Lcom/google/gson/JsonElement;ZLjava/util/function/BiFunction;)Lio/github/apace100/origins/power/PowerType;",

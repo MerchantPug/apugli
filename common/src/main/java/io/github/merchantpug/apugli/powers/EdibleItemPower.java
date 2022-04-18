@@ -10,13 +10,10 @@ import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.access.ItemStackAccess;
-import io.github.merchantpug.apugli.networking.ApugliPackets;
 import io.github.merchantpug.apugli.util.BackportedDataTypes;
-import io.github.merchantpug.apugli.util.ItemStackFoodComponentAPI;
+import io.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import io.github.merchantpug.apugli.util.StackFoodComponentUtil;
 import io.netty.buffer.Unpooled;
-import me.shedaniel.architectury.networking.NetworkManager;
-import me.shedaniel.architectury.utils.GameInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +21,6 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.UseAction;
 import org.jetbrains.annotations.Nullable;
@@ -82,18 +78,18 @@ public class EdibleItemPower extends Power {
         if (player.age % tickRate == 0) {
             if (mainHandStack != ItemStack.EMPTY) {
                 if (this.predicate.test(mainHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == null) {
-                    ItemStackFoodComponentAPI.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
+                    ItemStackFoodComponentUtil.setStackFood(mainHandStack, foodComponent, useAction, returnStack, sound);
                 }
                 if (this.predicate.test(mainHandStack) && !this.isActive() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == foodComponent) {
-                    ItemStackFoodComponentAPI.removeStackFood(mainHandStack);
+                    ItemStackFoodComponentUtil.removeStackFood(mainHandStack);
                 }
             }
             if (offHandStack != ItemStack.EMPTY) {
                 if (this.predicate.test(offHandStack) && this.isActive() && !((ItemStackAccess)(Object)mainHandStack).isItemStackFood() && ((ItemStackAccess)(Object)mainHandStack).getItemStackFoodComponent() == null) {
-                    ItemStackFoodComponentAPI.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
+                    ItemStackFoodComponentUtil.setStackFood(offHandStack, foodComponent, useAction, returnStack, sound);
                 }
                 if (this.predicate.test(offHandStack) && !this.isActive() && ((ItemStackAccess)(Object)offHandStack).getItemStackFoodComponent() == foodComponent) {
-                    ItemStackFoodComponentAPI.removeStackFood(offHandStack);
+                    ItemStackFoodComponentUtil.removeStackFood(offHandStack);
                 }
             }
         }
@@ -114,20 +110,20 @@ public class EdibleItemPower extends Power {
         for (int i = 0; i < player.inventory.main.size(); i++) {
             ItemStack itemStack = player.inventory.main.get(i);
             if (predicate.test(itemStack) && ((ItemStackAccess) (Object) itemStack).getItemStackFoodComponent() == foodComponent) {
-                ItemStackFoodComponentAPI.removeStackFood(itemStack);
+                ItemStackFoodComponentUtil.removeStackFood(itemStack);
                 this.sendFoodComponentRemovePacket(null, StackFoodComponentUtil.InventoryLocation.MAIN, i);
             }
         }
         for (int i = 0; i < player.inventory.armor.size(); i++) {
             ItemStack armorStack = player.inventory.getArmorStack(i);
             if (predicate.test(armorStack) && ((ItemStackAccess) (Object) armorStack).getItemStackFoodComponent() == foodComponent) {
-                ItemStackFoodComponentAPI.removeStackFood(armorStack);
+                ItemStackFoodComponentUtil.removeStackFood(armorStack);
                 this.sendFoodComponentRemovePacket(null, StackFoodComponentUtil.InventoryLocation.ARMOR, i);
             }
         }
         ItemStack offHandStack = player.getEquippedStack(EquipmentSlot.OFFHAND);
         if (predicate.test(offHandStack) && ((ItemStackAccess) (Object) offHandStack).getItemStackFoodComponent() == foodComponent) {
-            ItemStackFoodComponentAPI.removeStackFood(offHandStack);
+            ItemStackFoodComponentUtil.removeStackFood(offHandStack);
             this.sendFoodComponentRemovePacket(EquipmentSlot.OFFHAND, null, 0);
         }
     }

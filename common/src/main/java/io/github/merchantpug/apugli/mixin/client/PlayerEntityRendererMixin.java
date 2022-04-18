@@ -1,9 +1,6 @@
 package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.origins.component.OriginComponent;
-import io.github.merchantpug.apugli.entity.renderer.StackArmorFeatureRenderer;
-import io.github.merchantpug.apugli.entity.renderer.StackHeadFeatureRenderer;
-import io.github.merchantpug.apugli.entity.renderer.StackHeldItemFeatureRenderer;
 import io.github.merchantpug.apugli.powers.ModifyEquippedItemRenderPower;
 import io.github.merchantpug.apugli.powers.SetTexturePower;
 import net.fabricmc.api.EnvType;
@@ -23,7 +20,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -33,13 +29,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     public PlayerEntityRendererMixin(EntityRenderDispatcher dispatcher, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(dispatcher, model, shadowRadius);
-    }
-
-    @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRenderDispatcher;Z)V", at = @At("RETURN"))
-    private void construct(EntityRenderDispatcher dispatcher, boolean slim, CallbackInfo ci) {
-        this.addFeature(new StackHeadFeatureRenderer<>(this));
-        this.addFeature(new StackArmorFeatureRenderer(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
-        this.addFeature(new StackHeldItemFeatureRenderer<>(this));
     }
 
     @ModifyArgs(method = "renderArm", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getEntitySolid(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/RenderLayer;"))

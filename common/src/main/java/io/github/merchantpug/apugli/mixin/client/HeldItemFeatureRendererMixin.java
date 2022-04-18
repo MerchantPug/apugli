@@ -2,6 +2,7 @@ package io.github.merchantpug.apugli.mixin.client;
 
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.merchantpug.apugli.powers.ModifyEquippedItemRenderPower;
+import io.github.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -43,6 +44,9 @@ public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M ext
     @Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
     private void disableItemRendering(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = OriginComponent.getPowers(entity, ModifyEquippedItemRenderPower.class);
+        modifyEquippedItemRenderPowers.forEach(power -> {
+            ModifyEquippedItemRenderUtil.chooseArm(this, matrices, vertexConsumers, light, entity, power);
+        });
         if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && !this.isRightMainHand))) && arm == Arm.RIGHT) ci.cancel();
         if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && !this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && this.isRightMainHand))) && arm == Arm.LEFT) ci.cancel();
     }
