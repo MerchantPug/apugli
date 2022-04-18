@@ -3,9 +3,10 @@
   "texture_location": "minecraft:textures/entity/wither/wither_armor.png",
   "speed": 0.01,
   "condition": {
-    "type": "origins:relative_health",
-    "comparison": "<=",
-    "compare_to": 0.5
-  },
-  "merge_with_held": true
+    "type": "apugli:key_pressed",
+    "key": {
+      "key": "key.jump",
+      "continuous": true
+    }
+  }
 }

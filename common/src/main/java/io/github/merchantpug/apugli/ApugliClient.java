@@ -73,23 +73,21 @@ public class ApugliClient {
 
     @Environment(EnvType.CLIENT)
     private static void syncActiveKeys(HashSet<Active.Key> keys, boolean nothingPressed) {
+        if (MinecraftClient.getInstance().player == null) return;
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
         if (nothingPressed) {
-            PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
             buffer.writeInt(0);
-            Apugli.LOGGER.info("Cleared Keys!");
-            Apugli.currentlyUsedKeys.clear();
-            NetworkManager.sendToServer(ApugliPackets.SYNC_ACTIVE_KEYS, buffer);
+            buffer.writeInt(MinecraftClient.getInstance().player.getEntityId());
+            NetworkManager.sendToServer(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
             hasClearedKeySync = true;
         } else if (keys.size() > 0) {
-            Apugli.LOGGER.info("Added keys!");
-            PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
             buffer.writeInt(keys.size());
+            buffer.writeInt(MinecraftClient.getInstance().player.getEntityId());
             for(Active.Key key : keys) {
-                Apugli.LOGGER.info(key);
                 SerializableDataType.KEY.send(buffer, key);
             }
-            Apugli.currentlyUsedKeys = keys;
-            NetworkManager.sendToServer(ApugliPackets.SYNC_ACTIVE_KEYS, buffer);
+
+            NetworkManager.sendToServer(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
         }
     }
 }

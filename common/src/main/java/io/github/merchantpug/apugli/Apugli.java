@@ -10,10 +10,12 @@ import io.github.merchantpug.apugli.registry.condition.ApugliBlockConditions;
 import io.github.merchantpug.apugli.registry.condition.ApugliDamageConditions;
 import io.github.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import io.github.merchantpug.apugli.util.ApugliNamespaceAlias;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Apugli {
@@ -21,7 +23,7 @@ public class Apugli {
     public static final Logger LOGGER = LogManager.getLogger(Apugli.class);
 
     public static String VERSION = "";
-    public static HashSet<Active.Key> currentlyUsedKeys = new HashSet<>();
+    public static HashMap<PlayerEntity, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
 
     public static void init() {
         LOGGER.info("Apugli " + VERSION + " is initializing. Powering up your powered up game.");
