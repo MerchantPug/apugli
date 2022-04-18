@@ -70,7 +70,7 @@ public class ApugliClient implements ClientModInitializer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void syncActiveKeys(HashSet<Active.Key> keys, boolean nothingPressed) {
+	private static void syncActiveKeys(HashSet<Active.Key> keys, boolean nothingPressed) {
 		if (MinecraftClient.getInstance().player == null) return;
 		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 		if (nothingPressed) {
