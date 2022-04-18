@@ -16,7 +16,7 @@ jobs:
       - name: Validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Upload releases
-        run: ./gradlew checkVersion build publish curseforge github modrinth --stacktrace
+        run: ./gradlew build publish curseforge github modrinth --stacktrace
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
