@@ -11,7 +11,7 @@ jobs:
       image: eclipse-temurin:17-jdk
       options: --user root
     steps:
-      - run: ./gradlew checkVersion build publish curseforge github modrinth --stacktrace
+      - run: gradlew checkVersion build publish curseforge github modrinth --stacktrace
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
