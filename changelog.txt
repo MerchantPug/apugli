@@ -1,6 +1,9 @@
 ## Apugli v1.6.2 (Fabric 1.18.2)
 **Entity Conditions**
-- Internally rewrote `apugli:key_pressed` to be compatible with servers.
+- Internally rewrote `apugli:key_pressed` to be compatible with servers
 
 **Compatibility**
 - Updated dependencies in fabric.mod.json
+
+**Misc**
+- Removed test files
