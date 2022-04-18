@@ -220,7 +220,7 @@ modrinth {
 		versionType = project.mr_version_type
 
 		if(project.hasProperty("mr_modloader")) {
-			loaders = project.mr_modloader as List
+			loaders = [ project.mr_modloader ]
 		}
 
 		if(project.hasProperty("mr_release_versions")) {
