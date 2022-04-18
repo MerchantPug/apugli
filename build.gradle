@@ -152,9 +152,9 @@ String generateMarkdownChangelog() {
 }
 
 githubRelease {
-	token = System.getenv("GITHUB_TOKEN")
-
 	if (System.getenv("GITHUB_TOKEN") != null) {
+		token = System.getenv("GITHUB_TOKEN")
+
 		owner = project.gh_owner
 		repo = project.gh_repo
 		tagName = "v${project.mod_version}"
@@ -171,9 +171,9 @@ githubRelease {
 }
 
 curseforge {
-	apiKey = System.getenv("CURSEFORGE_API_KEY")
+	if (System.getenv("CURSEFORGE_API_KEY") && project.hasProperty("cf_project_id")) {
+		apiKey = System.getenv("CURSEFORGE_API_KEY")
 
-	if (project.hasProperty("cf_project_id")) {
 		project {
 			id = project.cf_project_id
 			releaseType = project.cf_release_type
@@ -212,10 +212,9 @@ curseforge {
 
 import com.modrinth.minotaur.dependencies.ModDependency
 modrinth {
-
-	token = System.getenv("MODRINTH_TOKEN")
-
 	if(System.getenv("MODRINTH_TOKEN") != null && project.hasProperty("mr_project_id")) {
+		token = System.getenv("MODRINTH_TOKEN")
+
 		projectId = project.mr_project_id
 
 		versionType = project.mr_version_type
