@@ -1,6 +1,9 @@
 plugins {
-	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'com.modrinth.minotaur' version '2.1.1'
+	id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -55,6 +58,194 @@ dependencies {
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
+}
+
+String generateHTMLChangelog() {
+	String changelogText = ""
+
+	File file = file("${projectDir}/changelog.txt")
+	if(file.exists()) {
+		List<String> stringList = file.readLines();
+		for (int i = 0; i < stringList.size(); ++i) {
+			String line = stringList.get(i)
+			if (!line.isBlank()) {
+				boolean h2 = false
+				boolean h3 = false
+				boolean bolded = false
+				boolean italicised = false
+				boolean bulletPointed = false
+
+				String newString = ""
+
+				if (line.startsWith("## ")) {
+					newString = line.replaceFirst("## ", "")
+					h2 = true
+				}
+				if (line.startsWith("### ")) {
+					newString = line.replaceFirst("### ", "")
+					h3 = true
+				}
+				if (line.startsWith("- ")) {
+					newString = line.replaceFirst("- ", "")
+					bulletPointed = true
+				}
+				if (line.startsWith("**") && line.endsWith("**")) {
+					StringBuilder stringBuilder = new StringBuilder(line)
+					stringBuilder.delete(0, 2)
+					stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length())
+					newString = stringBuilder.toString()
+					bolded = true
+				}
+				if (line.startsWith("*") && line.endsWith("*")) {
+					StringBuilder stringBuilder = new StringBuilder(line)
+					stringBuilder.delete(0, 1)
+					stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length())
+					newString = stringBuilder.toString()
+					italicised = true
+				}
+				if (h2) {
+					newString = "<h2>" + newString + "</h2>"
+				}
+				if (h3) {
+					newString = "<h3>" + newString + "</h3>"
+				}
+				if (bulletPointed) {
+					newString = "<li>" + newString + "</li>"
+				}
+				if (bolded) {
+					newString = "<b><strong>" + newString + "</strong></b>"
+				}
+				if (italicised) {
+					newString = "<i>" + newString + "</i>"
+				}
+				if (h2 || h3 || bulletPointed || bolded || italicised) {
+					changelogText += "${newString}"
+				} else {
+					changelogText += "<p>${newString}</p>"
+				}
+			}
+			if (i < stringList.size() - 1) {
+				changelogText += "\n"
+			}
+		}
+	}
+	return changelogText
+}
+
+String generateMarkdownChangelog() {
+	String changelogText = ""
+
+	File file = file("${projectDir}/changelog.txt")
+	if(file.exists()) {
+		List<String> stringList = file.readLines();
+		for (int i = 0; i < stringList.size(); ++i) {
+			String line = stringList.get(i)
+			if(!line.isBlank()) {
+				changelogText += "${line.stripIndent()}"
+			}
+			if (i < stringList.size() - 1) {
+				changelogText += "\n"
+			}
+		}
+	}
+	return changelogText
+}
+
+githubRelease {
+	token = System.getenv("GITHUB_TOKEN")
+
+	if (System.getenv("GITHUB_TOKEN") != null) {
+		owner = project.gh_owner
+		repo = project.gh_repo
+		tagName = "v${project.mod_version}"
+		targetCommitish = project.gh_target_commitish
+
+		body = generateMarkdownChangelog()
+
+		overwrite = true
+
+		releaseName = "${project.mod_name} v${project.mod_version} (MC ${project.gh_minecraft_versions})"
+
+		releaseAssets = files("${project.buildDir}/libs/${archivesBaseName}-${version}.jar", "${project.buildDir}/libs/${archivesBaseName}-${version}-sources.jar").files
+	}
+}
+
+curseforge {
+	apiKey = System.getenv("CURSEFORGE_API_KEY")
+
+	if (project.hasProperty("cf_project_id")) {
+		project {
+			id = project.cf_project_id
+			releaseType = project.cf_release_type
+			if (project.hasProperty("cf_game_versions")) {
+				def gameVersions = project.cf_game_versions.split(", ")
+				gameVersions.each { String gameVersion ->
+					addGameVersion gameVersion
+				}
+			}
+			if (project.hasProperty("cf_java_versions")) {
+				def gameVersions = project.cf_java_versions.split(", ")
+				gameVersions.each { String gameVersion ->
+					addGameVersion gameVersion
+				}
+			}
+			addGameVersion project.cf_modloader
+			mainArtifact(remapJar) {
+				displayName = "${project.mod_name} v${project.mod_version} (Fabric ${project.cf_minecraft_versions})"
+				relations {
+					if(project.hasProperty("cf_required_dependencies")) {
+						project.cf_required_dependencies.split(", ").each { String slug ->
+							requiredDependency slug
+						}
+					}
+				}
+			}
+			changelog = generateHTMLChangelog()
+			changelogType = 'html'
+		}
+		options {
+			forgeGradleIntegration = false
+		}
+	}
+}
+
+
+import com.modrinth.minotaur.dependencies.ModDependency
+modrinth {
+
+	token = System.getenv("MODRINTH_TOKEN")
+
+	if(System.getenv("MODRINTH_TOKEN") != null && project.hasProperty("mr_project_id")) {
+		projectId = project.mr_project_id
+
+		versionType = project.mr_version_type
+
+		if(project.hasProperty("mr_modloader")) {
+			loaders = project.mr_modloader as List
+		}
+
+		if(project.hasProperty("mr_release_versions")) {
+			gameVersions = project.mr_release_versions.split(", ") as List
+		}
+
+		def deps = []
+
+		if(project.hasProperty("mr_required_dependencies")) {
+			project.mr_required_dependencies.split(", ").each { String slug ->
+				deps << new ModDependency(slug, "required")
+			}
+		}
+
+		dependencies = deps
+
+		versionName = "${project.mod_name} v${project.mod_version} (Fabric ${project.mr_minecraft_versions})"
+
+		versionNumber = "v${project.mod_version}"
+
+		changelog = generateMarkdownChangelog()
+
+		uploadFile = remapJar
+	}
 }
 
 processResources {

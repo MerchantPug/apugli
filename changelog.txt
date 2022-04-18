@@ -1,0 +1,13 @@
+## Apugli v1.6.1 (Fabric 1.18.2)
+**Power Types**
+- `apugli:modify_equipped_item_render` now supports Elytra in chest slot.
+- Custom X Sound powers now works on all entities.
+
+**Entity Conditions**
+- Keys to check is now cleared whenever a power type is removed. (Optimisation for `apugli:key_pressed`)
+
+**Compatibility**
+- Updated required Apoli version to v2.3.2
+
+**Bugfixes**
+- Fixed `apugli:edible_item` bucket entity duplication bug.
