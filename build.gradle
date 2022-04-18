@@ -171,7 +171,7 @@ githubRelease {
 }
 
 curseforge {
-	if (System.getenv("CURSEFORGE_API_KEY") && project.hasProperty("cf_project_id")) {
+	if (System.getenv("CURSEFORGE_API_KEY") != null && project.hasProperty("cf_project_id")) {
 		apiKey = System.getenv("CURSEFORGE_API_KEY")
 
 		project {
