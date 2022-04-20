@@ -30,15 +30,11 @@ public abstract class ItemStackMixin {
             ItemStack itemStack = user.getStackInHand(hand);
             if (user.canConsume(((ItemStackAccess)this).getItemStackFoodComponent().isAlwaysEdible())) {
                 user.setCurrentHand(hand);
-                cir.setReturnValue(TypedActionResult.consume(itemStack));
                 if (this.getItem() instanceof BucketItem) {
-                    BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, ((BucketItem)this.getItem()).getFluid() == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
-                    if (blockHitResult.getType() == HitResult.Type.BLOCK) {
-                        cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
-                    }
+                    BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, ((BucketItem) this.getItem()).getFluid() == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
+                    if (blockHitResult.getType() == HitResult.Type.BLOCK) return;
                 }
-            } else {
-                cir.setReturnValue(((ItemStack)(Object)this).getItem().use(world, user, hand));
+                cir.setReturnValue(TypedActionResult.consume(itemStack));
             }
         }
     }
