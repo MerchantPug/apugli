@@ -1,7 +1,0 @@
-{
-  "type": "apugli:custom_death_sound",
-  "sound": {
-    "sound": "minecraft:entity.phantom.death",
-    "pitch": 0.5
-  }
-}

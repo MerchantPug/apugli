@@ -13,6 +13,8 @@ public class ApugliPowerFactories {
         register(ActionOnBoneMealPower.getFactory());
         register(ActionOnDurabilityChange.getFactory());
         register(ActionOnEquipPower.getFactory());
+        register(ActionOnTameHitPower.getFactory());
+        register(ActionWhenTameHitPower.getFactory());
         register(Power.createSimpleFactory(AerialAffinityPower::new, Apugli.identifier("aerial_affinity")));
         register(AllowAnvilEnchantPower.getFactory());
         register(BunnyHopPower.getFactory());

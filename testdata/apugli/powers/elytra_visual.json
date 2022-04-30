@@ -1,8 +1,0 @@
-{
-  "type": "apugli:modify_equipped_item_render",
-  "slot": "CHEST",
-  "stack": {
-    "item": "minecraft:elytra"
-  },
-  "override": true
-}

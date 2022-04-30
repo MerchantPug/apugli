@@ -8,15 +8,18 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class HitsOnTargetUtil {
-    public static void sendPacket(LivingEntity target, LivingEntity attacker, HitsOnTargetUtil.PacketType type, int setAmount) {
+    public static void sendPacket(LivingEntity target, @Nullable LivingEntity attacker, HitsOnTargetUtil.PacketType type, int addAmount) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(target.getId());
-        buf.writeInt(attacker.getId());
         buf.writeByte(type.ordinal());
-        if (type == PacketType.SET) {
-            buf.writeInt(setAmount);
+        buf.writeInt(target.getId());
+        if (attacker != null) {
+            buf.writeInt(attacker.getId());
+        }
+        if (type == PacketType.ADD) {
+            buf.writeInt(addAmount);
         }
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(target)) {
@@ -27,6 +30,6 @@ public class HitsOnTargetUtil {
     }
 
     public enum PacketType {
-        SET, REMOVE;
+        ADD, REMOVE, CLEAR
     }
 }

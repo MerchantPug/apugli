@@ -13,11 +13,15 @@ import net.minecraft.util.Pair;
 
 public class HitsOnTargetCondition {
     public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> pair) {
-        if (!(pair.getRight() instanceof LivingEntity)) return false;
-        int hitsOnTarget = ((LivingEntity) pair.getRight()).isDead() ? 0 : ((LivingEntityAccess) pair.getRight()).getHits().getOrDefault(pair.getLeft(), 0);
-        Comparison comparison = (Comparison)data.get("comparison");
-        int compareTo = data.getInt("compare_to");
-        return comparison.compare(hitsOnTarget, compareTo);
+        Apugli.LOGGER.info(pair.getRight() instanceof LivingEntity);
+        if (pair.getRight() instanceof LivingEntity) {
+            int hitsOnTarget = ((LivingEntityAccess)pair.getRight()).getHits().getOrDefault(pair.getLeft(), 0);
+            Comparison comparison = data.get("comparison");
+            int compareTo = data.getInt("compare_to");
+            Apugli.LOGGER.info("Hits on Target: " + comparison);
+            return comparison.compare(hitsOnTarget, compareTo);
+        }
+        return false;
     }
 
     public static ConditionFactory<Pair<Entity, Entity>> getFactory() {

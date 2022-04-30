@@ -65,28 +65,36 @@ public class ApugliPacketsS2C {
     }
 
     private static void onHitsOnTargetSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        int targetId = packetByteBuf.readInt();
-        int attackerId = packetByteBuf.readInt();
         HitsOnTargetUtil.PacketType type = HitsOnTargetUtil.PacketType.values()[packetByteBuf.readByte()];
+        int targetId = packetByteBuf.readInt();
+        int attackerId = Integer.MIN_VALUE;
+        if (type != HitsOnTargetUtil.PacketType.CLEAR) {
+            attackerId = packetByteBuf.readInt();
+        }
         int amount = 0;
-        if (type == HitsOnTargetUtil.PacketType.SET) {
+        if (type == HitsOnTargetUtil.PacketType.ADD) {
             amount = packetByteBuf.readInt();
         }
+        int finalAttackerId = attackerId;
         int finalAmount = amount;
 
         minecraftClient.execute(() -> {
             Entity target = clientPlayNetworkHandler.getWorld().getEntityById(targetId);
-            Entity attacker = clientPlayNetworkHandler.getWorld().getEntityById(attackerId);
+            Entity attacker = null;
+            if (finalAttackerId != Integer.MIN_VALUE) {
+               attacker = clientPlayNetworkHandler.getWorld().getEntityById(finalAttackerId);
+            }
             if (!(target instanceof LivingEntity)) {
                 Apugli.LOGGER.warn("Received unknown target");
-            } else if (!(attacker instanceof LivingEntity)) {
+            } else if (!(attacker instanceof LivingEntity) && type != HitsOnTargetUtil.PacketType.CLEAR) {
                 Apugli.LOGGER.warn("Received unknown attacker");
             } else switch (type) {
-                case SET -> ((LivingEntityAccess)target).getHits().put(attacker, finalAmount);
+                case ADD -> ((LivingEntityAccess)target).getHits().put(attacker, finalAmount);
                 case REMOVE -> {
                     if (!((LivingEntityAccess)target).getHits().containsKey(attacker)) return;
                     ((LivingEntityAccess)target).getHits().remove(attacker);
                 }
+                case CLEAR -> ((LivingEntityAccess)target).getHits().clear();
             }
         });
     }

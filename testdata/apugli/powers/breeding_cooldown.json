@@ -1,7 +1,0 @@
-{
-  "type": "apugli:modify_breeding_cooldown",
-  "modifier": {
-    "operation": "multiply_base",
-    "value": -0.6
-  }
-}

@@ -1,0 +1,28 @@
+{
+  "type": "apugli:action_on_tame_hit",
+  "bientity_condition": {
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apugli:hits_on_target",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      {
+        "type": "apoli:target_condition",
+        "condition": {
+          "type": "apoli:health",
+          "comparison": "==",
+          "compare_to": 0
+        }
+      }
+    ]
+  },
+  "bientity_action": {
+    "type": "apoli:actor_action",
+    "action": {
+      "type": "apoli:execute_command",
+      "command": "say Uh oh I killed something"
+    }
+  }
+}

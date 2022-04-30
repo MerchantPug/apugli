@@ -2,7 +2,9 @@
   "type": "apugli:rocket_jump",
   "cooldown": 5,
   "hud_render": {
-    "should_render": false
+    "should_render": true,
+    "sprite_location": "apugli:tmo_resource_bar.png",
+    "bar_index": 2
   },
   "source": {
     "name": "overheat",
@@ -11,12 +13,12 @@
     "unblockable": "true"
   },
   "key": {
-    "key": "key.use",
+    "key": "key.saveToolbarActivator",
     "continuous": false
   },
-  "modifier": {
+  "charged_modifier": {
     "operation": "multiply_base",
-    "value": 1.5
+    "value": 0.5
   },
   "amount": 2.0,
   "use_charged": true,

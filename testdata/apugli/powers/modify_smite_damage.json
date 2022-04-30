@@ -1,8 +1,0 @@
-{
-  "type": "ope:modify_enchantment_level",
-  "enchantment": "minecraft:smite",
-  "modifier": {
-    "operation": "addition",
-    "value": 5
-  }
-}

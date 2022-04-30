@@ -18,19 +18,18 @@ import java.util.function.Consumer;
 
 public class ChangeHitsOnTargetAction {
     public static void action(SerializableData.Instance data, Pair<Entity, Entity> pair) {
-        if (pair.getRight().world.isClient || !(pair.getLeft() instanceof LivingEntity) || !(pair.getRight() instanceof LivingEntity) || ((LivingEntity) pair.getRight()).isDead()) return;
+        if (!pair.getRight().world.isClient || !(pair.getLeft() instanceof LivingEntity) || !(pair.getRight() instanceof LivingEntity) || ((LivingEntity) pair.getRight()).isDead()) return;
         int change = data.getInt("change");
         ResourceOperation operation = data.get("operation");
         switch (operation) {
             case ADD: {
                 ((LivingEntityAccess)pair.getRight()).addToHits(pair.getLeft(), change);
-                HitsOnTargetUtil.sendPacket((LivingEntity)pair.getRight(), (LivingEntity)pair.getLeft(), HitsOnTargetUtil.PacketType.SET, ((LivingEntityAccess)pair.getRight()).getHits().get(pair.getLeft()));
             }
             case SET: {
                 ((LivingEntityAccess)pair.getRight()).setHits(pair.getLeft(), change);
-                HitsOnTargetUtil.sendPacket((LivingEntity)pair.getRight(), (LivingEntity)pair.getLeft(), HitsOnTargetUtil.PacketType.REMOVE, 0);
             }
         }
+        HitsOnTargetUtil.sendPacket((LivingEntity)pair.getRight(), (LivingEntity)pair.getLeft(), HitsOnTargetUtil.PacketType.ADD, ((LivingEntityAccess)pair.getRight()).getHits().get(pair.getLeft()));
     }
 
     public static ActionFactory<Pair<Entity, Entity>> getFactory() {

@@ -1,9 +1,0 @@
-{
-  "type": "apugli:modify_equipped_item_render",
-  "slot": "HEAD",
-  "stack": {
-    "item": "minecraft:player_head",
-    "tag": "{SkullOwner:\"MerchantPug\"}"
-  },
-  "override": true
-}

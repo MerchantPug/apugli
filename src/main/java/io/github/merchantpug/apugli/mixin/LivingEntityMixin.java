@@ -16,10 +16,12 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -49,19 +51,20 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow protected abstract boolean tryUseTotem(DamageSource source);
 
-    @Shadow public int hurtTime;
-
-    @Shadow public int maxHurtTime;
-
     @Shadow protected abstract void initDataTracker();
 
     @Shadow public abstract SoundEvent getEatSound(ItemStack stack);
+
+    @Shadow public abstract boolean isAlive();
+
+    @Shadow private int jumpingCooldown;
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Unique private final HashMap<Entity, Integer> hitsHashmap = new HashMap<>();
+    @Unique private int hitsResetCounter;
 
     @Redirect(method = "handleStatus", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V", ordinal = 1))
     private void playHurtSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
@@ -105,17 +108,23 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         ci.cancel();
     }
 
-    @Inject(method = "damage", at = @At("HEAD"))
-    private void addToHits(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (this.world.isClient || source.getAttacker() == null || source.getAttacker().world.isClient || !(source.getAttacker() instanceof LivingEntity) || this.hurtTime > 0 && this.hurtTime != this.maxHurtTime) return;
-        if (this.isDead() && !this.tryUseTotem(source) && hitsHashmap.containsKey(source.getAttacker())) {
-            hitsHashmap.remove(source.getAttacker());
-            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.REMOVE, 0);
+    @Inject(method = "damage", at = @At("RETURN"))
+    private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValue() || source.getAttacker() == null) return;
+        if ((LivingEntity)(Object)this instanceof TameableEntity tameable) {
+            PowerHolderComponent.withPowers(tameable.getOwner(), ActionWhenTameHitPower.class, p -> true, p -> p.whenHit(source.getAttacker(), source, amount));
+        }
+        if (source.getAttacker() instanceof TameableEntity tameable) {
+            PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, source, amount));
+        }
+        if (this.isDead() && !this.tryUseTotem(source)) {
+            hitsHashmap.clear();
+            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0);
             return;
         }
-        int newValue = hitsHashmap.containsKey(source.getAttacker()) ? hitsHashmap.get(source.getAttacker()) + 1 : 1;
-        hitsHashmap.put(source.getAttacker(), newValue);
-        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, newValue);
+        addToHits(source.getAttacker(), 1);
+        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.ADD, getHits().get(source.getAttacker()) + 1);
+        hitsResetCounter = 0;
     }
 
     @Unique private boolean hasModifiedDamage;
@@ -239,7 +248,20 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        if (this.isDead()) return;
+        if (!this.isAlive()) return;
+        if (!world.isClient && hitsHashmap.size() > 0) {
+            if (hitsResetCounter == 901) {
+                Apugli.LOGGER.info("Entity hits reset");
+                hitsHashmap.clear();
+                HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0);
+                hitsResetCounter++;
+            } else if (hitsResetCounter < 901) {
+                hitsHashmap.forEach((entity, integer) -> {
+                    Apugli.LOGGER.info("Entity: " + this.getName().getString() + " | " + entity.getName().getString() + " Hits on Target: " + integer + " | " + hitsResetCounter);
+                });
+                hitsResetCounter++;
+            }
+        }
         if (PowerHolderComponent.hasPower(this, HoverPower.class)) {
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallDistance = 0.0F;

@@ -1,0 +1,10 @@
+{
+  "type": "apugli:action_when_tame_hit",
+  "bientity_action": {
+    "type": "apoli:actor_action",
+    "action": {
+      "type": "apoli:execute_command",
+      "command": "say Hiiiii"
+    }
+  }
+}
