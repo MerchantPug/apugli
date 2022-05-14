@@ -10,7 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class KeyPressedCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         if (entity.world.isClient && ApugliClient.keysToCheck.stream().noneMatch(key -> key.equals(data.get("key")))) {
             ApugliClient.keysToCheck.add(data.get("key"));
         }

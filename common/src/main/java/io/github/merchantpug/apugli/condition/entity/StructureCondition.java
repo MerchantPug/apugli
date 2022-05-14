@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StructureCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         if (entity.getEntityWorld().isClient()) return false;
         StructureFeature<?> structure = Registry.STRUCTURE_FEATURE.get(data.getId("structure"));
         BlockPos structurePos = ((ServerWorld)entity.getEntityWorld()).locateStructure(structure, entity.getBlockPos(), 12, false);

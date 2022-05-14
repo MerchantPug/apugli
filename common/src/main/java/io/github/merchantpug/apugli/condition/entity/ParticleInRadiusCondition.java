@@ -20,7 +20,7 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 public class ParticleInRadiusCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         if (!entity.world.isClient()) return false;
         List<ParticleEffect> particles = (List<ParticleEffect>)data.get("particles");
         int stopAt = -1;

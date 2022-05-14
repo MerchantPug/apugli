@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
 public class RaycastCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         double baseReach = (entity instanceof PlayerEntity && ((PlayerEntity)entity).abilities.creativeMode) ? 5.0D : 4.5D;
         double reach = getReach(entity, baseReach);
         double distance = data.isPresent("distance") ? data.getDouble("distance") : reach;

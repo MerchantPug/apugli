@@ -15,7 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class CompareResourceCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         if (!(entity instanceof PlayerEntity)) return false;
         PlayerEntity player = (PlayerEntity) entity;
         Comparison comparison = ((Comparison) data.get("comparison"));
