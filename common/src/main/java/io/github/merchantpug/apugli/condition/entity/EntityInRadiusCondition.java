@@ -11,7 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import java.util.function.Predicate;
 
 public class EntityInRadiusCondition {
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+    public static boolean condition(SerializableData.Instance data, LivingEntity entity) {
         Predicate<Entity> entityCondition = (ConditionFactory<Entity>.Instance)data.get("condition");
         int stopAt = -1;
         Comparison comparison = (Comparison)data.get("comparison");
@@ -28,8 +28,8 @@ public class EntityInRadiusCondition {
         }
         int count = 0;
         for (Entity target : entity.world.getOtherEntities(entity, entity.getBoundingBox().expand(data.getDouble("radius")))) {
-            if (target != null) {
-                if ((entityCondition == null || entityCondition.test(target))) {
+            if (target instanceof LivingEntity) {
+                if (entityCondition == null || entityCondition.test(target)) {
                     count++;
                     if (count == stopAt) {
                         break;
