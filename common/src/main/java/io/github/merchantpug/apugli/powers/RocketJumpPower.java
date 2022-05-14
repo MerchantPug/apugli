@@ -11,21 +11,18 @@ import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import io.github.merchantpug.apugli.Apugli;
 import io.github.merchantpug.apugli.registry.ApugliDamageSources;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.merchantpug.apugli.util.RaycastUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.explosion.Explosion;
 
@@ -101,7 +98,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
                 double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z, true) : entityDistance * entityDistance;
                 double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(player, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+                EntityHitResult entityHitResult = RaycastUtils.raycast(player, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
 
                 HitResult.Type blockHitResultType = blockHitResult.getType();
                 HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
