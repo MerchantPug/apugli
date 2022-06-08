@@ -40,6 +40,9 @@ repositories {
 	maven {
 		url "https://maven.terraformersmc.com/"
 	}
+	flatDir {
+		dirs 'libs'
+	}
 }
 
 loom {
@@ -58,78 +61,10 @@ dependencies {
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
-}
 
-String generateHTMLChangelog() {
-	String changelogText = ""
-
-	File file = file("${projectDir}/changelog.txt")
-	if(file.exists()) {
-		List<String> stringList = file.readLines();
-		for (int i = 0; i < stringList.size(); ++i) {
-			String line = stringList.get(i)
-			if (!line.isBlank()) {
-				boolean h2 = false
-				boolean h3 = false
-				boolean bolded = false
-				boolean italicised = false
-				boolean bulletPointed = false
-
-				String newString = ""
-
-				if (line.startsWith("## ")) {
-					newString = line.replaceFirst("## ", "")
-					h2 = true
-				}
-				if (line.startsWith("### ")) {
-					newString = line.replaceFirst("### ", "")
-					h3 = true
-				}
-				if (line.startsWith("- ")) {
-					newString = line.replaceFirst("- ", "")
-					bulletPointed = true
-				}
-				if (line.startsWith("**") && line.endsWith("**")) {
-					StringBuilder stringBuilder = new StringBuilder(line)
-					stringBuilder.delete(0, 3)
-					stringBuilder.delete(stringBuilder.length() - 3, stringBuilder.length())
-					newString = stringBuilder.toString()
-					bolded = true
-				}
-				if (line.startsWith("*") && line.endsWith("*")) {
-					StringBuilder stringBuilder = new StringBuilder(line)
-					stringBuilder.delete(0, 2)
-					stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length())
-					newString = stringBuilder.toString()
-					italicised = true
-				}
-				if (h2) {
-					newString = "<h2>" + newString + "</h2>"
-				}
-				if (h3) {
-					newString = "<h3>" + newString + "</h3>"
-				}
-				if (bulletPointed) {
-					newString = "<li>" + newString + "</li>"
-				}
-				if (bolded) {
-					newString = "<b><strong>" + newString + "</strong></b>"
-				}
-				if (italicised) {
-					newString = "<i>" + newString + "</i>"
-				}
-				if (h2 || h3 || bulletPointed || bolded || italicised) {
-					changelogText += "${newString}"
-				} else {
-					changelogText += "<p>${newString}</p>"
-				}
-			}
-			if (i < stringList.size() - 1) {
-				changelogText += "\n"
-			}
-		}
-	}
-	return changelogText
+	implementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
+	annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
+	include("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
 }
 
 String generateMarkdownChangelog() {
@@ -189,6 +124,12 @@ curseforge {
 					addGameVersion gameVersion
 				}
 			}
+			if (project.hasProperty("cf_modloader")) {
+				def gameVersions = project.cf_modloader.split(", ")
+				gameVersions.each { String gameVersion ->
+					addGameVersion gameVersion
+				}
+			}
 			addGameVersion project.cf_modloader
 			mainArtifact(remapJar) {
 				displayName = "${project.mod_name} v${project.mod_version} (Fabric ${project.cf_minecraft_versions})"
@@ -200,8 +141,8 @@ curseforge {
 					}
 				}
 			}
-			changelog = generateHTMLChangelog()
-			changelogType = 'html'
+			changelog = generateMarkdownChangelog()
+			changelogType = 'markdown'
 		}
 		options {
 			forgeGradleIntegration = false
@@ -220,7 +161,7 @@ modrinth {
 		versionType = project.mr_version_type
 
 		if(project.hasProperty("mr_modloader")) {
-			loaders = [ project.mr_modloader ]
+			loaders = project.mr_modloader.split(", ") as List
 		}
 
 		if(project.hasProperty("mr_release_versions")) {

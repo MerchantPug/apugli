@@ -1,3 +1,21 @@
-## Apugli v1.7.0
+## Apugli v1.7.0 (Fabric/Quilt 1.19)
 **Power Types**
 - Added `apugli:action_on_tame_hit`, `apugli:action_when_tame_hit` power types.
+- Adjusted `apugli:rocket_jump` sound to be higher pitched and lower in volume.
+- `apugli:rocket_jump` no longer hurts non living entities and armor stands.
+- `apugli:rocket_jump` deals less knockback to entities that aren't the user.
+- Added `water_modifier` and `water_modifiers` fields to `apugli:rocket_jump`, the rocket jump `speed`/velocity will now be modified with this modifier when the entity is touching water.
+
+**Item Actions**
+- `apugli:action_on_durability_change` is now compatible with `apoli:damage`.
+- Both damage actions now utilise increase action from `apugli:action_on_durability_change` if they increase the durability of an item.
+
+**Bugfixes**
+- Made a temporary incompatibility fix involving Collective and `apugli:edible_item`.
+- Modified `apugli:edible_item` logic to make eating an item not increment relevant scores twice.
+- Fixed `apugli:modify_enchant_level` not applying correctly
+
+**Misc**
+- Updated to MC 1.19,
+- Updated modifier format to new Apoli format for powers/actions that contained modifier fields
+- Refactored directory location to com.github.merchantpug.apugli to match maven group (previously io.github.merchantpug.apugli)

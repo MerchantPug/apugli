@@ -21,8 +21,26 @@
   "bientity_action": {
     "type": "apoli:actor_action",
     "action": {
-      "type": "apoli:execute_command",
-      "command": "say Uh oh I killed something"
+      "type": "apoli:and",
+      "actions": [
+        {
+          "type": "apoli:equipped_item_action",
+          "equipment_slot": "mainhand",
+          "action": {
+            "type": "apoli:damage",
+            "amount": -100,
+            "ignore_unbreaking": true
+          }
+        },
+        {
+          "type": "apoli:execute_command",
+          "command": "say sup wyd"
+        }
+      ]
     }
+  },
+  "condition": {
+    "type": "apugli:structure",
+    "tag": "minecraft:village"
   }
 }

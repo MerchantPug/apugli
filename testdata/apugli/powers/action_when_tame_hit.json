@@ -6,5 +6,9 @@
       "type": "apoli:execute_command",
       "command": "say Hiiiii"
     }
+  },
+  "condition": {
+    "type": "apugli:structure",
+    "structure": "minecraft:village_desert"
   }
 }

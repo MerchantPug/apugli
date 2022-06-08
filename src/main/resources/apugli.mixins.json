@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.merchantpug.apugli.mixin",
+  "package": "com.github.merchantpug.apugli.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
@@ -21,6 +21,7 @@
     "ExplosionMixin",
     "HungerManagerMixin",
     "ItemAccessor",
+    "ItemActionsMixin",
     "ItemConditionsMixin",
     "ItemPredicateMixin",
     "ItemStackMixin",
@@ -41,9 +42,9 @@
     "client.ArmorFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
     "client.ClientWorldMixin",
-    "client.EntityRendererMixin",
     "client.ElytraFeatureRendererAccessor",
     "client.ElytraFeatureRendererMixin",
+    "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.HeadFeatureRendererAccessor",
     "client.HeadFeatureRendererMixin",

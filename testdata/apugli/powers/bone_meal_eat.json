@@ -1,0 +1,15 @@
+{
+  "type": "apugli:edible_item",
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:bone_meal"
+    }
+  },
+  "food_component": {
+    "hunger": 4,
+    "saturation": 1,
+    "meat": true
+  },
+  "use_action": "eat"
+}

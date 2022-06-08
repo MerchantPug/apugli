@@ -1,0 +1,9 @@
+{
+  "type": "apugli:prevent_sound",
+  "categories": [
+    "BLOCKS"
+  ],
+  "whitelist": [
+    "minecraft:block.glass.break"
+  ]
+}

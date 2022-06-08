@@ -1,0 +1,21 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:diamond_pickaxe"
+    }
+  },
+  "increase_action": {
+    "type": "apoli:execute_command",
+    "command": "tellraw @a {\"text\": \"Woooo!\", \"color\": \"green\"}"
+  },
+  "decrease_action": {
+    "type": "apoli:execute_command",
+    "command": "tellraw @a {\"text\": \"Shit!\", \"color\": \"green\"}"
+  },
+  "break_action": {
+    "type": "apoli:execute_command",
+    "command": "tellraw @a {\"text\": \":(\", \"color\": \"green\"}"
+  }
+}

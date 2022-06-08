@@ -1,0 +1,21 @@
+{
+  "type": "apoli:multiple",
+  "resource": {
+    "type": "apoli:resource",
+    "min": 0,
+    "max": 3,
+    "hud_render": {
+      "sprite_location": "apugli:tmo_resource_bar.png",
+      "bar_index": 1
+    }
+  },
+  "modification": {
+    "type": "apugli:modify_enchantment_level",
+    "enchantment": "minecraft:fortune",
+    "modifier": {
+      "operation": "addition",
+      "value": 1,
+      "resource": "*:*_resource"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "apoli:active_self",
+  "entity_action": {
+    "type": "apugli:fire_projectile",
+    "speed": 2.0,
+    "entity_type": "minecraft:arrow",
+    "tag": "{pickup:0}"
+  },
+  "cooldown": 2,
+  "hud_render": {
+    "should_render": false
+  },
+  "key": {
+    "key": "key.use",
+    "continuous": true
+  }
+}

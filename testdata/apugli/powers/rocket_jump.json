@@ -20,6 +20,10 @@
     "operation": "multiply_base",
     "value": 0.5
   },
+  "water_modifier": {
+    "operation": "multiply_base",
+    "value": -0.3
+  },
   "amount": 2.0,
   "use_charged": true,
   "speed": 1.0

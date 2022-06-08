@@ -1,0 +1,14 @@
+{
+  "type": "apugli:modify_soul_speed",
+  "modifier": {
+    "operation": "addition",
+    "value": 1
+  },
+  "condition": {
+    "type": "apoli:enchantment",
+    "enchantment": "minecraft:soul_speed",
+    "calculation": "max",
+    "comparison": "==",
+    "compare_to": 0
+  }
+}
