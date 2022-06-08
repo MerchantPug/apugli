@@ -96,7 +96,6 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
         if (entity == null) return self.getEnchantments();
         ConcurrentHashMap<NbtList, NbtList> itemEnchants = ENTITY_ITEM_ENCHANTS.computeIfAbsent(entity.getUuidAsString(), (_uuid) -> new ConcurrentHashMap<>());
         NbtList enchants = itemEnchants.compute(self.getEnchantments(), (tag, tag2) -> ModifyEnchantmentLevelPower.generateEnchantments(tag, self));
-        enchants.forEach(Apugli.LOGGER::info);
         return enchants;
     }
 
