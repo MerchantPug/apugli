@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(value = ItemActions.class)
 public class ItemActionsMixin {
-    @Inject(method = "lambda$register$3", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getDamage()I"))
+    @Inject(method = "lambda$register$3(Lio/github/apace100/calio/data/SerializableData$Instance;Lnet/minecraft/util/Pair;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getDamage()I"))
     private static void handleIncreaseDecreaseAction(SerializableData.Instance data, Pair<World, ItemStack> worldAndStack, CallbackInfo ci) {
         int amount = data.getInt("amount");
         LivingEntity stackHolder = (LivingEntity) ((ItemStackAccess) (Object) worldAndStack.getRight()).getEntity();
@@ -28,7 +28,7 @@ public class ItemActionsMixin {
         }
     }
 
-    @Inject(method = "lambda$register$3", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
+    @Inject(method = "lambda$register$3(Lio/github/apace100/calio/data/SerializableData$Instance;Lnet/minecraft/util/Pair;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private static void handleBreakAction(SerializableData.Instance data, Pair<World, ItemStack> worldAndStack, CallbackInfo ci) {
         LivingEntity stackHolder = (LivingEntity) ((ItemStackAccess) (Object) worldAndStack.getRight()).getEntity();
         PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeBreakAction);
