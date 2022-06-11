@@ -17,15 +17,16 @@ public class ChangeHitsOnTargetAction {
         if (!pair.getRight().world.isClient || !(pair.getLeft() instanceof LivingEntity) || !(pair.getRight() instanceof LivingEntity) || ((LivingEntity) pair.getRight()).isDead()) return;
         int change = data.getInt("change");
         ResourceOperation operation = data.get("operation");
+        Pair<Integer, Integer> valueTimerResetTimeTriple = ((LivingEntityAccess)pair.getRight()).getHits().get(pair.getLeft());
         switch (operation) {
             case ADD: {
-                ((LivingEntityAccess)pair.getRight()).addToHits(pair.getLeft(), change);
+                ((LivingEntityAccess)pair.getRight()).setHits(pair.getLeft(), valueTimerResetTimeTriple.getLeft() + change, valueTimerResetTimeTriple.getRight());
             }
             case SET: {
-                ((LivingEntityAccess)pair.getRight()).setHits(pair.getLeft(), change);
+                ((LivingEntityAccess)pair.getRight()).setHits(pair.getLeft(), change, valueTimerResetTimeTriple.getRight());
             }
         }
-        HitsOnTargetUtil.sendPacket((LivingEntity)pair.getRight(), (LivingEntity)pair.getLeft(), HitsOnTargetUtil.PacketType.ADD, ((LivingEntityAccess)pair.getRight()).getHits().get(pair.getLeft()));
+        HitsOnTargetUtil.sendPacket((LivingEntity)pair.getRight(), (LivingEntity)pair.getLeft(), HitsOnTargetUtil.PacketType.SET, valueTimerResetTimeTriple.getLeft(), valueTimerResetTimeTriple.getRight());
     }
 
     public static ActionFactory<Pair<Entity, Entity>> getFactory() {

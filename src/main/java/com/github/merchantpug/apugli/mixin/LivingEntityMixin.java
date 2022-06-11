@@ -1,28 +1,28 @@
 package com.github.merchantpug.apugli.mixin;
 
+import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.access.ItemStackAccess;
 import com.github.merchantpug.apugli.access.LivingEntityAccess;
 import com.github.merchantpug.apugli.power.*;
+import com.github.merchantpug.apugli.util.ApugliConfig;
 import com.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import com.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.apache.commons.lang3.tuple.Triple;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,7 +35,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
@@ -59,8 +61,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         super(entityType, world);
     }
 
-    @Unique private final HashMap<Entity, Integer> hitsHashmap = new HashMap<>();
-    @Unique private int hitsResetCounter;
+    @Unique private final HashMap<Entity, Pair<Integer, Integer>> hitsHashmap = new HashMap<>();
 
     @Redirect(method = "handleStatus", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;playSound(Lnet/minecraft/sound/SoundEvent;FF)V", ordinal = 1))
     private void playHurtSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
@@ -108,19 +109,18 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() || source.getAttacker() == null) return;
         if ((LivingEntity)(Object)this instanceof TameableEntity tameable) {
-            PowerHolderComponent.withPowers(tameable.getOwner(), ActionWhenTameHitPower.class, p -> true, p -> p.whenHit(source.getAttacker(), source, amount));
+            PowerHolderComponent.withPowers(tameable.getOwner(), ActionWhenTameHitPower.class, p -> true, p -> p.whenHit(tameable, source.getAttacker(), source, amount));
         }
         if (source.getAttacker() instanceof TameableEntity tameable) {
-            PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, source, amount));
+            PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, tameable, source, amount));
         }
         if (this.isDead() && !this.tryUseTotem(source)) {
             hitsHashmap.clear();
-            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0);
+            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0, 0);
             return;
         }
-        addToHits(source.getAttacker(), 1);
-        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.ADD, getHits().get(source.getAttacker()) + 1);
-        hitsResetCounter = 0;
+        setHits(source.getAttacker(), hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getRight());
+        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), getHits().get(source.getAttacker()).getRight());
     }
 
     @Unique private boolean hasModifiedDamage;
@@ -131,7 +131,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
 
         if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity && !source.isProjectile()) {
-            List<ModifyEnchantmentDamageDealtPower> damageDealtPowers = PowerHolderComponent.getPowers(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class).stream().filter(p -> p.doesApply(source, amount, thisAsLiving)).collect(Collectors.toList());
+            List<ModifyEnchantmentDamageDealtPower> damageDealtPowers = PowerHolderComponent.getPowers(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class).stream().filter(p -> p.doesApply(source, amount, thisAsLiving)).toList();
 
             damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
 
@@ -161,7 +161,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         return originalValue + additionalValue[0];
     }
 
-    @Inject(method = "eatFood", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "eatFood", at = @At("HEAD"))
     private void eatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
@@ -170,8 +170,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                 stack.decrement(1);
             }
             this.emitGameEvent(GameEvent.EAT);
-
-            cir.setReturnValue(stack);
         }
     }
 
@@ -236,13 +234,17 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (!this.isAlive()) return;
-        if (!world.isClient && hitsHashmap.size() > 0) {
-            if (hitsResetCounter == 901) {
-                hitsHashmap.clear();
-                HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0);
-                hitsResetCounter++;
-            } else if (hitsResetCounter < 901) {
-                hitsResetCounter++;
+        if (this.hitsHashmap.size() > 0) {
+            Iterator<Map.Entry<Entity, Pair<Integer, Integer>>> it = hitsHashmap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Entity, Pair<Integer, Integer>> values = it.next();
+                int hitAmount = values.getValue().getLeft();
+                int currentTime = values.getValue().getRight();
+                if (currentTime > Apugli.config.hitsOnTarget.resetTimerTicks) {
+                    it.remove();
+                    continue;
+                }
+                values.setValue(new Pair<>(hitAmount, currentTime + 1));
             }
         }
         if (PowerHolderComponent.hasPower(this, HoverPower.class)) {
@@ -288,17 +290,12 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Override
-    public HashMap<Entity, Integer> getHits() {
+    public HashMap<Entity, Pair<Integer, Integer>> getHits() {
         return this.hitsHashmap;
     }
 
     @Override
-    public void addToHits(Entity entity, int value) {
-        this.hitsHashmap.put(entity, hitsHashmap.containsKey(entity) ? hitsHashmap.get(entity) + value: value);
-    }
-
-    @Override
-    public void setHits(Entity entity, int value) {
-        this.hitsHashmap.put(entity, value);
+    public void setHits(Entity entity, int hitValue, int timer) {
+        this.hitsHashmap.put(entity, new Pair<>(hitValue, timer));
     }
 }

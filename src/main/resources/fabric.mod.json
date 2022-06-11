@@ -26,6 +26,9 @@
     ],
     "preLaunch": [
       "com.github.merchantpug.apugli.ApugliPreLaunch"
+    ],
+    "modmenu": [
+      "com.github.merchantpug.apugli.integration.ApugliModMenuIntegration"
     ]
   },
   "mixins": [

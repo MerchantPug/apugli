@@ -1,13 +1,17 @@
 package com.github.merchantpug.apugli.mixin;
 
+import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.apace100.apoli.util.modifier.Modifier;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,13 +31,16 @@ import java.util.Set;
 public abstract class ExplosionMixin implements ExplosionAccess {
     @Unique private boolean apugli$rocketJumpExplosion;
     @Unique private Entity apugli$affectedEntity;
+    @Unique private List<Modifier> apugli$explosionDamageModifiers;
 
     @Shadow @Final private World world;
+
+    @Shadow public abstract @Nullable LivingEntity getCausingEntity();
 
     @ModifyArg(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private float changeDamage(float amount) {
         if (this.isRocketJump()) {
-            return amount = amount * 0.0F;
+            return amount = (float) ModifierUtil.applyModifiers(this.getCausingEntity(), apugli$explosionDamageModifiers, amount);
         }
         return amount;
     }
@@ -55,7 +62,7 @@ public abstract class ExplosionMixin implements ExplosionAccess {
     @ModifyExpressionValue(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isImmuneToExplosion()Z"))
     private boolean cancelDamagedEntity(boolean original) {
         if (this.isRocketJump()) {
-            return original || !(apugli$affectedEntity instanceof LivingEntity) || apugli$affectedEntity instanceof ArmorStandEntity || apugli$affectedEntity.isTouchingWater();
+            return original || !(apugli$affectedEntity instanceof LivingEntity) || apugli$affectedEntity instanceof ArmorStandEntity;
         }
         return original;
     }
@@ -84,5 +91,11 @@ public abstract class ExplosionMixin implements ExplosionAccess {
     @Override
     public boolean isRocketJump() {
         return this.apugli$rocketJumpExplosion;
+    }
+
+
+    @Override
+    public void setExplosionDamageModifiers(List<Modifier> value) {
+        this.apugli$explosionDamageModifiers = value;
     }
 }

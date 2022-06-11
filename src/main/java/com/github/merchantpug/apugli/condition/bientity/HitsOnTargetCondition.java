@@ -10,14 +10,15 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class HitsOnTargetCondition {
     public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> pair) {
         if (pair.getRight() instanceof LivingEntity) {
-            int hitsOnTarget = ((LivingEntityAccess)pair.getRight()).getHits().getOrDefault(pair.getLeft(), 0);
+            Pair<Integer, Integer> hitsOnTarget = ((LivingEntityAccess)pair.getRight()).getHits().getOrDefault(pair.getLeft(), new Pair(0, 0));
             Comparison comparison = data.get("comparison");
             int compareTo = data.getInt("compare_to");
-            return comparison.compare(hitsOnTarget, compareTo);
+            return comparison.compare(hitsOnTarget.getLeft(), compareTo);
         }
         return false;
     }

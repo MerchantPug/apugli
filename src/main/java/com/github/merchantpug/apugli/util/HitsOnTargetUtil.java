@@ -10,15 +10,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class HitsOnTargetUtil {
-    public static void sendPacket(LivingEntity target, @Nullable LivingEntity attacker, HitsOnTargetUtil.PacketType type, int addAmount) {
+    public static void sendPacket(LivingEntity target, @Nullable LivingEntity attacker, HitsOnTargetUtil.PacketType type, int setAmount, int timer) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeByte(type.ordinal());
         buf.writeInt(target.getId());
+        buf.writeBoolean(attacker != null);
         if (attacker != null) {
             buf.writeInt(attacker.getId());
         }
-        if (type == PacketType.ADD) {
-            buf.writeInt(addAmount);
+        if (type == PacketType.SET) {
+            buf.writeInt(setAmount);
+            buf.writeInt(timer);
         }
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(target)) {
@@ -29,6 +31,6 @@ public class HitsOnTargetUtil {
     }
 
     public enum PacketType {
-        ADD, REMOVE, CLEAR
+        SET, REMOVE, CLEAR
     }
 }

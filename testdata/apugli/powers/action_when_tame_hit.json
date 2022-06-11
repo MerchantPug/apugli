@@ -1,10 +1,31 @@
 {
   "type": "apugli:action_when_tame_hit",
   "bientity_action": {
-    "type": "apoli:actor_action",
+    "type": "apoli:target_action",
     "action": {
-      "type": "apoli:execute_command",
-      "command": "say Hiiiii"
+      "type": "apoli:set_on_fire",
+      "duration": 1
+    }
+  },
+  "owner_bientity_action": {
+    "type": "apoli:target_action",
+    "action": {
+      "type": "apoli:and",
+      "actions": [
+        {
+          "type": "apoli:equipped_item_action",
+          "equipment_slot": "mainhand",
+          "action": {
+            "type": "apoli:damage",
+            "amount": -100,
+            "ignore_unbreaking": true
+          }
+        },
+        {
+          "type": "apoli:execute_command",
+          "command": "say hi I am the owner"
+        }
+      ]
     }
   },
   "condition": {

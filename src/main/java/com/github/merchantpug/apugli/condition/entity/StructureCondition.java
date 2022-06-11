@@ -26,7 +26,7 @@ public class StructureCondition {
 
         RegistryEntryList<Structure> entryList = null;
         RegistryKey<Structure> structure = data.get("structure");
-        TagKey<Structure> tag = data.get("structure_tag");
+        TagKey<Structure> tag = data.get("tag");
         if(structure != null) {
             var entry = registry.getEntry(structure);
             if(entry.isPresent()) {

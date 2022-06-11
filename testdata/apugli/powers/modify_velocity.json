@@ -1,0 +1,51 @@
+{
+  "type": "apoli:modify_velocity",
+  "modifiers": [
+    {
+      "operation": "multiply_total",
+      "value": -0.35
+    },
+    {
+      "operation": "min_total",
+      "value": -1.1
+    }
+  ],
+  "axes": [
+    "Y"
+  ],
+  "condition": {
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apugli:velocity",
+        "axes": [
+          "Y"
+        ],
+        "compare_to": 0.0,
+        "comparison": ">="
+      },
+      {
+        "type": "apoli:fluid_height",
+        "fluid": "minecraft:water",
+        "comparison": ">",
+        "compare_to": "0",
+        "inverted": true
+      },
+      {
+        "type": "apoli:fluid_height",
+        "fluid": "minecraft:lava",
+        "comparison": ">",
+        "compare_to": "0",
+        "inverted": true
+      },
+      {
+        "type": "apoli:fall_flying",
+        "inverted": true
+      },
+      {
+        "type": "apoli:riding",
+        "inverted": true
+      }
+    ]
+  }
+}

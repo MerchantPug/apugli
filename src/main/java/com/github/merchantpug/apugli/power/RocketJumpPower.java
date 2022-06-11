@@ -7,7 +7,6 @@ import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ActiveCooldownPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
@@ -21,7 +20,6 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -46,10 +44,12 @@ public class RocketJumpPower extends ActiveCooldownPower {
     private final double distance;
     private final DamageSource source;
     private final float amount;
-    private final double speed;
+    private final double velocity;
+    private final double velocityClamp;
     private final boolean useCharged;
     private final List<Modifier> chargedModifiers = new LinkedList<>();
     private final List<Modifier> waterModifiers = new LinkedList<>();
+    private final List<Modifier> damageModifiers = new LinkedList<>();
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<RocketJumpPower>(Apugli.identifier("rocket_jump"),
@@ -58,7 +58,8 @@ public class RocketJumpPower extends ActiveCooldownPower {
                         .add("distance", SerializableDataTypes.DOUBLE, Double.NaN)
                         .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
                         .add("amount", SerializableDataTypes.FLOAT, 0.0F)
-                        .add("speed", SerializableDataTypes.DOUBLE, 1.0D)
+                        .add("velocity", SerializableDataTypes.DOUBLE, 1.0D)
+                        .addFunctionedDefault("velocity_clamp", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity") * 1.8D)
                         .add("use_charged", SerializableDataTypes.BOOLEAN, false)
                         .add("charged_modifier", Modifier.DATA_TYPE, null)
                         .add("charged_modifiers", Modifier.LIST_TYPE, null)
@@ -70,7 +71,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 (data) ->
                         (type, entity) ->  {
-                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("speed"), data.getBoolean("use_charged"));
+                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("velocity"), data.getDouble("velocity_clamp"), data.getBoolean("use_charged"));
                             power.setKey((Active.Key)data.get("key"));
                             if(data.isPresent("charged_modifier")) {
                                 power.addChargedJumpModifier(data.get("charged_modifier"));
@@ -85,22 +86,23 @@ public class RocketJumpPower extends ActiveCooldownPower {
                                 ((List<Modifier>)data.get("water_modifiers")).forEach(power::addWaterJumpModifier);
                             }
                             if(data.isPresent("damage_modifier")) {
-                                power.addWaterJumpModifier(data.get("water_modifier"));
+                                power.addDamageModifier(data.get("damage_modifier"));
                             }
                             if(data.isPresent("damage_modifiers")) {
-                                ((List<Modifier>)data.get("water_modifiers")).forEach(power::addWaterJumpModifier);
+                                ((List<Modifier>)data.get("damage_modifiers")).forEach(power::addDamageModifier);
                             }
                             return power;
                         })
                 .allowCondition();
     }
 
-    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double speed, boolean useCharged) {
+    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double velocity, double velocityClamp, boolean useCharged) {
         super(type, entity, cooldownDuration, hudRender, null);
         this.distance = distance;
         this.source = source;
         this.amount = amount;
-        this.speed = speed;
+        this.velocity = velocity;
+        this.velocityClamp = velocityClamp;
         this.useCharged = useCharged;
     }
 
@@ -149,7 +151,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
     }
 
     private void handleRocketJump(HitResult hitResult, boolean isCharged) {
-        double speed = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? ModifierUtil.applyModifiers(entity, chargedModifiers, this.speed) : this.speed;
+        double velocity = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? ModifierUtil.applyModifiers(entity, chargedModifiers, this.velocity) : this.velocity;
         float e = isCharged && this.useCharged ? 2.0F : 1.5F;
         if (this.source != null && this.amount != 0.0F) entity.damage(this.source, this.amount);
         float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
@@ -158,16 +160,19 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
         Explosion explosion = new Explosion(entity.world, entity, ApugliDamageSources.jumpExplosion(entity), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
         ((ExplosionAccess)explosion).setRocketJump(true);
+        ((ExplosionAccess)explosion).setExplosionDamageModifiers(this.getDamageModifiers());
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld(true);
 
         sendExplosionToClient(hitResult, e);
 
         if (entity.isTouchingWater()) {
-            speed = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, speed) : speed;
+            velocity = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, velocity) : velocity;
         }
-        entity.addVelocity(f * speed, g * speed, h * speed);
+        Vec3d vec = entity.getVelocity().add(f * velocity, g * velocity, h * velocity);
+        entity.setVelocity(MathHelper.clamp(vec.x, velocity * -velocityClamp, velocityClamp), MathHelper.clamp(vec.y, -velocityClamp, velocityClamp), MathHelper.clamp(vec.z, -velocityClamp, velocityClamp));
         entity.velocityModified = true;
+        Apugli.LOGGER.info(entity.getVelocity().y);
         entity.fallDistance = 0;
         this.use();
     }
@@ -179,6 +184,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
         buf.writeDouble(hitResult.getPos().getY());
         buf.writeDouble(hitResult.getPos().getZ());
         buf.writeFloat(radius);
+        Modifier.LIST_TYPE.send(buf, this.getDamageModifiers());
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(entity)) {
             ServerPlayNetworking.send(player, ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, buf);
@@ -211,5 +217,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
     public List<Modifier> getWaterModifiers() {
         return waterModifiers;
+    }
+
+    public void addDamageModifier(Modifier modifier) {
+        this.damageModifiers.add(modifier);
+    }
+
+    public List<Modifier> getDamageModifiers() {
+        return damageModifiers;
     }
 }
