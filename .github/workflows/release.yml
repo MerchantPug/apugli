@@ -19,14 +19,15 @@ jobs:
           distribution: "temurin"
           java-version: 17
 
-      - name: Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: wrapper
-          arguments: clean build
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
 
-      - name: Publish
-      - uses: Kir-Antipov/mc-publish@v3.0
+      - name: Build
+        run: ./gradlew clean build
+
+      - name: Publish (CurseForge/Modrinth)
+        uses: Kir-Antipov/mc-publish@v3.0
         with:
           # Modrinth
           modrinth-id: 1qeWG44Y
@@ -37,6 +38,30 @@ jobs:
           curseforge-id: 579886
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
+          # Config
+          name: Apugli v1.7.1 (Fabric 1.19)
+          version: v1.7.1+1.19-fabric
+          version-type: release
+          changelog-file: CHANGELOG.md
+          files-primary: build/libs/!(*-@(dev|sources)).jar
+          files-secondary: ""
+
+          loaders: |
+            fabric
+            quilt
+          game-versions: |
+            1.19
+          dependencies: |
+            fabric-api | depends | *
+          java: |
+            17
+
+          retry-attempts: 2
+          retry-delay: 10000
+
+      - name: Publish (GitHub)
+        uses: Kir-Antipov/mc-publish@v3.0
+        with:
           # GitHub
           github-tag: v1.7.1
           github-draft: false
@@ -45,7 +70,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
           name: Apugli v1.7.1 (Fabric 1.19)
-          version: v1.7.1-fabric
+          version: v1.7.1+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
 
