@@ -11,14 +11,38 @@ jobs:
       image: eclipse-temurin:17-jdk
       options: --user root
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: Upload releases
-        run: ./gradlew build publish curseforge github modrinth --stacktrace
-        env:
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-          ENVIRONMENT: production
+      - uses: Kir-Antipov/mc-publish@v3.0
+        with:
+          # Modrinth
+          modrinth-id: 1qeWG44Y
+          modrinth-featured: true
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # CurseForge
+          curseforge-id: 579886
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # GitHub
+          github-tag: v1.7.1
+          github-draft: false
+          github-prerelease: false
+          github-commitish: 1.19-fabric
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          name: Apugli v1.7.1 (Fabric 1.19)
+          version: v1.7.1-fabric
+          version-type: release
+          changelog-file: CHANGELOG.md
+
+          loaders: |
+            fabric
+            quilt
+          game-versions: |
+            1.19
+          dependencies: |
+            fabric-api | depends | *
+          java: |
+            17
+
+          retry-attempts: 2
+          retry-delay: 10000
