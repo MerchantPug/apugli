@@ -40,9 +40,6 @@ repositories {
 	maven {
 		url "https://maven.terraformersmc.com/"
 	}
-	flatDir {
-		dirs 'libs'
-	}
 }
 
 loom {
