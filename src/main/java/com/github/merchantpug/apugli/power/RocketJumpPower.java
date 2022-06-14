@@ -172,7 +172,6 @@ public class RocketJumpPower extends ActiveCooldownPower {
         Vec3d vec = entity.getVelocity().add(f * velocity, g * velocity, h * velocity);
         entity.setVelocity(MathHelper.clamp(vec.x, velocity * -velocityClamp, velocityClamp), MathHelper.clamp(vec.y, -velocityClamp, velocityClamp), MathHelper.clamp(vec.z, -velocityClamp, velocityClamp));
         entity.velocityModified = true;
-        Apugli.LOGGER.info(entity.getVelocity().y);
         entity.fallDistance = 0;
         this.use();
     }
