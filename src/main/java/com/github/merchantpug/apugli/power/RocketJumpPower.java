@@ -170,7 +170,8 @@ public class RocketJumpPower extends ActiveCooldownPower {
             velocity = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, velocity) : velocity;
         }
         Vec3d vec = entity.getVelocity().add(f * velocity, g * velocity, h * velocity);
-        entity.setVelocity(MathHelper.clamp(vec.x, velocity * -velocityClamp, velocityClamp), MathHelper.clamp(vec.y, -velocityClamp, velocityClamp), MathHelper.clamp(vec.z, -velocityClamp, velocityClamp));
+        double clamp = isCharged ? ModifierUtil.applyModifiers(entity, getChargedModifiers(), velocityClamp) : velocityClamp;
+        entity.setVelocity(MathHelper.clamp(vec.x, velocity * -clamp, clamp), MathHelper.clamp(vec.y, -clamp, clamp), MathHelper.clamp(vec.z, -clamp, clamp));
         entity.velocityModified = true;
         entity.fallDistance = 0;
         this.use();
