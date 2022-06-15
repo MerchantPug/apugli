@@ -48,8 +48,10 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.RegEx;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
@@ -61,7 +63,7 @@ public class Apugli implements ModInitializer {
 
 	public static ApugliConfig config;
 	public static ApugliServerConfig serverConfig;
-	private static final HashSet<String> DEPENDENT_MODIDS = new HashSet<>();
+	private static final HashMap<String, String> DEPENDENTS = new HashMap<>();
 
 	@Override
 	public void onInitialize() {
@@ -109,17 +111,17 @@ public class Apugli implements ModInitializer {
 		return new Identifier(MODID, path);
 	}
 
-	public static HashSet<String> getDependentModids() {
-		return DEPENDENT_MODIDS;
+	public static HashMap<String, String> getDependents() {
+		return DEPENDENTS;
 	}
 
-	public static void addDependentModid(String value) {
-		DEPENDENT_MODIDS.add(value);
+	public static void addDependents(String value, String apugliVersion) {
+		DEPENDENTS.put(value, apugliVersion);
 	}
 
 	public static boolean shouldCheckVersion() {
-		for (String dependentModId : DEPENDENT_MODIDS) {
-			if (FabricLoader.getInstance().isModLoaded(dependentModId)) {
+		for (String dependentModId : DEPENDENTS.keySet()) {
+			if (FabricLoader.getInstance().isModLoaded(dependentModId) && DEPENDENTS.get(dependentModId).matches(VERSION)) {
 				return false;
 			}
 		}
