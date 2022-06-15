@@ -43,10 +43,8 @@ import java.util.List;
 
 public class ApugliPacketsC2S {
     public static void register() {
-        if (Apugli.shouldCheckVersion()) {
-            ServerLoginConnectionEvents.QUERY_START.register(ApugliPacketsC2S::handshake);
-            ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsC2S::handleHandshakeReply);
-        }
+        ServerLoginConnectionEvents.QUERY_START.register(ApugliPacketsC2S::handshake);
+        ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsC2S::handleHandshakeReply);
         ServerPlayNetworking.registerGlobalReceiver(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, ApugliPacketsC2S::onSyncActiveKeys);
     }
 
@@ -81,28 +79,30 @@ public class ApugliPacketsC2S {
     }
 
     private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
-        if (understood) {
-            int clientSemVerLength = packetByteBuf.readInt();
-            int[] clientSemVer = new int[clientSemVerLength];
-            boolean mismatch = clientSemVerLength != Apugli.SEMVER.length;
-            for(int i = 0; i < clientSemVerLength; i++) {
-                clientSemVer[i] = packetByteBuf.readInt();
-                if(i < clientSemVerLength - 1 && clientSemVer[i] != Apugli.SEMVER[i]) {
-                    mismatch = true;
-                }
-            }
-            if(mismatch) {
-                StringBuilder clientVersionString = new StringBuilder();
-                for(int i = 0; i < clientSemVerLength; i++) {
-                    clientVersionString.append(clientSemVer[i]);
-                    if(i < clientSemVerLength - 1) {
-                        clientVersionString.append(".");
+        if (Apugli.shouldCheckVersion()) {
+            if (understood) {
+                int clientSemVerLength = packetByteBuf.readInt();
+                int[] clientSemVer = new int[clientSemVerLength];
+                boolean mismatch = clientSemVerLength != Apugli.SEMVER.length;
+                for (int i = 0; i < clientSemVerLength; i++) {
+                    clientSemVer[i] = packetByteBuf.readInt();
+                    if (i < clientSemVerLength - 1 && clientSemVer[i] != Apugli.SEMVER[i]) {
+                        mismatch = true;
                     }
                 }
-                serverLoginNetworkHandler.disconnect(Text.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
+                if (mismatch) {
+                    StringBuilder clientVersionString = new StringBuilder();
+                    for (int i = 0; i < clientSemVerLength; i++) {
+                        clientVersionString.append(clientSemVer[i]);
+                        if (i < clientSemVerLength - 1) {
+                            clientVersionString.append(".");
+                        }
+                    }
+                    serverLoginNetworkHandler.disconnect(Text.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
+                }
+            } else {
+                serverLoginNetworkHandler.disconnect(Text.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
             }
-        } else {
-            serverLoginNetworkHandler.disconnect(Text.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
         }
     }
 
