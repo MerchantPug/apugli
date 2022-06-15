@@ -48,10 +48,8 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.RegEx;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
@@ -115,16 +113,19 @@ public class Apugli implements ModInitializer {
 		return DEPENDENTS;
 	}
 
-	public static void addDependents(String value, String apugliVersion) {
+	public static void addDependent(String value, String apugliVersion) {
 		DEPENDENTS.put(value, apugliVersion);
 	}
 
 	public static boolean shouldCheckVersion() {
+		boolean value = serverConfig.performVersionCheck;
 		for (String dependentModId : DEPENDENTS.keySet()) {
 			if (FabricLoader.getInstance().isModLoaded(dependentModId) && DEPENDENTS.get(dependentModId).matches(VERSION)) {
-				return false;
+				Apugli.LOGGER.info("Apugli will not check client versions.");
+				value = false;
+				break;
 			}
 		}
-		return serverConfig.performVersionCheck;
+		return value;
 	}
 }
