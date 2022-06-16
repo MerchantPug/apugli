@@ -79,7 +79,15 @@ public class ApugliPacketsC2S {
     }
 
     private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
-        if (Apugli.shouldCheckVersion()) {
+        boolean shouldCheckVersion = Apugli.serverConfig.performVersionCheck;
+        for (String dependentModId : Apugli.getDependents().keySet()) {
+            if (Apugli.getDependents().get(dependentModId).matches(Apugli.VERSION)) {
+                shouldCheckVersion = false;
+                break;
+            }
+        }
+
+        if (shouldCheckVersion) {
             if (understood) {
                 int clientSemVerLength = packetByteBuf.readInt();
                 int[] clientSemVer = new int[clientSemVerLength];

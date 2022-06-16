@@ -116,16 +116,4 @@ public class Apugli implements ModInitializer {
 	public static void addDependent(String value, String apugliVersion) {
 		DEPENDENTS.put(value, apugliVersion);
 	}
-
-	public static boolean shouldCheckVersion() {
-		boolean value = serverConfig.performVersionCheck;
-		for (String dependentModId : DEPENDENTS.keySet()) {
-			if (FabricLoader.getInstance().isModLoaded(dependentModId) && DEPENDENTS.get(dependentModId).matches(VERSION)) {
-				Apugli.LOGGER.info("Apugli will not check client versions.");
-				value = false;
-				break;
-			}
-		}
-		return value;
-	}
 }
