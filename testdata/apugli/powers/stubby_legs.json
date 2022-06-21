@@ -1,0 +1,9 @@
+{
+  "type": "apoli:attribute",
+  "modifier": {
+    "name": "Sneaking steps speed reduction",
+    "attribute": "minecraft:generic.movement_speed",
+    "value": -0.25,
+    "operation": "multiply_base"
+  }
+}

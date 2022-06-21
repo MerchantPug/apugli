@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.network.PacketByteBuf;
@@ -44,8 +45,9 @@ public class RocketJumpPower extends ActiveCooldownPower {
     private final double distance;
     private final DamageSource source;
     private final float amount;
-    private final double velocity;
-    private final double velocityClamp;
+    private final double horizontalVelocity;
+    private final double verticalVelocity;
+    private final double velocityClampMultiplier;
     private final boolean useCharged;
     private final List<Modifier> chargedModifiers = new LinkedList<>();
     private final List<Modifier> waterModifiers = new LinkedList<>();
@@ -54,12 +56,14 @@ public class RocketJumpPower extends ActiveCooldownPower {
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<RocketJumpPower>(Apugli.identifier("rocket_jump"),
                 new SerializableData()
-                        .add("cooldown", SerializableDataTypes.INT)
+                        .add("cooldown", SerializableDataTypes.INT, 1)
                         .add("distance", SerializableDataTypes.DOUBLE, Double.NaN)
                         .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
                         .add("amount", SerializableDataTypes.FLOAT, 0.0F)
                         .add("velocity", SerializableDataTypes.DOUBLE, 1.0D)
-                        .addFunctionedDefault("velocity_clamp", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity") * 1.8D)
+                        .addFunctionedDefault("horizontal_velocity", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity"))
+                        .addFunctionedDefault("vertical_velocity", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity"))
+                        .add("velocity_clamp_multiplier", SerializableDataTypes.DOUBLE, 1.8D)
                         .add("use_charged", SerializableDataTypes.BOOLEAN, false)
                         .add("charged_modifier", Modifier.DATA_TYPE, null)
                         .add("charged_modifiers", Modifier.LIST_TYPE, null)
@@ -71,7 +75,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 (data) ->
                         (type, entity) ->  {
-                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("velocity"), data.getDouble("velocity_clamp"), data.getBoolean("use_charged"));
+                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("horizontal_velocity"), data.getDouble("vertical_velocity"), data.getDouble("velocity_clamp_multiplier"), data.getBoolean("use_charged"));
                             power.setKey((Active.Key)data.get("key"));
                             if(data.isPresent("charged_modifier")) {
                                 power.addChargedJumpModifier(data.get("charged_modifier"));
@@ -96,13 +100,14 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 .allowCondition();
     }
 
-    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double velocity, double velocityClamp, boolean useCharged) {
+    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double horizontalVelocity, double verticalVelocity, double velocityClampMultiplier, boolean useCharged) {
         super(type, entity, cooldownDuration, hudRender, null);
         this.distance = distance;
         this.source = source;
         this.amount = amount;
-        this.velocity = velocity;
-        this.velocityClamp = velocityClamp;
+        this.horizontalVelocity = horizontalVelocity;
+        this.verticalVelocity = verticalVelocity;
+        this.velocityClampMultiplier = velocityClampMultiplier;
         this.useCharged = useCharged;
     }
 
@@ -129,7 +134,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
                 double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
                 double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && (!(traceEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)traceEntity).isMarker()), entityReach);
 
                 HitResult.Type blockHitResultType = blockHitResult.getType();
                 HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
@@ -139,19 +144,21 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
                 if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
-                if (blockHitResultType == HitResult.Type.BLOCK) {
-                    this.handleRocketJump(blockHitResult, isCharged);
-                }
-
                 if (entityHitResultType == HitResult.Type.ENTITY) {
                     this.handleRocketJump(entityHitResult, isCharged);
+                    return;
+                }
+
+                if (blockHitResultType == HitResult.Type.BLOCK) {
+                    this.handleRocketJump(blockHitResult, isCharged);
                 }
             }
         }
     }
 
     private void handleRocketJump(HitResult hitResult, boolean isCharged) {
-        double velocity = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? ModifierUtil.applyModifiers(entity, chargedModifiers, this.velocity) : this.velocity;
+        double horizontalVelocity = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? ModifierUtil.applyModifiers(entity, chargedModifiers, this.horizontalVelocity) : this.horizontalVelocity;
+        double verticalVelocity = isCharged && this.useCharged && !this.getChargedModifiers().isEmpty() ? ModifierUtil.applyModifiers(entity, chargedModifiers, this.verticalVelocity) : this.verticalVelocity;
         float e = isCharged && this.useCharged ? 2.0F : 1.5F;
         if (this.source != null && this.amount != 0.0F) entity.damage(this.source, this.amount);
         float f = MathHelper.sin(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
@@ -167,11 +174,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
         sendExplosionToClient(hitResult, e);
 
         if (entity.isTouchingWater()) {
-            velocity = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, velocity) : velocity;
+            horizontalVelocity = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, horizontalVelocity) : horizontalVelocity;
+            verticalVelocity = !this.waterModifiers.isEmpty() ? ModifierUtil.applyModifiers(entity, waterModifiers, verticalVelocity) : verticalVelocity;
         }
-        Vec3d vec = entity.getVelocity().add(f * velocity, g * velocity, h * velocity);
-        double clamp = isCharged ? ModifierUtil.applyModifiers(entity, getChargedModifiers(), velocityClamp) : velocityClamp;
-        entity.setVelocity(MathHelper.clamp(vec.x, velocity * -clamp, clamp), MathHelper.clamp(vec.y, -clamp, clamp), MathHelper.clamp(vec.z, -clamp, clamp));
+        Vec3d vec = entity.getVelocity().add(f * horizontalVelocity, g * verticalVelocity, h * horizontalVelocity);
+        double horizontalClamp = isCharged ? ModifierUtil.applyModifiers(entity, getChargedModifiers(), horizontalVelocity * velocityClampMultiplier) : horizontalVelocity * velocityClampMultiplier;
+        double verticalClamp = isCharged ? ModifierUtil.applyModifiers(entity, getChargedModifiers(), verticalVelocity * velocityClampMultiplier) : verticalVelocity * velocityClampMultiplier;
+        entity.setVelocity(MathHelper.clamp(vec.x, -horizontalClamp, horizontalClamp), MathHelper.clamp(vec.y, -verticalClamp, verticalClamp), MathHelper.clamp(vec.z, -horizontalClamp, horizontalClamp));
         entity.velocityModified = true;
         entity.fallDistance = 0;
         this.use();

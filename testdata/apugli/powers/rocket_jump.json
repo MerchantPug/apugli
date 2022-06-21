@@ -28,7 +28,8 @@
     "operation": "multiply_total",
     "value": -0.5
   },
-  "amount": 2.0,
+  "amount": 3.0,
   "use_charged": true,
-  "velocity": 1.0
+  "vertical_velocity": 1.0,
+  "horizontal_velocity": 1.2
 }
