@@ -11,6 +11,7 @@ public class ApugliEntityConditions {
         register(CanHaveEffectCondition.getFactory());
         register(CompareResourceCondition.getFactory());
         register(EntityInRadiusCondition.getFactory());
+        register(HostileCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());
         register(KeyPressedCondition.getFactory());
         register(ParticleInRadiusCondition.getFactory());
