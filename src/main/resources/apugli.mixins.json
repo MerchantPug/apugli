@@ -32,6 +32,7 @@
     "PlayerInventoryMixin",
     "PowerHolderComponentImplMixin",
     "ServerPlayerEntityAccessor",
+    "ServerWorldMixin",
     "StatusEffectMixin",
     "TemptGoalMixin"
   ],

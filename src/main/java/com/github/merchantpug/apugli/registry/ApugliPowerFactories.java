@@ -40,6 +40,7 @@ public class ApugliPowerFactories {
         register(PreventBreedingPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
         register(PreventSoundPower.getFactory());
+        register(RedirectLightningPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetTexturePower.getFactory());
     }
