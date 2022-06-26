@@ -8,14 +8,19 @@
     }
   },
   "bientity_condition": {
-    "type": "apoli:target_condition",
-    "condition": {
-      "type": "apoli:and",
-      "conditions": [
-        {
-          "type": "apugli:hostile"
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apoli:target_condition",
+        "condition": {
+          "type": "apoli:and",
+          "conditions": [
+            {
+              "type": "apugli:hostile"
+            }
+          ]
         }
-      ]
-    }
+      }
+    ]
   }
 }

@@ -59,6 +59,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow public abstract @Nullable LivingEntity getPrimeAdversary();
 
+    @Shadow public abstract @Nullable LivingEntity getAttacker();
+
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -184,8 +186,12 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;getAttacker()Lnet/minecraft/entity/Entity;"))
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
+        if (this.world.isClient) return;
         PowerHolderComponent.getPowers(source.getAttacker(), ActionOnTargetDeathPower.class).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
-        PowerHolderComponent.getPowers(this.getPrimeAdversary(), ActionOnTargetDeathPower.class).stream().filter(p -> p.includesPrimeAdversary).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
+
+        if (source.getAttacker() == null || source.getAttacker() != null && !source.getAttacker().equals(this.getPrimeAdversary())) {
+            PowerHolderComponent.getPowers(this.getPrimeAdversary(), ActionOnTargetDeathPower.class).stream().filter(p -> p.includesPrimeAdversary).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
+        }
     }
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
