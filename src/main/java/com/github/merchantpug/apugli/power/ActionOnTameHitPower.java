@@ -54,7 +54,7 @@ public class ActionOnTameHitPower extends CooldownPower {
     public static PowerFactory getFactory() {
         return new PowerFactory<>(Apugli.identifier("action_on_tame_hit"),
                 new SerializableData()
-                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION)
+                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                         .add("damage_condition", ApoliDataTypes.DAMAGE_CONDITION, null)
                         .add("cooldown", SerializableDataTypes.INT, 1)
                         .add("hud_render", ApoliDataTypes.HUD_RENDER, HudRender.DONT_RENDER)
