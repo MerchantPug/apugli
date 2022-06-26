@@ -49,8 +49,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
 
     @Shadow public abstract boolean isDead();
 
-    @Shadow protected abstract boolean tryUseTotem(DamageSource source);
-
     @Shadow protected abstract void initDataTracker();
 
     @Shadow public abstract SoundEvent getEatSound(ItemStack stack);
@@ -58,8 +56,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Shadow public abstract boolean isAlive();
 
     @Shadow public abstract @Nullable LivingEntity getPrimeAdversary();
-
-    @Shadow public abstract @Nullable LivingEntity getAttacker();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -118,13 +114,10 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         if (source.getAttacker() instanceof TameableEntity tameable) {
             PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, tameable, source, amount));
         }
-        if (this.isDead() && !this.tryUseTotem(source)) {
-            hitsHashmap.clear();
-            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, null, HitsOnTargetUtil.PacketType.CLEAR, 0, 0);
-            return;
+        if ((LivingEntity)(Object)this instanceof LivingEntity) {
+            setHits(source.getAttacker(), hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
+            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), 0);
         }
-        setHits(source.getAttacker(), hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getRight());
-        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), getHits().get(source.getAttacker()).getRight());
     }
 
     @Unique private boolean apugli$hasModifiedDamage;
@@ -187,11 +180,13 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;getAttacker()Lnet/minecraft/entity/Entity;"))
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
         if (this.world.isClient) return;
-        PowerHolderComponent.getPowers(source.getAttacker(), ActionOnTargetDeathPower.class).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
 
-        if (source.getAttacker() == null || source.getAttacker() != null && !source.getAttacker().equals(this.getPrimeAdversary())) {
+        if (source.getAttacker() == null || !source.getAttacker().equals(this.getPrimeAdversary())) {
             PowerHolderComponent.getPowers(this.getPrimeAdversary(), ActionOnTargetDeathPower.class).stream().filter(p -> p.includesPrimeAdversary).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
+            return;
         }
+
+        PowerHolderComponent.getPowers(source.getAttacker(), ActionOnTargetDeathPower.class).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
     }
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
@@ -255,17 +250,23 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (!this.isAlive()) return;
-        if (this.hitsHashmap.size() > 0) {
-            Iterator<Map.Entry<Entity, Pair<Integer, Integer>>> it = hitsHashmap.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Entity, Pair<Integer, Integer>> values = it.next();
-                int hitAmount = values.getValue().getLeft();
-                int currentTime = values.getValue().getRight();
-                if (currentTime > Apugli.config.hitsOnTarget.resetTimerTicks) {
-                    it.remove();
-                    continue;
+        if (!this.world.isClient && (LivingEntity)(Object)this instanceof LivingEntity) {
+            if (this.hitsHashmap.size() > 0) {
+                Iterator<Map.Entry<Entity, Pair<Integer, Integer>>> it = hitsHashmap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Entity, Pair<Integer, Integer>> values = it.next();
+                    Entity entity = values.getKey();
+                    int hitAmount = values.getValue().getLeft();
+                    int currentTime = values.getValue().getRight();
+                    if (currentTime > Apugli.config.hitsOnTarget.resetTimerTicks) {
+                        it.remove();
+                        if (entity instanceof LivingEntity) {
+                            HitsOnTargetUtil.sendPacket((LivingEntity) (Object) this, (LivingEntity)entity, HitsOnTargetUtil.PacketType.REMOVE, 0, 0);
+                        }
+                        continue;
+                    }
+                    values.setValue(new Pair<>(hitAmount, currentTime + 1));
                 }
-                values.setValue(new Pair<>(hitAmount, currentTime + 1));
             }
         }
         if (PowerHolderComponent.hasPower(this, HoverPower.class)) {

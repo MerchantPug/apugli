@@ -7,6 +7,7 @@
 
 **Entity Condition Types**
 - Added `apugli:hostile` entity condition type.
+- Modified `apugli:hits_on_target` logic.
 
 **Entity Action Types**
 - Removed `apugli:drop_item`, it didn't even work lmao.
