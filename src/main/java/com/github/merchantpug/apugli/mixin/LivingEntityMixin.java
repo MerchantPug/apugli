@@ -22,7 +22,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -56,6 +56,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Shadow public abstract SoundEvent getEatSound(ItemStack stack);
 
     @Shadow public abstract boolean isAlive();
+
+    @Shadow public abstract @Nullable LivingEntity getPrimeAdversary();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -123,7 +125,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), getHits().get(source.getAttacker()).getRight());
     }
 
-    @Unique private boolean hasModifiedDamage;
+    @Unique private boolean apugli$hasModifiedDamage;
 
     @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
     private float modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
@@ -143,7 +145,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             }
         }
 
-        List<ModifyEnchantmentDamageTakenPower> damageTakenPowers = PowerHolderComponent.getPowers(this, ModifyEnchantmentDamageTakenPower.class).stream().filter(p -> p.doesApply(source, amount)).collect(Collectors.toList());
+        List<ModifyEnchantmentDamageTakenPower> damageTakenPowers = PowerHolderComponent.getPowers(this, ModifyEnchantmentDamageTakenPower.class).stream().filter(p -> p.doesApply(source, amount)).toList();
 
         damageTakenPowers.forEach(power -> additionalValue[0] += power.baseValue);
 
@@ -156,7 +158,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             }
         }
 
-        hasModifiedDamage = originalValue +  additionalValue[0] != originalValue;
+        apugli$hasModifiedDamage = originalValue +  additionalValue[0] != originalValue;
 
         return originalValue + additionalValue[0];
     }
@@ -173,9 +175,22 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
     }
 
+    @Unique private float apugli$damageAmountOnDeath;
+
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;onDeath(Lnet/minecraft/entity/damage/DamageSource;)V"))
+    private void captureDamageAmount(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        apugli$damageAmountOnDeath = amount;
+    }
+
+    @Inject(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;getAttacker()Lnet/minecraft/entity/Entity;"))
+    private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
+        PowerHolderComponent.getPowers(source.getAttacker(), ActionOnTargetDeathPower.class).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
+        PowerHolderComponent.getPowers(this.getPrimeAdversary(), ActionOnTargetDeathPower.class).stream().filter(p -> p.includesPrimeAdversary).forEach(p -> p.onTargetDeath((LivingEntity)(Object)this, source, apugli$damageAmountOnDeath));
+    }
+
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     private void preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if(hasModifiedDamage && amount == 0.0F) {
+        if(apugli$hasModifiedDamage && amount == 0.0F) {
             cir.setReturnValue(false);
         }
     }
@@ -229,7 +244,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         }
     }
 
-    @Unique private int apugli_framesOnGround;
+    @Unique private int apugli$framesOnGround;
 
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
@@ -254,16 +269,16 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         PowerHolderComponent.KEY.get(this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
-            if (apugli_framesOnGround > 4) {
+            if (apugli$framesOnGround > 4) {
                 bunnyHopPower.setValue(0);
                 PowerHolderComponent.syncPower(this, bunnyHopPower.getType());
             }
             if (this.onGround || this.isTouchingWater() || this.isInLava() || this.hasVehicle() || this.isFallFlying()) {
-                if (apugli_framesOnGround <= 4) {
-                    apugli_framesOnGround += 1;
+                if (apugli$framesOnGround <= 4) {
+                    apugli$framesOnGround += 1;
                 }
             } else {
-                this.apugli_framesOnGround = 0;
+                this.apugli$framesOnGround = 0;
             }
         }
     }
@@ -274,8 +289,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class)) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (!this.world.isClient) {
-                if (this.apugli_framesOnGround <= 4) {
-                    if (this.apugli_framesOnGround == 0) {
+                if (this.apugli$framesOnGround <= 4) {
+                    if (this.apugli$framesOnGround == 0) {
                         if (this.age % bunnyHopPower.tickRate == 0) {
                             if (bunnyHopPower.getValue() < bunnyHopPower.getMax()) {
                                 bunnyHopPower.increment();

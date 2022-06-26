@@ -1,0 +1,21 @@
+{
+  "type": "apugli:action_on_target_death",
+  "bientity_action": {
+    "type": "apoli:actor_action",
+    "action": {
+      "type": "apoli:execute_command",
+      "command": "say Threat eliminated."
+    }
+  },
+  "bientity_condition": {
+    "type": "apoli:target_condition",
+    "condition": {
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apugli:hostile"
+        }
+      ]
+    }
+  }
+}
