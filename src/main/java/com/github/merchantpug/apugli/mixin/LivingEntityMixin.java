@@ -4,7 +4,6 @@ import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.access.ItemStackAccess;
 import com.github.merchantpug.apugli.access.LivingEntityAccess;
 import com.github.merchantpug.apugli.power.*;
-import com.github.merchantpug.apugli.util.ApugliConfig;
 import com.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import com.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
@@ -38,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements LivingEntityAccess {
@@ -158,15 +156,18 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         return originalValue + additionalValue[0];
     }
 
-    @Inject(method = "eatFood", at = @At("HEAD"))
+    @Inject(method = "eatFood", at = @At("HEAD"), cancellable = true)
     private void eatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             ItemStackFoodComponentUtil.applyFoodEffects(stack, world, (LivingEntity)(Object)this);
+            ItemStack newStack = stack.copy();
             if (!((LivingEntity)(Object)this instanceof PlayerEntity) || !((PlayerEntity)(Object)this).getAbilities().creativeMode) {
-                stack.decrement(1);
+                newStack.decrement(1);
+                Apugli.LOGGER.info(stack.getCount());
             }
             this.emitGameEvent(GameEvent.EAT);
+            cir.setReturnValue(newStack);
         }
     }
 

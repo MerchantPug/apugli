@@ -37,6 +37,8 @@ import java.util.function.Consumer;
 public abstract class ItemStackMixin implements ItemStackAccess {
     @Shadow public abstract Item getItem();
 
+    @Shadow public abstract ItemStack copy();
+
     @Unique
     public Entity entity;
 
@@ -46,10 +48,11 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     }
 
     @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setBobbingAnimationTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void copyEntity(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
+    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
         if (this.getEntity() != null) {
             ((ItemStackAccess) (Object) itemStack).setEntity(this.getEntity());
         }
+        ItemStackFoodComponentUtil.setStackFood(itemStack, this.stackFoodComponent, this.useAction, this.returnStack, this.eatSound);
     }
 
     @Inject(method = "addEnchantment", at = @At(value = "TAIL"))
@@ -82,13 +85,6 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Unique
     protected SoundEvent eatSound;
 
-    @Inject(method = "copy", at = @At("RETURN"))
-    private void copyFoodComponent(CallbackInfoReturnable<ItemStack> cir) {
-        if (this.isItemStackFood()) {
-            ItemStackFoodComponentUtil.setStackFood(cir.getReturnValue(), this.stackFoodComponent, this.useAction, this.returnStack, this.eatSound);
-        }
-    }
-
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (this.isItemStackFood()) {
@@ -104,16 +100,17 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         }
     }
 
-    @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "finishUsing", at = @At("RETURN"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (this.isItemStackFood()) {
             PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
-            user.eatFood(world, (ItemStack)(Object)this);
+            ItemStack newStack = this.copy();
+            newStack = user.eatFood(world, newStack);
             if (!((PlayerEntity)user).getAbilities().creativeMode) {
-                if (this.getReturnStack() != null) {
-                    cir.setReturnValue(this.getReturnStack());
+                if (((ItemStackAccess)(Object)newStack).getReturnStack() != null) {
+                    cir.setReturnValue(((ItemStackAccess)(Object)newStack).getReturnStack());
                 } else {
-                    cir.setReturnValue((ItemStack)(Object)this);
+                    cir.setReturnValue(newStack);
                 }
             }
         }

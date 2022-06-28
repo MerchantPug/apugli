@@ -13,8 +13,8 @@ public class KeyPressedCondition {
         if (entity.world.isClient && ApugliClient.keysToCheck.stream().noneMatch(key -> key.equals(data.get("key")))) {
             ApugliClient.keysToCheck.add(data.get("key"));
         }
-        if (entity instanceof PlayerEntity && Apugli.currentlyUsedKeys.containsKey(entity)) {
-            return Apugli.currentlyUsedKeys.get(entity).stream().anyMatch(key -> key.equals(data.get("key")));
+        if (entity instanceof PlayerEntity && Apugli.currentlyUsedKeys.containsKey(entity.getUuid())) {
+            return Apugli.currentlyUsedKeys.get(entity.getUuid()).stream().anyMatch(key -> key.equals(data.get("key")));
         }
         return false;
     }

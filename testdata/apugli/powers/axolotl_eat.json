@@ -9,7 +9,8 @@
   "food_component": {
     "hunger": 4,
     "saturation": 1,
-    "meat": true
+    "meat": true,
+    "always_edible": true
   },
   "use_action": "eat",
   "return_stack": {

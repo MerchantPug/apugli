@@ -11,3 +11,7 @@
 
 **Entity Action Types**
 - Removed `apugli:drop_item`, it didn't even work lmao.
+
+**Bugfixes**
+- Fixed `apugli:key_pressed` entity condition type sending packets when the key presser isn't loaded on other entities' clients.
+- Fixed issues with `apugli:edible_item` consuming the wrong amount of items when used with `apoli:modify_food`.

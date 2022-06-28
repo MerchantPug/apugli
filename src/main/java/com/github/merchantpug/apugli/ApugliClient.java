@@ -83,7 +83,7 @@ public class ApugliClient implements ClientModInitializer {
 				});
 				lastKeyBindingStates = currentKeyBindingStates;
 				if (pressedKeys.size() > 0) {
-					if (Apugli.currentlyUsedKeys.get(MinecraftClient.getInstance().player) != pressedKeys) {
+					if (MinecraftClient.getInstance().player != null && Apugli.currentlyUsedKeys.get(MinecraftClient.getInstance().player.getUuid()) != pressedKeys) {
 						syncActiveKeys(pressedKeys, false);
 					}
 				} else {
@@ -99,12 +99,12 @@ public class ApugliClient implements ClientModInitializer {
 		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 		if (nothingPressed) {
 			buffer.writeInt(0);
-			buffer.writeInt(MinecraftClient.getInstance().player.getId());
+			buffer.writeUuid(MinecraftClient.getInstance().player.getUuid());
 			ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
 			hasClearedKeySync = true;
 		} else if (keys.size() > 0) {
 			buffer.writeInt(keys.size());
-			buffer.writeInt(MinecraftClient.getInstance().player.getId());
+			buffer.writeUuid(MinecraftClient.getInstance().player.getUuid());
 			for(Active.Key key : keys) {
 				ApoliDataTypes.KEY.send(buffer, key);
 			}

@@ -84,14 +84,15 @@ public class ApugliPacketsS2C {
         }
         minecraftClient.execute(() -> {
             Entity entity = clientPlayNetworkHandler.getWorld().getEntityById(playerId);
-            if (!(entity instanceof PlayerEntity playerEntity2)) {
+            if (!(entity instanceof PlayerEntity playerEntity)) {
                 Apugli.LOGGER.warn("Tried modifying non PlayerEntity's keys pressed.");
+                Apugli.LOGGER.info(clientPlayNetworkHandler.getWorld().getEntityById(playerId));
                 return;
             }
             if (activeKeys.length == 0) {
-                Apugli.currentlyUsedKeys.remove(playerEntity2);
+                Apugli.currentlyUsedKeys.remove(playerEntity.getUuid());
             } else {
-                Apugli.currentlyUsedKeys.put(playerEntity2, new HashSet<>(List.of(activeKeys)));
+                Apugli.currentlyUsedKeys.put(playerEntity.getUuid(), new HashSet<>(List.of(activeKeys)));
             }
         });
     }

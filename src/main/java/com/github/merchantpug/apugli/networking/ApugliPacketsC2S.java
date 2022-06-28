@@ -40,6 +40,7 @@ import net.minecraft.text.Text;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 public class ApugliPacketsC2S {
     public static void register() {
@@ -50,13 +51,13 @@ public class ApugliPacketsC2S {
 
     private static void onSyncActiveKeys(MinecraftServer minecraftServer, ServerPlayerEntity playerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         int count = packetByteBuf.readInt();
-        int playerId = packetByteBuf.readInt();
+        UUID playerUuid = packetByteBuf.readUuid();
         Active.Key[] activeKeys = new Active.Key[count];
         for(int i = 0; i < count; i++) {
             activeKeys[i] = ApoliDataTypes.KEY.receive(packetByteBuf);
         }
         minecraftServer.execute(() -> {
-            Entity entity = playerEntity.getWorld().getEntityById(playerId);
+            Entity entity = playerEntity.getWorld().getEntity(playerUuid);
             if (!(entity instanceof PlayerEntity playerEntity2)) {
                 Apugli.LOGGER.warn("Tried modifying non PlayerEntity's keys pressed.");
                 return;
@@ -67,13 +68,13 @@ public class ApugliPacketsC2S {
             for(Active.Key key : activeKeys) {
                 ApoliDataTypes.KEY.send(buf, key);
             }
-            minecraftServer.getPlayerManager().getPlayerList().forEach(player -> {
+            for (ServerPlayerEntity player : PlayerLookup.tracking(playerEntity2)) {
                 ServerPlayNetworking.send(player, ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, buf);
-            });
+            }
             if (activeKeys.length == 0) {
-                Apugli.currentlyUsedKeys.remove(playerEntity2);
+                Apugli.currentlyUsedKeys.remove(playerEntity2.getUuid());
             } else {
-                Apugli.currentlyUsedKeys.put(playerEntity2, new HashSet<>(List.of(activeKeys)));
+                Apugli.currentlyUsedKeys.put(playerEntity2.getUuid(), new HashSet<>(List.of(activeKeys)));
             }
         });
     }

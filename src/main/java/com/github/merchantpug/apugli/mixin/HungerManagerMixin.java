@@ -21,9 +21,7 @@ public abstract class HungerManagerMixin {
         if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
             FoodComponent foodComponent = ((ItemStackAccess)(Object)stack).getItemStackFoodComponent();
             this.add(foodComponent.getHunger(), foodComponent.getSaturationModifier());
-            if (item.isFood()) {
-                ci.cancel();
-            }
+            ci.cancel();
         }
     }
 }

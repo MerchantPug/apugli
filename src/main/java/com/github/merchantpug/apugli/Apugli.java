@@ -50,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
@@ -57,7 +58,7 @@ public class Apugli implements ModInitializer {
 	public static String VERSION = "";
 	public static int[] SEMVER;
 
-	public static HashMap<PlayerEntity, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
+	public static HashMap<UUID, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
 
 	public static ApugliConfig config;
 	public static ApugliServerConfig serverConfig;
