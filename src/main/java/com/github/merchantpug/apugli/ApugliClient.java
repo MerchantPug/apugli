@@ -38,6 +38,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.network.PacketByteBuf;
 
@@ -82,8 +83,10 @@ public class ApugliClient implements ClientModInitializer {
 					}
 				});
 				lastKeyBindingStates = currentKeyBindingStates;
+				ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
 				if (pressedKeys.size() > 0) {
-					if (MinecraftClient.getInstance().player != null && Apugli.currentlyUsedKeys.get(MinecraftClient.getInstance().player.getUuid()) != pressedKeys) {
+					if (clientPlayer == null) return;
+					if (!Apugli.currentlyUsedKeys.getOrDefault(clientPlayer.getUuid(), new HashSet<>()).equals(pressedKeys)) {
 						syncActiveKeys(pressedKeys, false);
 					}
 				} else {
