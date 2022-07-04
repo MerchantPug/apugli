@@ -1,0 +1,13 @@
+{
+  "type": "apugli:allow_anvil_enchant",
+  "hidden": true,
+  "enchantments": [
+    "minecraft:loyalty"
+  ],
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:netherite_hoe"
+    }
+  }
+}

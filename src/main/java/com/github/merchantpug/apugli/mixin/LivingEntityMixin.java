@@ -112,10 +112,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
         if (source.getAttacker() instanceof TameableEntity tameable) {
             PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, tameable, source, amount));
         }
-        if ((LivingEntity)(Object)this instanceof LivingEntity) {
-            setHits(source.getAttacker(), hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
-            HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), 0);
-        }
+        setHits(source.getAttacker(), hitsHashmap.getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
+        HitsOnTargetUtil.sendPacket((LivingEntity)(Object)this, (LivingEntity)source.getAttacker(), HitsOnTargetUtil.PacketType.SET, getHits().get(source.getAttacker()).getLeft(), 0);
     }
 
     @Unique private boolean apugli$hasModifiedDamage;

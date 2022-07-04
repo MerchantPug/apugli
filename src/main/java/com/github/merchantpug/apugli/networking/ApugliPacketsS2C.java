@@ -129,7 +129,7 @@ public class ApugliPacketsS2C {
             }
             if (!(target instanceof LivingEntity)) {
                 Apugli.LOGGER.warn("Received unknown target");
-            } else if (hasAttacker && !(attacker instanceof LivingEntity)) {
+            } else if (hasAttacker && attacker == null) {
                 Apugli.LOGGER.warn("Received unknown attacker");
             } else switch (type) {
                 case SET -> ((LivingEntityAccess)target).getHits().put(attacker, new Pair<>(finalAmount, finalTimer));

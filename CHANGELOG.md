@@ -15,3 +15,5 @@
 **Bugfixes**
 - Fixed `apugli:key_pressed` entity condition type sending packets when the key presser isn't loaded on other entities' clients.
 - Fixed issues with `apugli:edible_item` consuming the wrong amount of items when used with `apoli:modify_food`.
+- Fixed crash involving casting non living entities to living entities when a target is hurt.
+- Updated `apugli:allow_anvil_enchant` logic, it should now work as intended.
