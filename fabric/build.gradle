@@ -17,7 +17,7 @@ repositories {
 }
 
 loom {
-    accessWidener = file("src/main/resources/apugli.accessWidener")
+    accessWidener = file("src/main/resources/apugli.accesswidener")
     mixinConfigs = ["apugli.mixins.json", "apugli.fabric.mixins.json", "apugli.origins.fabric.mixins.json"]
 }
 
@@ -38,6 +38,9 @@ dependencies {
     }
 
     modImplementation group: 'com.github.apace100', name: 'origins-fabric', version: "${rootProject.origins_fabric_version}"
+
+    implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}")
+    annotationProcessor("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}")
 }
 
 processResources {

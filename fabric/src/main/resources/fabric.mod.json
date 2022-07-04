@@ -24,7 +24,7 @@
       "com.github.merchantpug.apugli.fabric.integration.ApugliModMenuIntegration"
     ]
   },
-  "accessWidener": "apugli.accessWidener",
+  "accessWidener": "apugli.accesswidener",
   "mixins": [
     "apugli.mixins.json",
     "apugli.fabric.mixins.json",

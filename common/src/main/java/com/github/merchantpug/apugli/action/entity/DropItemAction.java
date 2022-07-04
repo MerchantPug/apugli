@@ -15,11 +15,11 @@ import net.minecraft.util.Hand;
 public class DropItemAction {
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof LivingEntity)) return;
-        ConditionFactory<ItemStack>.Instance condition = (ConditionFactory<ItemStack>.Instance) data.get("item_condition");
-        ItemStack equippedItem = ((LivingEntity) entity).getEquippedStack((EquipmentSlot) data.get("equipment_slot"));
+        ConditionFactory<ItemStack>.Instance condition = data.get("item_condition");
+        ItemStack equippedItem = ((LivingEntity) entity).getEquippedStack(data.get("equipment_slot"));
         if (!equippedItem.isEmpty() && condition.test(equippedItem)) {
             entity.dropStack(equippedItem, entity.getEyeHeight(entity.getPose()));
-            entity.equipStack((EquipmentSlot) data.get("equipment_slot"), ItemStack.EMPTY);
+            entity.equipStack(data.get("equipment_slot"), ItemStack.EMPTY);
         }
     }
 

@@ -36,6 +36,8 @@ dependencies {
     modApi "top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}"
     modApi group: 'com.github.EdwinMindcraft.origins-architectury', name: 'Origins-1.16.5-forge', version: "${rootProject.origins_architectury_version}"
 
+    implementation "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}"
+
     implementation(project(path: ":common")) {
         transitive = false
     }
@@ -43,6 +45,9 @@ dependencies {
         transitive = false
     }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
+        transitive = false
+    }
+    shadowCommon("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}") {
         transitive = false
     }
 }
@@ -61,6 +66,8 @@ shadowJar {
 
     configurations = [project.configurations.shadowCommon]
     classifier "dev-shadow"
+
+    relocate('com.llamalad7.mixinextras', 'com.github.merchantpug.apugli.shadowed.com.llamalad7.mixinextras')
 }
 
 remapJar {
