@@ -38,11 +38,11 @@
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
+    "client.AbstractSoundInstanceMixin",
     "client.ApoliClientAccessor",
     "client.ArmorFeatureRendererAccessor",
     "client.ArmorFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
-    "client.ClientWorldMixin",
     "client.ElytraFeatureRendererAccessor",
     "client.ElytraFeatureRendererMixin",
     "client.EntityRendererMixin",
@@ -56,6 +56,8 @@
     "client.ParticleManagerMixin",
     "client.ParticleMixin",
     "client.PlayerEntityRendererMixin",
+    "client.PositionedSoundInstanceMixin",
+    "client.SoundSystemMixin",
     "client.WorldRendererMixin"
   ],
   "injectors": {
