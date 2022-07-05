@@ -63,7 +63,6 @@ public class Apugli implements ModInitializer {
 
 	public static ApugliConfig config;
 	public static ApugliServerConfig serverConfig;
-	private static final HashMap<String, String> DEPENDENTS = new HashMap<>();
 
 	@Override
 	public void onInitialize() {
@@ -112,13 +111,5 @@ public class Apugli implements ModInitializer {
 
 	public static Identifier identifier(String path) {
 		return new Identifier(MODID, path);
-	}
-
-	public static HashMap<String, String> getDependents() {
-		return DEPENDENTS;
-	}
-
-	public static void addDependent(String value, String apugliVersion) {
-		DEPENDENTS.put(value, apugliVersion);
 	}
 }

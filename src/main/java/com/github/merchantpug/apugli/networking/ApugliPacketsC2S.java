@@ -29,6 +29,8 @@ import io.github.apace100.apoli.power.Active;
 import com.github.merchantpug.apugli.Apugli;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -81,11 +83,8 @@ public class ApugliPacketsC2S {
 
     private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
         boolean shouldCheckVersion = Apugli.serverConfig.performVersionCheck;
-        for (String dependentModId : Apugli.getDependents().keySet()) {
-            if (Apugli.getDependents().get(dependentModId).matches(Apugli.VERSION)) {
-                shouldCheckVersion = false;
-                break;
-            }
+        if (FabricLoader.getInstance().getModContainer(Apugli.MODID).flatMap(ModContainer::getContainingMod).isPresent()) {
+            shouldCheckVersion = false;
         }
 
         if (shouldCheckVersion) {
