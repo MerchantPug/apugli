@@ -31,13 +31,13 @@ public class PreventSoundPower extends Power {
                         (type, entity) -> {
                             PreventSoundPower power = new PreventSoundPower(type, entity);
                             if(data.isPresent("category")) {
-                                power.addCategory((SoundCategory)data.get("category"));
+                                power.addCategory(data.get("category"));
                             }
                             if(data.isPresent("categories")) {
                                 ((List<SoundCategory>)data.get("categories")).forEach(power::addCategory);
                             }
                             if(data.isPresent("sound")) {
-                                power.addSound((SoundEvent)data.get("sound"));
+                                power.addSound(data.get("sound"));
                             }
                             if(data.isPresent("sounds")) {
                                 ((List<SoundEvent>)data.get("sounds")).forEach(power::addSound);
