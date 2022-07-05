@@ -1,0 +1,30 @@
+{
+  "type": "apoli:multiple",
+  "simple": {
+    "type": "apoli:simple",
+    "condition": {
+      "type": "apugli:key_pressed",
+      "key":
+      {
+        "key": "key.saveToolbarActivator",
+        "continuous": true
+      }
+    }
+  },
+  "glow": {
+    "type": "apoli:action_over_time",
+    "interval": 10,
+    "entity_action": {
+      "type": "apoli:apply_effect",
+      "effect":
+      {
+        "effect": "minecraft:glowing",
+        "duration": 15
+      }
+    },
+    "condition": {
+      "type": "apoli:power_active",
+      "power": "*:*_simple"
+    }
+  }
+}

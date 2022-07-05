@@ -69,7 +69,6 @@ public class ApugliPacketsS2C {
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
-            ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_KEYS_TO_CHECK, ApugliPacketsS2C::onRemoveKeysToCheck);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, ApugliPacketsS2C::onSyncActiveKeys);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, ApugliPacketsS2C::syncRocketJumpExplosion);
         }));
@@ -94,12 +93,6 @@ public class ApugliPacketsS2C {
             } else {
                 Apugli.currentlyUsedKeys.put(playerEntity.getUuid(), new HashSet<>(List.of(activeKeys)));
             }
-        });
-    }
-
-    private static void onRemoveKeysToCheck(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        minecraftClient.execute(() -> {
-            ApugliClient.keysToCheck.clear();
         });
     }
 

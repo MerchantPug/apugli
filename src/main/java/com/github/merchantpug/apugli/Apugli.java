@@ -58,6 +58,7 @@ public class Apugli implements ModInitializer {
 	public static String VERSION = "";
 	public static int[] SEMVER;
 
+	public static HashMap<UUID, HashSet<Active.Key>> keysToCheck = new HashMap<>();
 	public static HashMap<UUID, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
 
 	public static ApugliConfig config;
@@ -103,7 +104,10 @@ public class Apugli implements ModInitializer {
 
 		NamespaceAlias.addAlias("ope", MODID);
 
-		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> currentlyUsedKeys.clear()));
+		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> {
+			keysToCheck.remove(handler.player.getUuid());
+			currentlyUsedKeys.remove(handler.player.getUuid());
+		}));
 	}
 
 	public static Identifier identifier(String path) {

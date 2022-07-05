@@ -4,6 +4,9 @@ on: [workflow_dispatch]
 permissions:
   contents: write
 
+env:
+  ENVIRONMENT: production
+
 jobs:
   release:
     runs-on: ubuntu-latest

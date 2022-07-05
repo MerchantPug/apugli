@@ -46,7 +46,6 @@ import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class ApugliClient implements ClientModInitializer {
-	public static HashSet<Active.Key> keysToCheck = new HashSet<>();
 	private static HashMap<String, Boolean> lastKeyBindingStates = new HashMap<>();
 	private static boolean hasClearedKeySync = false;
 
@@ -57,13 +56,17 @@ public class ApugliClient implements ClientModInitializer {
 		ApugliPacketsS2C.register();
 		ApugliClassDataClient.registerAll();
 
-		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> keysToCheck.clear()));
+		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
+			Apugli.keysToCheck.clear();
+			Apugli.currentlyUsedKeys.clear();
+		}));
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
 			if(tick.player != null) {
 				HashSet<Active.Key> pressedKeys = new HashSet<>();
 				HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
-				keysToCheck.forEach(key -> {
+				if (!Apugli.keysToCheck.containsKey(tick.player.getUuid())) return;
+				Apugli.keysToCheck.get(tick.player.getUuid()).forEach(key -> {
 					if(!ApoliClientAccessor.getInitializedKeyBindingMap()) {
 						ApoliClientAccessor.setInitializedKeyBindingMap(true);
 						MinecraftClient client = MinecraftClient.getInstance();
@@ -83,10 +86,8 @@ public class ApugliClient implements ClientModInitializer {
 					}
 				});
 				lastKeyBindingStates = currentKeyBindingStates;
-				ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
 				if (pressedKeys.size() > 0) {
-					if (clientPlayer == null) return;
-					if (!Apugli.currentlyUsedKeys.getOrDefault(clientPlayer.getUuid(), new HashSet<>()).equals(pressedKeys)) {
+					if (!Apugli.currentlyUsedKeys.getOrDefault(tick.player.getUuid(), new HashSet<>()).equals(pressedKeys)) {
 						syncActiveKeys(pressedKeys, false);
 					}
 				} else {

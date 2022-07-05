@@ -53,8 +53,8 @@ public class AllowAnvilEnchantPower extends Power {
         return enchantments.contains(enchantment) && itemCondition.test(itemStack) &&
                 (comparison.compare(EnchantmentHelper.getLevel(enchantment, itemStack2), compareTo) ||
                 itemStack2.getItem() instanceof EnchantedBookItem &&
-                EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(itemStack2)).entrySet().stream().anyMatch(enchantmentIntegerEntry -> enchantments.contains(enchantmentIntegerEntry.getKey()) && comparison.compare(enchantmentIntegerEntry.getValue(), compareTo)) &&
-                EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(itemStack2)).entrySet().stream().noneMatch(enchantmentIntegerEntry -> !enchantmentIntegerEntry.getKey().isAcceptableItem(itemStack) && PowerHolderComponent.getPowers(entity, AllowAnvilEnchantPower.class).stream().noneMatch(p -> p.getEnchantments().contains(enchantmentIntegerEntry.getKey()) && p.comparison.compare(enchantmentIntegerEntry.getValue(), p.compareTo))));
+                EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(itemStack2)).entrySet().stream().anyMatch(enchantmentIntegerEntry -> enchantments.contains(enchantmentIntegerEntry.getKey()) && comparison.compare(enchantmentIntegerEntry.getValue(), compareTo))) &&
+                EnchantmentHelper.get(itemStack2).entrySet().stream().noneMatch(enchantmentIntegerEntry -> !enchantmentIntegerEntry.getKey().isAcceptableItem(itemStack) && PowerHolderComponent.getPowers(entity, AllowAnvilEnchantPower.class).stream().noneMatch(p -> p.getEnchantments().contains(enchantmentIntegerEntry.getKey()) && p.comparison.compare(enchantmentIntegerEntry.getValue(), p.compareTo)));
     }
 
     private List<Enchantment> getEnchantments() {

@@ -1,12 +1,9 @@
 package com.github.merchantpug.apugli.mixin;
 
-import com.github.merchantpug.apugli.networking.ApugliPackets;
+import com.github.merchantpug.apugli.Apugli;
 import io.github.apace100.apoli.component.PowerHolderComponentImpl;
 import io.github.apace100.apoli.power.PowerType;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
@@ -23,6 +20,6 @@ public class PowerHolderComponentImplMixin {
     @Inject(method = "removePower", at = @At(value = "INVOKE", target = "Lio/github/apace100/apoli/power/Power;onLost()V"))
     private void resetKeysToCheckWhenRemoved(PowerType<?> powerType, Identifier source, CallbackInfo ci) {
         if (!(owner instanceof ServerPlayerEntity)) return;
-        ServerPlayNetworking.send((ServerPlayerEntity)owner, ApugliPackets.REMOVE_KEYS_TO_CHECK, new PacketByteBuf(Unpooled.buffer()));
+        Apugli.keysToCheck.remove(owner.getUuid());
     }
 }

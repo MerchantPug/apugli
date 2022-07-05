@@ -30,7 +30,6 @@ import com.github.merchantpug.apugli.Apugli;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -58,8 +57,8 @@ public class ApugliPacketsC2S {
         }
         minecraftServer.execute(() -> {
             Entity entity = playerEntity.getWorld().getEntity(playerUuid);
-            if (!(entity instanceof PlayerEntity playerEntity2)) {
-                Apugli.LOGGER.warn("Tried modifying non PlayerEntity's keys pressed.");
+            if (!(entity instanceof ServerPlayerEntity playerEntity2)) {
+                Apugli.LOGGER.warn("Tried modifying non ServerPlayerEntity's keys pressed.");
                 return;
             }
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
@@ -71,6 +70,7 @@ public class ApugliPacketsC2S {
             for (ServerPlayerEntity player : PlayerLookup.tracking(playerEntity2)) {
                 ServerPlayNetworking.send(player, ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, buf);
             }
+            ServerPlayNetworking.send(playerEntity2, ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, buf);
             if (activeKeys.length == 0) {
                 Apugli.currentlyUsedKeys.remove(playerEntity2.getUuid());
             } else {
