@@ -54,7 +54,9 @@ public class KeyPressedCondition {
             Apugli.keysToCheck.get(entity.getUuid()).add(data.get("key"));
         }
         if (entity instanceof PlayerEntity) {
-            handleActiveKeys((PlayerEntity)entity);
+            if (entity.world.isClient) {
+                handleActiveKeys((PlayerEntity)entity);
+            }
             if (Apugli.currentlyUsedKeys.containsKey(entity.getUuid())) {
                 return Apugli.currentlyUsedKeys.get(entity.getUuid()).stream().anyMatch(key -> key.equals(data.get("key")));
             }
