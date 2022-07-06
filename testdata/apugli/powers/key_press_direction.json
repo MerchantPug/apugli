@@ -1,0 +1,78 @@
+{
+    "type": "apoli:active_self",
+    "cooldown": 1,
+    "hud_render": {
+        "should_render": false
+    },
+    "key": {
+        "key": "key.saveToolbarActivator",
+        "continuous": false
+    },
+    "entity_action": {
+        "type": "apoli:if_else_list",
+        "actions": [
+            {
+                "condition": {
+                    "type": "apugli:key_pressed",
+                    "key": {
+                        "key": "key.forward",
+                        "continuous": true
+                    }
+                },
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "say forward"
+                }
+            },
+            {
+                "condition": {
+                    "type": "apugli:key_pressed",
+                    "key": {
+                        "key": "key.left",
+                        "continuous": true
+                    }
+                },
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "say left"
+                }
+            },
+            {
+                "condition": {
+                    "type": "apugli:key_pressed",
+                    "key": {
+                        "key": "key.back",
+                        "continuous": true
+                    }
+                },
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "say back"
+                }
+            },
+            {
+                "condition": {
+                    "type": "apugli:key_pressed",
+                    "key": {
+                        "key": "key.right",
+                        "continuous": true
+                    }
+                },
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "say right"
+                }
+            },
+            {
+                "condition": {
+                    "type": "apoli:constant",
+                    "value": true
+                },
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "say nothing"
+                }
+            }
+        ]
+    }
+}
