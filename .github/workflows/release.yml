@@ -30,7 +30,7 @@ jobs:
         run: ./gradlew clean build
 
       - name: Publish (CurseForge/Modrinth)
-        uses: Kir-Antipov/mc-publish@v3.0
+        uses: Kir-Antipov/mc-publish@v3.1
         with:
           # Modrinth
           modrinth-id: 1qeWG44Y
@@ -42,8 +42,8 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           # Config
-          name: Apugli v1.8.0 (Fabric 1.19)
-          version: v1.8.0+1.19+fabric
+          name: Apugli v1.8.2 (Fabric 1.19)
+          version: v1.8.2+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
           files-primary: build/libs/!(*-@(dev|sources)).jar
@@ -66,14 +66,14 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.0
         with:
           # GitHub
-          github-tag: v1.8.0
+          github-tag: v1.8.2-1.19-fabric
           github-draft: false
           github-prerelease: false
           github-commitish: 1.19-fabric
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          name: Apugli v1.8.0 (Fabric 1.19)
-          version: v1.8.0+1.19+fabric
+          name: Apugli v1.8.2 (Fabric 1.19)
+          version: v1.8.2+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
 
