@@ -42,8 +42,7 @@ public abstract class ServerWorldMixin extends World {
     private Vec3i redirectLightningToPowerHolder(Vec3i vec) {
         if (!apugli$isLightningSkeletonHorse) {
             LivingEntity target = null;
-            List<Map.Entry<LivingEntity, Float>> list = new ArrayList<>(RedirectLightningPower.STRUCK_BY_LIGHTNING_CHANCES.entrySet());
-            Collections.shuffle(list);
+            List<Map.Entry<LivingEntity, Float>> list = RedirectLightningPower.STRUCK_BY_LIGHTNING_CHANCES.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).toList();
             for (Map.Entry<LivingEntity, Float> hashMap : list) {
                 if (this.random.nextDouble() < hashMap.getValue()) {
                     target = hashMap.getKey();
