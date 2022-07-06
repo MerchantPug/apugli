@@ -62,6 +62,7 @@ public class KeyPressedCondition {
         return false;
     }
 
+    @Environment(EnvType.CLIENT)
     private static void handleActiveKeys(PlayerEntity player) {
         if(player != null) {
             HashSet<Active.Key> pressedKeys = new HashSet<>();
