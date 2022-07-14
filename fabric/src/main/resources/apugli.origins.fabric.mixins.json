@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.github.merchantpug.apugli.mixin.fabric",
+  "package": "io.github.merchantpug.apugli.mixin.fabric",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ActionTypeMixin",
