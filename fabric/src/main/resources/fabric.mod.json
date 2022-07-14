@@ -15,13 +15,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.merchantpug.apugli.fabric.ApugliFabric"
+      "com.github.merchantpug.apugli.fabric.ApugliFabric"
     ],
     "client": [
-      "io.github.merchantpug.apugli.fabric.ApugliFabricClient"
+      "com.github.merchantpug.apugli.fabric.ApugliFabricClient"
     ],
     "modmenu": [
-      "io.github.merchantpug.apugli.fabric.integration.ApugliModMenuIntegration"
+      "com.github.merchantpug.apugli.fabric.integration.ApugliModMenuIntegration"
     ]
   },
   "accessWidener": "apugli.accessWidener",
