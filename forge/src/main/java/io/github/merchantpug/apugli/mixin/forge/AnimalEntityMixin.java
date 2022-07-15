@@ -27,7 +27,7 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
     }
 
     @Inject(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;getLovingPlayer()Lnet/minecraft/server/network/ServerPlayerEntity;", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void captureBreedLocals(ServerWorld world, AnimalEntity other, CallbackInfo ci, PassiveEntity ageableentity, BabyEntitySpawnEvent event, boolean cancelled, ServerPlayerEntity serverplayerentity) {
+    private void captureBreedLocals(ServerWorld world, AnimalEntity other, CallbackInfo ci, PassiveEntity ageableentity, BabyEntitySpawnEvent event, boolean cancelled, ServerPlayerEntity serverPlayerEntity) {
         this.otherAnimalEntity = other;
         this.serverPlayerEntity = serverPlayerEntity;
     }
