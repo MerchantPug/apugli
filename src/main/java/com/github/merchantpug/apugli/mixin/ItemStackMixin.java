@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Random;
 import java.util.function.Consumer;
 
 @Mixin(value = ItemStack.class, priority = 998)
@@ -103,7 +102,6 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Inject(method = "finishUsing", at = @At("RETURN"), cancellable = true)
     private void finishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         if (this.isItemStackFood()) {
-            PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
             ItemStack newStack = this.copy();
             newStack = user.eatFood(world, newStack);
             if (!((PlayerEntity)user).getAbilities().creativeMode) {
@@ -113,6 +111,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
                     cir.setReturnValue(newStack);
                 }
             }
+            PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
         }
     }
 

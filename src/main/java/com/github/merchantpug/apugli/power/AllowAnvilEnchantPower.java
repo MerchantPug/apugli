@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class AllowAnvilEnchantPower extends Power {
-    private List<Enchantment> enchantments = new ArrayList<>();
+    private final List<Enchantment> enchantments = new ArrayList<>();
     public int compareTo;
     public Comparison comparison;
     private final Predicate<ItemStack> itemCondition;

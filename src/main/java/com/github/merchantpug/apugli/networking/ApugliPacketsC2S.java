@@ -24,6 +24,7 @@ SOFTWARE.
 
 package com.github.merchantpug.apugli.networking;
 
+import com.github.merchantpug.apugli.util.ApugliServerConfig;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import com.github.merchantpug.apugli.Apugli;
@@ -82,7 +83,7 @@ public class ApugliPacketsC2S {
     }
 
     private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
-        boolean shouldCheckVersion = Apugli.serverConfig.performVersionCheck;
+        boolean shouldCheckVersion = ApugliServerConfig.performVersionCheck;
         if (FabricLoader.getInstance().getModContainer(Apugli.MODID).isPresent() && FabricLoader.getInstance().getModContainer(Apugli.MODID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED)) {
             shouldCheckVersion = false;
         }

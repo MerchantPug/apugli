@@ -43,13 +43,14 @@ public abstract class ServerWorldMixin extends World {
         if (!apugli$isLightningSkeletonHorse) {
             LivingEntity target = null;
             List<Map.Entry<LivingEntity, Float>> list = RedirectLightningPower.STRUCK_BY_LIGHTNING_CHANCES.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).toList();
-            for (Map.Entry<LivingEntity, Float> hashMap : list) {
-                if (this.random.nextDouble() < hashMap.getValue()) {
-                    target = hashMap.getKey();
+            for (Map.Entry<LivingEntity, Float> map : list) {
+                if (!this.hasRain(map.getKey().getBlockPos())) continue;
+                if (this.random.nextDouble() < map.getValue()) {
+                    target = map.getKey();
                     break;
                 }
             }
-            if (target != null && this.hasRain(target.getBlockPos())) {
+            if (target != null) {
                 return target.getBlockPos();
             }
         }

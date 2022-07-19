@@ -35,6 +35,7 @@ import com.github.merchantpug.apugli.registry.condition.ApugliDamageConditions;
 import com.github.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import com.github.merchantpug.apugli.util.ApugliConfig;
 import com.github.merchantpug.apugli.util.ApugliServerConfig;
+import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import com.github.merchantpug.apugli.registry.action.ApugliEntityActions;
@@ -60,9 +61,6 @@ public class Apugli implements ModInitializer {
 
 	public static HashMap<UUID, HashSet<Active.Key>> keysToCheck = new HashMap<>();
 	public static HashMap<UUID, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
-
-	public static ApugliConfig config;
-	public static ApugliServerConfig serverConfig;
 
 	@Override
 	public void onInitialize() {
@@ -93,12 +91,6 @@ public class Apugli implements ModInitializer {
 
 		ApugliPowerFactories.register();
 
-		AutoConfig.register(ApugliConfig.class, JanksonConfigSerializer::new);
-		config = AutoConfig.getConfigHolder(ApugliConfig.class).getConfig();
-
-		AutoConfig.register(ApugliServerConfig.class, JanksonConfigSerializer::new);
-		serverConfig = AutoConfig.getConfigHolder(ApugliServerConfig.class).getConfig();
-
 		ApugliPacketsC2S.register();
 
 		NamespaceAlias.addAlias("ope", MODID);
@@ -107,6 +99,9 @@ public class Apugli implements ModInitializer {
 			keysToCheck.remove(handler.player.getUuid());
 			currentlyUsedKeys.remove(handler.player.getUuid());
 		}));
+
+		MidnightConfig.init(Apugli.MODID, ApugliConfig.class);
+		MidnightConfig.init(Apugli.MODID + "_server", ApugliServerConfig.class);
 	}
 
 	public static Identifier identifier(String path) {

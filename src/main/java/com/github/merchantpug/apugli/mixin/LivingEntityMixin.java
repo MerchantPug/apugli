@@ -4,6 +4,7 @@ import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.access.ItemStackAccess;
 import com.github.merchantpug.apugli.access.LivingEntityAccess;
 import com.github.merchantpug.apugli.power.*;
+import com.github.merchantpug.apugli.util.ApugliConfig;
 import com.github.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import com.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
@@ -162,7 +163,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             ItemStack newStack = stack.copy();
             if (!((LivingEntity)(Object)this instanceof PlayerEntity) || !((PlayerEntity)(Object)this).getAbilities().creativeMode) {
                 newStack.decrement(1);
-                Apugli.LOGGER.info(stack.getCount());
             }
             this.emitGameEvent(GameEvent.EAT);
             cir.setReturnValue(newStack);
@@ -257,7 +257,7 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
                     Entity entity = values.getKey();
                     int hitAmount = values.getValue().getLeft();
                     int currentTime = values.getValue().getRight();
-                    if (currentTime > Apugli.config.hitsOnTarget.resetTimerTicks) {
+                    if (currentTime > ApugliConfig.resetTimerTicks) {
                         it.remove();
                         if (entity instanceof LivingEntity) {
                             HitsOnTargetUtil.sendPacket((LivingEntity) (Object) this, (LivingEntity)entity, HitsOnTargetUtil.PacketType.REMOVE, 0, 0);

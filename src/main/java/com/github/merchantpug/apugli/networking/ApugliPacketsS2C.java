@@ -85,7 +85,6 @@ public class ApugliPacketsS2C {
             Entity entity = clientPlayNetworkHandler.getWorld().getEntityById(playerId);
             if (!(entity instanceof PlayerEntity playerEntity)) {
                 Apugli.LOGGER.warn("Tried modifying non PlayerEntity's keys pressed.");
-                Apugli.LOGGER.info(clientPlayNetworkHandler.getWorld().getEntityById(playerId));
                 return;
             }
             if (activeKeys.length == 0) {

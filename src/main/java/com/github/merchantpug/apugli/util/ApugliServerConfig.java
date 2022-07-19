@@ -1,10 +1,8 @@
 package com.github.merchantpug.apugli.util;
 
-import com.github.merchantpug.apugli.Apugli;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
+import eu.midnightdust.lib.config.MidnightConfig;
 
-@Config(name = Apugli.MODID + "_server")
-public class ApugliServerConfig implements ConfigData {
-    public boolean performVersionCheck = true;
+public class ApugliServerConfig extends MidnightConfig {
+    @Entry
+    public static boolean performVersionCheck = true;
 }

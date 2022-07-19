@@ -1,0 +1,22 @@
+{
+  "type": "apugli:edible_item",
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "item": "minecraft:blaze_rod"
+    }
+  },
+  "food_component": {
+    "hunger": 0,
+    "saturation": 0,
+    "meat": false,
+    "always_edible": true,
+    "snack": false
+  },
+  "use_action": "eat",
+  "entity_action": {
+    "type": "apoli:revoke_power",
+    "power": "*:*",
+    "source": "apoli:command"
+  }
+}

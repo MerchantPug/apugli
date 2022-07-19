@@ -1,6 +1,5 @@
 package com.github.merchantpug.apugli.mixin;
 
-import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.util.modifier.Modifier;

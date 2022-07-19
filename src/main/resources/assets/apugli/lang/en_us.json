@@ -1,7 +1,7 @@
 {
   "apugli.gui.version_mismatch": "This server is running a different version of Apugli (v%1$s) which is incompatible with the one you have installed (v%2$s).",
 
-  "text.autoconfig.apugli.title": "Apugli Configuration",
-  "text.autoconfig.apugli.option.hitsOnTarget": "Hits on Target Options",
-  "text.autoconfig.apugli.option.hitsOnTarget.resetTimerTicks": "Reset Timer Ticks"
+  "apugli.midnightconfig.title": "Apugli Configuration",
+  "apugli.midnightconfig.hitsOnTargetOptions": "Hits on Target Options",
+  "apugli.midnightconfig.resetTimerTicks": "Reset Timer Ticks"
 }
