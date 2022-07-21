@@ -1,30 +1,28 @@
 package com.github.merchantpug.apugli.networking;
 
+import com.github.merchantpug.apugli.access.ExplosionAccess;
+import com.github.merchantpug.apugli.registry.ApugliDamageSources;
 import io.github.apace100.origins.power.Active;
-import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import com.github.merchantpug.apugli.Apugli;
-import com.github.merchantpug.apugli.ApugliClient;
 import com.github.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import com.github.merchantpug.apugli.util.StackFoodComponentUtil;
-import io.netty.buffer.Unpooled;
 import me.shedaniel.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.world.explosion.Explosion;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 public class ApugliPacketsS2C {
@@ -32,6 +30,27 @@ public class ApugliPacketsS2C {
     public static void register() {
         NetworkManager.registerReceiver(NetworkManager.s2c(), ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
         NetworkManager.registerReceiver(NetworkManager.s2c(), ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, ApugliPacketsS2C::onSyncActiveKeys);
+        NetworkManager.registerReceiver(NetworkManager.s2c(), ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, ApugliPacketsS2C::onSyncRocketjumpExplosion);
+    }
+
+    private static void onSyncRocketjumpExplosion(PacketByteBuf packetByteBuf, NetworkManager.PacketContext packetContext) {
+        int userId = packetByteBuf.readInt();
+        double x = packetByteBuf.readDouble();
+        double y = packetByteBuf.readDouble();
+        double z = packetByteBuf.readDouble();
+        float radius = packetByteBuf.readFloat();
+
+        packetContext.queue(() -> {
+            Entity user = packetContext.getPlayer().getEntityWorld().getEntityById(userId);
+            if (!(user instanceof LivingEntity)) {
+                Apugli.LOGGER.warn("Received unknown target");
+            } else {
+                Explosion explosion = new Explosion(user.world, user, ApugliDamageSources.jumpExplosion((LivingEntity) user), null, x, y, z, radius, false, Explosion.DestructionType.NONE);
+                ((ExplosionAccess) explosion).setRocketJump(true);
+                explosion.collectBlocksAndDamageEntities();
+                explosion.affectWorld(true);
+            }
+        });
     }
 
     private static void onSyncActiveKeys(PacketByteBuf packetByteBuf, NetworkManager.PacketContext packetContext) {
@@ -43,8 +62,8 @@ public class ApugliPacketsS2C {
         }
         packetContext.queue(() -> {
             Entity entity = packetContext.getPlayer().getEntityWorld().getPlayerByUuid(playerUuid);
-            if (!(entity instanceof ServerPlayerEntity)) {
-                Apugli.LOGGER.warn("Tried modifying non ServerPlayerEntity's keys pressed.");
+            if (entity == null) {
+                Apugli.LOGGER.warn("Failed modifying PlayerEntity's keys pressed.");
                 return;
             }
 

@@ -1,5 +1,7 @@
 package com.github.merchantpug.apugli.powers;
 
+import com.github.merchantpug.apugli.access.ExplosionAccess;
+import com.github.merchantpug.apugli.networking.ApugliPackets;
 import com.github.merchantpug.apugli.registry.ApugliDamageSources;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.apace100.origins.power.Active;
@@ -12,11 +14,15 @@ import io.github.apace100.origins.util.SerializableData;
 import io.github.apace100.origins.util.SerializableDataType;
 import com.github.merchantpug.apugli.Apugli;
 import com.github.merchantpug.apugli.util.RaycastUtils;
+import io.netty.buffer.Unpooled;
+import me.shedaniel.architectury.networking.NetworkManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -106,12 +112,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
                 if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
-                if (blockHitResultType == HitResult.Type.BLOCK) {
-                    this.handleRocketJump(blockHitResult, isCharged);
-                }
-
                 if (entityHitResultType == HitResult.Type.ENTITY) {
                     this.handleRocketJump(entityHitResult, isCharged);
+                    return;
+                }
+
+                if (blockHitResultType == HitResult.Type.BLOCK) {
+                    this.handleRocketJump(blockHitResult, isCharged);
                 }
             }
         }
@@ -140,11 +147,28 @@ public class RocketJumpPower extends ActiveCooldownPower {
         float g = MathHelper.sin(player.pitch * 0.017453292F);
         float h = -MathHelper.cos(player.yaw * 0.017453292F) * MathHelper.cos(player.pitch * 0.017453292F);
 
-        player.world.createExplosion(player, ApugliDamageSources.jumpExplosion(player), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+        Explosion explosion = new Explosion(player.world, player, ApugliDamageSources.jumpExplosion(player), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+        ((ExplosionAccess)explosion).setRocketJump(true);
+        explosion.collectBlocksAndDamageEntities();
+        explosion.affectWorld(true);
+
+        sendExplosionToClient(hitResult, e);
+
         player.addVelocity(f * speed, g * speed, h * speed);
         player.velocityModified = true;
         player.fallDistance = 0;
         this.use();
+    }
+
+    public void sendExplosionToClient(HitResult hitResult, float radius) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(player.getEntityId());
+        buf.writeDouble(hitResult.getPos().getX());
+        buf.writeDouble(hitResult.getPos().getY());
+        buf.writeDouble(hitResult.getPos().getZ());
+        buf.writeFloat(radius);
+
+        NetworkManager.sendToPlayers(((ServerWorld)player.world).getPlayers(), ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, buf);
     }
 
     @Override

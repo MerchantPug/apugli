@@ -19,26 +19,26 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(AnimalEntity.class)
 public abstract class AnimalEntityMixin extends PassiveEntity {
-    @Unique private AnimalEntity otherAnimalEntity;
-    @Unique private ServerPlayerEntity serverPlayerEntity;
+    @Unique private AnimalEntity apugli$otherAnimalEntity;
+    @Unique private ServerPlayerEntity apugli$serverPlayerEntity;
 
     protected AnimalEntityMixin(EntityType<? extends PassiveEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    @Inject(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;getLovingPlayer()Lnet/minecraft/server/network/ServerPlayerEntity;", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void captureBreedLocals(ServerWorld world, AnimalEntity other, CallbackInfo ci, PassiveEntity ageableentity, BabyEntitySpawnEvent event, boolean cancelled, ServerPlayerEntity serverPlayerEntity) {
-        this.otherAnimalEntity = other;
-        this.serverPlayerEntity = serverPlayerEntity;
+    @Inject(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;getLovingPlayer()Lnet/minecraft/server/network/ServerPlayerEntity;", ordinal = 1, shift = At.Shift.BY, by = -2), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void captureBreedLocals(ServerWorld world, AnimalEntity other, CallbackInfo ci, PassiveEntity ageableEntity, BabyEntitySpawnEvent event, boolean cancelled, ServerPlayerEntity serverPlayerEntity) {
+        this.apugli$otherAnimalEntity = other;
+        this.apugli$serverPlayerEntity = serverPlayerEntity;
     }
 
-    @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 0))
+    @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 2))
     private int modifyThisAnimalBreed(int age) {
-        return (int)OriginComponent.modify(serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(this));
+        return (int)OriginComponent.modify(apugli$serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(this));
     }
 
-    @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 1))
+    @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 3))
     private int modifyOtherAnimalBreed(int age) {
-        return (int)OriginComponent.modify(serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(otherAnimalEntity));
+        return (int)OriginComponent.modify(apugli$serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(apugli$otherAnimalEntity));
     }
 }

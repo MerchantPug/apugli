@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AbstractFurnaceBlockEntityAccessor",
+    "AbstractSoundInstanceMixin",
     "ActiveKeyMixin",
     "AnimalEntityMixin",
     "AnvilScreenHandlerMixin",
@@ -39,7 +40,6 @@
     "client.ArmorFeatureRendererAccessor",
     "client.ArmorFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
-    "client.ClientWorldMixin",
     "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.HeadFeatureRendererMixin",
@@ -51,6 +51,8 @@
     "client.ParticleManagerMixin",
     "client.ParticleMixin",
     "client.PlayerEntityRendererMixin",
+    "client.PositionedSoundInstanceMixin",
+    "client.SoundSystemMixin",
     "client.WorldRendererMixin"
   ]
 }

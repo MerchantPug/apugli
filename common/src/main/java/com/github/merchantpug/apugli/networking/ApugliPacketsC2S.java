@@ -36,7 +36,7 @@ public class ApugliPacketsC2S {
             PlayerEntity playerEntity2 = (PlayerEntity)entity;
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeInt(activeKeys.length);
-            buf.writeInt(entity.getEntityId());
+            buf.writeUuid(entity.getUuid());
             for(Active.Key key : activeKeys) {
                 SerializableDataType.KEY.send(buf, key);
             }

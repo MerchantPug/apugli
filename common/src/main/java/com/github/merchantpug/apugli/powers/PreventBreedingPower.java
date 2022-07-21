@@ -54,4 +54,8 @@ public class PreventBreedingPower extends Power {
             selfAction.accept(player);
         }
     }
+
+    public boolean hasActions() {
+        return targetAction != null && selfAction != null;
+    }
 }

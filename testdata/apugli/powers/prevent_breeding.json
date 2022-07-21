@@ -8,5 +8,5 @@
     "food": 4,
     "saturation": 2
   },
-  "prevent_follow": false
+  "prevent_follow": true
 }

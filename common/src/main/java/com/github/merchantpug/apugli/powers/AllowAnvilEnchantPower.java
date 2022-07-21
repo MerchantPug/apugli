@@ -1,5 +1,6 @@
 package com.github.merchantpug.apugli.powers;
 
+import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.power.Power;
 import io.github.apace100.origins.power.PowerType;
 import io.github.apace100.origins.power.factory.PowerFactory;
@@ -19,9 +20,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class AllowAnvilEnchantPower extends Power {
-    private List<Enchantment> enchantments = new ArrayList<>();
-    private int compareTo;
-    private Comparison comparison;
+    private final List<Enchantment> enchantments = new ArrayList<>();
+    private final int compareTo;
+    private final Comparison comparison;
     private final Predicate<ItemStack> itemCondition;
 
     public static PowerFactory<?> getFactory() {
@@ -36,9 +37,9 @@ public class AllowAnvilEnchantPower extends Power {
                 data -> (type, player) -> {
                     AllowAnvilEnchantPower power = new AllowAnvilEnchantPower(type, player, data.getInt("compare_to"), data.get("comparison"), data.get("item_condition"));
                     if(data.isPresent("enchantment")) {
-                        power.addEnchantment((Enchantment)data.get("enchantment"));
+                        power.addEnchantment(data.get("enchantment"));
                     }
-                    if(data.isPresent("effects")) {
+                    if(data.isPresent("enchantments")) {
                         ((List<Enchantment>)data.get("enchantments")).forEach(power::addEnchantment);
                     }
                     return power;
@@ -47,10 +48,15 @@ public class AllowAnvilEnchantPower extends Power {
     }
 
     public boolean doesApply(Enchantment enchantment, ItemStack itemStack, ItemStack itemStack2) {
-        return enchantments.contains(enchantment) && itemCondition.test(itemStack) && (comparison.compare(EnchantmentHelper.getLevel(enchantment, itemStack2), compareTo) || itemStack2.getItem() instanceof EnchantedBookItem && EnchantedBookItem.getEnchantmentTag(itemStack2).stream().anyMatch(nbt -> {
-            if (!(nbt instanceof CompoundTag)) return false;
-            return comparison.compare(((CompoundTag) nbt).getInt("lvl"), compareTo);
-        }));
+        return enchantments.contains(enchantment) && itemCondition.test(itemStack) &&
+                (comparison.compare(EnchantmentHelper.getLevel(enchantment, itemStack2), compareTo) ||
+                        itemStack2.getItem() instanceof EnchantedBookItem &&
+                                EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(itemStack2)).entrySet().stream().anyMatch(enchantmentIntegerEntry -> enchantments.contains(enchantmentIntegerEntry.getKey()) && comparison.compare(enchantmentIntegerEntry.getValue(), compareTo))) &&
+                EnchantmentHelper.get(itemStack2).entrySet().stream().noneMatch(enchantmentIntegerEntry -> !enchantmentIntegerEntry.getKey().isAcceptableItem(itemStack) && OriginComponent.getPowers(player, AllowAnvilEnchantPower.class).stream().noneMatch(p -> p.getEnchantments().contains(enchantmentIntegerEntry.getKey()) && p.comparison.compare(enchantmentIntegerEntry.getValue(), p.compareTo)));
+    }
+
+    private List<Enchantment> getEnchantments() {
+        return enchantments;
     }
 
     private void addEnchantment(Enchantment enchantment) {

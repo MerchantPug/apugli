@@ -38,7 +38,6 @@ public class ModifyBreedingCooldownPower extends ValueModifyingPower {
     }
 
     public boolean doesApply(LivingEntity mobEntity) {
-        Apugli.LOGGER.info(targetCondition == null || this.targetCondition.test(mobEntity));
         return this.targetCondition == null || this.targetCondition.test(mobEntity);
     }
 

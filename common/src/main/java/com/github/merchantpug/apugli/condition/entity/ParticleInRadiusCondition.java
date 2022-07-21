@@ -36,7 +36,7 @@ public class ParticleInRadiusCondition {
                 stopAt = compareTo;
         }
         int count = 0;
-        ParticleManager particleManager = ((ClientPlayerEntityAccessor)entity).getClient().particleManager;
+        ParticleManager particleManager = ((ClientPlayerEntityAccessor)(Object)entity).getClient().particleManager;
         for (Queue<Particle> particleQueue : ((ParticleManagerAccessor)particleManager).getParticles().values()) {
             for (Particle particle : particleQueue.stream().filter(particle -> entity.getBoundingBox().expand(data.getDouble("radius")).intersects(particle.getBoundingBox())).collect(Collectors.toList())) {
                 if (data.isPresent("particle") && ((ParticleAccess)particle).getParticleEffect() == data.get("particle") || data.isPresent("particles") &&  particles.stream().anyMatch(particleEffect -> ((ParticleAccess)particle).getParticleEffect() == particleEffect)) {
