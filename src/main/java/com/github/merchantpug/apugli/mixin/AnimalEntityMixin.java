@@ -33,6 +33,7 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
 
     @Shadow public abstract boolean canEat();
 
+    @Shadow private int loveTicks;
     @Unique private AnimalEntity otherAnimalEntity;
     @Unique private ServerPlayerEntity serverPlayerEntity;
 
@@ -47,10 +48,13 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
         if (this.isBreedingItem(itemStack)) {
             int i = this.getBreedingAge();
             if (i == 0 && this.canEat()) {
-                if (!this.world.isClient) {
+                if (preventBreedingPowerList.stream().anyMatch(PreventBreedingPower::hasAction)) {
                     preventBreedingPowerList.forEach(power -> power.executeAction(this));
+                    this.loveTicks = (int)PowerHolderComponent.modify(player, ModifyBreedingCooldownPower.class, 600);
+                    cir.setReturnValue(ActionResult.SUCCESS);
+                } else {
+                    cir.setReturnValue(ActionResult.FAIL);
                 }
-                cir.setReturnValue(ActionResult.FAIL);
             }
         }
     }

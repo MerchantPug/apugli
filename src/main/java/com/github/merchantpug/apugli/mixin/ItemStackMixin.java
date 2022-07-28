@@ -54,11 +54,6 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         ItemStackFoodComponentUtil.setStackFood(itemStack, this.stackFoodComponent, this.useAction, this.returnStack, this.eatSound);
     }
 
-    @Inject(method = "addEnchantment", at = @At(value = "TAIL"))
-    private void addEnchantment(Enchantment enchantment, int level, CallbackInfo ci) {
-        ModifyEnchantmentLevelPower.updateEnchantments((ItemStack) (Object) this);
-    }
-
     public void setEntity(Entity entity) { this.entity = entity; }
 
     public Entity getEntity() {

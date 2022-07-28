@@ -19,8 +19,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,8 +27,8 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
     private static final ConcurrentHashMap<String, ConcurrentHashMap<NbtList, NbtList>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
     private final Enchantment enchantment;
 
-    public ModifyEnchantmentLevelPower(PowerType<?> type, LivingEntity player, Enchantment enchantment) {
-        super(type, player);
+    public ModifyEnchantmentLevelPower(PowerType<?> type, LivingEntity entity, Enchantment enchantment) {
+        super(type, entity);
         this.enchantment = enchantment;
     }
 
@@ -57,13 +55,10 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
 
         if (!(entity instanceof PlayerEntity)) return enchants;
-
-        NbtList newEnchants = enchants.copy();
-        List<ModifyEnchantmentLevelPower> powers = PowerHolderComponent.getPowers(entity, ModifyEnchantmentLevelPower.class);
-
-        if (powers.isEmpty()) return enchants;
         
-        for (ModifyEnchantmentLevelPower power : powers) {
+        NbtList newEnchants = enchants.copy();
+
+        for (ModifyEnchantmentLevelPower power : PowerHolderComponent.getPowers(entity, ModifyEnchantmentLevelPower.class)) {
             Identifier id = Registry.ENCHANTMENT.getId(power.getEnchantment());
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if (idx.isPresent()) {
@@ -78,25 +73,15 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
                 newEnchant.putInt("lvl", (int) PowerHolderComponent.modify(entity, ModifyEnchantmentLevelPower.class, 0, powerFilter -> powerFilter.doesApply(power.getEnchantment())));
                 newEnchants.add(newEnchant);
             }
-        };
+        }
         return newEnchants;
-    }
-
-    public static void updateEnchantments(ItemStack self) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
-        if (entity == null) return;
-        ConcurrentHashMap<NbtList, NbtList> itemEnchants = ENTITY_ITEM_ENCHANTS.computeIfAbsent(entity.getUuidAsString(), (_uuid) -> new ConcurrentHashMap<>());
-        NbtList tag = self.getEnchantments();
-        NbtList enchantments = ModifyEnchantmentLevelPower.generateEnchantments(tag, self);
-        itemEnchants.put(tag, enchantments);
     }
 
     public static NbtList getEnchantments(ItemStack self) {
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity == null) return self.getEnchantments();
         ConcurrentHashMap<NbtList, NbtList> itemEnchants = ENTITY_ITEM_ENCHANTS.computeIfAbsent(entity.getUuidAsString(), (_uuid) -> new ConcurrentHashMap<>());
-        NbtList enchants = itemEnchants.compute(self.getEnchantments(), (tag, tag2) -> ModifyEnchantmentLevelPower.generateEnchantments(tag, self));
-        return enchants;
+        return itemEnchants.compute(self.getEnchantments(), (tag, tag2) -> ModifyEnchantmentLevelPower.generateEnchantments(tag, self));
     }
 
     public static PowerFactory<?> getFactory() {
@@ -106,8 +91,8 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
                         .add("enchantment", SerializableDataTypes.ENCHANTMENT)
                         .add("modifier", Modifier.DATA_TYPE, null)
                         .add("modifiers", Modifier.LIST_TYPE, null),
-                data -> (type, player) -> {
-                    ModifyEnchantmentLevelPower power = new ModifyEnchantmentLevelPower(type, player, (Enchantment) data.get("enchantment"));
+                data -> (type, entity) -> {
+                    ModifyEnchantmentLevelPower power = new ModifyEnchantmentLevelPower(type, entity, (Enchantment) data.get("enchantment"));
                     if (data.isPresent("modifier")) {
                         power.addModifier((Modifier) data.get("modifier"));
                     }

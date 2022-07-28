@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnchantmentHelper.class)
-public class EnchantmentHelperMixin {
+public abstract class EnchantmentHelperMixin {
     @Redirect(method = "forEachEnchantment(Lnet/minecraft/enchantment/EnchantmentHelper$Consumer;Lnet/minecraft/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"))
     private static boolean forEachIsEmpty(ItemStack self) {
         return false;
@@ -35,10 +35,9 @@ public class EnchantmentHelperMixin {
         return ModifyEnchantmentLevelPower.getEnchantments(self);
     }
 
-    @Inject(method ="getEquipmentLevel", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getEquipmentLevel", at = @At("RETURN"), cancellable = true)
     private static void getEquipmentLevel(Enchantment enchantment, LivingEntity entity, CallbackInfoReturnable<Integer> cir) {
         int originalReturn = cir.getReturnValue();
-        if (originalReturn != 0) return;
         int newEnchantLevel = (int) PowerHolderComponent.modify(entity, ModifyEnchantmentLevelPower.class, originalReturn, power -> power.doesApply(enchantment));
         cir.setReturnValue(newEnchantLevel);
     }

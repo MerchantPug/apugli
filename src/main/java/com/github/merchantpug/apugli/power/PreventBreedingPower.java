@@ -48,4 +48,8 @@ public class PreventBreedingPower extends Power {
         if (biEntityAction == null) return;
         this.biEntityAction.accept(new Pair<>(entity, mobEntity));
     }
+
+    public boolean hasAction() {
+        return biEntityAction != null;
+    }
 }
