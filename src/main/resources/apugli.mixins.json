@@ -39,11 +39,12 @@
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.AbstractSoundInstanceMixin",
+    "client.AnimalModelMixin",
     "client.ApoliClientAccessor",
     "client.ArmorFeatureRendererAccessor",
     "client.ArmorFeatureRendererMixin",
+    "client.CapeFeatureRendererMixin",
     "client.ClientPlayerEntityAccessor",
-    "client.ElytraFeatureRendererAccessor",
     "client.ElytraFeatureRendererMixin",
     "client.EntityRendererMixin",
     "client.GameRendererMixin",

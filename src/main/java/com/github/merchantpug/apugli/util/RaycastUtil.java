@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class RaycastUtils {
+public class RaycastUtil {
 
     public static List<EntityHitResult> raycastMultiple(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
         List<EntityHitResult> list = new ArrayList<>();

@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.Triple;
 public class HitsOnTargetCondition {
     public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> pair) {
         if (pair.getRight() instanceof LivingEntity) {
-            Pair<Integer, Integer> hitsOnTarget = ((LivingEntityAccess)pair.getRight()).getHits().getOrDefault(pair.getLeft(), new Pair<Integer, Integer>(0, 0));
+            Pair<Integer, Integer> hitsOnTarget = ((LivingEntityAccess)pair.getRight()).getHits().getOrDefault(pair.getLeft(), new Pair<>(0, 0));
             Comparison comparison = data.get("comparison");
             int compareTo = data.getInt("compare_to");
             return comparison.compare(hitsOnTarget.getLeft(), compareTo);

@@ -1,5 +1,6 @@
 package com.github.merchantpug.apugli.entity.feature;
 
+import com.github.merchantpug.apugli.util.TextureUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import com.github.merchantpug.apugli.power.EntityTextureOverlayPower;
 import net.minecraft.client.render.OverlayTexture;
@@ -22,7 +23,12 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
         matrices.push();
         EntityModel<T> entityModel = this.getContextModel();
         PowerHolderComponent.getPowers(entity, EntityTextureOverlayPower.class).forEach(power -> {
-            entityModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(power.textureLocation)), light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+            if (power.textureUrl != null) {
+                TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
+                entityModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(power.getUrlTextureIdentifier())), light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+            } else if (power.textureLocation != null) {
+                entityModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(power.textureLocation)), light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+            }
         });
         matrices.pop();
     }

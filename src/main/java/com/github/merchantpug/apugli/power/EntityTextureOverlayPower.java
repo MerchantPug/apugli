@@ -11,19 +11,32 @@ import net.minecraft.util.Identifier;
 
 public class EntityTextureOverlayPower extends Power {
     public final Identifier textureLocation;
+    public final String textureUrl;
+    public final boolean showFirstPerson;
+    public final boolean hideEntityModel;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<>(Apugli.identifier("entity_texture_overlay"),
                 new SerializableData()
-                        .add("texture_location", SerializableDataTypes.IDENTIFIER),
+                        .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
+                        .add("url", SerializableDataTypes.STRING, null)
+                        .add("show_first_person", SerializableDataTypes.BOOLEAN, false)
+                        .add("hide_player_model", SerializableDataTypes.BOOLEAN, false),
                 data ->
                         (type, player) ->
-                                new EntityTextureOverlayPower(type, player, data.getId("texture_location")))
+                                new EntityTextureOverlayPower(type, player, data.getId("texture_location"), data.getString("url"), data.getBoolean("show_first_person"), data.getBoolean("hide_player_model")))
                 .allowCondition();
     }
 
-    public EntityTextureOverlayPower(PowerType<?> type, LivingEntity entity, Identifier textureLocation) {
+    public EntityTextureOverlayPower(PowerType<?> type, LivingEntity entity, Identifier textureLocation, String textureUrl, boolean showFirstPerson, boolean hideEntityModel) {
         super(type, entity);
         this.textureLocation = textureLocation;
+        this.textureUrl = textureUrl;
+        this.showFirstPerson = showFirstPerson;
+        this.hideEntityModel = hideEntityModel;
+    }
+
+    public Identifier getUrlTextureIdentifier() {
+        return new Identifier(Apugli.MODID, "entitytextureoverlaypower/" + this.getType().getIdentifier().getNamespace() + "/" + this.getType().getIdentifier().getPath());
     }
 }

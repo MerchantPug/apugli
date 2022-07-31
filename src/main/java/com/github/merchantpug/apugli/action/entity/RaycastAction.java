@@ -1,7 +1,7 @@
 package com.github.merchantpug.apugli.action.entity;
 
 import com.github.merchantpug.apugli.Apugli;
-import com.github.merchantpug.apugli.util.RaycastUtils;
+import com.github.merchantpug.apugli.util.RaycastUtil;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
@@ -59,7 +59,7 @@ public class RaycastAction {
         createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
 
         if (data.getBoolean("pierce")) {
-            List<EntityHitResult> list = RaycastUtils.raycastMultiple(entity, eyePosition, traceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+            List<EntityHitResult> list = RaycastUtil.raycastMultiple(entity, eyePosition, traceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
             RaycastAction.handlePierce(data, entity, list);
             return;
         }

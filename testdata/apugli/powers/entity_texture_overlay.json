@@ -1,0 +1,6 @@
+{
+  "type": "apugli:entity_texture_overlay",
+  "url": "https://i.imgur.com/wMe7kJs.png",
+  "show_first_person": true,
+  "hide_player_model": false
+}

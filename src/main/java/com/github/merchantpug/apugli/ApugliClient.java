@@ -5,7 +5,11 @@ import com.github.merchantpug.apugli.util.ApugliClassDataClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.ResourceTexture;
 
 import java.util.*;
 
@@ -18,6 +22,10 @@ public class ApugliClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+			client.getTextureManager().registerTexture(Apugli.identifier("empty_player_texture"), new ResourceTexture(Apugli.identifier("textures/empty_player_texture.png")));
+		});
+
 		ApugliPacketsS2C.register();
 		ApugliClassDataClient.registerAll();
 
