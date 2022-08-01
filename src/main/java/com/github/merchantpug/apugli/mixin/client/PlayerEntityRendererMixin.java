@@ -5,6 +5,7 @@ import com.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import com.github.merchantpug.apugli.power.SetTexturePower;
 import com.github.merchantpug.apugli.util.TextureUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.ModelColorPower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -19,15 +20,19 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 @Mixin(PlayerEntityRenderer.class)
@@ -47,17 +52,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 sleeve.pitch = 0.0f;
             }
 
-            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> {
-                if (!power.showFirstPerson) return;
-                if (power.textureUrl != null) {
-                    TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
-                    arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(power.getUrlTextureIdentifier())), light, OverlayTexture.DEFAULT_UV);
-                    sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier())), light, OverlayTexture.DEFAULT_UV);
-                } else if (power.textureLocation != null) {
-                    arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(power.textureLocation)), light, OverlayTexture.DEFAULT_UV);
-                    sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(power.textureLocation)), light, OverlayTexture.DEFAULT_UV);
-                }
-            });
+            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
             ci.cancel();
         }
     }
@@ -65,17 +60,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Inject(method = "renderArm", at = @At(value = "TAIL"))
     private void renderOverlayOnArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().noneMatch(power -> power.hideEntityModel)) {
-            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> {
-                if (!power.showFirstPerson) return;
-                if (power.textureUrl != null) {
-                    TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
-                    arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(power.getUrlTextureIdentifier())), light, OverlayTexture.DEFAULT_UV);
-                    sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier())), light, OverlayTexture.DEFAULT_UV);
-                } else if (power.textureLocation != null) {
-                    arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(power.textureLocation)), light, OverlayTexture.DEFAULT_UV);
-                    sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(power.textureLocation)), light, OverlayTexture.DEFAULT_UV);
-                }
-            });
+            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
         }
     }
 
@@ -107,6 +92,37 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 .stream()
                 .anyMatch(power -> power.shouldOverride() && (power.slot == EquipmentSlot.MAINHAND && hand == Hand.MAIN_HAND && power.stack.isEmpty() || power.slot == EquipmentSlot.OFFHAND && hand == Hand.OFF_HAND && power.stack.isEmpty()))) {
             cir.setReturnValue(BipedEntityModel.ArmPose.EMPTY);
+        }
+    }
+
+    @Unique
+    public void apugli$renderArmOverlay(EntityTextureOverlayPower power, AbstractClientPlayerEntity player, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ModelPart arm, ModelPart sleeve) {
+        if (!power.showFirstPerson) return;
+        float red = 1.0F;
+        float green = 1.0F;
+        float blue = 1.0F;
+        float alpha = 1.0F;
+
+        List<ModelColorPower> modelColorPowers = PowerHolderComponent.getPowers(player, ModelColorPower.class);
+        if (modelColorPowers.size() > 0) {
+            red = modelColorPowers.stream().map(ModelColorPower::getRed).reduce((a, b) -> a * b).get();
+            green = modelColorPowers.stream().map(ModelColorPower::getGreen).reduce((a, b) -> a * b).get();
+            blue = modelColorPowers.stream().map(ModelColorPower::getBlue).reduce((a, b) -> a * b).get();
+            alpha = modelColorPowers.stream().map(ModelColorPower::getAlpha).min(Float::compare).get();
+        }
+        RenderLayer renderLayer;
+        if (power.textureUrl != null) {
+            TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
+
+            renderLayer = alpha == 1.0 ? RenderLayer.getEntityCutoutNoCull(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
+
+            arm.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
+            sleeve.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
+        } else if (power.textureLocation != null) {
+            renderLayer = alpha == 1.0 ? RenderLayer.getEntityCutoutNoCull(power.textureLocation) : RenderLayer.getEntityTranslucent(power.textureLocation);
+
+            arm.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
+            sleeve.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
         }
     }
 }

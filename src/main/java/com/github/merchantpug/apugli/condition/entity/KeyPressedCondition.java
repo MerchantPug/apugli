@@ -55,68 +55,13 @@ public class KeyPressedCondition {
         }
         if (entity instanceof PlayerEntity) {
             if (entity.world.isClient) {
-                handleActiveKeys((PlayerEntity)entity);
+               ApugliClient.handleActiveKeys((PlayerEntity)entity);
             }
             if (Apugli.currentlyUsedKeys.containsKey(entity.getUuid())) {
                 return Apugli.currentlyUsedKeys.get(entity.getUuid()).stream().anyMatch(key -> key.equals(data.get("key")));
             }
         }
         return false;
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void handleActiveKeys(PlayerEntity player) {
-        if(player != null) {
-            HashSet<Active.Key> pressedKeys = new HashSet<>();
-            HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
-            if (!Apugli.keysToCheck.containsKey(player.getUuid())) return;
-            Apugli.keysToCheck.get(player.getUuid()).forEach(key -> {
-                if(!ApoliClientAccessor.getInitializedKeyBindingMap()) {
-                    ApoliClientAccessor.setInitializedKeyBindingMap(true);
-                    MinecraftClient client = MinecraftClient.getInstance();
-                    for(int i = 0; i < client.options.allKeys.length; i++) {
-                        ApoliClientAccessor.getIdToKeyBindingMap().put(client.options.allKeys[i].getTranslationKey(), client.options.allKeys[i]);
-                    }
-                }
-                KeyBinding keyBinding = ApoliClientAccessor.getIdToKeyBindingMap().get(key.key);
-                if(keyBinding != null) {
-                    if(!currentKeyBindingStates.containsKey(key.key)) {
-                        currentKeyBindingStates.put(key.key, keyBinding.isPressed());
-                    }
-                    if(!pressedKeys.contains(key) && currentKeyBindingStates.get(key.key) && (key.continuous || !ApugliClient.lastKeyBindingStates.getOrDefault(key.key, false))) {
-                        pressedKeys.add(key);
-                        ApugliClient.hasClearedKeySync = false;
-                    }
-                }
-            });
-            ApugliClient.lastKeyBindingStates = currentKeyBindingStates;
-            if (pressedKeys.size() > 0) {
-                if (!Apugli.currentlyUsedKeys.getOrDefault(player.getUuid(), new HashSet<>()).equals(pressedKeys)) {
-                    syncActiveKeys(pressedKeys, false);
-                }
-            } else {
-                syncActiveKeys(pressedKeys, !ApugliClient.hasClearedKeySync);
-            }
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    private static void syncActiveKeys(HashSet<Active.Key> keys, boolean nothingPressed) {
-        if (MinecraftClient.getInstance().player == null) return;
-        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-        if (nothingPressed) {
-            buffer.writeInt(0);
-            buffer.writeUuid(MinecraftClient.getInstance().player.getUuid());
-            ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
-            ApugliClient.hasClearedKeySync = true;
-        } else if (keys.size() > 0) {
-            buffer.writeInt(keys.size());
-            buffer.writeUuid(MinecraftClient.getInstance().player.getUuid());
-            for(Active.Key key : keys) {
-                ApoliDataTypes.KEY.send(buffer, key);
-            }
-            ClientPlayNetworking.send(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, buffer);
-        }
     }
 
     public static ConditionFactory<Entity> getFactory() {

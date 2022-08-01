@@ -2,6 +2,9 @@
   "apugli.gui.version_mismatch": "This server is running a different version of Apugli (v%1$s) which is incompatible with the one you have installed (v%2$s).",
 
   "apugli.midnightconfig.title": "Apugli Configuration",
+  "apugli.midnightconfig.fileDownloadOptions": "File Download Options",
+  "apugli.midnightconfig.fileSizeLimit": "File Size Limit",
+  "apugli.midnightconfig.fileConnectionTimeout": "Connection Timeout (Milliseconds)",
   "apugli.midnightconfig.hitsOnTargetOptions": "Hits on Target Options",
   "apugli.midnightconfig.resetTimerTicks": "Reset Timer Ticks"
 }

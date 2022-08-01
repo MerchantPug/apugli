@@ -1,0 +1,20 @@
+{
+  "type": "apoli:multiple",
+  "entity_texture_overlay": {
+    "type": "apugli:entity_texture_overlay",
+    "url": "https://i.imgur.com/wMe7kJs.png",
+    "show_first_person": true,
+    "hide_player_model": true,
+    "rendering_power_compatible": true
+  },
+  "player_model_type": {
+    "type": "apugli:player_model_type",
+    "model": "SLIM"
+  },
+  "model_color": {
+    "type": "apoli:model_color",
+    "red": 0.5,
+    "green": 0.5,
+    "alpha": 0.7
+  }
+}

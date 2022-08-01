@@ -1,9 +1,10 @@
 package com.github.merchantpug.apugli.mixin.client;
 
+import com.github.merchantpug.apugli.power.PlayerModelTypePower;
 import com.github.merchantpug.apugli.power.SetTexturePower;
 import com.mojang.authlib.GameProfile;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import com.github.merchantpug.apugli.util.PlayerModelType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -17,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
+
 @Environment(EnvType.CLIENT)
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
@@ -26,7 +29,14 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
     private void getModel(CallbackInfoReturnable<String> cir) {
-        if (PowerHolderComponent.hasPower(this, SetTexturePower.class) && (PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.DEFAULT) || PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.equals(PlayerModelType.SLIM))) {
+        List<PlayerModelTypePower> playerModelTypePowers = PowerHolderComponent.getPowers(this, PlayerModelTypePower.class);
+        List<SetTexturePower> setTexturePowers = PowerHolderComponent.getPowers(this, SetTexturePower.class).stream().filter(power -> power.model != null).toList();
+        if (playerModelTypePowers.size() + setTexturePowers.size() > 1) {
+            Apoli.LOGGER.warn("Entity " + this.getDisplayName().toString() + " has two instances of player model setting powers active.");
+        }
+        if (playerModelTypePowers.size() > 0) {
+            cir.setReturnValue(PowerHolderComponent.getPowers(this, PlayerModelTypePower.class).get(0).model.toString());
+        } else if (setTexturePowers.size() > 0) {
             cir.setReturnValue(PowerHolderComponent.getPowers(this, SetTexturePower.class).get(0).model.toString());
         }
     }
