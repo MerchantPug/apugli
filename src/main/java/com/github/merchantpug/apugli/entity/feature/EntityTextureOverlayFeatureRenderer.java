@@ -48,17 +48,12 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
             if (power.textureUrl != null) {
                 TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
 
-                renderLayer = alpha == 1.0 ? RenderLayer.getEntityCutoutNoCull(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
-                if (MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible()) {
-                    renderLayer = RenderLayer.getOutline(power.getUrlTextureIdentifier());
-                }
+                renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
 
                 entityModel.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
             } else if (power.textureLocation != null) {
-                renderLayer = alpha == 1.0 ? RenderLayer.getEntityCutoutNoCull(power.textureLocation) : RenderLayer.getEntityTranslucent(power.textureLocation);
-                if (MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible()) {
-                    renderLayer = RenderLayer.getOutline(power.textureLocation);
-                }
+
+                renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.textureLocation) : RenderLayer.getEntityTranslucent(power.textureLocation);
 
                 entityModel.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
             }
