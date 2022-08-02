@@ -26,7 +26,7 @@ public class WorldRendererMixin {
     @Unique private double particleY;
     @Unique private double particleZ;
 
-    @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/SimpleOption;getValue()Ljava/lang/Object;", ordinal = 1))
+    @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/ParticlesMode;MINIMAL:Lnet/minecraft/client/option/ParticlesMode;"))
     private boolean allowForRainToSpawnIfMinimal(boolean original) {
         return false;
     }
