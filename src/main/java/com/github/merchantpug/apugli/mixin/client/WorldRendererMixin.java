@@ -1,7 +1,6 @@
 package com.github.merchantpug.apugli.mixin.client;
 
 import com.github.merchantpug.apugli.power.ForceParticleRenderPower;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,9 +25,9 @@ public class WorldRendererMixin {
     @Unique private double particleY;
     @Unique private double particleZ;
 
-    @ModifyExpressionValue(method = "tickRainSplashing", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/ParticlesMode;MINIMAL:Lnet/minecraft/client/option/ParticlesMode;"))
-    private boolean allowForRainToSpawnIfMinimal(boolean original) {
-        return false;
+    @Redirect(method = "tickRainSplashing", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/ParticlesMode;MINIMAL:Lnet/minecraft/client/option/ParticlesMode;"))
+    private ParticlesMode allowForRainToSpawnIfMinimal() {
+        return null;
     }
 
     @Inject(method = "spawnParticle(Lnet/minecraft/particle/ParticleEffect;ZZDDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At(value = "HEAD"))
