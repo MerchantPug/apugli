@@ -44,24 +44,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         super(ctx, model, shadowRadius);
     }
 
-    @Inject(method = "renderArm", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelPart;pitch:F", ordinal = 1), cancellable = true)
-    private void renderOverlayOnArmWithHiddenEntityModel(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().anyMatch(power -> power.hideEntityModel)) {
-            if (PowerHolderComponent.hasPower(player, EntityTextureOverlayPower.class)) {
-                arm.pitch = 0.0f;
-                sleeve.pitch = 0.0f;
-            }
-
-            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
-            ci.cancel();
-        }
-    }
-
     @Inject(method = "renderArm", at = @At(value = "TAIL"))
     private void renderOverlayOnArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().noneMatch(power -> power.hideEntityModel)) {
-            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
-        }
+        PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
     }
 
     @ModifyArgs(method = "renderArm", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getEntitySolid(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/RenderLayer;"))
@@ -103,12 +88,14 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         float blue = 1.0F;
         float alpha = 1.0F;
 
-        List<ModelColorPower> modelColorPowers = PowerHolderComponent.getPowers(player, ModelColorPower.class);
-        if (modelColorPowers.size() > 0) {
-            red = modelColorPowers.stream().map(ModelColorPower::getRed).reduce((a, b) -> a * b).get();
-            green = modelColorPowers.stream().map(ModelColorPower::getGreen).reduce((a, b) -> a * b).get();
-            blue = modelColorPowers.stream().map(ModelColorPower::getBlue).reduce((a, b) -> a * b).get();
-            alpha = modelColorPowers.stream().map(ModelColorPower::getAlpha).min(Float::compare).get();
+        if (power.usesRenderingPowers) {
+            List<ModelColorPower> modelColorPowers = PowerHolderComponent.getPowers(player, ModelColorPower.class);
+            if (modelColorPowers.size() > 0) {
+                red = modelColorPowers.stream().map(ModelColorPower::getRed).reduce((a, b) -> a * b).get();
+                green = modelColorPowers.stream().map(ModelColorPower::getGreen).reduce((a, b) -> a * b).get();
+                blue = modelColorPowers.stream().map(ModelColorPower::getBlue).reduce((a, b) -> a * b).get();
+                alpha = modelColorPowers.stream().map(ModelColorPower::getAlpha).min(Float::compare).get();
+            }
         }
         RenderLayer renderLayer;
         if (power.textureUrl != null) {

@@ -1,6 +1,5 @@
 package com.github.merchantpug.apugli.mixin.client;
 
-import com.github.merchantpug.apugli.access.AnimalModelAccess;
 import com.github.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;
 import com.github.merchantpug.apugli.entity.feature.EntityTextureOverlayFeatureRenderer;
 import com.github.merchantpug.apugli.power.EntityTextureOverlayPower;
@@ -43,20 +42,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     private void construct(EntityRendererFactory.Context ctx, M model, float shadowRadius, CallbackInfo ci) {
         this.addFeature(new EnergySwirlOverlayFeatureRenderer<>(this));
         this.addFeature(new EntityTextureOverlayFeatureRenderer<>(this));
-    }
-
-    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V"))
-    private void setHiddenModel(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if (this.model instanceof PlayerEntityModel<?> && PowerHolderComponent.getPowers(livingEntity, EntityTextureOverlayPower.class).stream().anyMatch(power -> power.hideEntityModel)) {
-            ((AnimalModelAccess)this.model).apugli$setHidden(true);
-        }
-    }
-
-    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V", shift = At.Shift.AFTER))
-    private void unsetHiddenModel(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if (this.model instanceof PlayerEntityModel<?> && PowerHolderComponent.getPowers(livingEntity, EntityTextureOverlayPower.class).stream().anyMatch(power -> power.hideEntityModel)) {
-            ((AnimalModelAccess)this.model).apugli$setHidden(false);
-        }
     }
 
     @ModifyVariable(method = "getRenderLayer", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;getTexture(Lnet/minecraft/entity/Entity;)Lnet/minecraft/util/Identifier;"))

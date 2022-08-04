@@ -1,5 +1,7 @@
 package com.github.merchantpug.apugli.entity.feature;
 
+import com.github.merchantpug.apugli.Apugli;
+import com.github.merchantpug.apugli.util.TextureUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import com.github.merchantpug.apugli.power.EnergySwirlPower;
 import net.fabricmc.api.EnvType;
@@ -22,18 +24,33 @@ public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         PowerHolderComponent.getPowers(entity, EnergySwirlPower.class).forEach(power -> {
-            this.renderOverlay(power.getTextureLocation(), power.getSpeed(), matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+            this.renderOverlay(power, matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
         });
     }
 
-    public void renderOverlay(Identifier textureLocation, float speed, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public void renderOverlay(EnergySwirlPower power, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         float f = (float)entity.age + tickDelta;
-        EntityModel<T> entityModel = this.getContextModel();
-        entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
-        this.getContextModel().copyStateTo(entityModel);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(textureLocation, this.getEnergySwirlX(f, speed) % 1.0F, f * 0.01F % 1.0F));
-        entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-        entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
+
+        VertexConsumer vertexConsumer = null;
+        if (power.getTextureUrl() != null) {
+            TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.getTextureUrl());
+
+            vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(power.getUrlTextureIdentifier(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
+        } else if (power.getTextureLocation() != null) {
+            vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(power.getTextureLocation(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
+        }
+
+        if (vertexConsumer != null) {
+            matrices.push();
+            EntityModel<T> entityModel = this.getContextModel();
+            entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
+            this.getContextModel().copyStateTo(entityModel);
+
+            entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+            matrices.scale(power.getSize(), power.getSize(), power.getSize());
+            entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
+            matrices.pop();
+        }
     }
 
     protected float getEnergySwirlX(float partialAge, float speed) {

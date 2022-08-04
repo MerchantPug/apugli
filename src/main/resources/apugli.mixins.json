@@ -39,7 +39,6 @@
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.AbstractSoundInstanceMixin",
-    "client.AnimalModelMixin",
     "client.ApoliClientAccessor",
     "client.ArmorFeatureRendererAccessor",
     "client.ArmorFeatureRendererMixin",
