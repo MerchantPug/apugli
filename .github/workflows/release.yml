@@ -54,6 +54,8 @@ jobs:
             quilt
           game-versions: |
             1.19
+            1.19.1
+            1.19.2
           dependencies: |
             fabric-api | depends | *
           java: |
