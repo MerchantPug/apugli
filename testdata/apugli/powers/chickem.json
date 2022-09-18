@@ -4,7 +4,6 @@
     "type": "apugli:entity_texture_overlay",
     "texture_url": "https://i.imgur.com/wMe7kJs.png",
     "show_first_person": true,
-    "hide_player_model": true,
     "use_rendering_powers": true
   },
   "player_model_type": {

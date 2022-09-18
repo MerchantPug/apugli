@@ -1,5 +1,7 @@
 package com.github.merchantpug.apugli.mixin.client;
 
+import com.github.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;
+import com.github.merchantpug.apugli.entity.feature.EntityTextureOverlayFeatureRenderer;
 import com.github.merchantpug.apugli.power.EntityTextureOverlayPower;
 import com.github.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import com.github.merchantpug.apugli.power.SetTexturePower;
@@ -20,7 +22,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,6 +43,13 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     public PlayerEntityRendererMixin(EntityRendererFactory.Context ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void addFeatures(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
+        // This is separated from LivingEntityRendererMixin as it breaks certain mods if it's part of that.
+        this.addFeature(new EnergySwirlOverlayFeatureRenderer<>(this));
+        this.addFeature(new EntityTextureOverlayFeatureRenderer<>(this));
     }
 
     @Inject(method = "renderArm", at = @At(value = "TAIL"))

@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
 public class ActionOnEquipPower extends Power {
     private final HashMap<EquipmentSlot, Predicate<ItemStack>> armorConditions;
     private final Consumer<Entity> armorAction;

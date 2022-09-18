@@ -6,7 +6,7 @@ import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -14,9 +14,10 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.List;
 
 @Mixin(BeehiveBlock.class)
 public class BeehiveBlockMixin {
@@ -26,11 +27,10 @@ public class BeehiveBlockMixin {
         ((BeehiveBlockEntityAccessor)beehiveBlockEntity).invokeTryReleaseBee(state, BeehiveBlockEntity.BeeState.EMERGENCY);
     }
 
-    @ModifyArg(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/BeeEntity;setTarget(Lnet/minecraft/entity/LivingEntity;)V"))
-    private LivingEntity dontAngerBees(LivingEntity entity) {
-        if (PowerHolderComponent.hasPower(entity, PreventBeeAngerPower.class)) {
-            return entity = null;
+    @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    private void dontAngerBees(World world, BlockPos pos, CallbackInfo ci, List<BeeEntity> list, List<PlayerEntity> list2) {
+        if (list2.stream().anyMatch(player -> PowerHolderComponent.hasPower(player, PreventBeeAngerPower.class))) {
+            ci.cancel();
         }
-        return entity;
     }
 }
