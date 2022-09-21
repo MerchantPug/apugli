@@ -13,15 +13,6 @@ jobs:
           java-version: 17
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - uses: s4u/maven-settings-action@v2.6.0
-        name: Generate maven settings
-        with:
-          servers: |
-            [{
-              "id": "merchantpug",
-              "merchantpugUsername": "${{ secrets.MAVEN_NAME }}",
-              "merchantpugPassword": "${{ secrets.MAVEN_SECRET }}"
-            }]
       - name: Publish with Gradle
         run: ./gradlew build publish
         env:
