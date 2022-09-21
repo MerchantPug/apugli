@@ -131,7 +131,6 @@ publishing {
 			name = "merchantpug"
 			url = "https://maven.merchantpug.net/releases"
 			credentials(PasswordCredentials)
-			authentication(userName: System.getenv("MAVEN_NAME"), password: System.getenv("MAVEN_TOKEN"))
 		}
 	}
 }
