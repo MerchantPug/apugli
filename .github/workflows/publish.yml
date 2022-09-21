@@ -19,8 +19,8 @@ jobs:
           servers: |
             [{
               "id": "merchantpug",
-              "username": "${{ secrets.MAVEN_NAME }}",
-              "password": "${{ secrets.MAVEN_SECRET }}"
+              "merchantpugUsername": "${{ secrets.MAVEN_NAME }}",
+              "merchantpugPassword": "${{ secrets.MAVEN_SECRET }}"
             }]
       - name: Publish with Gradle
         run: ./gradlew build publish
