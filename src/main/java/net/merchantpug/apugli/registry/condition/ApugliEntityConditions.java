@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.registry.condition;
 
-import com.github.merchantpug.apugli.condition.entity.*;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.merchantpug.apugli.condition.entity.*;

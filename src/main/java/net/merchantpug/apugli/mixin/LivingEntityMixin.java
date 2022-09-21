@@ -2,12 +2,11 @@ package net.merchantpug.apugli.mixin;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.access.LivingEntityAccess;
-import com.github.merchantpug.apugli.power.*;
+import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.util.ItemStackFoodComponentUtil;
-import net.merchantpug.apugli.power.*;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;

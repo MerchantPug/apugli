@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.registry;
 
 import net.merchantpug.apugli.Apugli;
-import com.github.merchantpug.apugli.power.*;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
