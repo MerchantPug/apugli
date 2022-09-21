@@ -1,5 +1,6 @@
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'signing'
 	id 'maven-publish'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'com.modrinth.minotaur' version '2.1.1'
@@ -127,6 +128,7 @@ publishing {
 	}
 	repositories {
 		maven {
+			name = "merchantpug"
 			url = "https://maven.merchantpug.net/releases"
 			credentials(PasswordCredentials)
 			authentication {
