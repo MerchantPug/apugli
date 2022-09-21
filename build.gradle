@@ -16,6 +16,10 @@ group = project.maven_group
 
 repositories {
 	maven {
+		name = "Pug's Maven"
+		url = 'https://maven.merchantpug.net/'
+	}
+	maven {
 		name = "Ladysnake Libs"
 		url = 'https://ladysnake.jfrog.io/artifactory/mods'
 	}
