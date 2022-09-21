@@ -15,7 +15,7 @@ Assuming you're using a 1.17 or above default Fabric workspace, you are able to 
 ```gradle
 repositories {
     maven {
-        name = "MerchantPug"
+        name = "Pug's Maven"
         url = 'https://maven.merchantpug.net/'
     }
     maven {
