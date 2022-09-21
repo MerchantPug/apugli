@@ -1,7 +1,4 @@
-**Bugfixes**
-- Fixed `apugli:energy_swirl` not displaying when using `texture_location` field.
-- Fixed an incompatibility with Figura's render layer getting method.
-- Updated `apugli:prevent_bee_anger` logic, bees don't anger on other players if they are nearby.
+This update does nothing for users of the mod. This is moreso for developers and mods that nest it.
 
-**Config**
-- Underlined headings for easier reading.
+**Refactors**
+- Changed from com.github.merchantpug package name to net.merchantpug
