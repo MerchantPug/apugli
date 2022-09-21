@@ -131,6 +131,9 @@ publishing {
 			name = "merchantpug"
 			url = "https://maven.merchantpug.net/releases"
 			credentials(PasswordCredentials)
+			authentication {
+				create("basic", BasicAuthentication)
+			}
 		}
 	}
 }
