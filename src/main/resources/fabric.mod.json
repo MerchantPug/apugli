@@ -19,16 +19,16 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.merchantpug.apugli.Apugli"
+      "net.merchantpug.apugli.Apugli"
     ],
     "client": [
-      "com.github.merchantpug.apugli.ApugliClient"
+      "net.merchantpug.apugli.ApugliClient"
     ],
     "preLaunch": [
-      "com.github.merchantpug.apugli.ApugliPreLaunch"
+      "net.merchantpug.apugli.ApugliPreLaunch"
     ],
     "modmenu": [
-      "com.github.merchantpug.apugli.integration.ApugliModMenuIntegration"
+      "net.merchantpug.apugli.integration.ApugliModMenuIntegration"
     ]
   },
   "mixins": [
