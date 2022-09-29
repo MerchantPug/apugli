@@ -2,6 +2,11 @@ name: Publish project to Maven repository
 
 on: [workflow_dispatch]
 
+env:
+  ORG_GRADLE_PROJECT_merchantpugUsername: ${{ secrets.MAVEN_NAME }} # token
+  ORG_GRADLE_PROJECT_merchantpugPassword: ${{ secrets.MAVEN_TOKEN }} # password
+  ENVIRONMENT: production
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -15,6 +20,3 @@ jobs:
         run: chmod +x gradlew
       - name: Publish with Gradle
         run: ./gradlew build publish
-        env:
-          ORG_GRADLE_PROJECT_merchantpugUsername: ${{ secrets.MAVEN_NAME }} # token
-          ORG_GRADLE_PROJECT_merchantpugPassword: ${{ secrets.MAVEN_TOKEN }} # password
