@@ -10,6 +10,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ParticleAccess;
 import net.merchantpug.apugli.mixin.client.ClientPlayerEntityAccessor;
 import net.merchantpug.apugli.mixin.client.ParticleManagerAccessor;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
@@ -21,28 +22,33 @@ import java.util.stream.Collectors;
 
 public class ParticleInRadiusCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
-        if (!entity.world.isClient()) return false;
-        List<ParticleEffect> particles = (List<ParticleEffect>)data.get("particles");
+        if (!entity.world.isClient()) {
+            return false;
+        }
+        List<ParticleEffect> particles = data.get("particles");
         int stopAt = -1;
-        Comparison comparison = ((Comparison) data.get("comparison"));
+        Comparison comparison = data.get("comparison");
         int compareTo = data.getInt("compare_to");
         switch (comparison) {
             case EQUAL, LESS_THAN_OR_EQUAL, GREATER_THAN -> stopAt = compareTo + 1;
             case LESS_THAN, GREATER_THAN_OR_EQUAL -> stopAt = compareTo;
         }
         int count = 0;
-        ParticleManager particleManager = ((ClientPlayerEntityAccessor)entity).getClient().particleManager;
-        for (Queue<Particle> particleQueue : ((ParticleManagerAccessor)particleManager).getParticles().values()) {
-            for (Particle particle : particleQueue.stream().filter(particle -> entity.getBoundingBox().expand(data.getDouble("radius")).intersects(particle.getBoundingBox())).collect(Collectors.toList())) {
-                if (data.isPresent("particle") && ((ParticleAccess)particle).getParticleEffect() == data.get("particle") || data.isPresent("particles") &&  particles.stream().anyMatch(particleEffect -> ((ParticleAccess)particle).getParticleEffect() == particleEffect)) {
-                    count++;
-                    if (count == stopAt) {
-                        break;
+        if (entity instanceof ClientPlayerEntity) {
+            ParticleManager particleManager = ((ClientPlayerEntityAccessor)entity).getClient().particleManager;
+            for (Queue<Particle> particleQueue : ((ParticleManagerAccessor)particleManager).getParticles().values()) {
+                for (Particle particle : particleQueue.stream().filter(particle -> entity.getBoundingBox().expand(data.getDouble("radius")).intersects(particle.getBoundingBox())).toList()) {
+                    if (data.isPresent("particle") && ((ParticleAccess)particle).getParticleEffect() == data.get("particle") || data.isPresent("particles") &&  particles.stream().anyMatch(particleEffect -> ((ParticleAccess)particle).getParticleEffect() == particleEffect)) {
+                        count++;
+                        if (count == stopAt) {
+                            break;
+                        }
                     }
                 }
             }
+            return comparison.compare(count, compareTo);
         }
-        return comparison.compare(count, compareTo);
+        return false;
     }
 
     public static ConditionFactory<Entity> getFactory() {
