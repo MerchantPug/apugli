@@ -1,4 +1,5 @@
-This update does nothing for users of the mod. This is moreso for developers and mods that nest it.
+**Changelog**
+- Fixed crash involving `apugli:particle_in_radius` on other client player entities.
 
-**Refactors**
-- Changed from com.github.merchantpug package name to net.merchantpug
+**Miscellaneous**
+- Removed test powers from maven artifact.
