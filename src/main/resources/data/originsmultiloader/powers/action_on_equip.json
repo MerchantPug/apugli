@@ -1,0 +1,11 @@
+{
+  "type": "originsmultiloader:action_on_equip",
+  "slot": "HEAD",
+  "entity_action": {
+    "type": "apoli:damage",
+    "amount": 20,
+    "source": {
+      "name": "test"
+    }
+  }
+}

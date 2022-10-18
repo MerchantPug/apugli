@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.merchantpug.apugli.mixin.xplatforn",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "common.accessor.AbstractFurnaceBlockEntityAccessor",
+    "common.accessor.BrewingStandBlockEntityAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "maxShiftBy": 5
+  },
+  "refmap": "${refmap_target}refmap.json"
+}
