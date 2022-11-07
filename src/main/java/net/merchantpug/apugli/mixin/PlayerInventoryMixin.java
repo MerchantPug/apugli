@@ -33,7 +33,7 @@ public class PlayerInventoryMixin {
     private void setStack(int slot, ItemStack stack, CallbackInfo ci, DefaultedList<ItemStack> defaultedList) {
         ItemStack currentItem = defaultedList.get(slot);
 
-        if (currentItem.getItem().equals(stack.getItem()) && this.player.currentScreenHandler.getCursorStack().isEmpty()) return;
+        if (this.player == null || currentItem.getItem().equals(stack.getItem()) && this.player.currentScreenHandler.getCursorStack().isEmpty()) return;
 
         if (defaultedList.equals(this.armor)) {
             EquipmentSlot equipmentSlot = EquipmentSlot.fromTypeIndex(EquipmentSlot.Type.ARMOR, slot);
