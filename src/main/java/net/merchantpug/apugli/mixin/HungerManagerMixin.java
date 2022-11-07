@@ -18,7 +18,7 @@ public abstract class HungerManagerMixin {
 
     @Inject(method = "eat", at = @At("HEAD"), cancellable = true)
     private void eat(Item item, ItemStack stack, CallbackInfo ci) {
-        if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
+        if (((ItemStackAccess)(Object)stack).getItemStackFoodComponent() != null) {
             FoodComponent foodComponent = ((ItemStackAccess)(Object)stack).getItemStackFoodComponent();
             this.add(foodComponent.getHunger(), foodComponent.getSaturationModifier());
             ci.cancel();

@@ -16,5 +16,6 @@
   "return_stack": {
     "item": "minecraft:water_bucket",
     "amount": 1
-  }
+  },
+  "sound": "minecraft:entity.axolotl.hurt"
 }

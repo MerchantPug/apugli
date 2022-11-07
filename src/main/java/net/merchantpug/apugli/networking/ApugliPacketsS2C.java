@@ -32,8 +32,6 @@ import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.access.LivingEntityAccess;
 import net.merchantpug.apugli.registry.ApugliDamageSources;
-import net.merchantpug.apugli.util.ItemStackFoodComponentUtil;
-import net.merchantpug.apugli.util.StackFoodComponentUtil;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -48,17 +46,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -67,30 +63,29 @@ public class ApugliPacketsS2C {
     public static void register() {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsS2C::handleHandshake);
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
-            ClientPlayNetworking.registerReceiver(ApugliPackets.REMOVE_STACK_FOOD_COMPONENT, ApugliPacketsS2C::onFoodComponentSync);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, ApugliPacketsS2C::onSyncActiveKeys);
-            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, ApugliPacketsS2C::syncRocketJumpExplosion);
+            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, ApugliPacketsS2C::onRocketJumpExplosionSync);
         }));
     }
 
     private static void onSyncActiveKeys(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         int count = packetByteBuf.readInt();
-        int playerId = packetByteBuf.readInt();
+        UUID playerUUID = packetByteBuf.readUuid();
         Active.Key[] activeKeys = new Active.Key[count];
         for(int i = 0; i < count; i++) {
             activeKeys[i] = ApoliDataTypes.KEY.receive(packetByteBuf);
         }
         minecraftClient.execute(() -> {
-            Entity entity = clientPlayNetworkHandler.getWorld().getEntityById(playerId);
-            if (!(entity instanceof PlayerEntity playerEntity)) {
-                Apugli.LOGGER.warn("Tried modifying non PlayerEntity's keys pressed.");
+            PlayerEntity player = clientPlayNetworkHandler.getWorld().getPlayerByUuid(playerUUID);
+            if (player == null) {
+                Apugli.LOGGER.warn("Tried modifying non-existent player's keys pressed.");
                 return;
             }
             if (activeKeys.length == 0) {
-                Apugli.currentlyUsedKeys.remove(playerEntity.getUuid());
+                Apugli.currentlyUsedKeys.remove(playerUUID);
             } else {
-                Apugli.currentlyUsedKeys.put(playerEntity.getUuid(), new HashSet<>(List.of(activeKeys)));
+                Apugli.currentlyUsedKeys.put(playerUUID, new HashSet<>(List.of(activeKeys)));
             }
         });
     }
@@ -134,51 +129,7 @@ public class ApugliPacketsS2C {
         });
     }
 
-    private static void onFoodComponentSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        int targetId = packetByteBuf.readInt();
-
-        boolean usesEquipmentSlot = packetByteBuf.readBoolean();
-        String equipmentSlotId = "";
-        if (usesEquipmentSlot) {
-            equipmentSlotId = packetByteBuf.readString(PacketByteBuf.DEFAULT_MAX_STRING_LENGTH);
-        }
-        String finalEquipmentSlotId = equipmentSlotId;
-
-        boolean usesInventoryIndex = packetByteBuf.readBoolean();
-        StackFoodComponentUtil.InventoryLocation inventoryLocation = null;
-        int inventoryIndex = 0;
-        if (usesInventoryIndex) {
-            inventoryLocation = StackFoodComponentUtil.InventoryLocation.values()[packetByteBuf.readByte()];
-            inventoryIndex = packetByteBuf.readInt();
-        }
-        StackFoodComponentUtil.InventoryLocation finalInventoryLocation = inventoryLocation;
-        int finalInventoryIndex = inventoryIndex;
-
-        minecraftClient.execute(() -> {
-            Entity entity = clientPlayNetworkHandler.getWorld().getEntityById(targetId);
-            if (!(entity instanceof PlayerEntity)) {
-                Apugli.LOGGER.warn("Received unknown target");
-            } else {
-                if (usesEquipmentSlot) {
-                    EquipmentSlot equipmentSlot = EquipmentSlot.byName(finalEquipmentSlotId);
-                    ItemStack stack = ((PlayerEntity)entity).getEquippedStack(equipmentSlot);
-                    ItemStackFoodComponentUtil.removeStackFood(stack);
-                }
-                if (usesInventoryIndex) {
-                    DefaultedList<ItemStack> inventory;
-                    switch(finalInventoryLocation) {
-                        case MAIN -> inventory = ((PlayerEntity) entity).getInventory().main;
-                        case ARMOR -> inventory = ((PlayerEntity) entity).getInventory().armor;
-                        case OFFHAND -> inventory = ((PlayerEntity) entity).getInventory().offHand;
-                        default -> throw new IllegalStateException("Unexpected value: " + finalInventoryLocation);
-                    }
-                    ItemStackFoodComponentUtil.removeStackFood(inventory.get(finalInventoryIndex));
-                }
-            }
-        });
-    }
-
-    private static void syncRocketJumpExplosion(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void onRocketJumpExplosionSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         int userId = packetByteBuf.readInt();
         double x = packetByteBuf.readDouble();
         double y = packetByteBuf.readDouble();

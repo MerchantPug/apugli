@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.client;
 
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import net.merchantpug.apugli.entity.feature.EnergySwirlOverlayFeatureRenderer;
 import net.merchantpug.apugli.entity.feature.EntityTextureOverlayFeatureRenderer;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
@@ -52,8 +53,19 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         this.addFeature(new EntityTextureOverlayFeatureRenderer<>(this));
     }
 
+    @Inject(method = "renderArm", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelPart;pitch:F", ordinal = 0), cancellable = true)
+    private void renderOverlayWithCancel(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().anyMatch(p -> !p.renderOriginalModel)) {
+            arm.pitch = 0.0f;
+            sleeve.pitch = 0.0f;
+            PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "renderArm", at = @At(value = "TAIL"))
     private void renderOverlayOnArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().allMatch(p -> p.renderOriginalModel)) return;
         PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
     }
 

@@ -14,6 +14,7 @@ public class EntityTextureOverlayPower extends Power {
     public final String textureUrl;
     public final boolean showFirstPerson;
     public final boolean usesRenderingPowers;
+    public final boolean renderOriginalModel;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<>(Apugli.identifier("entity_texture_overlay"),
@@ -21,14 +22,15 @@ public class EntityTextureOverlayPower extends Power {
                         .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
                         .add("texture_url", SerializableDataTypes.STRING, null)
                         .add("show_first_person", SerializableDataTypes.BOOLEAN, false)
-                        .add("use_rendering_powers", SerializableDataTypes.BOOLEAN,  false),
+                        .add("use_rendering_powers", SerializableDataTypes.BOOLEAN,  false)
+                        .add("render_original_model", SerializableDataTypes.BOOLEAN,  true),
                 data ->
                         (type, player) ->
-                                new EntityTextureOverlayPower(type, player, data.getId("texture_location"), data.getString("texture_url"), data.getBoolean("show_first_person"), data.getBoolean("use_rendering_powers")))
+                                new EntityTextureOverlayPower(type, player, data.getId("texture_location"), data.getString("texture_url"), data.getBoolean("show_first_person"), data.getBoolean("use_rendering_powers"), data.getBoolean("render_original_model")))
                 .allowCondition();
     }
 
-    public EntityTextureOverlayPower(PowerType<?> type, LivingEntity entity, Identifier textureLocation, String textureUrl, boolean showFirstPerson, boolean usesRenderingPowers) {
+    public EntityTextureOverlayPower(PowerType<?> type, LivingEntity entity, Identifier textureLocation, String textureUrl, boolean showFirstPerson, boolean usesRenderingPowers, boolean renderOriginalModel) {
         super(type, entity);
         if (textureLocation == null && textureUrl == null) {
             Apugli.LOGGER.warn("EntityTextureOverlayPower '" + this.getType().getIdentifier() + "' does not have a valid `texture_location` or `texture_url` field. This power will not render.");
@@ -37,6 +39,7 @@ public class EntityTextureOverlayPower extends Power {
         this.textureUrl = textureUrl;
         this.showFirstPerson = showFirstPerson;
         this.usesRenderingPowers = usesRenderingPowers;
+        this.renderOriginalModel = renderOriginalModel;
     }
 
     public Identifier getUrlTextureIdentifier() {

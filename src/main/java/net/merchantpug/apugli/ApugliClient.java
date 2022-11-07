@@ -31,10 +31,6 @@ public class ApugliClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-			client.getTextureManager().registerTexture(Apugli.identifier("empty_player_texture"), new ResourceTexture(Apugli.identifier("textures/empty_player_texture.png")));
-		});
-
 		ApugliPacketsS2C.register();
 		ApugliClassDataClient.registerAll();
 
@@ -42,12 +38,12 @@ public class ApugliClient implements ClientModInitializer {
 			if (tick.player == null) return;
 			ApugliClient.handleActiveKeys(tick.player);
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			Apugli.keysToCheck.clear();
 			Apugli.currentlyUsedKeys.clear();
 			ApugliClient.lastKeyBindingStates.clear();
 			ApugliClient.hasClearedKeySync = false;
-		}));
+		});
 	}
 
 	public static void handleActiveKeys(PlayerEntity player) {

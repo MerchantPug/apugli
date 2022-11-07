@@ -66,7 +66,7 @@ public class ApugliPacketsC2S {
             }
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeInt(activeKeys.length);
-            buf.writeInt(entity.getId());
+            buf.writeUuid(entity.getUuid());
             for(Active.Key key : activeKeys) {
                 ApoliDataTypes.KEY.send(buf, key);
             }

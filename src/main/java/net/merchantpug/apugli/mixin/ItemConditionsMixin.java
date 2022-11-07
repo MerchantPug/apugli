@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemConditionsMixin {
 
     @Inject(method = "lambda$register$10", at = @At("HEAD"), remap = false, cancellable = true)
-    private static void isNibblesMeat(SerializableData.Instance data, ItemStack stack, CallbackInfoReturnable cir) {
-        if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
+    private static void isPowerFoodMeat(SerializableData.Instance data, ItemStack stack, CallbackInfoReturnable cir) {
+        if (((ItemStackAccess)(Object)stack).getItemStackFoodComponent() != null) {
             cir.setReturnValue(((ItemStackAccess)(Object)stack).getItemStackFoodComponent().isMeat());
         }
     }

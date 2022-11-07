@@ -6,12 +6,12 @@ import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.merchantpug.apugli.util.ItemStackFoodComponentUtil;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -54,6 +54,8 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     @Shadow public abstract boolean isAlive();
 
     @Shadow public abstract @Nullable LivingEntity getPrimeAdversary();
+
+    @Shadow public abstract boolean addStatusEffect(StatusEffectInstance effect);
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -155,10 +157,15 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
     }
 
     @Inject(method = "eatFood", at = @At("HEAD"), cancellable = true)
-    private void eatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (((ItemStackAccess)(Object)stack).isItemStackFood()) {
+    private void eatStackFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+        if (((ItemStackAccess)(Object)stack).getItemStackFoodComponent() != null) {
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
-            ItemStackFoodComponentUtil.applyFoodEffects(stack, world, (LivingEntity)(Object)this);
+            List<com.mojang.datafixers.util.Pair<StatusEffectInstance, Float>> list = ((ItemStackAccess)(Object)stack).getItemStackFoodComponent().getStatusEffects();
+            for (com.mojang.datafixers.util.Pair<StatusEffectInstance, Float> pair : list) {
+                if (world.isClient || pair.getFirst() == null || !(world.random.nextFloat() < pair.getSecond()))
+                    continue;
+                this.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
+            }
             ItemStack newStack = stack.copy();
             if (!((LivingEntity)(Object)this instanceof PlayerEntity) || !((PlayerEntity)(Object)this).getAbilities().creativeMode) {
                 newStack.decrement(1);
@@ -271,7 +278,6 @@ public abstract class LivingEntityMixin extends Entity implements LivingEntityAc
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallDistance = 0.0F;
         }
-        PowerHolderComponent.KEY.get(this).getPowers(EdibleItemPower.class, true).forEach(EdibleItemPower::tempTick);
         if (PowerHolderComponent.hasPower(this, BunnyHopPower.class) && !this.world.isClient) {
             BunnyHopPower bunnyHopPower = PowerHolderComponent.getPowers(this, BunnyHopPower.class).get(0);
             if (apugli$framesOnGround > 4) {
