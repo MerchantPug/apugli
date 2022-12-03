@@ -1,12 +1,8 @@
 {
-    "type": "apoli:active_self",
-    "cooldown": 1,
+    "type": "apoli:action_over_time",
+    "interval": 1,
     "hud_render": {
         "should_render": false
-    },
-    "key": {
-        "key": "key.saveToolbarActivator",
-        "continuous": false
     },
     "entity_action": {
         "type": "apoli:if_else_list",
@@ -15,8 +11,7 @@
                 "condition": {
                     "type": "apugli:key_pressed",
                     "key": {
-                        "key": "key.forward",
-                        "continuous": true
+                        "key": "key.forward"
                     }
                 },
                 "action": {
@@ -28,8 +23,7 @@
                 "condition": {
                     "type": "apugli:key_pressed",
                     "key": {
-                        "key": "key.left",
-                        "continuous": true
+                        "key": "key.left"
                     }
                 },
                 "action": {
@@ -41,8 +35,7 @@
                 "condition": {
                     "type": "apugli:key_pressed",
                     "key": {
-                        "key": "key.back",
-                        "continuous": true
+                        "key": "key.back"
                     }
                 },
                 "action": {
@@ -54,23 +47,12 @@
                 "condition": {
                     "type": "apugli:key_pressed",
                     "key": {
-                        "key": "key.right",
-                        "continuous": true
+                        "key": "key.right"
                     }
                 },
                 "action": {
                     "type": "apoli:execute_command",
                     "command": "say right"
-                }
-            },
-            {
-                "condition": {
-                    "type": "apoli:constant",
-                    "value": true
-                },
-                "action": {
-                    "type": "apoli:execute_command",
-                    "command": "say nothing"
                 }
             }
         ]

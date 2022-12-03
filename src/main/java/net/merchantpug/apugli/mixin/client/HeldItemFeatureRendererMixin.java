@@ -33,7 +33,7 @@ import java.util.List;
 @Mixin(HeldItemFeatureRenderer.class)
 public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
     @Shadow @Final private HeldItemRenderer heldItemRenderer;
-    @Unique boolean isRightMainHand;
+    @Unique boolean apugli$isRightMainHand;
 
     public HeldItemFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
@@ -41,7 +41,7 @@ public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M ext
 
     @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/feature/HeldItemFeatureRenderer;getContextModel()Lnet/minecraft/client/render/entity/model/EntityModel;"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void captureBoolean(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci, boolean bl) {
-        this.isRightMainHand = bl;
+        this.apugli$isRightMainHand = bl;
     }
 
     @Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
@@ -50,7 +50,7 @@ public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M ext
         modifyEquippedItemRenderPowers.forEach(power -> {
             ModifyEquippedItemRenderUtil.chooseArm(this, matrices, vertexConsumers, light, entity, power, this.heldItemRenderer);
         });
-        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && !this.isRightMainHand))) && arm == Arm.RIGHT) ci.cancel();
-        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && !this.isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && this.isRightMainHand))) && arm == Arm.LEFT) ci.cancel();
+        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && this.apugli$isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && !this.apugli$isRightMainHand))) && arm == Arm.RIGHT) ci.cancel();
+        if (modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && ((power.slot == EquipmentSlot.MAINHAND && !this.apugli$isRightMainHand) || (power.slot == EquipmentSlot.OFFHAND && this.apugli$isRightMainHand))) && arm == Arm.LEFT) ci.cancel();
     }
 }

@@ -29,6 +29,9 @@
     ],
     "modmenu": [
       "net.merchantpug.apugli.integration.ApugliModMenuIntegration"
+    ],
+    "cardinal-components": [
+      "net.merchantpug.apugli.component.ApugliEntityComponents"
     ]
   },
   "mixins": [
@@ -37,7 +40,11 @@
   "custom": {
     "modmenu": {
       "badges": ["library"]
-    }
+    },
+    "cardinal-components": [
+      "apugli:hits_on_target",
+      "apugli:keys_pressed"
+    ]
   },
   "depends": {
     "fabricloader": ">=0.13.3",

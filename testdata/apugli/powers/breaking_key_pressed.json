@@ -1,17 +1,13 @@
 {
   "type": "apoli:action_over_time",
   "interval": 1,
-  "entity_action":
-  {
+  "entity_action": {
     "type": "apoli:if_else_list",
-    "actions":
-    [
+    "actions": [
       {
-        "action":
-        {
+        "action": {
           "type": "apoli:apply_effect",
-          "effect":
-          {
+          "effect": {
             "effect": "minecraft:slowness",
             "duration": 5,
             "amplifier": 4,
@@ -19,49 +15,32 @@
             "show_icon": false
           }
         },
-        "condition":
-        {
-          "type": "apoli:and",
-          "conditions":
-          [
-            {
-              "type": "apugli:key_pressed",
-              "key":
-              {
-                "key": "key.saveToolbarActivator",
-                "continuous": true
-              }
-            }
-          ]
+        "condition": {
+          "type": "apugli:key_pressed",
+          "key":
+          {
+            "key": "key.saveToolbarActivator",
+            "continuous": true
+          }
         }
       },
       {
-        "action":
-        {
+        "action": {
           "type": "apoli:apply_effect",
-          "effect":
-          {
+          "effect": {
             "effect": "minecraft:glowing",
             "duration": 5,
             "show_icon": false,
             "show_particles": false
           }
         },
-        "condition":
-        {
-          "type": "apoli:or",
-          "conditions":
-          [
-            {
-              "type": "apugli:key_pressed",
-              "key":
-              {
-                "key": "key.saveToolbarActivator",
-                "continuous": true
-              },
-              "inverted": true
-            }
-          ]
+        "condition": {
+          "type": "apugli:key_pressed",
+          "key": {
+            "key": "key.saveToolbarActivator",
+            "continuous": true
+          },
+          "inverted": true
         }
       }
     ]

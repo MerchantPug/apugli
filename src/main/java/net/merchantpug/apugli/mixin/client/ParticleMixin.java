@@ -1,25 +1,26 @@
 package net.merchantpug.apugli.mixin.client;
 
-import net.merchantpug.apugli.access.ParticleAccess;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.merchantpug.apugli.access.ParticleAccess;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.particle.ParticleEffect;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Environment(EnvType.CLIENT)
 @Mixin(Particle.class)
-public class ParticleMixin implements ParticleAccess {
+@Implements(@Interface(iface = ParticleAccess.class, prefix = "apugli$"))
+public class ParticleMixin {
     @Unique private ParticleEffect particleEffect;
 
-    @Override
-    public ParticleEffect getParticleEffect() {
+    public ParticleEffect apugli$getParticleEffect() {
         return this.particleEffect;
     }
 
-    @Override
-    public void setParticleEffect(ParticleEffect effect) {
+    public void apugli$setParticleEffect(ParticleEffect effect) {
         this.particleEffect = effect;
     }
 }

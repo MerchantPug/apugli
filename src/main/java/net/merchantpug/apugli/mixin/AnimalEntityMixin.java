@@ -34,8 +34,8 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
     @Shadow public abstract boolean canEat();
 
     @Shadow private int loveTicks;
-    @Unique private AnimalEntity otherAnimalEntity;
-    @Unique private ServerPlayerEntity serverPlayerEntity;
+    @Unique private AnimalEntity apugli$otherAnimalEntity;
+    @Unique private ServerPlayerEntity apugli$serverPlayerEntity;
 
     protected AnimalEntityMixin(EntityType<? extends PassiveEntity> entityType, World world) {
         super(entityType, world);
@@ -61,17 +61,17 @@ public abstract class AnimalEntityMixin extends PassiveEntity {
 
     @Inject(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;incrementStat(Lnet/minecraft/util/Identifier;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void captureBreedLocals(ServerWorld world, AnimalEntity other, CallbackInfo ci, PassiveEntity passiveEntity, ServerPlayerEntity serverPlayerEntity) {
-        this.otherAnimalEntity = other;
-        this.serverPlayerEntity = serverPlayerEntity;
+        this.apugli$otherAnimalEntity = other;
+        this.apugli$serverPlayerEntity = serverPlayerEntity;
     }
 
     @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 0))
     private int modifyThisAnimalBreed(int age) {
-        return (int)PowerHolderComponent.modify(serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply((Entity)(Object)this));
+        return (int)PowerHolderComponent.modify(apugli$serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply((Entity)(Object)this));
     }
 
     @ModifyArg(method = "breed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AnimalEntity;setBreedingAge(I)V", ordinal = 1))
     private int modifyOtherAnimalBreed(int age) {
-        return (int)PowerHolderComponent.modify(serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(otherAnimalEntity));
+        return (int)PowerHolderComponent.modify(apugli$serverPlayerEntity, ModifyBreedingCooldownPower.class, age, p -> p.doesApply(apugli$otherAnimalEntity));
     }
 }

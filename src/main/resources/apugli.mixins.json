@@ -30,7 +30,6 @@
     "MobEntityMixin",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
-    "PowerHolderComponentImplMixin",
     "ServerPlayerEntityAccessor",
     "ServerWorldMixin",
     "StatusEffectMixin",

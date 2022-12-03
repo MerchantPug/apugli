@@ -47,7 +47,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "JUMP", opcode = Opcodes.IFNULL, ordinal = 1))
     private void captureEntity(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if (apugli$capturedEntity != null) return;
         apugli$capturedEntity = livingEntity;
     }
 

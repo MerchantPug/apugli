@@ -18,7 +18,7 @@ import java.util.*;
 @Mixin(BlockItem.class)
 public class BlockItemMixin extends Item {
     @Unique
-    Pair<ModifyBlockPlacedPower, BlockState> pair;
+    Pair<ModifyBlockPlacedPower, BlockState> apugli$pair;
 
     public BlockItemMixin(Settings settings) {
         super(settings);
@@ -44,7 +44,7 @@ public class BlockItemMixin extends Item {
         int random = new Random(powers.get(0).getSeed()).nextInt(pairs.size());
         BlockState blockState = pairs.get(random).getRight();
 
-        this.pair = pairs.get(random);
+        this.apugli$pair = pairs.get(random);
 
         powers.get(0).generateSeed();
 
@@ -53,8 +53,8 @@ public class BlockItemMixin extends Item {
 
     @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemPlacementContext;getBlockPos()Lnet/minecraft/util/math/BlockPos;"))
     private void executeActionAfterPlaced(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir) {
-        if (this.pair == null) return;
-        this.pair.getLeft().executeAction(Optional.ofNullable(context.getBlockPos()));
-        this.pair = null;
+        if (this.apugli$pair == null) return;
+        this.apugli$pair.getLeft().executeAction(Optional.ofNullable(context.getBlockPos()));
+        this.apugli$pair = null;
     }
 }

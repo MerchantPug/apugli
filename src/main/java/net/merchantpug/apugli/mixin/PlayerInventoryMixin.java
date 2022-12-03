@@ -29,7 +29,7 @@ public class PlayerInventoryMixin {
         return false;
     }
 
-    @Inject(method = "setStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "setStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
     private void setStack(int slot, ItemStack stack, CallbackInfo ci, DefaultedList<ItemStack> defaultedList) {
         ItemStack currentItem = defaultedList.get(slot);
 

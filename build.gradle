@@ -70,9 +70,9 @@ dependencies {
 	modImplementation "maven.modrinth:midnightlib:${project.midnightlib_version}"
 	include "maven.modrinth:midnightlib:${project.midnightlib_version}"
 
-	implementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-	annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-	include("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
+	implementation "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
+	annotationProcessor "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
+	include "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
 }
 
 processResources {

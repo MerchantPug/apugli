@@ -94,12 +94,18 @@ public abstract class ItemStackMixin {
             ItemStack newStack = this.copy();
             ((ItemStackAccess)(Object)newStack).setItemStackFoodComponent(power.get().foodComponent);
             newStack = user.eatFood(world, newStack);
-            if (!((PlayerEntity)user).getAbilities().creativeMode) {
-                if (power.get().returnStack != null) {
+            if (user instanceof PlayerEntity player && !player.getAbilities().creativeMode) {
+                if (power.get().returnStack != null && newStack.isEmpty()) {
                     cir.setReturnValue(power.get().returnStack.copy());
                 } else {
+                    ItemStack stack2 = power.get().returnStack.copy();
+                    if (power.get().returnStack != null && !player.giveItemStack(stack2)) {
+                        player.dropItem(stack2, false);
+                    }
                     cir.setReturnValue(newStack);
                 }
+            } else {
+                cir.setReturnValue(newStack);
             }
             PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
         }

@@ -24,15 +24,15 @@ SOFTWARE.
 
 package net.merchantpug.apugli.networking;
 
-import net.merchantpug.apugli.util.ApugliServerConfig;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import net.merchantpug.apugli.Apugli;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModOrigin;
-import net.minecraft.entity.Entity;
+import net.merchantpug.apugli.component.ApugliEntityComponents;
+import net.merchantpug.apugli.component.KeyPressComponent;
+import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -41,60 +41,47 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 public class ApugliPacketsC2S {
     public static void register() {
         ServerLoginConnectionEvents.QUERY_START.register(ApugliPacketsC2S::handshake);
         ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsC2S::handleHandshakeReply);
-        ServerPlayNetworking.registerGlobalReceiver(ApugliPackets.SYNC_ACTIVE_KEYS_SERVER, ApugliPacketsC2S::onSyncActiveKeys);
+        ServerPlayNetworking.registerGlobalReceiver(ApugliPackets.UPDATE_KEYS_PRESSED, ApugliPacketsC2S::onUpdateKeysPressed);
     }
 
-    private static void onSyncActiveKeys(MinecraftServer minecraftServer, ServerPlayerEntity playerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        int count = packetByteBuf.readInt();
-        UUID playerUuid = packetByteBuf.readUuid();
-        Active.Key[] activeKeys = new Active.Key[count];
-        for(int i = 0; i < count; i++) {
-            activeKeys[i] = ApoliDataTypes.KEY.receive(packetByteBuf);
+    private static void onUpdateKeysPressed(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        Set<Active.Key> addedKeys = new HashSet<>();
+        int addedKeySize = buf.readInt();
+        for (int i = 0; i < addedKeySize; ++i) {
+            addedKeys.add(ApoliDataTypes.KEY.receive(buf));
         }
-        minecraftServer.execute(() -> {
-            Entity entity = playerEntity.getWorld().getEntity(playerUuid);
-            if (!(entity instanceof ServerPlayerEntity playerEntity2)) {
-                Apugli.LOGGER.warn("Tried modifying non ServerPlayerEntity's keys pressed.");
-                return;
-            }
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeInt(activeKeys.length);
-            buf.writeUuid(entity.getUuid());
-            for(Active.Key key : activeKeys) {
-                ApoliDataTypes.KEY.send(buf, key);
-            }
-            for (ServerPlayerEntity player : PlayerLookup.tracking(playerEntity2)) {
-                ServerPlayNetworking.send(player, ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, buf);
-            }
-            ServerPlayNetworking.send(playerEntity2, ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, buf);
-            if (activeKeys.length == 0) {
-                Apugli.currentlyUsedKeys.remove(playerEntity2.getUuid());
-            } else {
-                Apugli.currentlyUsedKeys.put(playerEntity2.getUuid(), new HashSet<>(List.of(activeKeys)));
-            }
+        Set<Active.Key> removedKeys = new HashSet<>();
+        int removedKeySize = buf.readInt();
+        for (int i = 0; i < removedKeySize; ++i) {
+             removedKeys.add(ApoliDataTypes.KEY.receive(buf));
+        }
+        server.execute(() -> {
+            KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
+            addedKeys.forEach(component::addKey);
+            removedKeys.forEach(component::removeKey);
+            ApugliEntityComponents.KEY_PRESS_COMPONENT.sync(player);
         });
     }
 
-    private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
-        boolean shouldCheckVersion = ApugliServerConfig.performVersionCheck;
+    private static void handleHandshakeReply(MinecraftServer server, ServerLoginNetworkHandler handler, boolean understood, PacketByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {
+        boolean shouldCheckVersion = ApugliConfig.performVersionCheck;
         if (FabricLoader.getInstance().getModContainer(Apugli.MODID).isPresent() && FabricLoader.getInstance().getModContainer(Apugli.MODID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED)) {
             shouldCheckVersion = false;
         }
 
         if (shouldCheckVersion) {
             if (understood) {
-                int clientSemVerLength = packetByteBuf.readInt();
+                int clientSemVerLength = buf.readInt();
                 int[] clientSemVer = new int[clientSemVerLength];
                 boolean mismatch = clientSemVerLength != Apugli.SEMVER.length;
                 for (int i = 0; i < clientSemVerLength; i++) {
-                    clientSemVer[i] = packetByteBuf.readInt();
+                    clientSemVer[i] = buf.readInt();
                     if (i < clientSemVerLength - 1 && clientSemVer[i] != Apugli.SEMVER[i]) {
                         mismatch = true;
                     }
@@ -107,10 +94,10 @@ public class ApugliPacketsC2S {
                             clientVersionString.append(".");
                         }
                     }
-                    serverLoginNetworkHandler.disconnect(Text.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
+                    handler.disconnect(Text.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
                 }
             } else {
-                serverLoginNetworkHandler.disconnect(Text.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
+                handler.disconnect(Text.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
             }
         }
     }

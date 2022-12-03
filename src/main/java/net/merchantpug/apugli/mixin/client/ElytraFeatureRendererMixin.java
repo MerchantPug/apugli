@@ -25,7 +25,7 @@ public class ElytraFeatureRendererMixin<T extends LivingEntity, M extends Entity
     }
 
     @ModifyExpressionValue(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
-    private boolean redirectRender(boolean original) {
+    private boolean allowPowerRendering(boolean original) {
         return original || PowerHolderComponent.getPowers(apugli$livingEntity, ModifyEquippedItemRenderPower.class).stream().anyMatch(power -> power.stack.getItem() == Items.ELYTRA && power.slot == EquipmentSlot.CHEST);
     }
 }

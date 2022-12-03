@@ -19,7 +19,7 @@ public class RedirectLightningPower extends Power {
         return new PowerFactory<RedirectLightningPower>(
                 Apugli.identifier("redirect_lightning"),
                 new SerializableData()
-                        .add("chance", SerializableDataTypes.FLOAT, null),
+                        .add("chance", SerializableDataTypes.FLOAT),
                 data -> (type, entity) -> new RedirectLightningPower(type, entity, data.getFloat("chance")))
                 .allowCondition();
     }

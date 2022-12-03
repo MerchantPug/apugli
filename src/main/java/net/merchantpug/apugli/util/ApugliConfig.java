@@ -14,4 +14,7 @@ public class ApugliConfig extends MidnightConfig {
     public static Comment hitsOnTargetOptions;
     @Entry
     public static int resetTimerTicks = 100;
+
+    @Server
+    public static boolean performVersionCheck = true;
 }

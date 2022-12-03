@@ -24,13 +24,13 @@ SOFTWARE.
 
 package net.merchantpug.apugli.networking;
 
-import net.merchantpug.apugli.util.HitsOnTargetUtil;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.access.LivingEntityAccess;
+import net.merchantpug.apugli.component.ApugliEntityComponents;
+import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.registry.ApugliDamageSources;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.netty.util.concurrent.Future;
@@ -49,12 +49,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Pair;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -63,82 +62,36 @@ public class ApugliPacketsS2C {
     public static void register() {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsS2C::handleHandshake);
         ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
-            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_HITS_ON_TARGET, ApugliPacketsS2C::onHitsOnTargetSync);
-            ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ACTIVE_KEYS_CLIENT, ApugliPacketsS2C::onSyncActiveKeys);
+            ClientPlayNetworking.registerReceiver(ApugliPackets.SEND_KEY_TO_CHECK, ApugliPacketsS2C::onSendPlayerKeybinds);
             ClientPlayNetworking.registerReceiver(ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, ApugliPacketsS2C::onRocketJumpExplosionSync);
         }));
     }
 
-    private static void onSyncActiveKeys(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        int count = packetByteBuf.readInt();
-        UUID playerUUID = packetByteBuf.readUuid();
-        Active.Key[] activeKeys = new Active.Key[count];
-        for(int i = 0; i < count; i++) {
-            activeKeys[i] = ApoliDataTypes.KEY.receive(packetByteBuf);
-        }
-        minecraftClient.execute(() -> {
-            PlayerEntity player = clientPlayNetworkHandler.getWorld().getPlayerByUuid(playerUUID);
-            if (player == null) {
-                Apugli.LOGGER.warn("Tried modifying non-existent player's keys pressed.");
+    private static void onSendPlayerKeybinds(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        Active.Key key = ApoliDataTypes.KEY.receive(buf);
+
+        client.execute(() -> {
+            PlayerEntity player = MinecraftClient.getInstance().player;
+            if (MinecraftClient.getInstance().player == null) {
+                Apugli.LOGGER.warn("Could not find client player.");
                 return;
             }
-            if (activeKeys.length == 0) {
-                Apugli.currentlyUsedKeys.remove(playerUUID);
-            } else {
-                Apugli.currentlyUsedKeys.put(playerUUID, new HashSet<>(List.of(activeKeys)));
-            }
+            KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
+            component.getKeysToCheck().add(key);
+            component.changePreviousKeysToCheckToCurrent();
         });
     }
 
-    private static void onHitsOnTargetSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        HitsOnTargetUtil.PacketType type = HitsOnTargetUtil.PacketType.values()[packetByteBuf.readByte()];
-        int targetId = packetByteBuf.readInt();
-        int attackerId = 0;
-        boolean hasAttacker = packetByteBuf.readBoolean();
-        if (hasAttacker) {
-            attackerId = packetByteBuf.readInt();
-        }
-        int amount = 0;
-        int timer = 0;
-        if (type == HitsOnTargetUtil.PacketType.SET) {
-            amount = packetByteBuf.readInt();
-            timer = packetByteBuf.readInt();
-        }
-        int finalAttackerId = attackerId;
-        int finalAmount = amount;
-        int finalTimer = timer;
+    private static void onRocketJumpExplosionSync(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        int userId = buf.readInt();
+        double x = buf.readDouble();
+        double y = buf.readDouble();
+        double z = buf.readDouble();
+        float radius = buf.readFloat();
+        List<Modifier> damageModifiers = Modifier.LIST_TYPE.receive(buf);
 
-        minecraftClient.execute(() -> {
-            Entity target = clientPlayNetworkHandler.getWorld().getEntityById(targetId);
-            Entity attacker = null;
-            if (hasAttacker) {
-               attacker = clientPlayNetworkHandler.getWorld().getEntityById(finalAttackerId);
-            }
-            if (!(target instanceof LivingEntity)) {
-                Apugli.LOGGER.warn("Received unknown target");
-            } else if (hasAttacker && attacker == null) {
-                Apugli.LOGGER.warn("Received unknown attacker");
-            } else switch (type) {
-                case SET -> ((LivingEntityAccess)target).getHits().put(attacker, new Pair<>(finalAmount, finalTimer));
-                case REMOVE -> {
-                    if (!((LivingEntityAccess)target).getHits().containsKey(attacker)) return;
-                    ((LivingEntityAccess)target).getHits().remove(attacker);
-                }
-                case CLEAR -> ((LivingEntityAccess)target).getHits().clear();
-            }
-        });
-    }
-
-    private static void onRocketJumpExplosionSync(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        int userId = packetByteBuf.readInt();
-        double x = packetByteBuf.readDouble();
-        double y = packetByteBuf.readDouble();
-        double z = packetByteBuf.readDouble();
-        float radius = packetByteBuf.readFloat();
-        List<Modifier> damageModifiers = Modifier.LIST_TYPE.receive(packetByteBuf);
-
-        minecraftClient.execute(() -> {
-            Entity user = clientPlayNetworkHandler.getWorld().getEntityById(userId);
+        client.execute(() -> {
+            Entity user = handler.getWorld().getEntityById(userId);
             if (!(user instanceof LivingEntity)) {
                 Apugli.LOGGER.warn("Received unknown target");
             } else {

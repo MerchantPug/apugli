@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemConditions.class)
 public class ItemConditionsMixin {
-
     @Inject(method = "lambda$register$10", at = @At("HEAD"), remap = false, cancellable = true)
     private static void isPowerFoodMeat(SerializableData.Instance data, ItemStack stack, CallbackInfoReturnable cir) {
         if (((ItemStackAccess)(Object)stack).getItemStackFoodComponent() != null) {

@@ -24,6 +24,7 @@ SOFTWARE.
 
 package net.merchantpug.apugli;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.merchantpug.apugli.networking.ApugliPacketsC2S;
 import net.merchantpug.apugli.registry.ApugliPowerFactories;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
@@ -34,30 +35,24 @@ import net.merchantpug.apugli.registry.condition.ApugliBlockConditions;
 import net.merchantpug.apugli.registry.condition.ApugliDamageConditions;
 import net.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import net.merchantpug.apugli.util.ApugliConfig;
-import net.merchantpug.apugli.util.ApugliServerConfig;
 import eu.midnightdust.lib.config.MidnightConfig;
-import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.merchantpug.apugli.registry.action.ApugliEntityActions;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.Iterator;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";
 	public static final Logger LOGGER = LogManager.getLogger(Apugli.class);
 	public static String VERSION = "";
 	public static int[] SEMVER;
-
-	public static HashMap<UUID, HashSet<Active.Key>> keysToCheck = new HashMap<>();
-	public static HashMap<UUID, HashSet<Active.Key>> currentlyUsedKeys = new HashMap<>();
 
 	@Override
 	public void onInitialize() {
@@ -92,13 +87,7 @@ public class Apugli implements ModInitializer {
 
 		NamespaceAlias.addAlias("ope", MODID);
 
-		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> {
-			keysToCheck.remove(handler.player.getUuid());
-			currentlyUsedKeys.remove(handler.player.getUuid());
-		}));
-
 		MidnightConfig.init(Apugli.MODID, ApugliConfig.class);
-		MidnightConfig.init(Apugli.MODID + "_server", ApugliServerConfig.class);
 	}
 
 	public static Identifier identifier(String path) {
