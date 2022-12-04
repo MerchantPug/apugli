@@ -53,7 +53,7 @@ public abstract class ExplosionMixin {
     }
 
     @Inject(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isImmuneToExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List list, Vec3d vec3d, int v, Entity entity) {
+    private void collectAffectedEntity(CallbackInfo ci, Set set, int k, float f, int l, int m, int r, int s, int t, int u, List list, Vec3d vec3d, int v, Entity entity) {
         this.apugli$affectedEntity = entity;
     }
 
