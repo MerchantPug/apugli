@@ -42,8 +42,8 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           # Config
-          name: Apugli v1.11.0 (Fabric/Quilt 1.19)
-          version: v1.11.0+1.19-fabric
+          name: Apugli v1.11.1 (Fabric/Quilt 1.19)
+          version: v1.11.1+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
           files-primary: build/libs/!(*-@(dev|sources)).jar
@@ -58,6 +58,7 @@ jobs:
             1.19.2
           dependencies: |
             fabric-api | depends | *
+            midnightlib | includes | 1.0.0-fabric
           java: |
             17
 
@@ -68,14 +69,14 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.1
         with:
           # GitHub
-          github-tag: v1.11.0-1.19-fabric
+          github-tag: v1.11.1-1.19-fabric
           github-draft: false
           github-prerelease: false
           github-commitish: fabric/1.19
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          name: Apugli v1.11.0 (Fabric/Quilt 1.19)
-          version: v1.11.0+1.19-fabric
+          name: Apugli v1.11.1 (Fabric/Quilt 1.19)
+          version: v1.11.1+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
 
@@ -88,6 +89,7 @@ jobs:
             1.19.2
           dependencies: |
             fabric-api | depends | *
+            midnightlib | includes | 1.0.0-fabric
           java: |
             17
 
