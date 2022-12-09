@@ -12,7 +12,7 @@
     "sources": "https://github.com/MerchantPug/apugli"
   },
 
-  "license": "MIT",
+  "license": "LGPL-3",
   "icon": "assets/apugli/icon.png",
 
   "accessWidener" : "apugli.accesswidener",
