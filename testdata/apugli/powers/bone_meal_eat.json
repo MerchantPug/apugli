@@ -11,9 +11,5 @@
     "saturation": 1,
     "meat": true
   },
-  "return_stack": {
-    "item": "minecraft:bone",
-    "amount": 2
-  },
   "use_action": "eat"
 }

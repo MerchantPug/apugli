@@ -98,9 +98,11 @@ public abstract class ItemStackMixin {
                 if (power.get().returnStack != null && newStack.isEmpty()) {
                     cir.setReturnValue(power.get().returnStack.copy());
                 } else {
-                    ItemStack stack2 = power.get().returnStack.copy();
-                    if (power.get().returnStack != null && !player.giveItemStack(stack2)) {
-                        player.dropItem(stack2, false);
+                    if (power.get().returnStack != null) {
+                        ItemStack stack2 = power.get().returnStack.copy();
+                        if (!player.giveItemStack(stack2)) {
+                            player.dropItem(stack2, false);
+                        }
                     }
                     cir.setReturnValue(newStack);
                 }
