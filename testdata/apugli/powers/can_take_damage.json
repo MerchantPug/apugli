@@ -1,0 +1,13 @@
+{
+  "type": "apoli:effect_immunity",
+  "effects": [
+    "minecraft:strength"
+  ],
+  "condition": {
+    "type": "apugli:can_take_damage",
+    "source": {
+      "name": "egg",
+      "fire": true
+    }
+  }
+}

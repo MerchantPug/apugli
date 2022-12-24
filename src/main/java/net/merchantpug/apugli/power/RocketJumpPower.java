@@ -19,14 +19,15 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.registry.ApugliTags;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -39,6 +40,7 @@ import net.minecraft.world.explosion.Explosion;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class RocketJumpPower extends ActiveCooldownPower {
     private Key key;
@@ -52,6 +54,8 @@ public class RocketJumpPower extends ActiveCooldownPower {
     private final List<Modifier> chargedModifiers = new LinkedList<>();
     private final List<Modifier> waterModifiers = new LinkedList<>();
     private final List<Modifier> damageModifiers = new LinkedList<>();
+    private final Predicate<Pair<Entity, Entity>> targetableBiEntityCondition;
+    private final Predicate<Pair<Entity, Entity>> damageBiEntityCondition;
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<RocketJumpPower>(Apugli.identifier("rocket_jump"),
@@ -72,11 +76,26 @@ public class RocketJumpPower extends ActiveCooldownPower {
                         .add("damage_modifier", Modifier.DATA_TYPE, null)
                         .add("damage_modifiers", Modifier.LIST_TYPE, null)
                         .add("hud_render", ApoliDataTypes.HUD_RENDER, HudRender.DONT_RENDER)
+                        .add("targetable_bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
+                        .add("damage_bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
                         .add("key", ApoliDataTypes.KEY, new Active.Key()),
                 (data) ->
                         (type, entity) ->  {
-                            RocketJumpPower power = new RocketJumpPower(type, entity, data.getInt("cooldown"), (HudRender)data.get("hud_render"), data.getDouble("distance"), (DamageSource)data.get("source"), data.getFloat("amount"), data.getDouble("horizontal_velocity"), data.getDouble("vertical_velocity"), data.getDouble("velocity_clamp_multiplier"), data.getBoolean("use_charged"));
-                            power.setKey((Active.Key)data.get("key"));
+                            RocketJumpPower power = new RocketJumpPower(
+                                    type,
+                                    entity,
+                                    data.getInt("cooldown"),
+                                    data.get("hud_render"),
+                                    data.getDouble("distance"),
+                                    data.get("source"),
+                                    data.getFloat("amount"),
+                                    data.getDouble("horizontal_velocity"),
+                                    data.getDouble("vertical_velocity"),
+                                    data.getDouble("velocity_clamp_multiplier"),
+                                    data.getBoolean("use_charged"),
+                                    data.get("damage_bientity_condition"),
+                                    data.get("targetable_bientity_condition"));
+                            power.setKey(data.get("key"));
                             if(data.isPresent("charged_modifier")) {
                                 power.addChargedJumpModifier(data.get("charged_modifier"));
                             }
@@ -100,7 +119,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
                 .allowCondition();
     }
 
-    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double horizontalVelocity, double verticalVelocity, double velocityClampMultiplier, boolean useCharged) {
+    public RocketJumpPower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, double distance, DamageSource source, float amount, double horizontalVelocity, double verticalVelocity, double velocityClampMultiplier, boolean useCharged, Predicate<Pair<Entity, Entity>> damageBiEntityCondition, Predicate<Pair<Entity, Entity>> targetableBiEntityCondition) {
         super(type, entity, cooldownDuration, hudRender, null);
         this.distance = distance;
         this.source = source;
@@ -109,49 +128,47 @@ public class RocketJumpPower extends ActiveCooldownPower {
         this.verticalVelocity = verticalVelocity;
         this.velocityClampMultiplier = velocityClampMultiplier;
         this.useCharged = useCharged;
+        this.damageBiEntityCondition = damageBiEntityCondition;
+        this.targetableBiEntityCondition = targetableBiEntityCondition;
     }
 
     @Override
     public void onUse() {
-        if (canUse()) {
-            if (!entity.world.isClient()) {
-                double baseReach = (entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode) ? 5.0D : 4.5D;
-                double reach = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getReachDistance(entity, baseReach) : baseReach;
-                double distance = !Double.isNaN(this.distance) ? this.distance : reach;
-                Vec3d eyePosition = entity.getCameraPosVec(0);
-                Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
-                Vec3d traceEnd = eyePosition.add(lookVector);
+        if (canUse() && !entity.world.isClient()) {
+            double baseReach = (entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode) ? 5.0D : 4.5D;
+            double reach = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getReachDistance(entity, baseReach) : baseReach;
+            double distance = !Double.isNaN(this.distance) ? this.distance : reach;
+            Vec3d eyePosition = entity.getCameraPosVec(0);
+            Vec3d lookVector = entity.getRotationVec(0).multiply(distance);
+            Vec3d traceEnd = eyePosition.add(lookVector);
 
-                RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
-                BlockHitResult blockHitResult = entity.world.raycast(context);
+            RaycastContext context = new RaycastContext(eyePosition, traceEnd, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity);
+            BlockHitResult blockHitResult = entity.world.raycast(context);
 
-                double baseEntityAttackRange = (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) ? 6.0D : 3.0D;
-                double entityAttackRange = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getAttackRange(entity, baseEntityAttackRange) : baseEntityAttackRange;
-                double entityDistance = !Double.isNaN(this.distance) ? this.distance : entityAttackRange;
-                Vec3d entityLookVector = entity.getRotationVec(0).multiply(entityDistance);
-                Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
-                Box entityBox = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
+            double baseEntityAttackRange = (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) ? 6.0D : 3.0D;
+            double entityAttackRange = FabricLoader.getInstance().isModLoaded("reach-entity-attributes") ? ReachEntityAttributes.getAttackRange(entity, baseEntityAttackRange) : baseEntityAttackRange;
+            double entityDistance = !Double.isNaN(this.distance) ? this.distance : entityAttackRange;
+            Vec3d entityLookVector = entity.getRotationVec(0).multiply(entityDistance);
+            Vec3d entityTraceEnd = eyePosition.add(entityLookVector);
+            Box entityBox = entity.getBoundingBox().stretch(lookVector).expand(1.0D);
 
-                double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
-                double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && (!(traceEntity instanceof ArmorStandEntity) || !((ArmorStandEntity)traceEntity).isMarker()), entityReach);
+            double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
+            double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
+            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && targetableBiEntityCondition.test(new Pair<>(entity, traceEntity)), entityReach);
 
-                HitResult.Type blockHitResultType = blockHitResult.getType();
-                HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
-                boolean tmoCharged = FabricLoader.getInstance().isModLoaded("toomanyorigins") && entity.hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-                boolean cursedCharged = FabricLoader.getInstance().isModLoaded("cursedorigins") && entity.hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
-                boolean isCharged = tmoCharged || cursedCharged;
+            HitResult.Type blockHitResultType = blockHitResult.getType();
+            HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
-                if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
+            boolean isCharged = entity.getStatusEffects().stream().anyMatch(effect -> Registry.STATUS_EFFECT.getKey(effect.getEffectType()).isPresent() && Registry.STATUS_EFFECT.entryOf(Registry.STATUS_EFFECT.getKey(effect.getEffectType()).get()).isIn(ApugliTags.CHARGED_EFFECTS));
 
-                if (entityHitResultType == HitResult.Type.ENTITY) {
-                    this.handleRocketJump(entityHitResult, isCharged);
-                    return;
-                }
+            if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
-                if (blockHitResultType == HitResult.Type.BLOCK) {
-                    this.handleRocketJump(blockHitResult, isCharged);
-                }
+            if (entityHitResultType == HitResult.Type.ENTITY) {
+                this.handleRocketJump(entityHitResult, isCharged);
+                return;
+            }
+            if (blockHitResultType == HitResult.Type.BLOCK) {
+                this.handleRocketJump(blockHitResult, isCharged);
             }
         }
     }
@@ -168,8 +185,9 @@ public class RocketJumpPower extends ActiveCooldownPower {
         Explosion explosion = new Explosion(entity.world, entity, ApugliDamageSources.jumpExplosion(entity), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
         ((ExplosionAccess)explosion).setRocketJump(true);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(this.getDamageModifiers());
+        ((ExplosionAccess)explosion).setBiEntityPredicate(this.getDamageBiEntityCondition());
         explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld(true);
+        explosion.affectWorld(false);
 
         sendExplosionToClient(hitResult, e);
 
@@ -193,7 +211,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
         buf.writeDouble(hitResult.getPos().getY());
         buf.writeDouble(hitResult.getPos().getZ());
         buf.writeFloat(radius);
-        Modifier.LIST_TYPE.send(buf, this.getDamageModifiers());
+        buf.writeIdentifier(this.getType().getIdentifier());
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(entity)) {
             ServerPlayNetworking.send(player, ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, buf);
@@ -234,5 +252,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
     public List<Modifier> getDamageModifiers() {
         return damageModifiers;
+    }
+
+    public Predicate<Pair<Entity, Entity>> getTargetableBiEntityCondition() {
+        return targetableBiEntityCondition;
+    }
+
+    public Predicate<Pair<Entity, Entity>> getDamageBiEntityCondition() {
+        return damageBiEntityCondition;
     }
 }

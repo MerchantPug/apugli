@@ -24,13 +24,18 @@ SOFTWARE.
 
 package net.merchantpug.apugli.networking;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
+import net.merchantpug.apugli.power.RocketJumpPower;
 import net.merchantpug.apugli.registry.ApugliDamageSources;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.netty.util.concurrent.Future;
@@ -49,6 +54,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.explosion.Explosion;
 
 import java.util.HashSet;
@@ -88,18 +94,24 @@ public class ApugliPacketsS2C {
         double y = buf.readDouble();
         double z = buf.readDouble();
         float radius = buf.readFloat();
-        List<Modifier> damageModifiers = Modifier.LIST_TYPE.receive(buf);
+        Identifier powerId = buf.readIdentifier();
 
         client.execute(() -> {
             Entity user = handler.getWorld().getEntityById(userId);
             if (!(user instanceof LivingEntity)) {
-                Apugli.LOGGER.warn("Received unknown target");
+                Apugli.LOGGER.warn("Received unknown rocket jumping entity.");
             } else {
                 Explosion explosion = new Explosion(user.world, user, ApugliDamageSources.jumpExplosion((LivingEntity) user), null, x, y, z, radius, false, Explosion.DestructionType.NONE);
-                ((ExplosionAccess) explosion).setRocketJump(true);
-                ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers);
-                explosion.collectBlocksAndDamageEntities();
-                explosion.affectWorld(true);
+                Power power = PowerTypeRegistry.get(powerId).get(user);
+                if (power instanceof RocketJumpPower rocketJumpPower) {
+                    ((ExplosionAccess) explosion).setRocketJump(true);
+                    ((ExplosionAccess) explosion).setExplosionDamageModifiers(rocketJumpPower.getDamageModifiers());
+                    ((ExplosionAccess) explosion).setBiEntityPredicate(rocketJumpPower.getDamageBiEntityCondition());
+                    explosion.collectBlocksAndDamageEntities();
+                    explosion.affectWorld(true);
+                } else {
+                    Apugli.LOGGER.warn("Tried syncing rocket jump explosion without a valid RocketJumpPower.");
+                }
             }
         });
     }

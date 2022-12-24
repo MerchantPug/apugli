@@ -2,7 +2,7 @@ package net.merchantpug.apugli.component;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import net.merchantpug.apugli.Apugli;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -20,6 +20,11 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
 
     public HitsOnTargetComponentImpl(LivingEntity provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity player) {
+        return player == provider || PlayerLookup.tracking(provider).contains(player);
     }
 
     @Override
@@ -60,12 +65,6 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
         int updateSize = buf.readInt();
         for (int i = 0; i < updateSize; ++i) {
             int entityId = buf.readInt();
-            Entity entity = provider.world.getEntityById(entityId);
-            if (entity == null) {
-                Apugli.LOGGER.warn("Could not find entity to add to hits on target component.");
-                hits.remove(entityId);
-                continue;
-            }
             int amount = buf.readInt();
             int ticksLeft = buf.readInt();
             hits.put(entityId, new Pair<>(amount, ticksLeft));

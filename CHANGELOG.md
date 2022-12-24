@@ -1,5 +1,9 @@
-**Bugfixes**
-- Fixed a crash when the edible item power doesn't have a return stack present.
+**Powers**
+- Added `targetable_bientity_condition` and `damage_bientity_condition` fields to `apugli:rocket_jump`.
+- Additional optimisations to `apugli:rocket_jump`.
 
-**Miscellaneous**
-- Corrected license field in fabric.mod.json.
+**Conditions**
+- Added `can_take_damage` entity condition. Accepts a `source` field.
+
+**Bugfixes**
+- Fixed Hits On Target trying to sync entities that aren't loaded.

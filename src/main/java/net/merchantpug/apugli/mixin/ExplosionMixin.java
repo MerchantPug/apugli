@@ -8,6 +8,7 @@ import net.merchantpug.apugli.access.ParticleAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
@@ -23,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Mixin(Explosion.class)
 @Implements(@Interface(iface = ExplosionAccess.class, prefix = "apugli$"))
@@ -30,6 +32,7 @@ public abstract class ExplosionMixin {
     @Unique private boolean apugli$rocketJumpExplosion;
     @Unique private Entity apugli$affectedEntity;
     @Unique private List<Modifier> apugli$explosionDamageModifiers;
+    @Unique private Predicate<Pair<Entity, Entity>> apugli$rocketJumpBiEntityCondition;
 
     @Shadow @Final private World world;
 
@@ -60,7 +63,7 @@ public abstract class ExplosionMixin {
     @ModifyExpressionValue(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isImmuneToExplosion()Z"))
     private boolean cancelDamagedEntity(boolean original) {
         if (this.apugli$isRocketJump()) {
-            return original || !(apugli$affectedEntity instanceof LivingEntity) || apugli$affectedEntity instanceof ArmorStandEntity;
+            return original || apugli$rocketJumpBiEntityCondition != null && !apugli$rocketJumpBiEntityCondition.test(new Pair<>(this.getCausingEntity(), this.apugli$affectedEntity));
         }
         return original;
     }
@@ -91,5 +94,9 @@ public abstract class ExplosionMixin {
 
     public void apugli$setExplosionDamageModifiers(List<Modifier> value) {
         this.apugli$explosionDamageModifiers = value;
+    }
+
+    public void apugli$setBiEntityPredicate(Predicate<Pair<Entity, Entity>> value) {
+        this.apugli$rocketJumpBiEntityCondition = value;
     }
 }
