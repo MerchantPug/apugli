@@ -5,7 +5,7 @@
 - Additional optimisations to `apugli:rocket_jump`.
 
 **Action Types**
-- 
+- Added `apugli:spawn_particles` action type.
 
 **Condition Types**
 - Added `apugli:can_take_damage` entity condition type. Accepts a `source` field.
