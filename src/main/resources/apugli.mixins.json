@@ -30,10 +30,12 @@
     "MobEntityMixin",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
+    "ProjectileEntityMixin",
     "ServerPlayerEntityAccessor",
     "ServerWorldMixin",
     "StatusEffectMixin",
-    "TemptGoalMixin"
+    "TemptGoalMixin",
+    "TridentEntityAccessor"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",

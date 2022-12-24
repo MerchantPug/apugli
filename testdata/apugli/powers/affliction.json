@@ -1,0 +1,392 @@
+{
+  "type": "apoli:multiple",
+  "wither_hit": {
+    "type": "apugli:action_on_projectile_hit",
+    "hud_render": {
+      "sprite_location": "apugli:tmo_resource_bar.png",
+      "bar_index": 3
+    },
+    "cooldown": 200,
+    "bientity_action": {
+      "type": "apoli:target_action",
+      "action": {
+        "type": "apoli:apply_effect",
+        "effect": {
+          "effect": "minecraft:wither",
+          "duration": 100,
+          "amplifier": 1
+        }
+      }
+    },
+    "bientity_condition": {
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apoli:actor_condition",
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:in_tag",
+                "tag": "apugli:withered_projectiles"
+              },
+              {
+                "type": "apoli:or",
+                "conditions": [
+                  {
+                    "type": "apoli:and",
+                    "conditions": [
+                      {
+                        "type": "apoli:in_tag",
+                        "tag": "apugli:potionable_arrows",
+                        "inverted": true
+                      },
+                      {
+                        "type": "apoli:in_tag",
+                        "tag": "apugli:tridents",
+                        "inverted": true
+                      }
+                    ]
+                  },
+                  {
+                    "type": "apoli:and",
+                    "conditions": [
+                      {
+                        "type": "apoli:in_tag",
+                        "tag": "apugli:potionable_arrows"
+                      },
+                      {
+                        "type": "apoli:command",
+                        "command": "execute if data entity @s Potion",
+                        "comparison": "==",
+                        "compare_to": 0
+                      },
+                      {
+                        "type": "apoli:or",
+                        "conditions": [
+                          {
+                            "type": "apoli:nbt",
+                            "nbt": "{Fire:-1s}"
+                          },
+                          {
+                            "type": "apoli:nbt",
+                            "nbt": "{Fire:0s}"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "apoli:and",
+                    "conditions": [
+                      {
+                        "type": "apoli:in_tag",
+                        "tag": "apugli:tridents"
+                      },
+                      {
+                        "type": "apoli:or",
+                        "conditions": [
+                          {
+                            "type": "apoli:in_rain",
+                            "inverted": true
+                          },
+                          {
+                            "type": "apoli:and",
+                            "conditions": [
+                              {
+                                "type": "apoli:in_rain"
+                              },
+                              {
+                                "type": "apoli:predicate",
+                                "predicate": "apugli:weather/is_thunderstorm",
+                                "inverted": true
+                              }
+                            ]
+                          },
+                          {
+                            "type": "apugli:trident_enchantment",
+                            "enchantment": "minecraft:channeling",
+                            "comparison": "==",
+                            "compare_to": 0
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "apoli:target_condition",
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apugli:can_have_effect",
+                "effect": "minecraft:wither"
+              },
+              {
+                "type": "apoli:health",
+                "comparison": ">",
+                "compare_to": 6
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "projectile_in_ground": {
+    "type": "apugli:projectile_action_over_time",
+    "interval": 5,
+    "bientity_action": {
+      "type": "apoli:target_action",
+      "action": {
+        "type": "apugli:spawn_particles",
+        "particle": {
+          "type": "minecraft:entity_effect"
+        },
+        "count": 1,
+        "spread": {
+          "x": 0.5,
+          "y": 1.0,
+          "z": 0.5
+        },
+        "velocity": {
+          "x": 0.207843137,
+          "y": 0.16470588235,
+          "z": 0.15294117647
+        }
+      }
+    },
+    "bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:and",
+        "conditions": [
+          {
+            "type": "apoli:in_tag",
+            "tag": "apugli:withered_projectiles"
+          },
+          {
+            "type": "apoli:nbt",
+            "nbt": "{inGround:1b}"
+          },
+          {
+            "type": "apoli:or",
+            "conditions": [
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:potionable_arrows",
+                    "inverted": true
+                  },
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:tridents",
+                    "inverted": true
+                  }
+                ]
+              },
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:potionable_arrows"
+                  },
+                  {
+                    "type": "apoli:command",
+                    "command": "execute if data entity @s Potion",
+                    "comparison": "==",
+                    "compare_to": 0
+                  },
+                  {
+                    "type": "apoli:or",
+                    "conditions": [
+                      {
+                        "type": "apoli:nbt",
+                        "nbt": "{Fire:-1s}"
+                      },
+                      {
+                        "type": "apoli:nbt",
+                        "nbt": "{Fire:0s}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:tridents"
+                  },
+                  {
+                    "type": "apoli:or",
+                    "conditions": [
+                      {
+                        "type": "apoli:in_rain",
+                        "inverted": true
+                      },
+                      {
+                        "type": "apoli:and",
+                        "conditions": [
+                          {
+                            "type": "apoli:in_rain"
+                          },
+                          {
+                            "type": "apoli:predicate",
+                            "predicate": "apugli:weather/is_thunderstorm",
+                            "inverted": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "apugli:trident_enchantment",
+                        "enchantment": "minecraft:channeling",
+                        "comparison": "==",
+                        "compare_to": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "projectile_out_of_ground": {
+    "type": "apugli:projectile_action_over_time",
+    "interval": 1,
+    "bientity_action": {
+      "type": "apoli:target_action",
+      "action": {
+        "type": "apugli:spawn_particles",
+        "particle": {
+          "type": "minecraft:entity_effect"
+        },
+        "count": 2,
+        "spread": {
+          "x": 0.5,
+          "y": 1.0,
+          "z": 0.5
+        },
+        "velocity": {
+          "x": 0.207843137,
+          "y": 0.16470588235,
+          "z": 0.15294117647
+        }
+      }
+    },
+    "bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:and",
+        "conditions": [
+          {
+            "type": "apoli:in_tag",
+            "tag": "apugli:withered_projectiles"
+          },
+          {
+            "type": "apoli:nbt",
+            "nbt": "{inGround:1b}",
+            "inverted": true
+          },
+          {
+            "type": "apoli:or",
+            "conditions": [
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:potionable_arrows",
+                    "inverted": true
+                  },
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:tridents",
+                    "inverted": true
+                  }
+                ]
+              },
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:potionable_arrows"
+                  },
+                  {
+                    "type": "apoli:command",
+                    "command": "execute if data entity @s Potion",
+                    "comparison": "==",
+                    "compare_to": 0
+                  },
+                  {
+                    "type": "apoli:or",
+                    "conditions": [
+                      {
+                        "type": "apoli:nbt",
+                        "nbt": "{Fire:-1s}"
+                      },
+                      {
+                        "type": "apoli:nbt",
+                        "nbt": "{Fire:0s}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "apoli:and",
+                "conditions": [
+                  {
+                    "type": "apoli:in_tag",
+                    "tag": "apugli:tridents"
+                  },
+                  {
+                    "type": "apoli:or",
+                    "conditions": [
+                      {
+                        "type": "apoli:in_rain",
+                        "inverted": true
+                      },
+                      {
+                        "type": "apoli:and",
+                        "conditions": [
+                          {
+                            "type": "apoli:in_rain"
+                          },
+                          {
+                            "type": "apoli:predicate",
+                            "predicate": "apugli:weather/is_thunderstorm",
+                            "inverted": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "apugli:trident_enchantment",
+                        "enchantment": "minecraft:channeling",
+                        "comparison": "==",
+                        "compare_to": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

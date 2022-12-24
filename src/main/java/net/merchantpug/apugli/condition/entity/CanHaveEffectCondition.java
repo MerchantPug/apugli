@@ -12,7 +12,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 public class CanHaveEffectCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
         if (entity instanceof LivingEntity) {
-            StatusEffect effect = (StatusEffect)data.get("effect");
+            StatusEffect effect = data.get("effect");
             StatusEffectInstance instance = new StatusEffectInstance(effect);
             return ((LivingEntity)entity).canHaveStatusEffect(instance);
         }

@@ -19,6 +19,7 @@ public class ApugliEntityConditions {
         register(PlayerModelTypeCondition.getFactory());
         register(RaycastCondition.getFactory());
         register(StructureCondition.getFactory());
+        register(TridentEnchantmentCondition.getFactory());
         register(VelocityCondition.getFactory());
     }
 

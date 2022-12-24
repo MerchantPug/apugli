@@ -24,7 +24,6 @@ SOFTWARE.
 
 package net.merchantpug.apugli;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.merchantpug.apugli.networking.ApugliPacketsC2S;
 import net.merchantpug.apugli.registry.ApugliPowerFactories;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
@@ -40,13 +39,9 @@ import io.github.apace100.apoli.util.NamespaceAlias;
 import net.merchantpug.apugli.registry.action.ApugliEntityActions;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Iterator;
 
 public class Apugli implements ModInitializer {
 	public static final String MODID = "apugli";

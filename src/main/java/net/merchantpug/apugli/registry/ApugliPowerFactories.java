@@ -13,6 +13,7 @@ public class ApugliPowerFactories {
         register(ActionOnBoneMealPower.getFactory());
         register(ActionOnDurabilityChange.getFactory());
         register(ActionOnEquipPower.getFactory());
+        register(ActionOnProjectileHitPower.getFactory());
         register(ActionOnTameHitPower.getFactory());
         register(ActionOnTargetDeathPower.getFactory());
         register(ActionWhenTameHitPower.getFactory());
@@ -42,6 +43,7 @@ public class ApugliPowerFactories {
         register(PreventBreedingPower.getFactory());
         register(PreventLabelRenderPower.getFactory());
         register(PreventSoundPower.getFactory());
+        register(ProjectileActionOverTimePower.getFactory());
         register(RedirectLightningPower.getFactory());
         register(RocketJumpPower.getFactory());
         register(SetTexturePower.getFactory());

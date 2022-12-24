@@ -14,6 +14,7 @@ public class ApugliEntityActions {
         register(ResourceTransferAction.getFactory());
         register(SetNoGravityAction.getFactory());
         register(SpawnItemAction.getFactory());
+        register(SpawnParticlesAction.getFactory());
         register(ZombifyVillagerAction.getFactory());
     }
 
