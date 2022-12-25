@@ -17,6 +17,7 @@ public class ApugliEntityConditions {
         register(HostileCondition.getFactory());
         register(JoinInvulnerabilityTicksCondition.getFactory());
         register(KeyPressedCondition.getFactory());
+        register(MaxHealthCondition.getFactory());
         register(ParticleInRadiusCondition.getFactory());
         register(PlayerModelTypeCondition.getFactory());
         register(RaycastCondition.getFactory());

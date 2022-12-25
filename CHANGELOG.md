@@ -11,6 +11,7 @@
 - Added `apugli:attacker_condition` entity condition type. Allows testing a bi-entity condition with the entity's attacker as the actor and the entity as the target.
 - Added `apugli:attack_target_condition` entity condition type. Allows testing a bi-entity condition with the entity as the actor and its attack target as the target.
 - Added `apugli:can_take_damage` entity condition type. Accepts a `source` field.
+- Added `apugli:max_health` entity condition type. Accepts `comparison` and `compare_to` values.
 - Added `apugli:trident_enchantment`entity condition type. Allows checking of enchantments on a trident that the condition is testing.
 
 **Bugfixes**
