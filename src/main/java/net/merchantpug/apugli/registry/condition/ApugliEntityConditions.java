@@ -8,6 +8,8 @@ import net.minecraft.util.registry.Registry;
 
 public class ApugliEntityConditions {
     public static void register() {
+        register(AttackerConditionCondition.getFactory());
+        register(AttackTargetConditionCondition.getFactory());
         register(CanHaveEffectCondition.getFactory());
         register(CanTakeDamageCondition.getFactory());
         register(CompareResourceCondition.getFactory());
