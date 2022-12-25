@@ -202,17 +202,17 @@ public abstract class LivingEntityMixin extends Entity {
     private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && ((LivingEntityAccessor)this).invokeIsOnSoulSpeedBlock());
+            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && this.isOnSoulSpeedBlock());
         }
     }
 
     @Inject(method = "isOnSoulSpeedBlock", at = @At("HEAD"), cancellable = true)
     private void isOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
-        PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).forEach(power -> {
-            if (power.blockCondition != null) {
-                cir.setReturnValue(power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)));
-            }
-        });
+        if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().anyMatch(power -> power.blockCondition != null && power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
+            cir.setReturnValue(true);
+        } else if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).noneMatch(power -> power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
+            cir.setReturnValue(false);
+        }
     }
 
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
