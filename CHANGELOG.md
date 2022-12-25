@@ -18,4 +18,4 @@
 - Fixed the Hits On Target component trying to sync entities that aren't loaded.
 
 **Internal**
-- Modified `apugli:modify_soul_speed` power type's block condition related logic. If any power is able to allow soul speed, the soul speed will be enabled, and if no powers that have a block condition allow it, the soul speed will be disabled.
+- Rewrote `apugli:modify_soul_speed` power type's logic.

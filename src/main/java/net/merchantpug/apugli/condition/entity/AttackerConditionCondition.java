@@ -4,6 +4,7 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Pair;
@@ -13,8 +14,14 @@ import java.util.function.Predicate;
 public class AttackerConditionCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
         Predicate<Pair<Entity, Entity>> pair = data.get("bientity_condition");
-        if (entity instanceof LivingEntity living && living.getAttacker() != null) {
-            return pair.test(new Pair<>(living.getAttacker(), living));
+        if (entity instanceof LivingEntity living) {
+            Integer attackerId = ApugliEntityComponents.ATTACK_COMPONENT.get(entity).getAttacker();
+            if (attackerId != null) {
+                Entity attacker = living.world.getEntityById(attackerId);
+                if (attacker != null) {
+                    return pair.test(new Pair<>(living, attacker));
+                }
+            }
         }
         return false;
     }

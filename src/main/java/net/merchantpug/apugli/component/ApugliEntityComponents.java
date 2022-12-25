@@ -9,11 +9,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class ApugliEntityComponents implements EntityComponentInitializer {
+    public static final ComponentKey<AttackComponent> ATTACK_COMPONENT = ComponentRegistry.getOrCreate(Apugli.identifier("attack"), AttackComponent.class);
     public static final ComponentKey<HitsOnTargetComponent> HITS_ON_TARGET_COMPONENT = ComponentRegistry.getOrCreate(Apugli.identifier("hits_on_target"), HitsOnTargetComponent.class);
     public static final ComponentKey<KeyPressComponent> KEY_PRESS_COMPONENT = ComponentRegistry.getOrCreate(Apugli.identifier("keys_pressed"), KeyPressComponent.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+        registry.registerFor(LivingEntity.class, ATTACK_COMPONENT, AttackComponentImpl::new);
         registry.registerFor(LivingEntity.class, HITS_ON_TARGET_COMPONENT, HitsOnTargetComponentImpl::new);
         registry.registerFor(PlayerEntity.class, KEY_PRESS_COMPONENT, KeyPressComponentImpl::new);
     }

@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -33,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -52,6 +54,10 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow public abstract @Nullable LivingEntity getPrimeAdversary();
 
     @Shadow public abstract boolean addStatusEffect(StatusEffectInstance effect);
+
+    @Shadow public abstract boolean blockedByShield(DamageSource source);
+
+    @Shadow public abstract void baseTick();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -113,6 +119,11 @@ public abstract class LivingEntityMixin extends Entity {
         HitsOnTargetComponent hitsComponent = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(thisAsLiving);
         hitsComponent.setHits(source.getAttacker(), hitsComponent.getHits().getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
         ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.sync(thisAsLiving);
+
+        ApugliEntityComponents.ATTACK_COMPONENT.get(source.getAttacker()).setAttacking((LivingEntity)(Object)this);
+        ApugliEntityComponents.ATTACK_COMPONENT.sync(source.getAttacker());
+        ApugliEntityComponents.ATTACK_COMPONENT.get(thisAsLiving).setAttacker(source.getAttacker());
+        ApugliEntityComponents.ATTACK_COMPONENT.sync(thisAsLiving);
     }
 
     @Unique private boolean apugli$hasModifiedDamage;
@@ -199,32 +210,44 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "shouldDisplaySoulSpeedEffects", at = @At("HEAD"), cancellable = true)
-    private void shouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
+    private void modifyShouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && this.isOnSoulSpeedBlock());
+            boolean doesApply;
+            if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).toList().size() == 0) {
+                doesApply = this.isOnSoulSpeedBlock();
+            } else {
+                doesApply = PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).anyMatch(power -> power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)));
+            }
+            cir.setReturnValue(this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && doesApply);
         }
     }
 
     @Inject(method = "isOnSoulSpeedBlock", at = @At("HEAD"), cancellable = true)
-    private void isOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
-        if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().anyMatch(power -> power.blockCondition != null && power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
-            cir.setReturnValue(true);
-        } else if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).noneMatch(power -> power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
-            cir.setReturnValue(false);
+    private void modifyIsOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
+        if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).toList().size() > 0) {
+            if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().anyMatch(power -> power.blockCondition != null && power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
+                cir.setReturnValue(true);
+            } else if (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).noneMatch(power -> power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
+                cir.setReturnValue(false);
+            }
         }
     }
 
     @ModifyVariable(method = "addSoulSpeedBoostIfNeeded", at = @At("STORE"), ordinal = 0)
     private int replaceLevelOfSoulSpeed(int i) {
-        return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, i);
+        int baseValue = this.world.getBlockState(this.getVelocityAffectingPos()).isIn(BlockTags.SOUL_SPEED_BLOCKS) ? i : 0;
+        if (!this.world.getBlockState(this.getVelocityAffectingPos()).isIn(BlockTags.SOUL_SPEED_BLOCKS) || i < baseValue) {
+            return i = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, baseValue);
+        }
+        return i;
     }
 
     @Inject(method = "getVelocityMultiplier", at = @At("HEAD"), cancellable = true)
-    private void getVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
+    private void modifyVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
         if (PowerHolderComponent.hasPower(this, ModifySoulSpeedPower.class)) {
             int soulSpeedValue = (int)PowerHolderComponent.modify(this, ModifySoulSpeedPower.class, EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, (LivingEntity)(Object)this));
-            if (soulSpeedValue <= 0 || !this.isOnSoulSpeedBlock()) {
+            if (soulSpeedValue <= 0 || (PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).toList().size() == 0 && !this.isOnSoulSpeedBlock()) || PowerHolderComponent.getPowers(this, ModifySoulSpeedPower.class).stream().filter(power -> power.blockCondition != null).anyMatch(power -> power.blockCondition.test(new CachedBlockPosition(this.world, this.getVelocityAffectingPos(), true)))) {
                 cir.setReturnValue(super.getVelocityMultiplier());
             } else {
                 cir.setReturnValue(1.0F);
