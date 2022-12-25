@@ -1,12 +1,10 @@
 package net.merchantpug.apugli.component;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
-public interface AttackComponent extends Component {
-    void setAttacker(@Nullable Entity entity);
-    void setAttacking(@Nullable Entity entity);
-    @Nullable Integer getAttacker();
-    @Nullable Integer getAttacking();
+public interface AttackComponent extends ServerTickingComponent {
+    @Nullable Entity getAttacker();
+    @Nullable Entity getAttacking();
 }

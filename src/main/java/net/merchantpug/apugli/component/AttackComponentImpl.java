@@ -3,6 +3,7 @@ package net.merchantpug.apugli.component;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.merchantpug.apugli.Apugli;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -11,8 +12,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class AttackComponentImpl implements AttackComponent, AutoSyncedComponent, ServerTickingComponent {
-    @Nullable private Integer attackerId;
-    @Nullable private Integer attackingId;
+    @Nullable private Entity attacker = null;
+    @Nullable private Entity attacking = null;
+    @Nullable private Entity previousAttacking = null;
+    @Nullable private Entity previousAttacker = null;
     private final LivingEntity provider;
 
     public AttackComponentImpl(LivingEntity provider) {
@@ -36,63 +39,66 @@ public class AttackComponentImpl implements AttackComponent, AutoSyncedComponent
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeBoolean(attackerId != null);
-        if (attackerId != null) {
-            buf.writeInt(attackerId);
+        buf.writeBoolean(attacker != previousAttacker);
+        if (attacker != previousAttacker) {
+            buf.writeBoolean(attacker != null);
+            if (attacker != null) {
+                buf.writeInt(attacker.getId());
+            }
         }
-        buf.writeBoolean(attackingId != null);
-        if (attackingId != null) {
-            buf.writeInt(attackingId);
+        buf.writeBoolean(attacking != previousAttacking);
+        if (attacking != previousAttacking) {
+            buf.writeBoolean(attacking != null);
+            if (attacking != null) {
+                buf.writeInt(attacking.getId());
+            }
         }
     }
 
     public void applySyncPacket(PacketByteBuf buf) {
-        if (buf.readBoolean()) {
-            attackerId = buf.readInt();
+        boolean updateAttacker = buf.readBoolean();
+        if (updateAttacker) {
+            boolean attackerNotNull = buf.readBoolean();
+            if (attackerNotNull) {
+                this.attacker = provider.world.getEntityById(buf.readInt());
+            }
         }
-        if (buf.readBoolean()) {
-            attackingId = buf.readInt();
+        boolean updateAttacking = buf.readBoolean();
+        if (updateAttacking) {
+            boolean attackingNotNull = buf.readBoolean();
+            if (attackingNotNull) {
+                this.attacking = provider.world.getEntityById(buf.readInt());
+            }
         }
     }
 
     @Override
-    public void setAttacker(@Nullable Entity entity) {
-        attackerId = entity != null ? entity.getId() : null;
+    public @Nullable Entity getAttacker() {
+        return attacker;
     }
 
     @Override
-    public void setAttacking(@Nullable Entity entity) {
-        attackingId = entity != null ? entity.getId() : null;
-    }
-
-    @Override
-    public @Nullable Integer getAttacker() {
-        return attackerId;
-    }
-
-    @Override
-    public @Nullable Integer getAttacking() {
-        return attackingId;
+    public @Nullable Entity getAttacking() {
+        return attacking;
     }
 
 
     @Override
     public void serverTick() {
+        previousAttacker = attacker;
+        previousAttacking = attacking;
+
         boolean hasChanged = false;
-        if (attackerId != null) {
-            Entity attacker = provider.world.getEntityById(attackerId);
-            if (attacker == null || !PlayerLookup.tracking(attacker).contains(provider) || !attacker.isAlive()) {
-                attackerId = null;
-                hasChanged = true;
-            }
+        if (provider.getAttacker() != attacker) {
+            attacker = provider.getAttacker();
+            hasChanged = true;
         }
-        if (attackingId != null) {
-            Entity attacking = provider.world.getEntityById(attackingId);
-            if (attacking == null || !PlayerLookup.tracking(attacking).contains(provider) || !attacking.isAlive()) {
-                attackingId = null;
-                hasChanged = true;
-            }
+
+        if (provider.getAttacking() != attacking) {
+            attacking = provider.getAttacking();
+            hasChanged = true;
         }
+
         if (hasChanged) {
             ApugliEntityComponents.ATTACK_COMPONENT.sync(provider);
         }

@@ -15,12 +15,9 @@ public class AttackerConditionCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
         Predicate<Pair<Entity, Entity>> pair = data.get("bientity_condition");
         if (entity instanceof LivingEntity living) {
-            Integer attackerId = ApugliEntityComponents.ATTACK_COMPONENT.get(entity).getAttacker();
-            if (attackerId != null) {
-                Entity attacker = living.world.getEntityById(attackerId);
-                if (attacker != null) {
-                    return pair.test(new Pair<>(living, attacker));
-                }
+            Entity attacker = ApugliEntityComponents.ATTACK_COMPONENT.get(entity).getAttacker();
+            if (attacker != null) {
+                return pair.test(new Pair<>(living, attacker));
             }
         }
         return false;

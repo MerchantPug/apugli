@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.component;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.entity.Entity;
@@ -13,7 +12,7 @@ import net.minecraft.util.Pair;
 
 import java.util.*;
 
-public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyncedComponent, ServerTickingComponent {
+public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyncedComponent {
     private Map<Integer, Pair<Integer, Integer>> previousHits = new HashMap<>();
     private final Map<Integer, Pair<Integer, Integer>> hits = new HashMap<>();
     private final LivingEntity provider;

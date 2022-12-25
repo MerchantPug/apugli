@@ -119,11 +119,6 @@ public abstract class LivingEntityMixin extends Entity {
         HitsOnTargetComponent hitsComponent = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(thisAsLiving);
         hitsComponent.setHits(source.getAttacker(), hitsComponent.getHits().getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
         ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.sync(thisAsLiving);
-
-        ApugliEntityComponents.ATTACK_COMPONENT.get(source.getAttacker()).setAttacking((LivingEntity)(Object)this);
-        ApugliEntityComponents.ATTACK_COMPONENT.sync(source.getAttacker());
-        ApugliEntityComponents.ATTACK_COMPONENT.get(thisAsLiving).setAttacker(source.getAttacker());
-        ApugliEntityComponents.ATTACK_COMPONENT.sync(thisAsLiving);
     }
 
     @Unique private boolean apugli$hasModifiedDamage;
