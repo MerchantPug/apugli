@@ -15,7 +15,8 @@
 - Added `apugli:trident_enchantment`entity condition type. Allows checking of enchantments on a trident that the condition is testing.
 
 **Bugfixes**
-- Fixed the Hits On Target component trying to sync entities that aren't loaded.
+- Fixed Hits On Target component trying to sync entities that aren't loaded.
+- Fixed Hits On Target component not ticking serverside.
 
 **Internal**
 - Rewrote `apugli:modify_soul_speed` power type's logic.
