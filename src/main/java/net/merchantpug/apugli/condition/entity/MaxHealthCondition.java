@@ -23,7 +23,7 @@ public class MaxHealthCondition {
         return new ConditionFactory<>(Apugli.identifier("max_health"), new SerializableData()
                 .add("compare_to", SerializableDataTypes.FLOAT)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL),
-                JoinInvulnerabilityTicksCondition::condition
+                MaxHealthCondition::condition
         );
     }
 }
