@@ -59,16 +59,18 @@ public class AttackComponentImpl implements AttackComponent, AutoSyncedComponent
         boolean updateAttacker = buf.readBoolean();
         if (updateAttacker) {
             boolean attackerNotNull = buf.readBoolean();
-            if (attackerNotNull) {
+            if (attackerNotNull)
                 this.attacker = provider.world.getEntityById(buf.readInt());
-            }
+            else
+                this.attacker = null;
         }
         boolean updateAttacking = buf.readBoolean();
         if (updateAttacking) {
             boolean attackingNotNull = buf.readBoolean();
-            if (attackingNotNull) {
+            if (attackingNotNull)
                 this.attacking = provider.world.getEntityById(buf.readInt());
-            }
+            else
+                this.attacking = null;
         }
     }
 
