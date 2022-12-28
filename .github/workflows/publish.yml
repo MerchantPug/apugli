@@ -1,4 +1,4 @@
-name: Publish project to Maven repository
+name: Maven Publish
 
 on: [workflow_dispatch]
 
