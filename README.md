@@ -14,10 +14,10 @@ Assuming you're using a 1.17 or above default Fabric workspace, you are able to 
 **build.gradle**
 ```gradle
 repositories {
-	maven {
-		name = "Pug's Maven"
-		url = 'https://maven.merchantpug.net/releases/'
-	}
+    maven {
+        name = "Pug's Maven"
+        url = 'https://maven.merchantpug.net/releases/'
+    }
     maven {
         name = "Ladysnake Libs"
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
@@ -48,8 +48,8 @@ repositories {
 }
 
 dependencies {
-    modImplementation "com.github.MerchantPug:apugli:${project.apugli_version}"
-    include "com.github.MerchantPug:apugli:${project.apugli_version}"
+    modImplementation "net.MerchantPug:apugli:${project.apugli_version}"
+    include "net.MerchantPug:apugli:${project.apugli_version}"
 }
 ```
 
