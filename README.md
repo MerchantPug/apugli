@@ -48,8 +48,8 @@ repositories {
 }
 
 dependencies {
-    modImplementation "net.MerchantPug:apugli:${project.apugli_version}"
-    include "net.MerchantPug:apugli:${project.apugli_version}"
+    modImplementation "net.merchantpug:apugli:${project.apugli_version}"
+    include "net.merchantpug:apugli:${project.apugli_version}"
 }
 ```
 
