@@ -9,7 +9,11 @@ It's recommended to have some knowledge about either mod before doing so.
 
 ## Implementing the library into your project
 
-Assuming you're using a 1.17 or above default Fabric workspace, you are able to add Apugli as a dependency to your workspace through adding these to your project.
+### Pug's Maven
+
+Assuming you're using a 1.19 or above default Fabric workspace, you are able to add Apugli as a dependency to your workspace through adding these to your project.
+
+Versions 1.9.2+1.19 and later have/will be uploaded to the MerchantPug maven.
 
 **build.gradle**
 ```gradle
@@ -57,4 +61,51 @@ dependencies {
 ```properties
 apugli_version=[INSERT VERSION HERE]
 ```
-You can find the version number by looking at the releases of the mod and looking at the tag.
+You can find the version number by looking [here](https://maven.merchantpug.net/#/releases/net/merchantpug/apugli).
+
+### JitPack (Old Builds and Commit Hashes Only) (Not Recommended)
+
+If you are trying to get v1.9.0+1.19 of Apugli, a version before then or a specific commit hash, please use JitPack.
+
+**build.gradle**
+```gradle
+repositories {
+    maven {
+        name = "Ladysnake Libs"
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+    }
+    maven {
+        name = "JitPack"
+        url = 'https://jitpack.io'
+    }
+    maven {
+        url = 'https://maven.cafeteria.dev'
+        content {
+            includeGroup 'net.adriantodt.fabricmc'
+        }
+    }
+    maven {
+        url "https://maven.shedaniel.me/"
+    }
+    maven {
+        url "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+dependencies {
+    modImplementation "com.github.MerchantPug:apugli:${project.apugli_version}"
+    include "com.github.MerchantPug:apugli:${project.apugli_version}"
+}
+```
+
+**gradle.properties**
+```properties
+apugli_version=[INSERT VERSION HERE]
+```

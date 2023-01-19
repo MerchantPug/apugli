@@ -154,7 +154,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
             double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
             double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && targetableBiEntityCondition.test(new Pair<>(entity, traceEntity)), entityReach);
+            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && (targetableBiEntityCondition == null || targetableBiEntityCondition.test(new Pair<>(entity, traceEntity))), entityReach);
 
             HitResult.Type blockHitResultType = blockHitResult.getType();
             HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
