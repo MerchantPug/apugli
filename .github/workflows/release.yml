@@ -75,7 +75,7 @@ jobs:
           github-commitish: fabric/1.19
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          name: Apugli v1.12.0 (Fabric/Quilt 1.19)
+          name: Apugli v1.12.1 (Fabric/Quilt 1.19)
           version: 1.12.1+1.19-fabric
           version-type: release
           changelog-file: CHANGELOG.md
