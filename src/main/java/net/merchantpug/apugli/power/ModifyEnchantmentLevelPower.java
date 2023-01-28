@@ -16,8 +16,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +59,7 @@ public class ModifyEnchantmentLevelPower extends ValueModifyingPower {
         NbtList newEnchants = enchants.copy();
 
         for (ModifyEnchantmentLevelPower power : PowerHolderComponent.getPowers(entity, ModifyEnchantmentLevelPower.class)) {
-            Identifier id = Registry.ENCHANTMENT.getId(power.getEnchantment());
+            Identifier id = Registries.ENCHANTMENT.getId(power.getEnchantment());
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if (idx.isPresent()) {
                 NbtCompound existingEnchant = newEnchants.getCompound(idx.get());

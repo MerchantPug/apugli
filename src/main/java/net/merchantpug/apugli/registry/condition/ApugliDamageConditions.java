@@ -4,8 +4,8 @@ import net.merchantpug.apugli.condition.damage.IsMagicCondition;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 public class ApugliDamageConditions {
     public static void register() {

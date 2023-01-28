@@ -3,9 +3,9 @@ package net.merchantpug.apugli.util;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.gen.structure.Structure;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class ApugliDataTypes {
     public static final SerializableDataType<PlayerModelType> PLAYER_MODEL_TYPE =
             SerializableDataType.enumValue(PlayerModelType.class);
 
-    public static final SerializableDataType<TagKey<Structure>> STRUCTURE_TAG = SerializableDataType.tag(Registry.STRUCTURE_KEY);
+    public static final SerializableDataType<TagKey<Structure>> STRUCTURE_TAG = SerializableDataType.tag(RegistryKeys.STRUCTURE);
 
-    public static final SerializableDataType<RegistryKey<Structure>> STRUCTURE = SerializableDataType.registryKey(Registry.STRUCTURE_KEY);
+    public static final SerializableDataType<RegistryKey<Structure>> STRUCTURE = SerializableDataType.registryKey(RegistryKeys.STRUCTURE);
 
     public static final SerializableDataType<SoundEventPitchVolume> SOUND_EVENT_PITCH_VOLUME =
             SerializableDataType.compound(SoundEventPitchVolume.class, new SerializableData()

@@ -5,15 +5,16 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.util.ApugliDataTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.*;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.structure.Structure;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class StructureCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
         if (entity.getEntityWorld().isClient()) return false;
         ServerWorld world = (ServerWorld)entity.getWorld();
-        Registry<Structure> registry = world.getRegistryManager().get(Registry.STRUCTURE_KEY);
+        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
 
         RegistryEntryList<Structure> entryList = null;
         RegistryKey<Structure> structure = data.get("structure");

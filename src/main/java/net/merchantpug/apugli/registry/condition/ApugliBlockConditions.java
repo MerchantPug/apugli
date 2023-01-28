@@ -4,7 +4,7 @@ import net.merchantpug.apugli.condition.block.IsAirCondition;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ApugliBlockConditions {
     public static void register() {

@@ -4,7 +4,7 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.merchantpug.apugli.action.entity.*;
 import net.minecraft.entity.*;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ApugliEntityActions {
     public static void register() {

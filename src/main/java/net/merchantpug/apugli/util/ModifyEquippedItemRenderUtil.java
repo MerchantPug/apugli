@@ -27,14 +27,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 public class ModifyEquippedItemRenderUtil {
 
     public static void renderArmor(ArmorFeatureRenderer<?, ?, ?> renderer, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, EquipmentSlot armorSlot, int light, BipedEntityModel model) {
         if (stack.getItem() instanceof ArmorItem armorItem) {
             if (armorItem.getSlotType() == armorSlot) {
-                renderer.getContextModel().setAttributes(model);
+                renderer.getContextModel().copyBipedStateTo(model);
                 ((ArmorFeatureRendererAccessor)renderer).invokeSetVisible(model, armorSlot);
                 boolean bl = armorSlot == EquipmentSlot.LEGS;
                 boolean bl2 = stack.hasGlint();
@@ -94,7 +94,7 @@ public class ModifyEquippedItemRenderUtil {
     public static void translateStackOnHead(MatrixStack matrices, boolean villager) {
         float f = 0.625F;
         matrices.translate(0.0D, -0.25D, 0.0D);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
         matrices.scale(0.625F, -0.625F, -0.625F);
         if (villager) {
             matrices.translate(0.0D, 0.1875D, 0.0D);
@@ -139,8 +139,8 @@ public class ModifyEquippedItemRenderUtil {
         if (!stack.isEmpty() && (shouldOverride || ((entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || shouldMergeWithHeld) && isMainArm || (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() || shouldMergeWithHeld) && !isMainArm))) {
             matrices.push();
             ((ModelWithArms)renderer.getContextModel()).setArmAngle(arm, matrices);
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
             boolean bl = arm == Arm.LEFT;
             matrices.translate(((float)(bl ? -1 : 1) / 16.0F), 0.125D, -0.625D);
             heldItemRenderer.renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);

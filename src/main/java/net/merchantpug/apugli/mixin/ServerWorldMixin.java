@@ -2,13 +2,13 @@ package net.merchantpug.apugli.mixin;
 
 import net.merchantpug.apugli.power.RedirectLightningPower;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;

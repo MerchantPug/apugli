@@ -50,7 +50,7 @@ public class RaycastAction {
 
         double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
         double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isCollidable(), entityReach);
 
         HitResult.Type blockHitResultType = blockHitResult.getType();
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
@@ -59,7 +59,7 @@ public class RaycastAction {
         createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
 
         if (data.getBoolean("pierce")) {
-            List<EntityHitResult> list = RaycastUtil.raycastMultiple(entity, eyePosition, traceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides(), entityReach);
+            List<EntityHitResult> list = RaycastUtil.raycastMultiple(entity, eyePosition, traceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isCollidable(), entityReach);
             RaycastAction.handlePierce(data, entity, list);
             return;
         }

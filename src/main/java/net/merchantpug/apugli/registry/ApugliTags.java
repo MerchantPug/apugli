@@ -2,9 +2,9 @@ package net.merchantpug.apugli.registry;
 
 import net.merchantpug.apugli.Apugli;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public class ApugliTags {
-    public static final TagKey<StatusEffect> CHARGED_EFFECTS = TagKey.of(Registry.MOB_EFFECT_KEY, Apugli.identifier("charged_effects"));
+    public static final TagKey<StatusEffect> CHARGED_EFFECTS = TagKey.of(RegistryKeys.STATUS_EFFECT, Apugli.identifier("charged_effects"));
 }

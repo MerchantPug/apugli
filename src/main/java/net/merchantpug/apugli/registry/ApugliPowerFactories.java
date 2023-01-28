@@ -5,7 +5,7 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.merchantpug.apugli.power.*;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ApugliPowerFactories {
     public static void register() {

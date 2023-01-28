@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ItemActions.class)
+@Mixin(value = ItemActions.class, remap = false)
 public class ItemActionsMixin {
     @Inject(method = "lambda$register$3(Lio/github/apace100/calio/data/SerializableData$Instance;Lnet/minecraft/util/Pair;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getDamage()I"))
     private static void handleIncreaseDecreaseAction(SerializableData.Instance data, Pair<World, ItemStack> worldAndStack, CallbackInfo ci) {

@@ -160,7 +160,7 @@ public class ApugliPacketsS2C {
             if (!(user instanceof LivingEntity)) {
                 Apugli.LOGGER.warn("Received unknown rocket jumping entity.");
             } else {
-                Explosion explosion = new Explosion(user.world, user, ApugliDamageSources.jumpExplosion((LivingEntity) user), null, x, y, z, radius, false, Explosion.DestructionType.NONE);
+                Explosion explosion = new Explosion(user.world, user, ApugliDamageSources.jumpExplosion((LivingEntity) user), null, x, y, z, radius, false, Explosion.DestructionType.KEEP);
                 Power power = PowerTypeRegistry.get(powerId).get(user);
                 if (power instanceof RocketJumpPower rocketJumpPower) {
                     ((ExplosionAccess) explosion).setRocketJump(true);

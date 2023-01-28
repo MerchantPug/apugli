@@ -26,6 +26,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
@@ -34,7 +35,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.explosion.Explosion;
 
@@ -154,12 +154,12 @@ public class RocketJumpPower extends ActiveCooldownPower {
 
             double blockHitResultSquaredDistance = blockHitResult != null ? blockHitResult.getBlockPos().getSquaredDistance(eyePosition.x, eyePosition.y, eyePosition.z) : entityDistance * entityDistance;
             double entityReach = Math.min(blockHitResultSquaredDistance, entityDistance * entityDistance);
-            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.collides() && (targetableBiEntityCondition == null || targetableBiEntityCondition.test(new Pair<>(entity, traceEntity))), entityReach);
+            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, eyePosition, entityTraceEnd, entityBox, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isCollidable() && (targetableBiEntityCondition == null || targetableBiEntityCondition.test(new Pair<>(entity, traceEntity))), entityReach);
 
             HitResult.Type blockHitResultType = blockHitResult.getType();
             HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
-            boolean isCharged = entity.getStatusEffects().stream().anyMatch(effect -> Registry.STATUS_EFFECT.getKey(effect.getEffectType()).isPresent() && Registry.STATUS_EFFECT.entryOf(Registry.STATUS_EFFECT.getKey(effect.getEffectType()).get()).isIn(ApugliTags.CHARGED_EFFECTS));
+            boolean isCharged = entity.getStatusEffects().stream().anyMatch(effect -> Registries.STATUS_EFFECT.getKey(effect.getEffectType()).isPresent() && Registries.STATUS_EFFECT.entryOf(Registries.STATUS_EFFECT.getKey(effect.getEffectType()).get()).isIn(ApugliTags.CHARGED_EFFECTS));
 
             if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
@@ -182,7 +182,7 @@ public class RocketJumpPower extends ActiveCooldownPower {
         float g = MathHelper.sin(entity.getPitch() * 0.017453292F);
         float h = -MathHelper.cos(entity.getYaw() * 0.017453292F) * MathHelper.cos(entity.getPitch() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.world, entity, ApugliDamageSources.jumpExplosion(entity), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.NONE);
+        Explosion explosion = new Explosion(entity.world, entity, ApugliDamageSources.jumpExplosion(entity), null, hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), e, false, Explosion.DestructionType.KEEP);
         ((ExplosionAccess)explosion).setRocketJump(true);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(this.getDamageModifiers());
         ((ExplosionAccess)explosion).setBiEntityPredicate(this.getDamageBiEntityCondition());

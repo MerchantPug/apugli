@@ -24,7 +24,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 @Mixin(ArmorFeatureRenderer.class)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-    @Shadow protected abstract A getArmor(EquipmentSlot slot);
+    @Shadow protected abstract A getModel(EquipmentSlot slot);
 
     public ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
@@ -35,7 +35,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class);
         modifyEquippedItemRenderPowers.forEach(power -> {
             if (power.slot.getType() == EquipmentSlot.Type.ARMOR) {
-                ModifyEquippedItemRenderUtil.renderArmor((ArmorFeatureRenderer<?, ?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, power.slot, i, this.getArmor(power.slot));
+                ModifyEquippedItemRenderUtil.renderArmor((ArmorFeatureRenderer<?, ?, ?>)(Object)this, power.stack, matrixStack, vertexConsumerProvider, livingEntity, power.slot, i, this.getModel(power.slot));
             }
         });
     }

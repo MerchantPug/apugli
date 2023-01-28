@@ -2,9 +2,6 @@ plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'signing'
 	id 'maven-publish'
-	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'com.modrinth.minotaur' version '2.1.1'
-	id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -63,8 +60,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// modImplementation "com.github.apace100:apoli:${project.apoli_version}"
-	modImplementation "com.github.eggohito:apoli:${project.apoli_version}"
+	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
 
