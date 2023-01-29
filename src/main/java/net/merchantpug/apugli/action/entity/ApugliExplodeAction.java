@@ -1,14 +1,14 @@
 package net.merchantpug.apugli.action.entity;
 
+import io.github.apace100.calio.data.SerializableDataType;
 import net.merchantpug.apugli.Apugli;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -18,7 +18,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
@@ -45,23 +44,19 @@ public class ApugliExplodeAction {
 
     private static float applyChargedModifiers(SerializableData.Instance data, Entity entity) {
         if (!data.getBoolean("use_charged")) return data.getFloat("power");
-        boolean tmoCharged;
-        boolean cursedCharged;
         List<Modifier> chargedModifiers = new ArrayList<>();
         if (data.isPresent("charged_modifier")) {
-            chargedModifiers.add((Modifier)data.get("charged_modifier"));
+            chargedModifiers.add(data.get("charged_modifier"));
         }
         if (data.isPresent("charged_modifiers")) {
             ((List<Modifier>)data.get("charged_modifiers")).forEach(modifier -> {
-                chargedModifiers.add((Modifier)data.get("charged_modifier"));
+                chargedModifiers.add(data.get("charged_modifier"));
             });
         }
-        tmoCharged = FabricLoader.getInstance().isModLoaded("toomanyorigins") && ((LivingEntity) entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-        cursedCharged = FabricLoader.getInstance().isModLoaded("cursedorigins") && ((LivingEntity) entity).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+        boolean isCharged = ((LivingEntity)entity).getStatusEffects().stream().anyMatch(statusEffectInstance -> Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).isPresent() && Registry.STATUS_EFFECT.getEntry(Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).get()).isPresent() && Registry.STATUS_EFFECT.getEntry(Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).get()).get().isIn(ApugliTags.CHARGED_EFFECTS));
 
-        if (tmoCharged || cursedCharged) {
-            ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-            ((LivingEntity)entity).removeStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+        if (isCharged) {
+            ((LivingEntity)entity).getStatusEffects().removeIf(statusEffectInstance -> Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).isPresent() && Registry.STATUS_EFFECT.getEntry(Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).get()).isPresent() && Registry.STATUS_EFFECT.getEntry(Registry.STATUS_EFFECT.getKey(statusEffectInstance.getEffectType()).get()).get().isIn(ApugliTags.CHARGED_EFFECTS));
             return (float) ModifierUtil.applyModifiers(entity, chargedModifiers, data.getFloat("power"));
         }
         return data.getFloat("power");
@@ -69,7 +64,7 @@ public class ApugliExplodeAction {
 
     private static void summonExplosion(SerializableData.Instance data, Entity entity, float power) {
         if(data.isPresent("indestructible")) {
-            Predicate<CachedBlockPosition> blockCondition = (Predicate<CachedBlockPosition>)data.get("indestructible");
+            Predicate<CachedBlockPosition> blockCondition = data.get("indestructible");
             ExplosionBehavior eb = new ExplosionBehavior() {
                 @Override
                 public Optional<Float> getBlastResistance(Explosion explosion, BlockView blockView, BlockPos world, BlockState pos, FluidState blockState) {
@@ -86,12 +81,12 @@ public class ApugliExplodeAction {
                             DamageSource.explosion((LivingEntity) null),
                     eb, entity.getX(), entity.getY(), entity.getZ(),
                     power, data.getBoolean("create_fire"),
-                    (Explosion.DestructionType) data.get("destruction_type"));
+                    data.get("destruction_type"));
         } else {
             entity.world.createExplosion(data.getBoolean("damage_self") ? null : entity,
                     entity.getX(), entity.getY(), entity.getZ(),
                     power, data.getBoolean("create_fire"),
-                    (Explosion.DestructionType) data.get("destruction_type"));
+                    data.get("destruction_type"));
         }
     }
 
