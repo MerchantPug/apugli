@@ -7,7 +7,7 @@ import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -18,7 +18,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.explosion.Explosion;
@@ -44,23 +43,19 @@ public class ApugliExplodeAction {
 
     private static float applyChargedModifiers(SerializableData.Instance data, Entity entity) {
         if (!data.getBoolean("use_charged")) return data.getFloat("power");
-        boolean tmoCharged;
-        boolean cursedCharged;
         List<Modifier> chargedModifiers = new ArrayList<>();
         if (data.isPresent("charged_modifier")) {
-            chargedModifiers.add((Modifier)data.get("charged_modifier"));
+            chargedModifiers.add(data.get("charged_modifier"));
         }
         if (data.isPresent("charged_modifiers")) {
             ((List<Modifier>)data.get("charged_modifiers")).forEach(modifier -> {
-                chargedModifiers.add((Modifier)data.get("charged_modifier"));
+                chargedModifiers.add(data.get("charged_modifier"));
             });
         }
-        tmoCharged = FabricLoader.getInstance().isModLoaded("toomanyorigins") && ((LivingEntity) entity).hasStatusEffect(Registries.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-        cursedCharged = FabricLoader.getInstance().isModLoaded("cursedorigins") && ((LivingEntity) entity).hasStatusEffect(Registries.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+        boolean isCharged = ((LivingEntity)entity).getStatusEffects().stream().anyMatch(statusEffectInstance -> Registries.STATUS_EFFECT.getEntry(statusEffectInstance.getEffectType()).isIn(ApugliTags.CHARGED_EFFECTS));
 
-        if (tmoCharged || cursedCharged) {
-            ((LivingEntity)entity).removeStatusEffect(Registries.STATUS_EFFECT.get(new Identifier("toomanyorigins", "charged")));
-            ((LivingEntity)entity).removeStatusEffect(Registries.STATUS_EFFECT.get(new Identifier("cursedorigins", "charged")));
+        if (isCharged) {
+            ((LivingEntity)entity).getStatusEffects().removeIf(statusEffectInstance -> Registries.STATUS_EFFECT.getEntry(statusEffectInstance.getEffectType()).isIn(ApugliTags.CHARGED_EFFECTS));
             return (float) ModifierUtil.applyModifiers(entity, chargedModifiers, data.getFloat("power"));
         }
         return data.getFloat("power");
