@@ -147,6 +147,14 @@ curseforge {
 		changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 		changelogType = 'markdown'
 		releaseType = 'release'
+		cf_environments.split(", ").each { String environment ->
+			addGameVersion environment
+		}
+
+		mod_loaders.split(", ").each { String loader ->
+			addGameVersion loader
+		}
+
 		game_versions.split(", ").each { String gameVersion ->
 			addGameVersion gameVersion
 		}
@@ -175,7 +183,7 @@ modrinth {
 	changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 	uploadFile = jar
 	gameVersions = game_versions.split(", ").toList()
-	loaders = [ "fabric" ]
+	loaders = mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) }
 	dependencies {
 		required_deps.split(", ").each { String project ->
 			required.project project
