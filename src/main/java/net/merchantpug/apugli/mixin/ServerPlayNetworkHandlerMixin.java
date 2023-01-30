@@ -18,7 +18,7 @@ public class ServerPlayNetworkHandlerMixin {
         return original && !PowerHolderComponent.hasPower(this.player, HoverPower.class);
     }
 
-    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;vehicleFloating:Z", ordinal = 0))
+    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;vehicleFloating:Z", ordinal = 1))
     private boolean doNotKickIfVehicleUsingHoverPower(boolean original) {
         return original && !PowerHolderComponent.hasPower(this.player.getRootVehicle(), HoverPower.class);
     }
