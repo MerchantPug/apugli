@@ -146,10 +146,6 @@ curseforge {
 			changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 			changelogType = 'markdown'
 			releaseType = 'release'
-			cf_environments.split(", ").each { String environment ->
-				addGameVersion environment
-			}
-
 			mod_loaders.split(", ").each { String loader ->
 				addGameVersion loader
 			}
