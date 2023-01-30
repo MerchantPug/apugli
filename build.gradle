@@ -147,6 +147,10 @@ curseforge {
 			changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 			changelogType = 'markdown'
 			releaseType = 'release'
+			java_versions.split(", ").each { String javaVersion ->
+				addGameVersion javaVersion
+			}
+
 			mod_loaders.split(", ").each { String loader ->
 				addGameVersion loader
 			}
