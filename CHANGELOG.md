@@ -1,6 +1,3 @@
 **Bugfixes**
-- Fix crash upon startup.
-
-**Misc**
-- Remove the -fabric within mod versioning.
-- Use the `apugli:charged_effects` tag for `apugli:explode`.
+- Fixed Handshake packet booting out those with the mod.
+- Fixed Hover power triggering 'flight is not enabled' kick.
