@@ -3,7 +3,7 @@ plugins {
 	id 'signing'
 	id 'maven-publish'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'com.modrinth.minotaur' version '2.1.1'
+	id 'com.modrinth.minotaur' version '2.+'
 	id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 
@@ -136,5 +136,66 @@ publishing {
 				create("basic", BasicAuthentication)
 			}
 		}
+	}
+}
+
+curseforge {
+	apiKey = System.getenv("CURSEFORGE_TOKEN")
+	if (apiKey == null) return
+	project {
+		id = cf_project_id
+		changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+		changelogType = 'markdown'
+		releaseType = 'release'
+		game_versions.split(", ").each { String gameVersion ->
+			addGameVersion gameVersion
+		}
+
+		mainArtifact(jar) {
+			displayName = "$project.mod_name v$project.version (Fabric/Quilt)"
+			relations {
+				required_deps.split(", ").each { String project ->
+					requiredDependency project
+				}
+
+				embedded_deps.split(", ").each { String project ->
+					embeddedLibrary project
+				}
+			}
+		}
+	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = mr_project_id
+	versionNumber = "${project.version}"
+	versionType = "release"
+	versionName = "$project.mod_name v$project.version (Fabric/Quilt)"
+	changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+	uploadFile = jar
+	gameVersions = game_versions.split(", ").toList()
+	loaders = [ "fabric" ]
+	dependencies {
+		required_deps.split(", ").each { String project ->
+			required.project project
+		}
+
+		embedded_deps.split(", ").each { String project ->
+			embedded.project project
+		}
+	}
+}
+
+githubRelease {
+	token = System.getenv("GITHUB_TOKEN")
+
+	owner = gh_owner
+	repo = gh_repo
+	tagName = version
+	targetCommitish = gh_commitish
+	releaseName = "$project.mod_name v$project.version (Fabric/Quilt)"
+	body {
+		new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 	}
 }
