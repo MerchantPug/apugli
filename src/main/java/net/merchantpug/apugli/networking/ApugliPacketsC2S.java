@@ -45,8 +45,10 @@ import java.util.Set;
 
 public class ApugliPacketsC2S {
     public static void register() {
-        ServerLoginConnectionEvents.QUERY_START.register(ApugliPacketsC2S::handshake);
-        ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsC2S::handleHandshakeReply);
+        if (ApugliConfig.performVersionCheck) {
+            ServerLoginConnectionEvents.QUERY_START.register(ApugliPacketsC2S::handshake);
+            ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPacketsC2S::handleHandshakeReply);
+        }
         ServerPlayNetworking.registerGlobalReceiver(ApugliPackets.UPDATE_KEYS_PRESSED, ApugliPacketsC2S::onUpdateKeysPressed);
     }
 
@@ -70,10 +72,7 @@ public class ApugliPacketsC2S {
     }
 
     private static void handleHandshakeReply(MinecraftServer server, ServerLoginNetworkHandler handler, boolean understood, PacketByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {
-        boolean shouldCheckVersion = ApugliConfig.performVersionCheck;
-        if (FabricLoader.getInstance().getModContainer(Apugli.MODID).isPresent() && FabricLoader.getInstance().getModContainer(Apugli.MODID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED)) {
-            shouldCheckVersion = false;
-        }
+        boolean shouldCheckVersion = FabricLoader.getInstance().getModContainer(Apugli.MODID).isEmpty() || !FabricLoader.getInstance().getModContainer(Apugli.MODID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED);
 
         if (shouldCheckVersion) {
             if (understood) {
