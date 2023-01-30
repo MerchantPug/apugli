@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'signing'
 	id 'maven-publish'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
@@ -175,35 +175,38 @@ curseforge {
 }
 
 modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
-	projectId = mr_project_id
-	versionNumber = "${project.version}"
-	versionType = "release"
-	versionName = "$project.mod_name v$project.version (Fabric/Quilt)"
-	changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
-	uploadFile = remapJar
-	gameVersions = game_versions.split(", ").toList()
-	loaders = mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) }
-	dependencies {
-		required_deps.split(", ").each { String project ->
-			required.project project
-		}
+	if (System.getenv("MODRINTH_TOKEN") != null) {
+		token = System.getenv("MODRINTH_TOKEN")
+		projectId = mr_project_id
+		versionNumber = "${project.version}"
+		versionType = "release"
+		versionName = "$project.mod_name v$project.version (Fabric/Quilt)"
+		changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+		uploadFile = remapJar
+		gameVersions = game_versions.split(", ").toList()
+		loaders = mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) }
+		dependencies {
+			required_deps.split(", ").each { String project ->
+				required.project project
+			}
 
-		embedded_deps.split(", ").each { String project ->
-			embedded.project project
+			embedded_deps.split(", ").each { String project ->
+				embedded.project project
+			}
 		}
 	}
 }
 
 githubRelease {
-	token = System.getenv("GITHUB_TOKEN")
-
-	owner = gh_owner
-	repo = gh_repo
-	tagName = version
-	targetCommitish = gh_commitish
-	releaseName = "$project.mod_name v$project.version (Fabric/Quilt)"
-	body {
-		new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+	if (System.getenv("GITHUB_TOKEN") != null) {
+		token = System.getenv("GITHUB_TOKEN")
+		owner = gh_owner
+		repo = gh_repo
+		tagName = version
+		targetCommitish = gh_commitish
+		releaseName = "$project.mod_name v$project.version (Fabric/Quilt)"
+		body {
+			new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+		}
 	}
 }
