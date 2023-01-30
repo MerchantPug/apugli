@@ -139,34 +139,35 @@ publishing {
 }
 
 curseforge {
-	apiKey = System.getenv("CURSEFORGE_TOKEN")
-	if (apiKey == null) return
-	project {
-		id = cf_project_id
-		changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
-		changelogType = 'markdown'
-		releaseType = 'release'
-		cf_environments.split(", ").each { String environment ->
-			addGameVersion environment
-		}
+	if (System.getenv("CURSEFORGE_TOKEN") != null) {
+		apiKey = System.getenv("CURSEFORGE_TOKEN")
+		project {
+			id = cf_project_id
+			changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+			changelogType = 'markdown'
+			releaseType = 'release'
+			cf_environments.split(", ").each { String environment ->
+				addGameVersion environment
+			}
 
-		mod_loaders.split(", ").each { String loader ->
-			addGameVersion loader
-		}
+			mod_loaders.split(", ").each { String loader ->
+				addGameVersion loader
+			}
 
-		game_versions.split(", ").each { String gameVersion ->
-			addGameVersion gameVersion
-		}
+			game_versions.split(", ").each { String gameVersion ->
+				addGameVersion gameVersion
+			}
 
-		mainArtifact(jar) {
-			displayName = "$project.mod_name v$project.version (Fabric/Quilt)"
-			relations {
-				required_deps.split(", ").each { String project ->
-					requiredDependency project
-				}
+			mainArtifact(remapJar) {
+				displayName = "$project.mod_name v$project.version (Fabric/Quilt)"
+				relations {
+					required_deps.split(", ").each { String project ->
+						requiredDependency project
+					}
 
-				embedded_deps.split(", ").each { String project ->
-					embeddedLibrary project
+					embedded_deps.split(", ").each { String project ->
+						embeddedLibrary project
+					}
 				}
 			}
 		}
@@ -180,7 +181,7 @@ modrinth {
 	versionType = "release"
 	versionName = "$project.mod_name v$project.version (Fabric/Quilt)"
 	changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
-	uploadFile = jar
+	uploadFile = remapJar
 	gameVersions = game_versions.split(", ").toList()
 	loaders = mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) }
 	dependencies {
