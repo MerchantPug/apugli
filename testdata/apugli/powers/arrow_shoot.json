@@ -4,7 +4,25 @@
     "type": "apugli:fire_projectile",
     "speed": 2.0,
     "entity_type": "minecraft:arrow",
-    "tag": "{pickup:0}"
+    "tag": "{pickup:0}",
+    "bientity_action": {
+      "type": "apoli:target_action",
+      "action": {
+        "type": "apoli:spawn_particles",
+        "particle": {
+          "type": "minecraft:block",
+          "params": "minecraft:redstone_block"
+        },
+        "count": 16,
+        "speed": 0.0,
+        "force": true,
+        "spread": {
+          "x": 3.0,
+          "y": 0.0,
+          "z": 3.0
+        }
+      }
+    }
   },
   "cooldown": 2,
   "hud_render": {
