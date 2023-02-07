@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.entity.feature;
 
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.mixin.PlayerEntityAccessor;
 import net.merchantpug.apugli.util.TextureUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
@@ -8,35 +10,52 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+    @Nullable private PlayerEntityModel<T> extraPlayerModel;
 
-    public EntityTextureOverlayFeatureRenderer(FeatureRendererContext<T, M> context) {
+    public EntityTextureOverlayFeatureRenderer(FeatureRendererContext<T, M> context, boolean slim, EntityModelLoader loader) {
         super(context);
+        if (context.getModel() instanceof PlayerEntityModel<?>) {
+            Apugli.LOGGER.info("Extra Player Model has been set.");
+            extraPlayerModel = new PlayerEntityModel<>(loader.getModelPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim);
+        }
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, LivingEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         if (entity.isInvisible() && !MinecraftClient.getInstance().hasOutline(entity)) return;
-        EntityModel<T> entityModel = this.getContextModel();
+        if (extraPlayerModel != null) {
+            this.getContextModel().copyStateTo(extraPlayerModel);
+            extraPlayerModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
+            extraPlayerModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+        }
+        EntityModel<T> entityModel = extraPlayerModel != null ? extraPlayerModel : this.getContextModel();
+
         PowerHolderComponent.getPowers(entity, EntityTextureOverlayPower.class).forEach(power -> {
-            if (power.textureLocation == null && power.textureUrl == null) {
+            if (power.getTextureLocation() == null && power.getTextureUrl() == null) {
                 return;
             }
 
             RenderLayer renderLayer;
-            if (power.textureUrl != null) {
-                TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.textureUrl);
+            if (power.getTextureUrl() != null) {
+                TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.getTextureUrl());
                 renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
             } else {
-                renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.textureLocation) : RenderLayer.getEntityTranslucent(power.textureLocation);
+                renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.getTextureLocation()) : RenderLayer.getEntityTranslucent(power.getTextureLocation());
             }
 
             if (renderLayer != null) {
@@ -46,7 +65,7 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
                 float blue = 1.0F;
                 float alpha = 1.0F;
 
-                if (power.usesRenderingPowers) {
+                if (power.shouldUseRenderingPowers()) {
                     List<ModelColorPower> modelColorPowers = PowerHolderComponent.getPowers(entity, ModelColorPower.class);
                     if (modelColorPowers.size() > 0) {
                         red = modelColorPowers.stream().map(ModelColorPower::getRed).reduce((a, b) -> a * b).get();
@@ -55,6 +74,7 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
                         alpha = modelColorPowers.stream().map(ModelColorPower::getAlpha).min(Float::compare).get();
                     }
                 }
+
 
                 entityModel.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
                 matrices.pop();
