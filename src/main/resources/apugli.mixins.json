@@ -27,6 +27,7 @@
     "ItemStackMixin",
     "LivingEntityMixin",
     "MobEntityMixin",
+    "PlayerEntityAccessor",
     "PlayerEntityMixin",
     "PlayerInventoryMixin",
     "ProjectileEntityMixin",
