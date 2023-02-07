@@ -1,7 +1,5 @@
 package net.merchantpug.apugli.entity.feature;
 
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.mixin.PlayerEntityAccessor;
 import net.merchantpug.apugli.util.TextureUtil;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
@@ -10,7 +8,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -19,7 +16,6 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -30,7 +26,6 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
     public EntityTextureOverlayFeatureRenderer(FeatureRendererContext<T, M> context, boolean slim, EntityModelLoader loader) {
         super(context);
         if (context.getModel() instanceof PlayerEntityModel<?>) {
-            Apugli.LOGGER.info("Extra Player Model has been set.");
             extraPlayerModel = new PlayerEntityModel<>(loader.getModelPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim);
         }
     }
