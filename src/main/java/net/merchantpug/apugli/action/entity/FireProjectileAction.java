@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.action.entity;
 
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import net.merchantpug.apugli.Apugli;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
@@ -13,13 +14,16 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.function.Consumer;
 
 public class FireProjectileAction {
     public static void action(SerializableData.Instance data, Entity entity) {
         if (data.isPresent("sound")) {
-            entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), (SoundEvent) data.get("sound"), SoundCategory.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
+            entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundCategory.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
         }
         for (int i = 0; i < data.getInt("count"); ++i) {
             fireProjectile(data, (LivingEntity) entity);
@@ -62,22 +66,26 @@ public class FireProjectileAction {
 
         if (data.isPresent("tag")) {
             NbtCompound mergedTag = firedEntity.writeNbt(new NbtCompound());
-            mergedTag.copyFrom((NbtCompound)data.get("tag"));
+            mergedTag.copyFrom(data.get("tag"));
             firedEntity.readNbt(mergedTag);
         }
 
         entity.world.spawnEntity(firedEntity);
+        if (data.isPresent("bientity_action")) {
+            ((Consumer<Pair<Entity, Entity>>)data.get("bientity_action")).accept(new Pair<>(entity, firedEntity));
+        }
     }
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(Apugli.identifier("fire_projectile"),
                 new SerializableData()
-                    .add("count", SerializableDataTypes.INT, 1)
-                    .add("speed", SerializableDataTypes.FLOAT, 1.5F)
-                    .add("divergence", SerializableDataTypes.FLOAT, 1F)
-                    .add("sound", SerializableDataTypes.SOUND_EVENT, null)
-                    .add("entity_type", SerializableDataTypes.ENTITY_TYPE)
-                    .add("tag", SerializableDataTypes.NBT, null),
+                        .add("count", SerializableDataTypes.INT, 1)
+                        .add("speed", SerializableDataTypes.FLOAT, 1.5F)
+                        .add("divergence", SerializableDataTypes.FLOAT, 1F)
+                        .add("sound", SerializableDataTypes.SOUND_EVENT, null)
+                        .add("entity_type", SerializableDataTypes.ENTITY_TYPE)
+                        .add("tag", SerializableDataTypes.NBT, null)
+                        .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null),
                 FireProjectileAction::action
         );
     }
