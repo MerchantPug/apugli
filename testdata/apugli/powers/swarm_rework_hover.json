@@ -1,0 +1,121 @@
+{
+  "type": "apoli:multiple",
+  "hover": {
+    "type": "apugli:hover",
+    "condition": {
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apugli:velocity",
+          "y": 0.0,
+          "comparison": ">="
+        },
+        {
+          "type": "apugli:key_pressed",
+          "key": {
+            "key": "key.jump",
+            "continuous": true
+          }
+        },
+        {
+          "type": "apoli:climbing",
+          "inverted": true
+        },
+        {
+          "type": "apoli:fluid_height",
+          "fluid": "minecraft:water",
+          "comparison": ">",
+          "compare_to": "0",
+          "inverted": true
+        },
+        {
+          "type": "apoli:fluid_height",
+          "fluid": "minecraft:lava",
+          "comparison": ">",
+          "compare_to": "0",
+          "inverted": true
+        },
+        {
+          "type": "apoli:fall_flying",
+          "inverted": true
+        },
+        {
+          "type": "apoli:riding",
+          "inverted": true
+        },
+        {
+          "type": "apoli:food_level",
+          "comparison": ">",
+          "compare_to": 6
+        },
+        {
+          "type": "apoli:power_active",
+          "power": "*:*_toggle_resource"
+        }
+      ]
+    }
+  },
+  "deplete_hunger_while_using": {
+    "type": "apoli:action_over_time",
+    "entity_action": {
+      "type": "apoli:if_else",
+      "condition": {
+        "type": "apoli:or",
+        "conditions": [
+          {
+            "type": "apugli:velocity",
+            "axes": [
+              "x"
+            ],
+            "compare_to": 0.05,
+            "comparison": ">"
+          },
+          {
+            "type": "apugli:velocity",
+            "axes": [
+              "x"
+            ],
+            "compare_to": 0.05,
+            "comparison": "<"
+          },
+          {
+            "type": "apugli:velocity",
+            "axes": [
+              "z"
+            ],
+            "compare_to": 0.05,
+            "comparison": ">"
+          },
+          {
+            "type": "apugli:velocity",
+            "axes": [
+              "z"
+            ],
+            "compare_to": 0.05,
+            "comparison": ">"
+          }
+        ]
+      },
+      "if_action": {
+        "type": "apoli:exhaust",
+        "amount": 0.08
+      },
+      "else_action": {
+        "type": "apoli:exhaust",
+        "amount": 0.06
+      }
+    },
+    "interval": 1,
+    "condition": {
+      "type": "apoli:power_active",
+      "power": "*:*_hover"
+    }
+  },
+  "toggle_resource": {
+    "type": "apoli:toggle",
+    "active_by_default": true,
+    "key": {
+      "key": "key.saveToolbarActivator"
+    }
+  }
+}

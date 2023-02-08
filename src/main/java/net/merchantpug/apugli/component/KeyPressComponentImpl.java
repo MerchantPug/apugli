@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.component;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingComponent, AutoSyncedComponent {
+public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingComponent {
     private int previousPowerSize = 0;
     private Set<Active.Key> previousKeysToCheck = new HashSet<>();
     private final Set<Active.Key> keysToCheck = new HashSet<>();
@@ -42,6 +41,16 @@ public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingCo
     }
 
     @Override
+    public Set<Active.Key> getPreviouslyUsedKeys() {
+        return previouslyUsedKeys;
+    }
+
+    @Override
+    public void setPreviouslyUsedKeys() {
+        previousKeysToCheck = keysToCheck;
+    }
+
+    @Override
     public void changePreviousKeysToCheckToCurrent() {
         this.previouslyUsedKeys = this.currentlyUsedKeys;
     }
@@ -49,6 +58,16 @@ public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingCo
     @Override
     public Set<Active.Key> getKeysToCheck() {
         return keysToCheck;
+    }
+
+    @Override
+    public Set<Active.Key> getPreviousKeysToCheck() {
+        return previousKeysToCheck;
+    }
+
+    @Override
+    public void setPreviousKeysToCheck() {
+        previouslyUsedKeys = currentlyUsedKeys.stream().filter(key -> key.continuous).collect(Collectors.toSet());
     }
 
     @Override
@@ -80,12 +99,11 @@ public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingCo
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        List<Active.Key> newKeysToCheck = keysToCheck.stream().filter(key -> !previousKeysToCheck.contains(key)).toList();
-        buf.writeInt(newKeysToCheck.size());
-        for (Active.Key key : newKeysToCheck) {
+        buf.writeInt(keysToCheck.size());
+        for (Active.Key key : keysToCheck) {
             ApoliDataTypes.KEY.send(buf, key);
         }
-        previousKeysToCheck = keysToCheck;
+        setPreviousKeysToCheck();
 
         List<Active.Key> keysToAdd = currentlyUsedKeys.stream().filter(key -> !previouslyUsedKeys.contains(key)).toList();
         buf.writeInt(keysToAdd.size());
@@ -98,7 +116,7 @@ public class KeyPressComponentImpl implements KeyPressComponent, CommonTickingCo
         for (Active.Key key : keysToRemove) {
             ApoliDataTypes.KEY.send(buf, key);
         }
-        previouslyUsedKeys = currentlyUsedKeys.stream().filter(key -> key.continuous).collect(Collectors.toSet());
+        setPreviouslyUsedKeys();
     }
 
     public void applySyncPacket(PacketByteBuf buf) {
