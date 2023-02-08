@@ -23,7 +23,7 @@ public class TridentEnchantmentCondition {
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(Apugli.identifier("trident_enchantment"), new SerializableData()
                 .add("enchantment", SerializableDataTypes.ENCHANTMENT)
-                .add("comparison", ApoliDataTypes.COMPARISON)
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL)
                 .add("compare_to", SerializableDataTypes.INT),
                 TridentEnchantmentCondition::condition
         );
