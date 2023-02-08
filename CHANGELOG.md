@@ -6,3 +6,6 @@
 
 **Bugfixes**
 - Fixed `apugli:keys_pressed` breaking upon reloading the player (such as entering a new dimension).
+
+**Internal**
+- Interally rewrote packet code to better prepare for eventual multiloader rewrite.
