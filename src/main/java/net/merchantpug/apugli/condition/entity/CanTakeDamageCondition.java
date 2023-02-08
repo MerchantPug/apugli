@@ -14,9 +14,8 @@ public class CanTakeDamageCondition {
         DamageSource source = data.get("source");
         if (entity.isInvulnerableTo(source))
             return false;
-        if (entity instanceof LivingEntity living) {
+        else if (entity instanceof LivingEntity living)
             return !source.isFire() || !living.hasStatusEffect(StatusEffects.FIRE_RESISTANCE);
-        }
         return true;
     }
 
