@@ -7,7 +7,13 @@ import java.util.Set;
 
 public interface KeyPressComponent extends AutoSyncedComponent {
     Set<Active.Key> getCurrentlyUsedKeys();
+    Set<Active.Key> getPreviouslyUsedKeys();
+    void setPreviouslyUsedKeys();
+
     Set<Active.Key> getKeysToCheck();
+    Set<Active.Key> getPreviousKeysToCheck();
+    void setPreviousKeysToCheck();
+
     void addKeyToCheck(Active.Key key);
     void changePreviousKeysToCheckToCurrent();
     void addKey(Active.Key key);

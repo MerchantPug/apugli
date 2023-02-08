@@ -14,10 +14,9 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ExplosionAccess;
+import net.merchantpug.apugli.networking.s2c.SyncRocketJumpExplosionPacket;
 import net.merchantpug.apugli.registry.ApugliDamageSources;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.entity.Entity;
@@ -25,7 +24,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
@@ -205,19 +203,13 @@ public class RocketJumpPower extends ActiveCooldownPower {
     }
 
     public void sendExplosionToClient(HitResult hitResult, float radius) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(entity.getId());
-        buf.writeDouble(hitResult.getPos().getX());
-        buf.writeDouble(hitResult.getPos().getY());
-        buf.writeDouble(hitResult.getPos().getZ());
-        buf.writeFloat(radius);
-        buf.writeIdentifier(this.getType().getIdentifier());
+        SyncRocketJumpExplosionPacket packet = new SyncRocketJumpExplosionPacket(entity.getId(), hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), radius, this.getType().getIdentifier());
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(entity)) {
-            ServerPlayNetworking.send(player, ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, buf);
+            ApugliPackets.sendS2CPacket(packet, player);
         }
-        if (!(entity instanceof ServerPlayerEntity)) return;
-        ServerPlayNetworking.send((ServerPlayerEntity)entity, ApugliPackets.SYNC_ROCKET_JUMP_EXPLOSION, buf);
+        if (!(entity instanceof ServerPlayerEntity serverHolder)) return;
+        ApugliPackets.sendS2CPacket(packet, serverHolder);
     }
 
     @Override

@@ -27,12 +27,10 @@ package net.merchantpug.apugli.action.entity;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.networking.ApugliPackets;
+import net.merchantpug.apugli.networking.s2c.SendParticlesPacket;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -63,34 +61,13 @@ public class SpawnParticlesAction {
     }
 
     private static void sendParticlePacket(ServerWorld world, ParticleEffect effect, boolean force, double x, double y, double z, float offsetX, float offsetY, float offsetZ, Optional<Vec3d> velocity, float speed, int count) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        SerializableDataTypes.PARTICLE_EFFECT.send(buf, effect);
-        buf.writeBoolean(force);
-
-        buf.writeDouble(x);
-        buf.writeDouble(y);
-        buf.writeDouble(z);
-
-        buf.writeFloat(offsetX);
-        buf.writeFloat(offsetY);
-        buf.writeFloat(offsetZ);
-
-        buf.writeBoolean(velocity.isPresent());
-        velocity.ifPresentOrElse((Vec3d vec3d) -> {
-            buf.writeDouble(vec3d.x);
-            buf.writeDouble(vec3d.y);
-            buf.writeDouble(vec3d.z);
-        }, () -> buf.writeFloat(speed));
-
-        buf.writeInt(count);
-
         for (int j = 0; j < world.getPlayers().size(); ++j) {
             ServerPlayerEntity player = world.getPlayers().get(j);
 
             if (player.getWorld() != world) return;
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
-                ServerPlayNetworking.send(player, ApugliPackets.SEND_PARTICLES, buf);
+                ApugliPackets.sendS2CPacket(new SendParticlesPacket(effect, force, x, y, z, offsetX, offsetY, offsetZ, speed, velocity, count), player);
             }
         }
     }

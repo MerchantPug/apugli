@@ -4,20 +4,16 @@ import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.mixin.client.ApoliClientAccessor;
 import net.merchantpug.apugli.networking.ApugliPackets;
-import net.merchantpug.apugli.networking.ApugliPacketsS2C;
+import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.util.ApugliClassDataClient;
-import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 
 import java.util.*;
 
@@ -28,7 +24,7 @@ public class ApugliClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ApugliPacketsS2C.register();
+		ApugliPackets.registerS2C();
 		ApugliClassDataClient.registerAll();
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
@@ -67,24 +63,8 @@ public class ApugliClient implements ClientModInitializer {
 					}
 				}
 			});
-			sendKeyUpdatePacket(addedKeys, removedKeys);
+			ApugliPackets.sendC2SPacket(new UpdateKeysPressedPacket(addedKeys, removedKeys));
 		}
 		lastKeyBindingStates = currentKeyBindingStates;
-	}
-
-	private static void sendKeyUpdatePacket(Set<Active.Key> addedKeys, Set<Active.Key> removedKeys) {
-		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-
-		buf.writeInt(addedKeys.size());
-		for (Active.Key key : addedKeys) {
-			ApoliDataTypes.KEY.send(buf, key);
-		}
-
-		buf.writeInt(removedKeys.size());
-		for (Active.Key key : removedKeys) {
-			ApoliDataTypes.KEY.send(buf, key);
-		}
-
-		ClientPlayNetworking.send(ApugliPackets.UPDATE_KEYS_PRESSED, buf);
 	}
 }

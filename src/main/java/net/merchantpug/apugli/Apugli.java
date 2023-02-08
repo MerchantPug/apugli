@@ -24,7 +24,7 @@ SOFTWARE.
 
 package net.merchantpug.apugli;
 
-import net.merchantpug.apugli.networking.ApugliPacketsC2S;
+import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.registry.ApugliPowerFactories;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import net.merchantpug.apugli.registry.action.ApugliBlockActions;
@@ -78,7 +78,7 @@ public class Apugli implements ModInitializer {
 
 		ApugliPowerFactories.register();
 
-		ApugliPacketsC2S.register();
+		ApugliPackets.registerC2S();
 
 		NamespaceAlias.addAlias("ope", MODID);
 

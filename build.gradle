@@ -74,6 +74,10 @@ dependencies {
 	implementation "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
 	annotationProcessor "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
 	include "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
+
+	modRuntimeOnly("maven.modrinth:lazydfu:0.1.3") {
+		transitive = false
+	}
 }
 
 processResources {
