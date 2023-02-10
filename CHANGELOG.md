@@ -4,6 +4,9 @@
 **Entity Action Types**
 - Added new `bientity_action` field to `apugli:fire_projectile`. This acts with the entity that used the action as the actor and the projectile as the target.
 
+**Entity Condition Types**
+- Added new `apugli:moving` entity condition, this checks if the entity has moved in any direction this tick.
+
 **Bugfixes**
 - Fixed `apugli:keys_pressed` breaking upon reloading the player (such as entering a new dimension).
 

@@ -34,14 +34,16 @@ public class EntityMixin {
     @Unique
     private boolean apugli$moving;
 
-        @Inject(method = "baseTick", at = @At(value = "HEAD", shift = At.Shift.BY, by = 2))
+    @Inject(method = "baseTick", at = @At(value = "HEAD", shift = At.Shift.BY, by = 2))
     private void setApugliMovingFalse(CallbackInfo ci) {
         apugli$moving = false;
     }
 
-    @Inject(method = "move", at = @At("HEAD"))
+    @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setPosition(DDD)V"))
     private void setApugliMovingTrue(MovementType movementType, Vec3d movement, CallbackInfo ci) {
-        apugli$moving = true;
+        if (movement != Vec3d.ZERO) {
+            apugli$moving = true;
+        }
     }
 
     public boolean apugli$isMoving() {
