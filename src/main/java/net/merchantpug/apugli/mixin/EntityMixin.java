@@ -8,8 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,8 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(Entity.class)
-@Implements(@Interface(iface = EntityAccess.class, prefix = "apugli$"))
-public class EntityMixin {
+public class EntityMixin implements EntityAccess {
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if (state.getMaterial().isLiquid()) return;
