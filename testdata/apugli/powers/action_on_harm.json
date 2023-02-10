@@ -1,0 +1,10 @@
+{
+  "type": "apugli:action_on_harm",
+  "bientity_action": {
+    "type": "apoli:actor_action",
+    "action": {
+      "type": "apoli:exhaust",
+      "amount": 0.275
+    }
+  }
+}
