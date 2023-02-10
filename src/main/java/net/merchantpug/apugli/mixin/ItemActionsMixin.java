@@ -1,7 +1,7 @@
 package net.merchantpug.apugli.mixin;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
-import net.merchantpug.apugli.power.ActionOnDurabilityChange;
+import net.merchantpug.apugli.power.ActionOnDurabilityChangePower;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.factory.action.ItemActions;
 import io.github.apace100.calio.data.SerializableData;
@@ -21,15 +21,15 @@ public class ItemActionsMixin {
         int amount = data.getInt("amount");
         LivingEntity stackHolder = (LivingEntity) ((ItemStackAccess) (Object) worldAndStack.getRight()).getEntity();
         if (amount < 0) {
-            PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeIncreaseAction);
+            PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeIncreaseAction);
         } else {
-            PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeDecreaseAction);
+            PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeDecreaseAction);
         }
     }
 
     @Inject(method = "lambda$register$3(Lio/github/apace100/calio/data/SerializableData$Instance;Lnet/minecraft/util/Pair;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private static void handleBreakAction(SerializableData.Instance data, Pair<World, ItemStack> worldAndStack, CallbackInfo ci) {
         LivingEntity stackHolder = (LivingEntity) ((ItemStackAccess) (Object) worldAndStack.getRight()).getEntity();
-        PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeBreakAction);
+        PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeBreakAction);
     }
 }
