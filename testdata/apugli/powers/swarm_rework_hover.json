@@ -60,39 +60,43 @@
     "entity_action": {
       "type": "apoli:if_else",
       "condition": {
-        "type": "apoli:or",
+        "type": "apoli:and",
         "conditions": [
           {
-            "type": "apugli:velocity",
-            "axes": [
-              "x"
-            ],
-            "compare_to": 0.05,
-            "comparison": ">"
+            "type": "apugli:moving"
           },
           {
-            "type": "apugli:velocity",
-            "axes": [
-              "x"
-            ],
-            "compare_to": 0.05,
-            "comparison": "<"
-          },
-          {
-            "type": "apugli:velocity",
-            "axes": [
-              "z"
-            ],
-            "compare_to": 0.05,
-            "comparison": ">"
-          },
-          {
-            "type": "apugli:velocity",
-            "axes": [
-              "z"
-            ],
-            "compare_to": 0.05,
-            "comparison": ">"
+            "type": "apoli:or",
+            "conditions": [
+              {
+                "type": "apugli:key_pressed",
+                "key": {
+                  "key": "key.forward",
+                  "continuous": true
+                }
+              },
+              {
+                "type": "apugli:key_pressed",
+                "key": {
+                  "key": "key.left",
+                  "continuous": true
+                }
+              },
+              {
+                "type": "apugli:key_pressed",
+                "key": {
+                  "key": "key.right",
+                  "continuous": true
+                }
+              },
+              {
+                "type": "apugli:key_pressed",
+                "key": {
+                  "key": "key.back",
+                  "continuous": true
+                }
+              }
+            ]
           }
         ]
       },
@@ -102,7 +106,7 @@
       },
       "else_action": {
         "type": "apoli:exhaust",
-        "amount": 0.06
+        "amount": 0.04
       }
     },
     "interval": 1,
