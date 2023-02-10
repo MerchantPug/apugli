@@ -1,0 +1,7 @@
+{
+  "type": "apugli:action_when_harmed",
+  "bientity_action": {
+    "type": "apoli:add_velocity",
+    "z": -1
+  }
+}

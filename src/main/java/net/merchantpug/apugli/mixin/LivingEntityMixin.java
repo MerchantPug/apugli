@@ -105,6 +105,13 @@ public abstract class LivingEntityMixin extends Entity {
         ci.cancel();
     }
 
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"))
+    private void runDamageFunctionsBeforeDamaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (source.getAttacker() == null || amount == 0.0F) return;
+        PowerHolderComponent.withPowers(source.getAttacker(), ActionOnHarmPower.class, p -> true, p -> p.onHurt((LivingEntity)(Object)this, source, amount));
+        PowerHolderComponent.withPowers(this, ActionWhenHarmedPower.class, p -> true, p -> p.whenHurt(source.getAttacker(), source, amount));
+    }
+
     @Inject(method = "damage", at = @At("RETURN"))
     private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() || source.getAttacker() == null) return;
@@ -116,7 +123,7 @@ public abstract class LivingEntityMixin extends Entity {
             PowerHolderComponent.withPowers(tameable.getOwner(), ActionOnTameHitPower.class, p -> true, p -> p.onHit(this, tameable, source, amount));
         }
         HitsOnTargetComponent hitsComponent = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(thisAsLiving);
-        hitsComponent.setHits(source.getAttacker(), hitsComponent.getHits().getOrDefault(source.getAttacker(), new Pair<>(0, 0)).getLeft() + 1, 0);
+        hitsComponent.setHits(source.getAttacker(), hitsComponent.getHits().getOrDefault(source.getAttacker().getId(), new Pair<>(0, 0)).getLeft() + 1, 0);
         ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.sync(thisAsLiving);
     }
 
