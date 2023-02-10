@@ -13,13 +13,13 @@ import net.minecraft.item.ItemStack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class ActionOnDurabilityChange extends Power {
+public class ActionOnDurabilityChangePower extends Power {
     private final Predicate<ItemStack> itemCondition;
     private final Consumer<Entity> increaseAction;
     private final Consumer<Entity> decreaseAction;
     private final Consumer<Entity> breakAction;
 
-    public ActionOnDurabilityChange(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Consumer<Entity> increaseAction, Consumer<Entity> decreaseAction, Consumer<Entity> breakAction) {
+    public ActionOnDurabilityChangePower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Consumer<Entity> increaseAction, Consumer<Entity> decreaseAction, Consumer<Entity> breakAction) {
         super(type, entity);
         this.itemCondition = itemCondition;
         this.increaseAction = increaseAction;
@@ -47,14 +47,14 @@ public class ActionOnDurabilityChange extends Power {
     }
 
     public static PowerFactory<?> getFactory() {
-        return new PowerFactory<ActionOnDurabilityChange>(
+        return new PowerFactory<ActionOnDurabilityChangePower>(
                 Apugli.identifier("action_on_durability_change"),
                 new SerializableData()
                         .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                         .add("increase_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("decrease_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("break_action", ApoliDataTypes.ENTITY_ACTION, null),
-                data -> (type, entity) -> new ActionOnDurabilityChange(type, entity, data.isPresent("item_condition") ? data.get("item_condition") : c -> true, data.get("increase_action"), data.get("decrease_action"), data.get("break_action")))
+                data -> (type, entity) -> new ActionOnDurabilityChangePower(type, entity, data.isPresent("item_condition") ? data.get("item_condition") : c -> true, data.get("increase_action"), data.get("decrease_action"), data.get("break_action")))
                 .allowCondition();
     }
 }

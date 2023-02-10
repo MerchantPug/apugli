@@ -29,7 +29,7 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.power.ActionOnDurabilityChange;
+import net.merchantpug.apugli.power.ActionOnDurabilityChangePower;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.UnbreakingEnchantment;
@@ -61,7 +61,7 @@ public class DamageAction {
         int newDamage = worldAndStack.getRight().getDamage() + damage;
         if (newDamage >= worldAndStack.getRight().getMaxDamage()) {
             if (stackHolder != null) {
-                PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeBreakAction);
+                PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeBreakAction);
                 EquipmentSlot equipmentSlot = null;
                 for (EquipmentSlot slotValue : EquipmentSlot.values()) {
                     ItemStack stack = stackHolder.getEquippedStack(slotValue);
@@ -82,9 +82,9 @@ public class DamageAction {
             worldAndStack.getRight().setDamage(newDamage);
             if (stackHolder != null) {
                 if (amount < 0) {
-                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeIncreaseAction);
+                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeIncreaseAction);
                 } else {
-                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChange::executeDecreaseAction);
+                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply(worldAndStack.getRight())).forEach(ActionOnDurabilityChangePower::executeDecreaseAction);
                 }
             }
         }

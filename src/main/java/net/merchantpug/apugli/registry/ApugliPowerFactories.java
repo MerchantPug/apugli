@@ -11,7 +11,7 @@ public class ApugliPowerFactories {
     public static void register() {
         register(ActionOnBlockPlacedPower.getFactory());
         register(ActionOnBoneMealPower.getFactory());
-        register(ActionOnDurabilityChange.getFactory());
+        register(ActionOnDurabilityChangePower.getFactory());
         register(ActionOnEquipPower.getFactory());
         register(ActionOnProjectileHitPower.getFactory());
         register(ActionOnTameHitPower.getFactory());

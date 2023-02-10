@@ -1,7 +1,7 @@
 package net.merchantpug.apugli.mixin;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
-import net.merchantpug.apugli.power.ActionOnDurabilityChange;
+import net.merchantpug.apugli.power.ActionOnDurabilityChangePower;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.minecraft.entity.Entity;
@@ -61,12 +61,12 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "damage(ILnet/minecraft/util/math/random/Random;Lnet/minecraft/server/network/ServerPlayerEntity;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getDamage()I", ordinal = 1))
     private void executeActionOnDurabilityDecrease(int amount, net.minecraft.util.math.random.Random random, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        PowerHolderComponent.getPowers(player, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChange::executeDecreaseAction);
+        PowerHolderComponent.getPowers(player, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChangePower::executeDecreaseAction);
     }
 
     @Inject(method = "damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;decrement(I)V"))
     private <T extends LivingEntity> void executeActionBroken(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
-        PowerHolderComponent.getPowers(entity, ActionOnDurabilityChange.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChange::executeBreakAction);
+        PowerHolderComponent.getPowers(entity, ActionOnDurabilityChangePower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChangePower::executeBreakAction);
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
