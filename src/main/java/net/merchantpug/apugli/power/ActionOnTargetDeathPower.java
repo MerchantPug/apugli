@@ -33,13 +33,9 @@ public class ActionOnTargetDeathPower extends CooldownPower {
     }
 
     public void onTargetDeath(Entity target, DamageSource damageSource, float damageAmount) {
-        if(canUse()) {
-            if(bientityCondition == null || bientityCondition.test(new Pair<>(entity, target))) {
-                if(damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount))) {
-                    this.bientityAction.accept(new Pair<>(entity, target));
-                    use();
-                }
-            }
+        if(canUse() && (bientityCondition == null || bientityCondition.test(new Pair<>(entity, target))) && (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount)))) {
+            this.bientityAction.accept(new Pair<>(entity, target));
+            use();
         }
     }
 

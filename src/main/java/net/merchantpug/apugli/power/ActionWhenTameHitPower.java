@@ -37,18 +37,14 @@ public class ActionWhenTameHitPower extends CooldownPower {
     }
 
     public void whenHit(TameableEntity tameable, Entity attacker, DamageSource damageSource, float damageAmount) {
-        if (canUse()) {
-            if (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount))) {
-                if ((bientityCondition == null || bientityCondition.test(new Pair<>(attacker, tameable))) && (ownerBiEntityCondition == null || ownerBiEntityCondition.test(new Pair<>(attacker, entity)))) {
-                    if (this.bientityAction != null) {
-                        this.bientityAction.accept(new Pair<>(attacker, tameable));
-                    }
-                    if (this.ownerBiEntityAction != null) {
-                        this.ownerBiEntityAction.accept(new Pair<>(attacker, entity));
-                    }
-                    use();
-                }
+        if (canUse() && (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount))) && (bientityCondition == null || bientityCondition.test(new Pair<>(attacker, tameable))) && (ownerBiEntityCondition == null || ownerBiEntityCondition.test(new Pair<>(attacker, entity)))) {
+            if (this.bientityAction != null) {
+                this.bientityAction.accept(new Pair<>(attacker, tameable));
             }
+            if (this.ownerBiEntityAction != null) {
+                this.ownerBiEntityAction.accept(new Pair<>(attacker, entity));
+            }
+            use();
         }
     }
 
