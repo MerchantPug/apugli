@@ -1,5 +1,6 @@
 package net.merchantpug.apugli;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.mixin.client.ApoliClientAccessor;
@@ -11,9 +12,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
 import java.util.*;
 
@@ -30,6 +33,10 @@ public class ApugliClient implements ClientModInitializer {
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
 			if (tick.player == null) return;
 			ApugliClient.handleActiveKeys(tick.player);
+		});
+
+		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
+			TextureUtil.clear();
 		});
 	}
 

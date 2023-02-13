@@ -1,17 +1,16 @@
 package net.merchantpug.apugli.power;
 
-import net.merchantpug.apugli.Apugli;
 import io.github.apace100.apoli.power.Power;
+import net.merchantpug.apugli.Apugli;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public class EnergySwirlPower extends Power {
+public class EnergySwirlPower extends Power implements TextureOrUrl {
     private final Identifier textureLocation;
     private final String textureUrl;
     private final float size;
@@ -41,14 +40,19 @@ public class EnergySwirlPower extends Power {
         this.speed = speed;
     }
 
-    @Nullable public Identifier getTextureLocation() {
-        return textureLocation;
+    @Nullable
+    @Override
+    public Identifier getTextureLocation() {
+        return this.textureLocation;
     }
 
-    @Nullable public String getTextureUrl() {
-        return textureUrl;
+    @Nullable
+    @Override
+    public String getTextureUrl() {
+        return this.textureUrl;
     }
 
+    @Override
     public Identifier getUrlTextureIdentifier() {
         return new Identifier(Apugli.MODID, "energyswirlpower/" + this.getType().getIdentifier().getNamespace() + "/" + this.getType().getIdentifier().getPath());
     }

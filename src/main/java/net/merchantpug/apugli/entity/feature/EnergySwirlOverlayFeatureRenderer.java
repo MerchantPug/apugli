@@ -30,8 +30,7 @@ public class EnergySwirlOverlayFeatureRenderer<T extends LivingEntity, M extends
         float f = (float)entity.age + tickDelta;
 
         VertexConsumer vertexConsumer = null;
-        if (power.getTextureUrl() != null) {
-            TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.getTextureUrl());
+        if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
             vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(power.getUrlTextureIdentifier(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
         } else if (power.getTextureLocation() != null) {
             vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(power.getTextureLocation(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));

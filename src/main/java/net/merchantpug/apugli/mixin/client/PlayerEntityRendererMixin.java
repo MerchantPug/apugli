@@ -56,7 +56,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "renderArm", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelPart;pitch:F", ordinal = 0), cancellable = true)
     private void renderOverlayWithCancel(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().anyMatch(p -> !p.shouldRenderOriginalModel())) {
+        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().anyMatch(p -> !p.shouldRenderOriginalModelClient())) {
             arm.pitch = 0.0f;
             sleeve.pitch = 0.0f;
             PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> ArmOverlayUtil.renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
@@ -67,7 +67,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Inject(method = "renderArm", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelPart;pitch:F", ordinal = 1), cancellable = true)
     private void renderOverlayWithCancelSleeve(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         List<EntityTextureOverlayPower> powers = PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class);
-        if (powers.stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModel) && powers.stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
+        if (powers.stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient) && powers.stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
             arm.pitch = 0.0f;
             sleeve.pitch = 0.0f;
             PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> ArmOverlayUtil.renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
@@ -77,7 +77,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "renderArm", at = @At(value = "TAIL"))
     private void renderOverlayOnArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
-        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModel)) return;
+        if (PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient)) return;
         PowerHolderComponent.getPowers(player, EntityTextureOverlayPower.class).forEach(power -> ArmOverlayUtil.renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
     }
 
