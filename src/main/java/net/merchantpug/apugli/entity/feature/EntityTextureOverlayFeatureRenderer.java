@@ -45,11 +45,10 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
                 return;
             }
 
-            RenderLayer renderLayer;
-            if (power.getTextureUrl() != null) {
-                TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.getTextureUrl());
+            RenderLayer renderLayer = null;
+            if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
                 renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
-            } else {
+            } else if (power.getTextureLocation() != null) {
                 renderLayer = MinecraftClient.getInstance().hasOutline(entity) && entity.isInvisible() ? RenderLayer.getOutline(power.getTextureLocation()) : RenderLayer.getEntityTranslucent(power.getTextureLocation());
             }
 

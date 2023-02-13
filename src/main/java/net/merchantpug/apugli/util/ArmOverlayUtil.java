@@ -30,9 +30,7 @@ public class ArmOverlayUtil {
             }
         }
         RenderLayer renderLayer;
-        if (power.getTextureUrl() != null) {
-            TextureUtil.registerEntityTextureOverlayTexture(power.getUrlTextureIdentifier(), power.getTextureUrl());
-
+        if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
             renderLayer = alpha == 1.0 ? RenderLayer.getEntityCutoutNoCull(power.getUrlTextureIdentifier()) : RenderLayer.getEntityTranslucent(power.getUrlTextureIdentifier());
 
             arm.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);

@@ -2,6 +2,7 @@
   "type": "apoli:multiple",
   "entity_texture_overlay": {
     "type": "apugli:entity_texture_overlay",
+    "texture_location": "apugli:textures/entity/test.png",
     "texture_url": "https://i.imgur.com/wMe7kJs.png",
     "show_first_person": true,
     "use_rendering_powers": true,

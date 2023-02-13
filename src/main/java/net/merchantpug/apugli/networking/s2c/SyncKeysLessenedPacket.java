@@ -42,6 +42,7 @@ public record SyncKeysLessenedPacket(int entityId,
 
     public static SyncKeysLessenedPacket decode(PacketByteBuf buf) {
         int entityId = buf.readInt();
+
         List<Active.Key> keysToCheck = new ArrayList<>();
         int keysToCheckSize = buf.readInt();
         for (int i = 0; i < keysToCheckSize; ++i) {

@@ -1,4 +1,5 @@
 **Power Types**
+- The `texture_url` field inside the `apugli:entity_texture_overlay` and `apugli:energy_swirl` power types have been rewritten to now serve as a fallback texture for when the `texture_location` field is unable to be found inside a user's resources.
 - Added new `apugli:action_on_harm` and `apugli:action_when_harmed` power types.
 - Added new `render_player_outer_layer` field to `apugli:entity_texture_overlay` power type.
 
@@ -14,3 +15,4 @@
 
 **Internal**
 - Interally rewrote packet code to better prepare for eventual multiloader rewrite.
+- Texture Location or URL based powers now load URL textures upon datapack reload instead of upon loading an entity.

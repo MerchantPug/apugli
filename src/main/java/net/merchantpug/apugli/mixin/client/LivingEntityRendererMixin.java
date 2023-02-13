@@ -52,7 +52,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @WrapWithCondition(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V"))
     private boolean wrapRenderOriginalModel(EntityModel<T> entityModel, MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int p, float red, float green, float blue, float alpha) {
-        return PowerHolderComponent.getPowers(apugli$capturedEntity, EntityTextureOverlayPower.class).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModel);
+        return PowerHolderComponent.getPowers(apugli$capturedEntity, EntityTextureOverlayPower.class).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))

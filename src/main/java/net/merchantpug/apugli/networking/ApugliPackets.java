@@ -35,10 +35,7 @@ import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
-import net.merchantpug.apugli.networking.s2c.SendKeyToCheckPacket;
-import net.merchantpug.apugli.networking.s2c.SendParticlesPacket;
-import net.merchantpug.apugli.networking.s2c.SyncKeysLessenedPacket;
-import net.merchantpug.apugli.networking.s2c.SyncRocketJumpExplosionPacket;
+import net.merchantpug.apugli.networking.s2c.*;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
@@ -60,12 +57,13 @@ public class ApugliPackets {
 
     public static void registerS2C() {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshake);
-        ClientPlayConnectionEvents.INIT.register(((clientPlayNetworkHandler, minecraftClient) -> {
+        ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(SendKeyToCheckPacket.ID, createS2CHandler(SendKeyToCheckPacket::decode, SendKeyToCheckPacket::handle));
             ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncRocketJumpExplosionPacket.ID, createS2CHandler(SyncRocketJumpExplosionPacket::decode, SyncRocketJumpExplosionPacket::handle));
-        }));
+            ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
+        });
     }
 
     public static void registerC2S() {

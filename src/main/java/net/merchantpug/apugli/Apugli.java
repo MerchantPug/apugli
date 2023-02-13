@@ -24,7 +24,12 @@ SOFTWARE.
 
 package net.merchantpug.apugli;
 
+import io.github.apace100.apoli.integration.PostPowerLoadCallback;
+import io.github.apace100.apoli.integration.PostPowerReloadCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.merchantpug.apugli.networking.ApugliPackets;
+import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
+import net.merchantpug.apugli.power.TextureOrUrl;
 import net.merchantpug.apugli.registry.ApugliPowerFactories;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import net.merchantpug.apugli.registry.action.ApugliBlockActions;
@@ -39,6 +44,9 @@ import io.github.apace100.apoli.util.NamespaceAlias;
 import net.merchantpug.apugli.registry.action.ApugliEntityActions;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.util.TextureUtil;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,8 +57,12 @@ public class Apugli implements ModInitializer {
 	public static String VERSION = "";
 	public static int[] SEMVER;
 
+	private static MinecraftServer server;
+
 	@Override
 	public void onInitialize() {
+		ServerLifecycleEvents.SERVER_STARTED.register(s -> server = s);
+
 		FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
 			VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
 			if(VERSION.contains("+")) {
@@ -79,6 +91,18 @@ public class Apugli implements ModInitializer {
 		ApugliPowerFactories.register();
 
 		ApugliPackets.registerC2S();
+
+		PostPowerLoadCallback.EVENT.register((powerId, factoryId, isSubPower, json, powerType) -> {
+			if (!(powerType.create(null) instanceof TextureOrUrl texturePower) || texturePower.getTextureUrl() == null) return;
+			TextureUtil.handleUrlTexture(powerId, texturePower);
+		});
+
+		PostPowerReloadCallback.EVENT.register(() -> {
+			if (server == null) return;
+			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+				ApugliPackets.sendS2CPacket(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
+			}
+		});
 
 		NamespaceAlias.addAlias("ope", MODID);
 
