@@ -10,10 +10,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
@@ -33,17 +30,9 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         if (entity.isInvisible() && !MinecraftClient.getInstance().hasOutline(entity)) return;
-        if (extraPlayerModel != null) {
-            this.getContextModel().copyStateTo(extraPlayerModel);
-            extraPlayerModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
-            extraPlayerModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-        }
-        EntityModel<T> entityModel = extraPlayerModel != null ? extraPlayerModel : this.getContextModel();
 
         PowerHolderComponent.getPowers(entity, EntityTextureOverlayPower.class).forEach(power -> {
-            if (power.getTextureLocation() == null && power.getTextureUrl() == null) {
-                return;
-            }
+            if (power.getTextureLocation() == null && power.getTextureUrl() == null) return;
 
             RenderLayer renderLayer = null;
             if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
@@ -69,6 +58,16 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
                     }
                 }
 
+                EntityModel<T> entityModel = extraPlayerModel != null ? extraPlayerModel : this.getContextModel();
+
+                if (this.getContextModel() instanceof PlayerEntityModel<?> originalModel) {
+                    PlayerEntityModel<T> extraModel = (PlayerEntityModel<T>) entityModel;
+                    ((PlayerEntityModel<T>) originalModel).setAttributes(extraModel);
+                    extraModel.leftSleeve.copyTransform(originalModel.leftSleeve);
+                    extraModel.rightSleeve.copyTransform(originalModel.rightSleeve);
+                    extraModel.leftPants.copyTransform(originalModel.leftPants);
+                    extraModel.rightPants.copyTransform(originalModel.rightPants);
+                }
 
                 entityModel.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.DEFAULT_UV, red, green, blue, alpha);
                 matrices.pop();
