@@ -48,9 +48,9 @@ public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements Ap
                     return;
                 }
 
-                if (texturePower.getTextureLocation() != null && TextureUtil.doesTextureExist(texturePower.getTextureLocation())) return;
+                if (texturePower.getTextureLocation() != null && TextureUtilClient.doesTextureExist(texturePower.getTextureLocation())) return;
 
-                TextureUtil.registerPowerTexture(texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl());
+                TextureUtilClient.registerPowerTexture(texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl());
                 TextureUtil.getPowerIdToUrl().put(identifier, texturePower.getTextureUrl());
             });
         });

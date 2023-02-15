@@ -15,9 +15,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
+import java.io.IOException;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
