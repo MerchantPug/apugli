@@ -5,6 +5,7 @@ import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.power.TextureOrUrl;
 import net.merchantpug.apugli.util.TextureUtil;
+import net.merchantpug.apugli.util.TextureUtilClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -40,7 +41,7 @@ public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements Ap
     @Override
     public void handle(MinecraftClient client) {
         client.execute(() -> {
-            TextureUtil.clear();
+            TextureUtilClient.clear();
             powerTypes.forEach(identifier -> {
                 Power power = PowerTypeRegistry.get(identifier).create(null);
                 if (!(power instanceof TextureOrUrl texturePower)) {
