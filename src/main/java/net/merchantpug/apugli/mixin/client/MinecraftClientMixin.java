@@ -5,6 +5,7 @@ import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.power.TextureOrUrl;
 import net.merchantpug.apugli.util.TextureUtil;
+import net.merchantpug.apugli.util.TextureUtilClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
