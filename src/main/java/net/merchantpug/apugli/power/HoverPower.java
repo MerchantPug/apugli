@@ -21,7 +21,7 @@ public class HoverPower extends Power {
                 new SerializableData()
                         .add("step_assist", SerializableDataTypes.FLOAT, 0.0F),
                 data ->
-                        (type, entity) -> new HoverPower(type, entity, data.getFloat("correction_range")))
+                        (type, entity) -> new HoverPower(type, entity, data.getFloat("step_assist")))
                 .allowCondition();
     }
 
