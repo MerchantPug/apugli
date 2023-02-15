@@ -63,7 +63,7 @@ public abstract class EntityMixin implements EntityAccess {
         }
     }
 
-    @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;pop()V", ordinal = 0))
+    @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;"))
     private void handleHoverCorrection(MovementType movementType, Vec3d movement, CallbackInfo ci) {
         if ((Entity)(Object)this instanceof LivingEntity thisAsLiving) {
             Optional<Float> correctionHeightOptional = PowerHolderComponent.getPowers(thisAsLiving, HoverPower.class).stream().filter(HoverPower::canCorrectHeight).map(HoverPower::getCorrectionRange).max(Float::compare);
