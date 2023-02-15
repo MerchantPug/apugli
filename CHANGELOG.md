@@ -9,6 +9,7 @@
 
 **Entity Condition Types**
 - Added new `apugli:moving` entity condition, this checks if the entity has moved in any direction this tick.
+- `apugli:trident_enchantment` now has `">="` as a default field for `comparison`.
 
 **Bugfixes**
 - Fixed `apugli:keys_pressed` breaking upon reloading a player (such as entering a new dimension).
