@@ -2,6 +2,7 @@
   "type": "apoli:multiple",
   "hover": {
     "type": "apugli:hover",
+    "correction_range": 0.6,
     "condition": {
       "type": "apoli:and",
       "conditions": [

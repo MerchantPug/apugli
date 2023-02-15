@@ -29,7 +29,7 @@ public class ApugliPowerFactories {
         register(EnergySwirlPower.getFactory());
         register(EntityTextureOverlayPower.getFactory());
         register(ForceParticleRenderPower.getFactory());
-        register(Power.createSimpleFactory(HoverPower::new, Apugli.identifier("hover")));
+        register(HoverPower.getFactory());
         register(InstantEffectImmunityPower.getFactory());
         register(Power.createSimpleFactory(InvertInstantEffectsPower::new, Apugli.identifier("invert_instant_effects")));
         register(MobsIgnorePower.getFactory());
