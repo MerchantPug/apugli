@@ -163,7 +163,7 @@ curseforge {
 			}
 
 			mainArtifact(remapJar) {
-				displayName = "$project.mod_name v$project.version (Fabric/Quilt)"
+				displayName = "v$project.version Fabric/Quilt"
 				relations {
 					required_deps.split(", ").each { String project ->
 						requiredDependency project
@@ -184,7 +184,7 @@ modrinth {
 		projectId = mr_project_id
 		versionNumber = "${project.version}"
 		versionType = "release"
-		versionName = "$project.mod_name v$project.version (Fabric/Quilt)"
+		versionName = "v$project.version Fabric/Quilt"
 		changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 		uploadFile = remapJar
 		gameVersions = game_versions.split(", ").toList()
@@ -208,7 +208,7 @@ githubRelease {
 		repo = gh_repo
 		tagName = version
 		targetCommitish = gh_commitish
-		releaseName = "$project.mod_name v$project.version (Fabric/Quilt)"
+		releaseName = "v$project.version Fabric/Quilt"
 		body {
 			new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
 		}
