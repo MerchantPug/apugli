@@ -62,7 +62,7 @@ public class EntityTextureOverlayFeatureRenderer<T extends LivingEntity, M exten
 
                 if (this.getContextModel() instanceof PlayerEntityModel<?> originalModel) {
                     PlayerEntityModel<T> extraModel = (PlayerEntityModel<T>) entityModel;
-                    ((PlayerEntityModel<T>) originalModel).setAttributes(extraModel);
+                    ((PlayerEntityModel<T>) originalModel).copyBipedStateTo(extraModel);
                     extraModel.leftSleeve.copyTransform(originalModel.leftSleeve);
                     extraModel.rightSleeve.copyTransform(originalModel.rightSleeve);
                     extraModel.leftPants.copyTransform(originalModel.leftPants);
