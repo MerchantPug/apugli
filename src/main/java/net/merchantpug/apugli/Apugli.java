@@ -85,8 +85,8 @@ public class Apugli implements ModInitializer {
 
 		ApugliBiEntityConditions.register();
 		ApugliBlockConditions.register();
-		ApugliEntityConditions.register();
 		ApugliDamageConditions.register();
+		ApugliEntityConditions.register();
 
 		ApugliPowerFactories.register();
 
@@ -100,7 +100,7 @@ public class Apugli implements ModInitializer {
 		PostPowerReloadCallback.EVENT.register(() -> {
 			if (server == null) return;
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-				ApugliPackets.sendS2CPacket(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
+				ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
 			}
 		});
 

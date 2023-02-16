@@ -6,6 +6,7 @@ import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.mixin.client.ApoliClientAccessor;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.registry.condition.ApugliEntityConditions;
 import net.merchantpug.apugli.util.ApugliClassDataClient;
 import io.github.apace100.apoli.power.Active;
 import net.fabricmc.api.ClientModInitializer;
@@ -30,8 +31,7 @@ public class ApugliClient implements ClientModInitializer {
 		ApugliClassDataClient.registerAll();
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
-			if (tick.player == null) return;
-			ApugliClient.handleActiveKeys(tick.player);
+			ApugliClient.handleActiveKeys();
 		});
 
 		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
@@ -39,7 +39,9 @@ public class ApugliClient implements ClientModInitializer {
 		});
 	}
 
-	public static void handleActiveKeys(PlayerEntity player) {
+	public static void handleActiveKeys() {
+		PlayerEntity player = MinecraftClient.getInstance().player;
+		if (player == null) return;
 		Set<Active.Key> addedKeys = new HashSet<>();
 		Set<Active.Key> removedKeys = new HashSet<>();
 		HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
@@ -69,7 +71,7 @@ public class ApugliClient implements ClientModInitializer {
 					}
 				}
 			});
-			ApugliPackets.sendC2SPacket(new UpdateKeysPressedPacket(addedKeys, removedKeys));
+			ApugliPackets.sendC2S(new UpdateKeysPressedPacket(addedKeys, removedKeys));
 		}
 		lastKeyBindingStates = currentKeyBindingStates;
 	}

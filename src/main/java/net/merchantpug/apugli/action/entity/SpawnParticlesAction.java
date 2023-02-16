@@ -67,7 +67,7 @@ public class SpawnParticlesAction {
             if (player.getWorld() != world) return;
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
-                ApugliPackets.sendS2CPacket(new SendParticlesPacket(effect, force, x, y, z, offsetX, offsetY, offsetZ, speed, velocity, count), player);
+                ApugliPackets.sendS2C(new SendParticlesPacket(effect, force, x, y, z, offsetX, offsetY, offsetZ, speed, velocity, count), player);
             }
         }
     }
