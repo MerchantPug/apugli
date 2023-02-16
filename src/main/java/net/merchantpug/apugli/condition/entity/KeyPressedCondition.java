@@ -8,12 +8,9 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
-import net.merchantpug.apugli.networking.ApugliPackets;
-import net.merchantpug.apugli.networking.s2c.SendKeyToCheckPacket;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class KeyPressedCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
@@ -21,12 +18,10 @@ public class KeyPressedCondition {
             Active.Key key = data.get("key");
             KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
             if (!component.getKeysToCheck().contains(key)) {
-                if (!player.world.isClient) {
-                    component.addKeyToCheck(key);
-                    ApugliPackets.sendS2CPacket(new SendKeyToCheckPacket(key), (ServerPlayerEntity)player);
-                } else if (MinecraftClient.getInstance().getCameraEntity() == player) {
-                    ApugliClient.handleActiveKeys(player);
-                }
+                component.addKeyToCheck(key);
+                component.changePreviousKeysToCheckToCurrent();
+            } else if (player.world.isClient && player instanceof ClientPlayerEntity) {
+                ApugliClient.handleActiveKeys();
             }
             return component.getCurrentlyUsedKeys().contains(key);
         }

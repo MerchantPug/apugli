@@ -27,7 +27,7 @@ public class ApugliEntityConditions {
         register(VelocityCondition.getFactory());
     }
 
-    private static void register(ConditionFactory<Entity> conditionFactory) {
+    protected static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }

@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.power;
 
-import net.merchantpug.apugli.networking.ApugliPackets;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
@@ -14,6 +13,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ExplosionAccess;
+import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.s2c.SyncRocketJumpExplosionPacket;
 import net.merchantpug.apugli.registry.ApugliDamageSources;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -206,10 +206,10 @@ public class RocketJumpPower extends ActiveCooldownPower {
         SyncRocketJumpExplosionPacket packet = new SyncRocketJumpExplosionPacket(entity.getId(), hitResult.getPos().getX(), hitResult.getPos().getY(), hitResult.getPos().getZ(), radius, this.getType().getIdentifier());
 
         for (ServerPlayerEntity player : PlayerLookup.tracking(entity)) {
-            ApugliPackets.sendS2CPacket(packet, player);
+            ApugliPackets.sendS2C(packet, player);
         }
         if (!(entity instanceof ServerPlayerEntity serverHolder)) return;
-        ApugliPackets.sendS2CPacket(packet, serverHolder);
+        ApugliPackets.sendS2C(packet, serverHolder);
     }
 
     @Override

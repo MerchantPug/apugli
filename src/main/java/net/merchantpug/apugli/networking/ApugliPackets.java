@@ -32,7 +32,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModOrigin;
-import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.Apugli;;
 import net.merchantpug.apugli.ApugliClient;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.networking.s2c.*;
@@ -58,7 +58,6 @@ public class ApugliPackets {
     public static void registerS2C() {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshake);
         ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> {
-            ClientPlayNetworking.registerReceiver(SendKeyToCheckPacket.ID, createS2CHandler(SendKeyToCheckPacket::decode, SendKeyToCheckPacket::handle));
             ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncRocketJumpExplosionPacket.ID, createS2CHandler(SyncRocketJumpExplosionPacket::decode, SyncRocketJumpExplosionPacket::handle));
@@ -66,32 +65,12 @@ public class ApugliPackets {
         });
     }
 
-    public static void registerC2S() {
-        if (ApugliConfig.performVersionCheck) {
-            ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
-            ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
-        }
-        ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
-    }
-
-    public static void sendC2SPacket(ApugliPacket packet) {
-        ClientPlayNetworking.send(packet.getId(), packet.toBuf());
-    }
-
-    public static void sendS2CPacket(ApugliPacket packet, ServerPlayerEntity player) {
+    public static void sendS2C(ApugliPacket packet, ServerPlayerEntity player) {
         ServerPlayNetworking.send(player, packet.getId(), packet.toBuf());
-    }
-
-    private static <T extends ApugliPacket> ServerPlayNetworking.PlayChannelHandler createC2SHandler(Function<PacketByteBuf, T> decode, TriConsumer<T, MinecraftServer, ServerPlayerEntity> handler) {
-        return (server, player, _handler, buf, sender) -> handler.accept(decode.apply(buf), server, player);
     }
 
     private static <T extends ApugliPacket> ClientPlayNetworking.PlayChannelHandler createS2CHandler(Function<PacketByteBuf, T> decode, BiConsumer<T, MinecraftClient> handler) {
         return (client, _handler, buf, responseSender) -> handler.accept(decode.apply(buf), client);
-    }
-
-    private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
-        packetSender.sendPacket(ApugliPackets.HANDSHAKE, PacketByteBufs.empty());
     }
 
     private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
@@ -102,6 +81,26 @@ public class ApugliPackets {
         }
         ApugliClient.isServerRunningApugli = true;
         return CompletableFuture.completedFuture(buf);
+    }
+
+    public static void registerC2S() {
+        if (ApugliConfig.performVersionCheck) {
+            ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
+            ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
+        }
+        ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
+    }
+
+    public static void sendC2S(ApugliPacket packet) {
+        ClientPlayNetworking.send(packet.getId(), packet.toBuf());
+    }
+
+    private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
+        packetSender.sendPacket(ApugliPackets.HANDSHAKE, PacketByteBufs.empty());
+    }
+
+    private static <T extends ApugliPacket> ServerPlayNetworking.PlayChannelHandler createC2SHandler(Function<PacketByteBuf, T> decode, TriConsumer<T, MinecraftServer, ServerPlayerEntity> handler) {
+        return (server, player, _handler, buf, sender) -> handler.accept(decode.apply(buf), server, player);
     }
 
     private static void handleHandshakeReply(MinecraftServer server, ServerLoginNetworkHandler handler, boolean understood, PacketByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {

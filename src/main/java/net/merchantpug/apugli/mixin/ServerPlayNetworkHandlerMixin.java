@@ -36,6 +36,6 @@ public class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onResourcePackStatus", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/c2s/play/ResourcePackStatusC2SPacket;getStatus()Lnet/minecraft/network/packet/c2s/play/ResourcePackStatusC2SPacket$Status;"))
     private void sendUrlTexturesToPlayerAfterResourceLoad(ResourcePackStatusC2SPacket packet, CallbackInfo ci) {
         if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) return;
-        ApugliPackets.sendS2CPacket(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
+        ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
     }
 }

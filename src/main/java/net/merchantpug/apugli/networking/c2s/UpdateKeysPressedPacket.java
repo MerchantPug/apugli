@@ -68,7 +68,7 @@ public record UpdateKeysPressedPacket(Set<Active.Key> addedKeys,
             component.setPreviouslyUsedKeys();
 
             for (ServerPlayerEntity otherPlayer : server.getPlayerManager().getPlayerList())
-                ApugliPackets.sendS2CPacket(new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove), otherPlayer);
+                ApugliPackets.sendS2C(new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove), otherPlayer);
         });
     }
 }

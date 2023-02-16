@@ -21,6 +21,6 @@ public class PlayerManagerMixin {
     @Inject(method = "onPlayerConnect", at = @At("TAIL"))
     private void handleOnConnectResources(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         if (this.server.getResourcePackProperties().isPresent()) return;
-        ApugliPackets.sendS2CPacket(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
+        ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
     }
 }
