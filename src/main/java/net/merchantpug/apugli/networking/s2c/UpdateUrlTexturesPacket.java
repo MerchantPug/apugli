@@ -10,10 +10,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements ApugliPacketS2C {
+public record UpdateUrlTexturesPacket(Set<Identifier> powerTypes) implements ApugliPacketS2C {
     public static final Identifier ID = Apugli.identifier("update_url_textures");
 
     @Override
@@ -26,7 +26,7 @@ public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements Ap
 
     public static UpdateUrlTexturesPacket decode(PacketByteBuf buf) {
         int powerTypesSize = buf.readInt();
-        List<Identifier> powerTypes = new ArrayList<>();
+        Set<Identifier> powerTypes = new HashSet<>();
         for (int i = 0; i < powerTypesSize; ++i) {
             powerTypes.add(buf.readIdentifier());
         }
@@ -41,7 +41,6 @@ public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements Ap
     @Override
     public void handle(MinecraftClient client) {
         client.execute(() -> {
-            TextureUtilClient.clear();
             powerTypes.forEach(identifier -> {
                 Power power = PowerTypeRegistry.get(identifier).create(null);
                 if (!(power instanceof TextureOrUrl texturePower)) {
@@ -51,9 +50,9 @@ public record UpdateUrlTexturesPacket(List<Identifier> powerTypes) implements Ap
 
                 if (texturePower.getTextureLocation() != null && TextureUtilClient.doesTextureExist(texturePower.getTextureLocation())) return;
 
-                TextureUtilClient.registerPowerTexture(texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl());
-                TextureUtil.getPowerIdToUrl().put(identifier, texturePower.getTextureUrl());
+                TextureUtilClient.registerPowerTexture(identifier, texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl(), false);
             });
+            TextureUtilClient.update();
         });
     }
 }

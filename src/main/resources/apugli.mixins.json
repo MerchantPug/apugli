@@ -62,6 +62,7 @@
     "client.PlayerEntityRendererMixin",
     "client.PositionedSoundInstanceMixin",
     "client.SoundSystemMixin",
+    "client.TextureManagerAccessor",
     "client.WorldRendererMixin"
   ],
   "injectors": {
