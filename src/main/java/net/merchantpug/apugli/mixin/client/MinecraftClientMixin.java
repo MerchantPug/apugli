@@ -27,7 +27,7 @@ public class MinecraftClientMixin {
             if (!(power instanceof TextureOrUrl textureOrUrl)) {
                 Apugli.LOGGER.warn("Tried reloading URL textures from power '{}' but couldn't as its power type does not implement TextureOrUrl.", id);
             } else if (textureOrUrl.getTextureLocation() == null || !TextureUtilClient.doesTextureExist(textureOrUrl.getTextureLocation())) {
-                TextureUtilClient.registerPowerTexture(textureOrUrl.getUrlTextureIdentifier(), url);
+                TextureUtilClient.registerPowerTexture(null, textureOrUrl.getUrlTextureIdentifier(), url, true);
             } else {
                 TextureUtil.getRegisteredTextures().remove(textureOrUrl.getUrlTextureIdentifier());
             }

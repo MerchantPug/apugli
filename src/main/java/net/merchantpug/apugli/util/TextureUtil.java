@@ -8,9 +8,10 @@ import java.util.*;
 public class TextureUtil {
     private static final HashMap<Identifier, String> POWER_ID_TO_URL = new HashMap<>();
     private static final HashMap<Identifier, String> REGISTERED_TEXTURES = new HashMap<>();
+    protected static final HashMap<Identifier, String> TEXTURE_TO_SHA256 = new HashMap<>();
 
-    public static List<Identifier> getTexturePowers() {
-        return POWER_ID_TO_URL.keySet().stream().toList();
+    public static Set<Identifier> getTexturePowers() {
+        return POWER_ID_TO_URL.keySet();
     }
 
     public static HashMap<Identifier, String> getPowerIdToUrl() {
@@ -25,5 +26,9 @@ public class TextureUtil {
         POWER_ID_TO_URL.put(id, power.getTextureUrl());
     }
 
-
+    protected static void clearMaps() {
+        POWER_ID_TO_URL.clear();
+        REGISTERED_TEXTURES.clear();
+        TEXTURE_TO_SHA256.clear();
+    }
 }

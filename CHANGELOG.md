@@ -1,3 +1,7 @@
+**Refactors**
+- Updated URL based texture loading.
+  - It now checks the SHA256 checksum of a file to make sure that it's not overwriting the exact same texture before loading any texture.
+  - It now doesn't create a new texture, instead updating the old texture's image upon reloading.
+
 **Bugfixes**
-- Removed `apugli:send_key_to_check` packet which was causing an 'Internal server error'.
-- Fixed `apugli:entity_texture_overlay`'s unique player model not moving with the player's player model.
+- Fixed URL based texture loading.
