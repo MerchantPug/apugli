@@ -1,0 +1,176 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.minecraftforge.net' }
+        maven { url 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url "https://plugins.gradle.org/m2/" }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath group: 'gradle.plugin.com.github.johnrengelman', name: 'shadow', version: '7.1.2'
+    }
+}
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'maven-publish'
+
+archivesBaseName = "${mod_id}-forge-${minecraft_version}"
+version = "${rootProject.version}+${rootProject.minecraft_version}-forge"
+
+repositories {
+    maven {
+        name = "CurseMaven"
+        url = "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "JitPack"
+        url = 'https://jitpack.io'
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    flatDir {
+        dirs "$rootDir/libs"
+    }
+}
+
+mixin {
+    add sourceSets.main, "apugli.refmap.json"
+
+    config "${mod_id}.mixins.json"
+    config "${mod_id}.forge.mixins.json"
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    if(project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
+        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+        project.logger.debug('Forge Access Transformers are enabled for this project.')
+    }
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+dependencies {
+    //Forge
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    //Apoli
+    implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
+    implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
+    //MixinExtras
+    implementation "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    //Mixin
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    //Service
+    compileOnly group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
+    annotationProcessor group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
+    //Relying on the Common Project for sure
+    implementation project(":Common")
+}
+
+tasks.withType(JavaCompile) {
+    source(project(":Common").sourceSets.main.allSource)
+}
+
+processResources {
+    from project(':Common').sourceSets.main.resources
+
+    inputs.property 'version', project.version
+
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
+    }
+
+    filesMatching('*.mixins.json') {
+        expand 'refmap_target': "${mod_id}."
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+shadowJar {
+    classifier ''
+    configurations = [project.configurations.compileClasspath]
+    dependencies {
+        include(dependency {
+            it.moduleGroup == 'com.github.merchantpug'
+        })
+        include dependency("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    }
+    relocate 'com.llamalad7.mixinextras', 'com.github.merchantpug.apugli.shadow.llamalad7.mixinextras'
+}
+
+shadowJar.finalizedBy(reobf.maybeCreate('shadowJar'))
+build.dependsOn('shadowJar')
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://" + System.getenv("local_maven")
+        }
+    }
+}

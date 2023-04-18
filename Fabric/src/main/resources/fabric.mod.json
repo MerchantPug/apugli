@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "apugli",
+  "version": "${version}",
+
+  "name": "Apugli",
+  "description": "Pug's extension to A Power Library.",
+  "authors": [
+    "MerchantPug",
+    "LimonBlaze"
+  ],
+  "contact": {
+    "sources": "https://github.com/MerchantPug/apugli"
+  },
+
+<<<<<<< HEAD:src/main/resources/fabric.mod.json
+  "license": "LGPL-3.0-only",
+  "icon": "assets/apugli/icon.png",
+=======
+  "license": "MIT",
+  "icon": "pack.png",
+>>>>>>> pr/25:Fabric/src/main/resources/fabric.mod.json
+
+  "accessWidener" : "apugli.accesswidener",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.merchantpug.apugli.Apugli"
+    ],
+    "client": [
+      "net.merchantpug.apugli.ApugliClient"
+    ],
+    "preLaunch": [
+      "net.merchantpug.apugli.ApugliPreLaunch"
+    ],
+    "modmenu": [
+      "net.merchantpug.apugli.integration.ApugliModMenuIntegration"
+    ],
+    "cardinal-components": [
+      "net.merchantpug.apugli.component.ApugliEntityComponents"
+    ]
+  },
+  "mixins": [
+    "apugli.mixins.json",
+    "apugli.fabric.mixins.json"
+  ],
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    },
+    "cardinal-components": [
+      "apugli:attack",
+      "apugli:hits_on_target",
+      "apugli:keys_pressed"
+    ]
+  },
+  "depends": {
+    "java": ">=17",
+    "fabricloader": ">=0.12.3",
+    "fabric": ">=0.55.0",
+    "minecraft": ">=1.19.1",
+    "apoli": ">=2.6.0",
+    "calio": ">=1.7.0"
+  }
+}
