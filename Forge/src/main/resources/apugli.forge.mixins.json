@@ -4,8 +4,8 @@
   "package": "com.github.merchantpug.apugli.mixin.forge",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "FabricPowerFactoryAccessor",
-    "ItemStackMixin"
+    "net.merchantpug.apugli.mixin.forge.FabricPowerFactoryAccessor",
+    "net.merchantpug.apugli.mixin.forge.ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

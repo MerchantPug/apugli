@@ -1,4 +1,5 @@
-**Refactors**
-- Updated URL based texture loading.
-  - It now checks the SHA256 checksum of a file to make sure that it's not overwriting the exact same texture before loading any texture.
-  - It now doesn't create a new texture, instead updating the old texture's image upon reloading.
+**Rewrite**
+- Apugli is now a multiloader mod. This means that it is now simultaneously being developed for Fabric and Forge.
+
+**Entity Action Types**
+- `apugli:explode` no longer removes effects within the `apugli:charged` tag mob effect tag upon being triggered. Please do this yourself.

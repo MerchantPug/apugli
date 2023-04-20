@@ -6,32 +6,29 @@
   "name": "Apugli",
   "description": "Pug's extension to A Power Library.",
   "authors": [
-    "MerchantPug",
+    "MerchantPug"
+  ],
+  "contributors": [
     "LimonBlaze"
   ],
   "contact": {
     "sources": "https://github.com/MerchantPug/apugli"
   },
 
-<<<<<<< HEAD:src/main/resources/fabric.mod.json
-  "license": "LGPL-3.0-only",
-  "icon": "assets/apugli/icon.png",
-=======
   "license": "MIT",
   "icon": "pack.png",
->>>>>>> pr/25:Fabric/src/main/resources/fabric.mod.json
 
   "accessWidener" : "apugli.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.merchantpug.apugli.Apugli"
+      "net.merchantpug.apugli.ApugliFabric"
     ],
     "client": [
-      "net.merchantpug.apugli.ApugliClient"
+      "net.merchantpug.apugli.ApugliClientFabric"
     ],
     "preLaunch": [
-      "net.merchantpug.apugli.ApugliPreLaunch"
+      "net.merchantpug.apugli.ApugliPreLaunchFabric"
     ],
     "modmenu": [
       "net.merchantpug.apugli.integration.ApugliModMenuIntegration"
