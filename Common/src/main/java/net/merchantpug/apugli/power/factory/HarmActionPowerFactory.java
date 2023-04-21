@@ -10,7 +10,8 @@ public interface HarmActionPowerFactory<P> extends CooldownPowerFactory<P> {
 
     static SerializableData getSerializableData() {
         return CooldownPowerFactory.getSerializableData()
-                .add("bientity_action", Services.ACTION.biEntityDataType())
+                .add("entity_action", Services.ACTION.entityDataType(), null)
+                .add("bientity_action", Services.ACTION.biEntityDataType(), null)
                 .add("damage_condition", Services.CONDITION.damageDataType(), null)
                 .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
                 .add("amount_to_trigger", SerializableDataTypes.FLOAT, 1.0F)
@@ -22,7 +23,9 @@ public interface HarmActionPowerFactory<P> extends CooldownPowerFactory<P> {
         if (canUse(power, powerHolder) && (Services.CONDITION.checkDamage(data, "damage_condition", source, amount)) && (Services.CONDITION.checkBiEntity(data, "bientity_condition", attacker, target))) {
             float triggerTimes = data.getBoolean("overflow") ? amount / data.getFloat("amount_to_trigger") : Math.min(target.getHealth(), amount) / data.getFloat("amount_to_trigger");
             for (int i = 0; i < triggerTimes; ++i) {
-                Services.ACTION.executeBiEntity(data, "bientity_action", attacker, target);
+                Services.ACTION.executeEntity(data, "entity_action", powerHolder);
+                if (attacker != null && target != null)
+                    Services.ACTION.executeBiEntity(data, "bientity_action", attacker, target);
             }
             this.use(power, powerHolder);
         }

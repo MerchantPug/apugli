@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.world.entity.LivingEntity;
 
+@Deprecated
 public class AerialAffinityPower extends Power {
     
     public AerialAffinityPower(PowerType<?> type, LivingEntity entity) {

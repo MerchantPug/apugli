@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Deprecated
 public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P> {
 
     static SerializableData getSerializableData() {

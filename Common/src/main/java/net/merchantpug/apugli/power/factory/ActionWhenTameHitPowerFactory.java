@@ -18,7 +18,8 @@ public interface ActionWhenTameHitPowerFactory<P> extends TameHitActionPowerFact
     }
 
     default void execute(TamableAnimal tamable, DamageSource source, float amount) {
-        this.execute(tamable, tamable.getLastHurtByMob(), tamable, source, amount);
+        if (!(source.getEntity() instanceof LivingEntity living)) return;
+        this.execute(tamable, living, tamable, source, amount);
     }
     
 }

@@ -5,13 +5,19 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.BoneMealItemMixin",
+    "common.HungerManagerMixin",
+    "common.ItemActionsMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
     "common.MobEntityMixin",
+    "common.ProjectileEntityMixin",
     "common.accessor.BucketItemAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "${refmap_target}refmap.json"
+  "refmap": "${refmap_target}refmap.json",
+  "client": [
+    "client.accessor.ApoliClientAccessor"
+  ]
 }

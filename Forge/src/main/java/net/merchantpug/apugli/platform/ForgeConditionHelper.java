@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import net.merchantpug.apugli.access.ItemStackLevelAccess;
 import net.merchantpug.apugli.condition.*;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
@@ -12,6 +13,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -50,8 +52,15 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return pair -> ((ConfiguredBiEntityCondition<?, ?>)data.get(fieldName)).check(pair.getA(), pair.getB());
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Tuple<Entity, Entity>> biEntityPredicate(C condition) {
+        if (!(condition instanceof ConfiguredBiEntityCondition<?, ?> configured)) {
+            return null;
+        }
+        return pair -> configured.check(pair.getA(), pair.getB());
+    }
+
     @Override
     public SerializableDataType<?> biomeDataType() {
         return ApoliForgeDataTypes.BIOME_CONDITION;
@@ -75,8 +84,16 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return biome -> ((ConfiguredBiomeCondition<?, ?>)data.get(fieldName)).check(biome);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Holder<Biome>> biomePredicate(C condition) {
+        if (!(condition instanceof ConfiguredBiomeCondition<?, ?> configured)) {
+            return null;
+        }
+        return configured::check;
+    }
+
+
     @Override
     public SerializableDataType<?> blockDataType() {
         return ApoliForgeDataTypes.BLOCK_CONDITION;
@@ -100,8 +117,16 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return block -> ((ConfiguredBlockCondition<?, ?>)data.get(fieldName)).check(block.getLevel(), block.getPos(), block::getState);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<BlockInWorld> blockPredicate(C condition) {
+        if (!(condition instanceof ConfiguredBlockCondition<?, ?> configured)) {
+            return null;
+        }
+        return block -> configured.check(block.getLevel(), block.getPos(), block::getState);
+    }
+
+
     @Override
     public SerializableDataType<?> damageDataType() {
         return ApoliForgeDataTypes.DAMAGE_CONDITION;
@@ -125,8 +150,16 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return pair -> ((ConfiguredDamageCondition<?, ?>)data.get(fieldName)).check(pair.getA(), pair.getB());
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Tuple<DamageSource, Float>> damagePredicate(C condition) {
+        if (!(condition instanceof ConfiguredDamageCondition<?, ?> configured)) {
+            return null;
+        }
+        return dmg -> configured.check(dmg.getA(), dmg.getB());
+    }
+
+
     @Override
     public SerializableDataType<?> entityDataType() {
         return ApoliForgeDataTypes.ENTITY_CONDITION;
@@ -150,8 +183,16 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return entity -> ((ConfiguredEntityCondition<?, ?>)data.get(fieldName)).check(entity);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Entity> entityPredicate(C condition) {
+        if (!(condition instanceof ConfiguredEntityCondition<?, ?> configured)) {
+            return null;
+        }
+        return configured::check;
+    }
+
+
     @Override
     public SerializableDataType<?> fluidDataType() {
         return ApoliForgeDataTypes.FLUID_CONDITION;
@@ -175,8 +216,16 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return fluid -> ((ConfiguredFluidCondition<?, ?>)data.get(fieldName)).check(fluid);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<FluidState> fluidPredicate(C condition) {
+        if (!(condition instanceof ConfiguredFluidCondition<?, ?> configured)) {
+            return null;
+        }
+        return configured::check;
+    }
+
+
     @Override
     public SerializableDataType<?> itemDataType() {
         return ApoliForgeDataTypes.ITEM_CONDITION;
@@ -200,5 +249,13 @@ public class ForgeConditionHelper implements IConditionHelper {
         }
         return item -> ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(((ItemStackLevelAccess)(Object)item).getLevel(), item);
     }
-    
+
+    @Override
+    public @Nullable <C> Predicate<ItemStack> itemPredicate(C condition) {
+        if (!(condition instanceof ConfiguredItemCondition<?, ?> configured)) {
+            return null;
+        }
+        return item -> configured.check(((ItemStackLevelAccess)(Object)item).getLevel(), item);
+    }
+
 }

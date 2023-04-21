@@ -14,9 +14,11 @@ public class ApugliPowers {
     public static final Supplier<ActionOnBonemealPower.Factory> ACTION_ON_BONEMEAL = register(new ActionOnBonemealPower.Factory());
     public static final Supplier<ActionOnDurabilityChangePower.Factory> ACTION_ON_DURABILITY_CHANGE = register(new ActionOnDurabilityChangePower.Factory());
     public static final Supplier<ActionOnEquipPower.Factory> ACTION_ON_EQUIP = register(new ActionOnEquipPower.Factory());
-    public static final Supplier<ActionOnTargetDeathPowerFactory> ACTION_ON_TARGET_DEATH = register("action_on_target_death", ActionOnTargetDeathPowerFactory.class);
     public static final Supplier<ActionOnProjectileHitPowerFactory> ACTION_ON_PROJECTILE_HIT = register("action_on_projectile_hit", ActionOnProjectileHitPowerFactory.class);
-    public static final Supplier<TameHitActionPowerFactory> ACTION_WHEN_TAME_HIT = register("action_when_tame_hit", TameHitActionPowerFactory.class);
+    public static final Supplier<ActionOnTameHitPowerFactory> ACTION_ON_TAME_HIT = register("action_on_tame_hit", ActionOnTameHitPowerFactory.class);
+    public static final Supplier<ActionOnTargetDeathPowerFactory> ACTION_ON_TARGET_DEATH = register("action_on_target_death", ActionOnTargetDeathPowerFactory.class);
+    public static final Supplier<ActionWhenProjectileHitPowerFactory> ACTION_WHEN_PROJECTILE_HIT = register("action_when_projectile_hit", ActionWhenProjectileHitPowerFactory.class);
+    public static final Supplier<ActionWhenTameHitPowerFactory> ACTION_WHEN_TAME_HIT = register("action_when_tame_hit", ActionWhenTameHitPowerFactory.class);
     public static final Supplier<AerialAffinityPower.Factory> AERIAL_AFFINITY = register(new AerialAffinityPower.Factory());
     public static final Supplier<AllowAnvilEnchantPower.Factory> ALLOW_ANVIL_ENCHANT = register(new AllowAnvilEnchantPower.Factory());
     public static final Supplier<BunnyHopPowerFactory> BUNNY_HOP = register("bunny_hop", BunnyHopPowerFactory.class);

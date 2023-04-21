@@ -1,11 +1,8 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-import the.great.migration.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -27,9 +24,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.List;
-
-@Environment(EnvType.CLIENT)
 @Mixin(ItemInHandLayer.class)
 public abstract class HeldItemFeatureRendererMixin<T extends LivingEntity, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
     @Shadow @Final private ItemInHandRenderer heldItemRenderer;

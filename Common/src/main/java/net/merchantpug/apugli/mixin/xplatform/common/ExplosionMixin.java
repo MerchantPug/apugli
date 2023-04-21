@@ -94,7 +94,7 @@ public abstract class ExplosionMixin {
         this.apugli$explosionDamageModifiers = value;
     }
 
-    public void apugli$setBiEntityPredicate(Predicate<Tuple<Entity, Entity>> value) {
-        this.apugli$rocketJumpBiEntityCondition = value;
+    public <C> void apugli$setBiEntityPredicate(C value) {
+        this.apugli$rocketJumpBiEntityCondition = Services.CONDITION.biEntityPredicate(value);
     }
 }

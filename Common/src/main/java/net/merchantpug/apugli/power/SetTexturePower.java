@@ -10,6 +10,7 @@ import net.merchantpug.apugli.util.PlayerModelType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
+@Deprecated
 public class SetTexturePower extends Power {
     public final ResourceLocation textureLocation;
     public final PlayerModelType model;

@@ -24,10 +24,10 @@ public abstract class LivingEntityMixin {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
 
         if ((Object) this instanceof TamableAnimal tamable) {
-            ApugliPowers.ACTION_WHEN_TAME_HIT.get().whenTameHit(tamable, source.getEntity(), source, amount);
+            ApugliPowers.ACTION_WHEN_TAME_HIT.get().execute(tamable, source, amount);
         }
         if (source.getEntity() instanceof TamableAnimal tamable) {
-            ApugliPowers.ACTION_WHEN_TAME_HIT.get().whenTameHit(tamable, thisAsLiving, source, amount);
+            ApugliPowers.ACTION_ON_TAME_HIT.get().execute(tamable, source, amount, thisAsLiving);
         }
         HitsOnTargetComponent hitsComponent = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(thisAsLiving);
         hitsComponent.setHits(source.getEntity(), hitsComponent.getHits().getOrDefault(source.getEntity().getId(), new Tuple<>(0, 0)).getA() + 1, 0);
@@ -43,11 +43,11 @@ public abstract class LivingEntityMixin {
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
         if (source.getEntity() != null && source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().getModifiedDamage(attacker, source, amount, thisAsLiving);
+            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 
         if (source.getEntity() != null && source.getEntity() instanceof LivingEntity) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().getModifiedDamage(thisAsLiving, source, amount);
+            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().applyModifiers(thisAsLiving, source, amount);
         }
 
         apugli$hasModifiedDamage = originalValue + additionalValue != originalValue;

@@ -26,10 +26,11 @@ import net.minecraft.world.phys.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 @AutoService(RocketJumpPowerFactory.class)
 public class RocketJumpPower extends AbstractActiveCooldownPower implements RocketJumpPowerFactory<ConfiguredPower<FabricActiveCooldownConfiguration, ?>> {
 
-    protected RocketJumpPower(Codec<FabricActiveCooldownConfiguration> codec) {
+    protected RocketJumpPower() {
         super(RocketJumpPowerFactory.getSerializableData().xmap(
                 FabricActiveCooldownConfiguration::new,
                 FabricActiveCooldownConfiguration::data
@@ -121,7 +122,8 @@ public class RocketJumpPower extends AbstractActiveCooldownPower implements Rock
     }
 
     public void sendExplosionToClient(ConfiguredPower<FabricActiveCooldownConfiguration, ?> power, Entity entity, HitResult hitResult, float radius) {
-        SyncRocketJumpExplosionPacket packet = new SyncRocketJumpExplosionPacket(entity.getId(), hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), radius, power.getPowerType().getIdentifier());
+        SerializableData.Instance data = getDataFromPower(power);
+        SyncRocketJumpExplosionPacket packet = new SyncRocketJumpExplosionPacket(entity.getId(), hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), radius, data.get("damage_modifiers"), data.get("damage_bientity_condition"));
         if (entity instanceof ServerPlayer serverPlayer)
             ApugliPacketHandler.sendS2CTrackingAndSelf(packet, serverPlayer);
     }

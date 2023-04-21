@@ -12,6 +12,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
@@ -50,8 +51,15 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Tuple<Entity, Entity>> biEntityPredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
     @Override
     public SerializableDataType<?> biomeDataType() {
         return ApoliDataTypes.BIOME_CONDITION;
@@ -73,8 +81,16 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Holder<Biome>> biomePredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
+
     @Override
     public SerializableDataType<?> blockDataType() {
         return ApoliDataTypes.BLOCK_CONDITION;
@@ -96,8 +112,16 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<BlockInWorld> blockPredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
+
     @Override
     public SerializableDataType<?> damageDataType() {
         return ApoliDataTypes.DAMAGE_CONDITION;
@@ -119,7 +143,15 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<Tuple<DamageSource, Float>> damagePredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
+
+    @Override
+    public @Nullable <C> Predicate<Tuple<DamageSource, Float>> damagePredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
     @Override
     public SerializableDataType<?> entityDataType() {
         return ApoliDataTypes.ENTITY_CONDITION;
@@ -142,8 +174,16 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<Entity> entityPredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
+
     @Override
     public SerializableDataType<?> fluidDataType() {
         return ApoliDataTypes.FLUID_CONDITION;
@@ -165,8 +205,16 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<FluidState> fluidPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
-    
+
+    @Override
+    public @Nullable <C> Predicate<FluidState> fluidPredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
+
     @Override
     public SerializableDataType<?> itemDataType() {
         return ApoliDataTypes.ITEM_CONDITION;
@@ -188,5 +236,13 @@ public class FabricConditionHelper implements IConditionHelper {
     public Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
+
+    @Override
+    public @Nullable <C> Predicate<ItemStack> itemPredicate(C condition) {
+        if (!(condition instanceof ConditionFactory.Instance predicate)) {
+            return null;
+        }
+        return predicate;
+    }
+
 }

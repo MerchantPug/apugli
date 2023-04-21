@@ -1,15 +1,13 @@
 package net.merchantpug.apugli.power.factory;
 
-import io.github.apace100.calio.data.SerializableData;
-import net.merchantpug.apugli.platform.Services;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 
-public interface ActionOnProjectileHitPowerFactory<P> extends CooldownPowerFactory<P> {
+public interface ActionOnProjectileHitPowerFactory<P> extends ProjectileHitActionPowerFactory<P> {
 
-    static SerializableData getSerializableData() {
-        return CooldownPowerFactory.getSerializableData()
-                .add("bientity_action", Services.ACTION.biEntityDataType(), null)
-                .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
-                .add("owner_bientity_action", Services.ACTION.biEntityDataType(), null)
-                .add("owner_bientity_condition", Services.CONDITION.biEntityDataType(), null);
+    default void execute(P power, LivingEntity entity, Entity target, Projectile projectile) {
+        this.execute(power, entity, entity, target, projectile);
     }
+
 }

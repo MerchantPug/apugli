@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-// TODO: Remove this absolute mess of a class once the Apoli rewrite happens. Maybe earlier...
+@Deprecated
 @AutoService(RocketJumpPowerFactory.class)
 public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower.Instance> implements RocketJumpPowerFactory<RocketJumpPower.Instance> {
 
@@ -140,7 +140,7 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
             Explosion explosion = new Explosion(entity.level, entity, new JumpExplosionPlayerDamageSource(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.NONE);
             ((ExplosionAccess)explosion).setRocketJump(true);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(this.getDamageModifiers());
-            ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("damage_bientity"));
+            ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("damage_bientity_condition"));
             explosion.explode();
             explosion.finalizeExplosion(false);
             explosion.explode();
@@ -164,7 +164,7 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
         }
 
         public void sendExplosionToClient(HitResult hitResult, float radius) {
-            SyncRocketJumpExplosionPacket packet = new SyncRocketJumpExplosionPacket(entity.getId(), hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), radius, this.getType().getIdentifier());
+            SyncRocketJumpExplosionPacket<?> packet = new SyncRocketJumpExplosionPacket<>(entity.getId(), hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), radius, data.get("damage_modifiers"), data.get("damage_bientity_condition"));
 
             for (ServerPlayer player : PlayerLookup.tracking(entity)) {
                 ApugliPackets.sendS2C(packet, player);
