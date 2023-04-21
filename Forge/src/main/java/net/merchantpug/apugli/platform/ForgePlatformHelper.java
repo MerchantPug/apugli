@@ -21,6 +21,7 @@ import com.google.auto.service.AutoService;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -131,6 +132,12 @@ public class ForgePlatformHelper implements IPlatformHelper {
             return capability.get().getCurrentlyUsedKeys().contains(key);
         }
         return false;
+    }
+
+    // TODO: Implement this.
+    @Override
+    public Tuple<Integer, Integer> getHitsOnTarget(Entity actor, LivingEntity target) {
+        return null;
     }
 
 }
