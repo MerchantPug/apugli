@@ -2,7 +2,7 @@ package net.merchantpug.apugli.util;
 
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.ClassDataRegistry;
-import net.merchantpug.apugli.entity.renderer.EntityTextureOverlayLayer;
+import net.merchantpug.apugli.client.renderer.EntityTextureOverlayLayer;
 import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 

@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.power;
 
 import net.merchantpug.apugli.power.factory.ActionOnTargetDeathPowerFactory;
-import net.merchantpug.apugli.power.factory.ActionWhenTameHitPowerFactory;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
@@ -11,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ActionOnTargetDeathPower extends AbstractCooldownPower<ActionOnTargetDeathPower.Instance> implements ActionOnTargetDeathPowerFactory<ActionOnTargetDeathPower.Instance> {
     
     public ActionOnTargetDeathPower() {
-        super("action_on_target_death", ActionWhenTameHitPowerFactory.getSerializableData(),
+        super("action_on_target_death", ActionOnTargetDeathPowerFactory.getSerializableData(),
             data -> (type, entity) -> new ActionOnTargetDeathPower.Instance(type, entity, data));
         allowCondition();
     }
@@ -19,11 +18,6 @@ public class ActionOnTargetDeathPower extends AbstractCooldownPower<ActionOnTarg
     @Override
     public Class<ActionOnTargetDeathPower.Instance> getPowerClass() {
         return Instance.class;
-    }
-    
-    @Override
-    public SerializableData.Instance getDataFromPower(ActionOnTargetDeathPower.Instance power) {
-        return power.data;
     }
     
     public static class Instance extends AbstractCooldownPower.Instance {

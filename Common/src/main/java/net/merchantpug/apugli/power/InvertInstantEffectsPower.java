@@ -7,6 +7,7 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 
 public class InvertInstantEffectsPower extends Power {
+
     public InvertInstantEffectsPower(PowerType<?> type, LivingEntity entity) {
         super(type, entity);
     }
@@ -14,7 +15,7 @@ public class InvertInstantEffectsPower extends Power {
     public static class Factory extends SimplePowerFactory<InvertInstantEffectsPower> {
 
         public Factory() {
-            super("hover",
+            super("invert_instant_effects",
                     new SerializableData(),
                     data -> InvertInstantEffectsPower::new);
 

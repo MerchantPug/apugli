@@ -5,7 +5,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.util.ApugliDataTypes;
+import net.merchantpug.apugli.data.ApugliDataTypes;
 import net.merchantpug.apugli.util.SoundEventPitchVolume;
 import net.merchantpug.apugli.util.SoundEventWeight;
 import net.minecraft.sounds.SoundEvent;

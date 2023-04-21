@@ -1,10 +1,7 @@
 package net.merchantpug.apugli.platform;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.platform.services.IActionHelper;
-import net.merchantpug.apugli.platform.services.IConditionHelper;
-import net.merchantpug.apugli.platform.services.IPlatformHelper;
-import net.merchantpug.apugli.platform.services.IPowerHelper;
+import net.merchantpug.apugli.platform.services.*;
 
 import java.util.ServiceLoader;
 
@@ -12,6 +9,7 @@ public class Services {
     
     public static final IActionHelper ACTION = load(IActionHelper.class);
     public static final IConditionHelper CONDITION = load(IConditionHelper.class);
+    public static final IConfigHelper CONFIG = load(IConfigHelper.class);
     public static final IPowerHelper<?> POWER = load(IPowerHelper.class);
     public static final IPlatformHelper PLATFORM = load(IPlatformHelper.class);
     

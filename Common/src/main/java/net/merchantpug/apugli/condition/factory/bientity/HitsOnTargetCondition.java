@@ -5,8 +5,10 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.platform.Services;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class HitsOnTargetCondition implements IConditionFactory<Tuple<Entity, Entity>> {
     
@@ -18,8 +20,8 @@ public class HitsOnTargetCondition implements IConditionFactory<Tuple<Entity, En
     }
     
     public boolean check(SerializableData.Instance data, Tuple<Entity, Entity> pair) {
-        if(pair.getB() instanceof LivingEntityAccess access) {
-            Tuple<Integer, Integer> hitsOnTarget = access.getHits().getOrDefault(pair.getA(), new Tuple<>(0, 0));
+        if (pair.getB() instanceof LivingEntity living) {
+            Tuple<Integer, Integer> hitsOnTarget = Services.PLATFORM.getHitsOnTarget(pair.getA(), living);
             Comparison comparison = data.get("comparison");
             int compareTo = data.getInt("compare_to");
             return comparison.compare(hitsOnTarget.getA(), compareTo);

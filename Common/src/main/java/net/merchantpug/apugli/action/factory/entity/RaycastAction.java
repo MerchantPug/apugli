@@ -53,11 +53,12 @@ public class RaycastAction implements IActionFactory<Entity> {
             handlePierce(data, entity, list);
             return;
         }
-        if(blockHitResultType == HitResult.Type.BLOCK) {
-            onHitBlock(data, entity, blockHitResult);
-        }
         if(entityHitResultType == HitResult.Type.ENTITY) {
             onHitEntity(data, entity, entityHitResult, false);
+            return;
+        }
+        if(blockHitResultType == HitResult.Type.BLOCK) {
+            onHitBlock(data, entity, blockHitResult);
         }
     }
     

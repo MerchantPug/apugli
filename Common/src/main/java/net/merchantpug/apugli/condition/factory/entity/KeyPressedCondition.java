@@ -27,33 +27,26 @@ package net.merchantpug.apugli.condition.factory.entity;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableData;
+import net.merchantpug.apugli.platform.Services;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashSet;
 
-//TODO: implement key checking
 public class KeyPressedCondition implements IConditionFactory<Entity> {
     
     @Override
     public SerializableData getSerializableData() {
-        return new SerializableData().add("key", ApoliDataTypes.KEY);
+        return new SerializableData()
+                .add("key", Services.PLATFORM.getKeyDataType());
     }
     
     public boolean check(SerializableData.Instance data, Entity entity) {
-        if(!Apugli.keysToCheck.containsKey(entity.getUUID())) {
-            Apugli.keysToCheck.put(entity.getUUID(), new HashSet<>());
-        }
-        if(Apugli.keysToCheck.get(entity.getUUID()).stream().noneMatch(key -> key.equals(data.get("key")))) {
-            Apugli.keysToCheck.get(entity.getUUID()).add(data.get("key"));
-        }
-        if(entity instanceof Player) {
-            if(entity.level.isClientSide) {
-               ApugliClient.handleActiveKeys((Player)entity);
-            }
-            if(Apugli.currentlyUsedKeys.containsKey(entity.getUUID())) {
-                return Apugli.currentlyUsedKeys.get(entity.getUUID()).stream().anyMatch(key -> key.equals(data.get("key")));
-            }
+        if (entity instanceof Player player) {
+            Services.PLATFORM.updateKeys(data, player);
+
+            return Services.PLATFORM.isCurrentlyUsingKey(data, player);
         }
         return false;
     }

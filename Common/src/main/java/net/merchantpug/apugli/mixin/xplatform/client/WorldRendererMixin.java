@@ -1,17 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/mixin/client/WorldRendererMixin.java
-package net.merchantpug.apugli.mixin.client;
-
 import net.merchantpug.apugli.power.ForceParticleRenderPower;
-========
-package com.github.merchantpug.apugli.mixin.xplatforn.client;
-
-import the.great.migration.merchantpug.apugli.power.ForceParticleRenderPower;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/mixin/xplatforn/client/WorldRendererMixin.java
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
 import net.minecraft.client.particle.Particle;

@@ -1,18 +1,5 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/mixin/client/HeldItemRendererMixin.java
-package net.merchantpug.apugli.mixin.client;
-
-import net.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
-========
-package com.github.merchantpug.apugli.mixin.xplatforn.client;
-
-import the.great.migration.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
-import com.mojang.blaze3d.vertex.PoseStack;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/mixin/xplatforn/client/HeldItemRendererMixin.java
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -27,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Environment(EnvType.CLIENT)
 @Mixin(ItemInHandRenderer.class)
 public abstract class HeldItemRendererMixin {
     @Shadow private ItemStack mainHand;

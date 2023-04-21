@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class PlayerInventoryMixin {
     @Shadow @Final public NonNullList<ItemStack> armor;
 
-    @Shadow @Final public NonNullList<ItemStack> offHand;
+    @Shadow @Final public NonNullList<ItemStack> offhand;
 
     @Shadow @Final public Player player;
 
@@ -36,12 +37,12 @@ public class PlayerInventoryMixin {
 
         if(defaultedList.equals(this.armor)) {
             EquipmentSlot equipmentSlot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, slot);
-            PowerHolderComponent.getPowers(this.player, ActionOnEquipPower.class).forEach(power -> power.fireAction(equipmentSlot, stack));
+            Services.POWER.getPowers(this.player, ApugliPowers.ACTION_ON_EQUIP.get()).forEach(power -> power.executeAction(equipmentSlot, stack));
         }
 
-        if(defaultedList.equals(this.offHand)) {
+        if(defaultedList.equals(this.offhand)) {
             EquipmentSlot equipmentSlot = EquipmentSlot.OFFHAND;
-            PowerHolderComponent.getPowers(this.player, ActionOnEquipPower.class).forEach(power -> power.fireAction(equipmentSlot, stack));
+            Services.POWER.getPowers(this.player, ApugliPowers.ACTION_ON_EQUIP.get()).forEach(power -> power.executeAction(equipmentSlot, stack));
         }
     }
 }

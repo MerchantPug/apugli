@@ -6,9 +6,7 @@
   "name": "Apugli",
   "description": "Pug's extension to A Power Library.",
   "authors": [
-    "MerchantPug"
-  ],
-  "contributors": [
+    "MerchantPug",
     "LimonBlaze"
   ],
   "contact": {
@@ -25,7 +23,7 @@
       "net.merchantpug.apugli.ApugliFabric"
     ],
     "client": [
-      "net.merchantpug.apugli.ApugliClientFabric"
+      "net.merchantpug.apugli.client.ApugliClientFabric"
     ],
     "preLaunch": [
       "net.merchantpug.apugli.ApugliPreLaunchFabric"

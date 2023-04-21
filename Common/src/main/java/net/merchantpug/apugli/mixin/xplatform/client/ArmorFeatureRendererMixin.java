@@ -3,8 +3,6 @@ package net.merchantpug.apugli.mixin.xplatform.client;
 import net.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -17,11 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import the.great.migration.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 
-import java.util.List;
-
-@Environment(EnvType.CLIENT)
 @Mixin(HumanoidArmorLayer.class)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> {
     @Shadow protected abstract A getArmor(EquipmentSlot slot);

@@ -1,16 +1,18 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnEquipPower;
 import net.merchantpug.apugli.power.AerialAffinityPower;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
-import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,21 +28,21 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Redirect(method = "getBlockBreakingSpeed", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD))
+    @Redirect(method = "getDestroySpeed", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/player/Player;onGround:Z", opcode = Opcodes.GETFIELD))
     private boolean hasAirAffinity(Player instance) {
-        return PowerHolderComponent.hasPower(instance, AerialAffinityPower.class) || instance.isOnGround();
+        return Services.POWER.hasPower(instance, ApugliPowers.AERIAL_AFFINITY.get()) || instance.isOnGround();
     }
 
-    @Inject(method = "equipStack", at = @At(value = "TAIL"))
+    @Inject(method = "setItemSlot", at = @At(value = "TAIL"))
     public void equipStack(EquipmentSlot slot, ItemStack stack, CallbackInfo ci) {
         if(slot.getType() != EquipmentSlot.Type.ARMOR && !slot.equals(EquipmentSlot.OFFHAND)) return;
 
-        PowerHolderComponent.getPowers((Player)(Object)this, ActionOnEquipPower.class).forEach(power -> power.fireAction(slot, stack));
+        Services.POWER.getPowers((Player)(Object)this, ApugliPowers.ACTION_ON_EQUIP.get()).forEach(power -> power.executeAction(slot, stack));
     }
 
-    @Inject(method = "isPartVisible", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "isModelPartShown", at = @At("RETURN"), cancellable = true)
     private void setPartsToInvisibleWithPower(PlayerModelPart modelPart, CallbackInfoReturnable<Boolean> cir) {
-        if (PowerHolderComponent.getPowers((PlayerEntity)(Object)this, EntityTextureOverlayPower.class).stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
+        if (Services.POWER.getPowers((Player)(Object)this, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get()).stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
             cir.setReturnValue(false);
         }
     }

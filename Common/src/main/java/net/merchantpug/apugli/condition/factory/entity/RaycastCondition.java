@@ -36,8 +36,8 @@ public class RaycastCondition implements IConditionFactory<Entity> {
         EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance);
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
         //Check Conditions
-        if(blockHitResultType == HitResult.Type.BLOCK) return checkHitBlock(data, entity, blockHitResult);
         if(entityHitResultType == HitResult.Type.ENTITY) return checkHitEntity(data, entity, entityHitResult);
+        if(blockHitResultType == HitResult.Type.BLOCK) return checkHitBlock(data, entity, blockHitResult);
         return false;
     }
 

@@ -8,17 +8,28 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 
 public class HoverPower extends Power {
-    public HoverPower(PowerType<?> type, LivingEntity entity) {
+    private final float correctionRange;
+
+    public HoverPower(PowerType<?> type, LivingEntity entity, float correctionRange) {
         super(type, entity);
+        this.correctionRange = correctionRange;
+    }
+
+    public boolean canCorrectHeight() {
+        return correctionRange > 0.0F;
+    }
+
+    public float getCorrectionRange() {
+        return correctionRange;
     }
 
     public static class Factory extends SimplePowerFactory<HoverPower> {
 
         public Factory() {
             super("hover",
-                    new SerializableData(),
-                    data -> HoverPower::new);
-
+                    new SerializableData()
+                            .add("step_assist", SerializableDataTypes.FLOAT, 0.0F),
+                    data -> (type, entity) -> new HoverPower(type, entity, data.getFloat("step_assist")));
             allowCondition();
         }
 

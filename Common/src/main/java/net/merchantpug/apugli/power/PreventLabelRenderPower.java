@@ -1,14 +1,9 @@
 package net.merchantpug.apugli.power;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/power/PreventLabelRenderPower.java
-import net.merchantpug.apugli.Apugli;
-========
-import the.great.migration.merchantpug.apugli.Apugli;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/power/PreventLabelRenderPower.java
-import io.github.apace100.apoli.data.ApoliDataTypes;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import java.util.function.Predicate;
 import net.minecraft.util.Tuple;
@@ -29,13 +24,21 @@ public class PreventLabelRenderPower extends Power {
         return (this.entityCondition == null || this.entityCondition.test(living)) && (this.biEntityCondition == null || this.biEntityCondition.test(new Tuple<>(entity, living)));
     }
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<PreventLabelRenderPower>(
-                Apugli.identifier("prevent_label_render"),
-                new SerializableData()
-                        .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION, null)
-                        .add("bientity_condition", Services.CONDITION.biEntityDataType(), null),
-                data -> (type, entity) -> new PreventLabelRenderPower(type, entity, (Predicate<Entity>) data.get("entity_condition"), (Predicate<Tuple<Entity, Entity>>) data.get("bientity_condition")))
-                .allowCondition();
+    public static class Factory extends SimplePowerFactory<PreventLabelRenderPower> {
+
+        public Factory() {
+            super("prevent_label_render",
+                    new SerializableData()
+                            .add("entity_condition", Services.CONDITION.entityDataType(), null)
+                            .add("bientity_condition", Services.CONDITION.biEntityDataType(), null),
+                    data -> (type, entity) -> new PreventLabelRenderPower(type, entity, data.get("entity_condition"), data.get("bientity_condition")));
+        }
+
+        @Override
+        public Class<PreventLabelRenderPower> getPowerClass() {
+            return PreventLabelRenderPower.class;
+        }
+
     }
+
 }

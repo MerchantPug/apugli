@@ -29,7 +29,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> biEntityDataType() {
-        return ApoliForgeDataTypes.BIENTITY_CONDITION.get();
+        return ApoliForgeDataTypes.BIENTITY_CONDITION;
     }
     
     @Override
@@ -54,7 +54,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> biomeDataType() {
-        return ApoliForgeDataTypes.BIOME_CONDITION.get();
+        return ApoliForgeDataTypes.BIOME_CONDITION;
     }
     
     @Override
@@ -79,7 +79,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> blockDataType() {
-        return ApoliForgeDataTypes.BLOCK_CONDITION.get();
+        return ApoliForgeDataTypes.BLOCK_CONDITION;
     }
     
     @Override
@@ -104,7 +104,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> damageDataType() {
-        return ApoliForgeDataTypes.DAMAGE_CONDITION.get();
+        return ApoliForgeDataTypes.DAMAGE_CONDITION;
     }
     
     @Override
@@ -129,7 +129,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> entityDataType() {
-        return ApoliForgeDataTypes.ENTITY_CONDITION.get();
+        return ApoliForgeDataTypes.ENTITY_CONDITION;
     }
     
     @Override
@@ -154,7 +154,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> fluidDataType() {
-        return ApoliForgeDataTypes.FLUID_CONDITION.get();
+        return ApoliForgeDataTypes.FLUID_CONDITION;
     }
     
     @Override
@@ -179,7 +179,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> itemDataType() {
-        return ApoliForgeDataTypes.ITEM_CONDITION.get();
+        return ApoliForgeDataTypes.ITEM_CONDITION;
     }
     
     @Override

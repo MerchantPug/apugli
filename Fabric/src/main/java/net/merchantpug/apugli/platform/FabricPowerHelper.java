@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.power.*;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.platform.services.IPowerHelper;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
@@ -9,10 +10,6 @@ import net.merchantpug.apugli.registry.services.RegistryObject;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.CooldownPower;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerTypeReference;
-import io.github.apace100.apoli.power.VariableIntPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.minecraft.world.entity.LivingEntity;
@@ -82,10 +79,9 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         return ApoliDataTypes.POWER_TYPE;
     }
 
-
     @Override
-    public void syncPower(LivingEntity entity, PowerTypeReference powerType) {
-        PowerHolderComponent.syncPower(entity, powerType.getReferencedPowerType());
+    public void syncPower(LivingEntity entity, PowerType<?> powerType) {
+        PowerHolderComponent.syncPower(entity, powerType);
     }
 
     @Override
@@ -114,5 +110,5 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerType.getIdentifier());
         return OptionalInt.empty();
     }
-    
+
 }

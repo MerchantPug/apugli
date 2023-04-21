@@ -1,8 +1,8 @@
 package net.merchantpug.apugli.condition.factory.entity;
 
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
-import com.github.merchantpug.apugli.util.ApugliDataTypes;
 import io.github.apace100.calio.data.SerializableData;
+import net.merchantpug.apugli.data.ApugliDataTypes;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Entity;
 

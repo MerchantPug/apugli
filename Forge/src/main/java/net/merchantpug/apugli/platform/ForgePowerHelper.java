@@ -1,8 +1,9 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.power.PowerType;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
-import net.merchantpug.apugli.mixin.forge.FabricPowerFactoryAccessor;
+import net.merchantpug.apugli.mixin.forge.common.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.platform.services.IPowerHelper;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
@@ -70,11 +71,11 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     
     @Override
     public SerializableDataType<Holder<ConfiguredPower<?, ?>>> getPowerTypeDataType() {
-        return ApoliForgeDataTypes.POWER_TYPE.get();
+        return ApoliForgeDataTypes.POWER_TYPE;
     }
 
     @Override
-    public void syncPower(LivingEntity entity, Holder<ConfiguredPower<?, ?>> holder) {
+    public void syncPower(LivingEntity entity, PowerType<?> factory) {
         ApoliAPI.synchronizePowerContainer(entity);
     }
 

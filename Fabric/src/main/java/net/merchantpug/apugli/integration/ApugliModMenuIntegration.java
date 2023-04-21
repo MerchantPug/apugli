@@ -5,6 +5,7 @@ import com.terraformersmc.modmenu.api.ModMenuApi;
 import eu.midnightdust.core.config.MidnightLibConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.merchantpug.apugli.Apugli;
 
 @Environment(EnvType.CLIENT)
 public class ApugliModMenuIntegration implements ModMenuApi {

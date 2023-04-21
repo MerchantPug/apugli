@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.access;
 
-import io.github.apace100.apoli.util.modifier.Modifier;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 
@@ -12,6 +11,6 @@ public interface ExplosionAccess {
     void setRocketJump(boolean value);
     boolean isRocketJump();
 
-    void setExplosionDamageModifiers(List<Modifier> value);
+    void setExplosionDamageModifiers(List<?> value);
     void setBiEntityPredicate(@Nullable Predicate<Tuple<Entity, Entity>> value);
 }

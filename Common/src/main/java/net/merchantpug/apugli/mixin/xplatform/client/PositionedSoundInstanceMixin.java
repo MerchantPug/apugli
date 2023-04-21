@@ -1,24 +1,11 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/mixin/client/PositionedSoundInstanceMixin.java
-package net.merchantpug.apugli.mixin.client;
-
 import net.merchantpug.apugli.access.AbstractSoundInstanceAccess;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.Random;
-========
-package com.github.merchantpug.apugli.mixin.xplatforn.client;
-
-import com.github.merchantpug.apugli.access.AbstractSoundInstanceAccess;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/mixin/xplatforn/client/PositionedSoundInstanceMixin.java
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

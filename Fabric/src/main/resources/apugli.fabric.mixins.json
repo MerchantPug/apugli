@@ -4,6 +4,11 @@
   "package": "net.merchantpug.apugli.mixin.fabric",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.BoneMealItemMixin",
+    "common.ItemStackMixin",
+    "common.LivingEntityMixin",
+    "common.MobEntityMixin",
+    "common.accessor.BucketItemAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

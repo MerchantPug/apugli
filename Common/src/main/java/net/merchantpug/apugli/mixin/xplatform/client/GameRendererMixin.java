@@ -1,17 +1,5 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/mixin/client/GameRendererMixin.java
-package net.merchantpug.apugli.mixin.client;
-
-import net.merchantpug.apugli.power.BunnyHopPower;
-========
-package com.github.merchantpug.apugli.mixin.xplatforn.client;
-
-import the.great.migration.merchantpug.apugli.power.BunnyHopPower;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/mixin/xplatforn/client/GameRendererMixin.java
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -21,7 +9,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements ResourceManagerReloadListener, AutoCloseable {
     @Shadow

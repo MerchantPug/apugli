@@ -1,29 +1,12 @@
 package net.merchantpug.apugli.power;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/power/ModifyBlockPlacedPower.java
-import net.merchantpug.apugli.Apugli;
-========
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
-import the.great.migration.merchantpug.apugli.Apugli;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/power/ModifyBlockPlacedPower.java
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import org.apache.commons.lang3.tuple.Triple;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +17,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.tuple.Triple;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class ModifyBlockPlacedPower extends Power {
     private final List<BlockState> blockStates = new ArrayList<>();
@@ -68,7 +58,7 @@ public class ModifyBlockPlacedPower extends Power {
         if(!(entity instanceof Player)) return;
         if(!entity.level.isClientSide()) {
             this.seed = (int)(Math.random() * Integer.MAX_VALUE);
-            PowerHolderComponent.syncPower(entity, this.getType());
+            Services.POWER.syncPower(entity, this.getType());
         }
     }
 
@@ -98,20 +88,12 @@ public class ModifyBlockPlacedPower extends Power {
                             .add("item_condition", Services.CONDITION.itemDataType()),
                     data -> (type, entity) -> {
                                 ModifyBlockPlacedPower power = new ModifyBlockPlacedPower(type, entity, Services.CONDITION.itemPredicate(data, "item_condition"), Services.ACTION.blockConsumer(data, "block_action"));
-                                if(data.isPresent("block")) {
-                                    power.addBlockState(((Block)data.get("block")).defaultBlockState());
-                                }
-                                if(data.isPresent("block_state")) {
-                                    power.addBlockState((BlockState)data.get("block_state"));
-                                }
-                                if(data.isPresent("blocks")) {
-                                    ((List<Block>)data.get("blocks")).forEach(block -> power.addBlockState(block.defaultBlockState()));
-                                }
-                                if(data.isPresent("block_states")) {
-                                    ((List<BlockState>)data.get("block_states")).forEach(power::addBlockState);
-                                }
-                                return power;
-                            })
+                                data.<Block>ifPresent("block", block -> power.addBlockState(block.defaultBlockState()));
+                                data.ifPresent("block_state", power::addBlockState);
+                                data.<List<Block>>ifPresent("blocks", blocks -> blocks.forEach(block -> power.addBlockState(block.defaultBlockState())));
+                                data.<List<BlockState>>ifPresent("block_states", states -> states.forEach(power::addBlockState));
+                        return power;
+                            });
             allowCondition();
         }
 
@@ -121,4 +103,5 @@ public class ModifyBlockPlacedPower extends Power {
         }
 
     }
+
 }

@@ -1,39 +1,22 @@
 package net.merchantpug.apugli.power;
 
-<<<<<<<< HEAD:src/main/java/net/merchantpug/apugli/power/PreventBreedingPower.java
-import net.merchantpug.apugli.Apugli;
-========
-import the.great.migration.merchantpug.apugli.Apugli;
->>>>>>>> pr/25:Common/src/main/java/com/github/merchantpug/apugli/power/PreventBreedingPower.java
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class PreventBreedingPower extends Power {
     private final Predicate<Tuple<Entity, Entity>> biEntityCondition;
     private final Consumer<Tuple<Entity, Entity>> biEntityAction;
     public final boolean preventFollow;
-
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<PreventBreedingPower>(Apugli.identifier("prevent_breeding"),
-                new SerializableData()
-                        .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
-                        .add("bientity_action", Services.ACTION.biEntityDataType(), null)
-                        .add("prevent_follow", SerializableDataTypes.BOOLEAN, true),
-                data ->
-                        (type, entity) ->
-                                new PreventBreedingPower(type, entity, (ConditionFactory<Tuple<Entity, Entity>>.Instance)data.get("bientity_condition"), (ActionFactory<Tuple<Entity, Entity>>.Instance)data.get("bientity_action"), data.getBoolean("prevent_follow")))
-                .allowCondition();
-    }
 
     public PreventBreedingPower(PowerType<?> type, LivingEntity entity, Predicate<Tuple<Entity, Entity>> biEntityCondition, Consumer<Tuple<Entity, Entity>> biEntityAction, boolean preventFollow) {
         super(type, entity);
@@ -54,4 +37,22 @@ public class PreventBreedingPower extends Power {
     public boolean hasAction() {
         return biEntityAction != null;
     }
+
+    public static class Factory extends SimplePowerFactory<PreventBreedingPower> {
+
+        public Factory() {
+            super("prevent_breeding_power",
+                    new SerializableData()
+                            .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                            .add("bientity_action", Services.ACTION.biEntityDataType(), null)
+                            .add("prevent_follow", SerializableDataTypes.BOOLEAN, true),
+                    data -> (type, entity) -> new PreventBreedingPower(type, entity, data.get("bientity_condition"), data.get("bientity_action"), data.getBoolean("prevent_follow")));
+        }
+
+        @Override
+        public Class<PreventBreedingPower> getPowerClass() {
+            return PreventBreedingPower.class;
+        }
+    }
+
 }

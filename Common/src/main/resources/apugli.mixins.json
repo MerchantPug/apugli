@@ -4,11 +4,24 @@
   "package": "net.merchantpug.apugli.mixin.xplatform",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.AnimalEntityMixin",
+    "common.AnvilScreenHandlerMixin",
+    "common.BeehiveBlockEntityMixin",
+    "common.BeehiveBlockMixin",
+    "common.BlockItemMixin",
+    "common.EntityMixin",
+    "common.ExplosionMixin",
+    "common.ItemConditionsMixin",
+    "common.ItemPredicateMixin",
+    "common.ItemStackMixin",
+    "common.PlayerInventoryMixin",
+    "common.ProjectileEntityMixin",
     "common.accessor.AbstractFurnaceBlockEntityAccessor",
     "common.accessor.BrewingStandBlockEntityAccessor",
     "common.accessor.TridentEntityAccessor"
   ],
   "client": [
+    "client.EntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

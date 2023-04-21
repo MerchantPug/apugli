@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.CustomDeathSoundPower;
 import net.merchantpug.apugli.power.CustomHurtSoundPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -122,65 +123,6 @@ public abstract class LivingEntityMixin extends Entity {
         PowerHolderComponent.withPowers(this, ActionWhenHarmedPower.class, p -> true, p -> p.whenHurt(source.getEntity(), source, amount));
     }
 
-    @Inject(method = "hurt", at = @At("RETURN"))
-    private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValue() || source.getEntity() == null) return;
-        if ((Object) this instanceof TamableAnimal tamable) {
-            ApugliPowers.ACTION_WHEN_TAME_HIT.get().whenTameHit(tamable, source.getEntity(), source, amount);
-        }
-        if (source.getEntity() instanceof TamableAnimal tamable) {
-            ApugliPowers.ACTION_WHEN_TAME_HIT.get().whenTameHit(tamable, this, source, amount);
-        }
-        HitsOnTargetComponent hitsComponent = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(thisAsLiving);
-        hitsComponent.setHits(source.getAttacker(), hitsComponent.getHits().getOrDefault(source.getEntity().getId(), new Tuple<>(0, 0)).getLeft() + 1, 0);
-        ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.sync(thisAsLiving);
-    }
-
-    @Unique
-    private boolean apugli$hasModifiedDamage;
-
-    @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true)
-    private float modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
-        float[] additionalValue = {0.0F};
-        LivingEntity thisAsLiving = (LivingEntity) (Object) this;
-
-        if (source.getEntity() != null && source.getEntity() instanceof LivingEntity && !source.isProjectile()) {
-            List<ModifyEnchantmentDamageDealtPower> damageDealtPowers = PowerHolderComponent.getPowers(source.getEntity(), ModifyEnchantmentDamageDealtPower.class).stream().filter(p -> p.doesApply(source, amount, thisAsLiving)).toList();
-
-            damageDealtPowers.forEach(power -> additionalValue[0] += power.baseValue);
-
-            for (ModifyEnchantmentDamageDealtPower power : damageDealtPowers) {
-                for (int i = 0; i < EnchantmentHelper.getItemEnchantmentLevel(power.enchantment, ((LivingEntity) source.getEntity()).getItemBySlot(EquipmentSlot.MAINHAND)); ++i) {
-                    additionalValue[0] = PowerHolderComponent.modify(source.getAttacker(), ModifyEnchantmentDamageDealtPower.class,
-                            additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(thisAsLiving));
-                }
-            }
-        }
-
-        List<ModifyEnchantmentDamageTakenPower> damageTakenPowers = PowerHolderComponent.getPowers(this, ModifyEnchantmentDamageTakenPower.class).stream().filter(p -> p.doesApply(source, amount)).toList();
-
-        damageTakenPowers.forEach(power -> additionalValue[0] += power.baseValue);
-
-        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
-            for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
-                for (int i = 0; i < EnchantmentHelper.getLevel(power.enchantment, ((LivingEntity) source.getAttacker()).getEquippedStack(EquipmentSlot.MAINHAND)); ++i) {
-                    if (source.getEntity() != null && source.getEntity() instanceof LivingEntity) {
-                        for (ModifyEnchantmentDamageTakenPower power : damageTakenPowers) {
-                            for (int i = 0; i < EnchantmentHelper.getItemEnchantmentLevel(power.enchantment, ((LivingEntity) source.getEntity()).getItemBySlot(EquipmentSlot.MAINHAND)); i++) {
-                                additionalValue[0] = PowerHolderComponent.modify(this, ModifyEnchantmentDamageTakenPower.class,
-                                        additionalValue[0], enchantmentDamageTakenPower -> true, p -> p.executeActions(source.getEntity()));
-                            }
-                        }
-                    }
-
-                    apugli$hasModifiedDamage = originalValue + additionalValue[0] != originalValue;
-
-                    return originalValue + additionalValue[0];
-                }
-            }
-        }
-    }
-
     @Inject(method = "eat", at = @At("HEAD"))
     private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (((ItemStackAccess) (Object) stack).getItemStackFoodComponent() != null) {
@@ -212,13 +154,6 @@ public abstract class LivingEntityMixin extends Entity {
         }
 
         PowerHolderComponent.getPowers(source.getEntity(), ActionOnTargetDeathPower.class).forEach(p -> p.onTargetDeath((LivingEntity) (Object) this, source, apugli$damageAmountOnDeath));
-    }
-
-    @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
-    private void preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (apugli$hasModifiedDamage && amount == 0.0F) {
-            cir.setReturnValue(false);
-        }
     }
 
     @Inject(method = "canSpawnSoulSpeedParticle", at = @At("HEAD"), cancellable = true)
@@ -277,7 +212,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "isInvertedHealAndHarm", at = @At("HEAD"), cancellable = true)
     private void invertInstantEffects(CallbackInfoReturnable<Boolean> cir) {
-        if (PowerHolderComponent.hasPower(this, InvertInstantEffectsPower.class)) {
+        if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.INVERT_INSTANT_EFFECTS.get())) {
             cir.setReturnValue(true);
         }
     }
@@ -328,4 +263,5 @@ public abstract class LivingEntityMixin extends Entity {
             this.moveRelative((float) bunnyHopPower.increasePerTick * bunnyHopPower.getValue(), movementInput);
         }
     }
+
 }

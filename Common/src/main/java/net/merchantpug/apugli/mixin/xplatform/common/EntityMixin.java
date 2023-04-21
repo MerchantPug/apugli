@@ -1,14 +1,16 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.CustomFootstepPower;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import the.great.migration.merchantpug.apugli.power.CustomFootstepPower;
 
 import java.util.List;
 
@@ -16,11 +18,11 @@ import java.util.List;
 public class EntityMixin {
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
-        if(state.getMaterial().isLiquid()) return;
-        List<CustomFootstepPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, CustomFootstepPower.class);
+        if(!((Entity)(Object)this instanceof LivingEntity living) || state.getMaterial().isLiquid()) return;
+        List<CustomFootstepPower> powers = Services.POWER.getPowers(living, ApugliPowers.CUSTOM_FOOTSTEP.get());
         if(powers.isEmpty()) return;
         if(powers.stream().anyMatch(CustomFootstepPower::isMuted)) ci.cancel();
-        powers.forEach(power -> power.playFootstep((Entity)(Object)this));
+        powers.forEach(power -> power.playSound(living));
         ci.cancel();
     }
 }

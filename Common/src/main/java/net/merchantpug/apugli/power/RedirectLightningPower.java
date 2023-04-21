@@ -1,15 +1,15 @@
 package net.merchantpug.apugli.power;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import java.util.HashMap;
-
-import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.factory.SimplePowerFactory;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.HashMap;
 
 public class RedirectLightningPower extends Power {
     public static final HashMap<LivingEntity, Float> STRUCK_BY_LIGHTNING_CHANCES = new HashMap<>();
@@ -23,7 +23,7 @@ public class RedirectLightningPower extends Power {
     @Override
     public void onAdded() {
         float chances = 0;
-        for(RedirectLightningPower power : PowerHolderComponent.getPowers(entity, RedirectLightningPower.class)) {
+        for(RedirectLightningPower power : Services.POWER.getPowers(entity, ApugliPowers.REDIRECT_LIGHTNING.get())) {
             chances += power.chance;
         }
         STRUCK_BY_LIGHTNING_CHANCES.put(entity, chances);
@@ -32,7 +32,7 @@ public class RedirectLightningPower extends Power {
     @Override
     public void onRemoved() {
         float chances = 0;
-        for(RedirectLightningPower power : PowerHolderComponent.getPowers(entity, RedirectLightningPower.class)) {
+        for(RedirectLightningPower power : Services.POWER.getPowers(entity, ApugliPowers.REDIRECT_LIGHTNING.get())) {
             chances += power.chance;
         }
         if(chances == 0) {
@@ -42,12 +42,20 @@ public class RedirectLightningPower extends Power {
         }
     }
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<RedirectLightningPower>(
-                Apugli.asResource("redirect_lightning"),
-                new SerializableData()
-                        .add("chance", SerializableDataTypes.FLOAT, null),
-                data -> (type, entity) -> new RedirectLightningPower(type, entity, data.getFloat("chance")))
-                .allowCondition();
+    public static class Factory extends SimplePowerFactory<RedirectLightningPower> {
+
+        public Factory() {
+            super("redirect_lightning",
+                    new SerializableData()
+                            .add("chance", SerializableDataTypes.FLOAT, null),
+                    data -> (type, entity) -> new RedirectLightningPower(type, entity, data.getFloat("chance")));
+            allowCondition();
+        }
+
+        @Override
+        public Class<RedirectLightningPower> getPowerClass() {
+            return RedirectLightningPower.class;
+        }
+
     }
 }

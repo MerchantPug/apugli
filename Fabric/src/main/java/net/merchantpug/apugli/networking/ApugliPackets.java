@@ -33,7 +33,7 @@ import net.fabricmc.fabric.api.networking.v1.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.merchantpug.apugli.Apugli;;
-import net.merchantpug.apugli.ApugliClientFabric;
+import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.networking.s2c.*;

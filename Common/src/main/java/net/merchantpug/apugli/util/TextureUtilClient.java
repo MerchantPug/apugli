@@ -4,6 +4,7 @@ import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.mixin.xplatform.client.accessor.TextureManagerAccessor;
+import net.merchantpug.apugli.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -90,7 +91,7 @@ public class TextureUtilClient {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection(Minecraft.getInstance().getProxy());
 
             connection.addRequestProperty("Content-Type", "image/png");
-            connection.setConnectTimeout(ApugliConfig.fileConnectionTimeout);
+            connection.setConnectTimeout(Services.CONFIG.getFileConnectionTimeout());
             connection.setDoInput(true);
             connection.setDoOutput(false);
 
@@ -114,13 +115,13 @@ public class TextureUtilClient {
         }
         fileSizeLimit = 1024 * 1024 * 1024;
         try {
-            String limit = ApugliConfig.fileSizeLimit.toUpperCase(Locale.ROOT);
+            String limit = Services.CONFIG.getFileSizeLimit().toUpperCase(Locale.ROOT);
             if (limit.endsWith("MB") && Pattern.matches("[0-9]+", limit.split("MB")[0])) {
-                fileSizeLimit = Long.parseLong(ApugliConfig.fileSizeLimit.split("MB")[0]) * 1024 * 1024;
+                fileSizeLimit = Long.parseLong(Services.CONFIG.getFileSizeLimit().split("MB")[0]) * 1024 * 1024;
             } else if (limit.endsWith("KB") && Pattern.matches("[0-9]+", limit.split("KB")[0])) {
-                fileSizeLimit = Long.parseLong(ApugliConfig.fileSizeLimit.split("KB")[0]) * 1024;
+                fileSizeLimit = Long.parseLong(Services.CONFIG.getFileSizeLimit().split("KB")[0]) * 1024;
             } else if (limit.endsWith("B") && Pattern.matches("[0-9]+", limit.split("B")[0])) {
-                fileSizeLimit = Long.parseLong(ApugliConfig.fileSizeLimit.split("B")[0]);
+                fileSizeLimit = Long.parseLong(Services.CONFIG.getFileSizeLimit().split("B")[0]);
             } else {
                 Apugli.LOG.warn("Could not parse File Size Limit in Apugli config, setting to 1MB.");
             }

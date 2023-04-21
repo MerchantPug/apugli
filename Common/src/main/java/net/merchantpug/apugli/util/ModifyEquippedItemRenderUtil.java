@@ -110,18 +110,18 @@ public class ModifyEquippedItemRenderUtil {
         ItemStack leftHandStack = ItemStack.EMPTY;
         ItemStack rightHandStack = ItemStack.EMPTY;
         if(bl) {
-            if(power.slot == EquipmentSlot.OFFHAND) {
-                leftHandStack = power.stack;
+            if(power.getSlot() == EquipmentSlot.OFFHAND) {
+                leftHandStack = power.getStack();
             }
-            if(power.slot == EquipmentSlot.MAINHAND) {
-                rightHandStack = power.stack;
+            if(power.getSlot() == EquipmentSlot.MAINHAND) {
+                rightHandStack = power.getStack();
             }
         } else {
-            if(power.slot == EquipmentSlot.MAINHAND) {
-                leftHandStack = power.stack;
+            if(power.getSlot() == EquipmentSlot.MAINHAND) {
+                leftHandStack = power.getStack();
             }
-            if(power.slot == EquipmentSlot.OFFHAND) {
-                rightHandStack = power.stack;
+            if(power.getSlot() == EquipmentSlot.OFFHAND) {
+                rightHandStack = power.getStack();
             }
         }
         if(!leftHandStack.isEmpty() || !rightHandStack.isEmpty()) {

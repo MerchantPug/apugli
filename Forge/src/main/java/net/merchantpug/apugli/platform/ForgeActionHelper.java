@@ -33,7 +33,7 @@ public class ForgeActionHelper implements IActionHelper {
     
     @Override
     public SerializableDataType<?> biEntityDataType() {
-        return ApoliForgeDataTypes.BIENTITY_ACTION.get();
+        return ApoliForgeDataTypes.BIENTITY_ACTION;
     }
     
     @Override
@@ -59,7 +59,7 @@ public class ForgeActionHelper implements IActionHelper {
     
     @Override
     public SerializableDataType<?> blockDataType() {
-        return ApoliForgeDataTypes.BLOCK_ACTION.get();
+        return ApoliForgeDataTypes.BLOCK_ACTION;
     }
     
     @Override
@@ -84,7 +84,7 @@ public class ForgeActionHelper implements IActionHelper {
     
     @Override
     public SerializableDataType<?> entityDataType() {
-        return ApoliForgeDataTypes.ENTITY_ACTION.get();
+        return ApoliForgeDataTypes.ENTITY_ACTION;
     }
     
     @Override
@@ -109,7 +109,7 @@ public class ForgeActionHelper implements IActionHelper {
     
     @Override
     public SerializableDataType<?> itemDataType() {
-        return ApoliForgeDataTypes.ITEM_ACTION.get();
+        return ApoliForgeDataTypes.ITEM_ACTION;
     }
     
     @Override

@@ -4,7 +4,6 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.power.RocketJumpPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

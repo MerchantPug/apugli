@@ -1,10 +1,9 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.ModifyBlockPlacedPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.minecraft.core.BlockPos;
-import net.minecraft.item.*;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import the.great.migration.merchantpug.apugli.power.ModifyBlockPlacedPower;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,7 @@ public class BlockItemMixin extends Item {
         super(settings);
     }
 
-    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;Lnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canPlace", at = @At("HEAD"), cancellable = true)
     private void onPlaced(BlockPlaceContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
         Player player = context.getPlayer();
         ItemStack heldItem = context.getItemInHand();
@@ -43,7 +41,7 @@ public class BlockItemMixin extends Item {
             .filter(power -> power.itemCondition.test(heldItem))
             .forEach(power -> power.executeAction(pos));
 
-        List<ModifyBlockPlacedPower> powers = PowerHolderComponent.getPowers(context.getPlayer(), ModifyBlockPlacedPower.class)
+        List<ModifyBlockPlacedPower> powers = Services.POWER.getPowers(context.getPlayer(), ApugliPowers.MODIFY_BLOCK_PLACED.get())
                 .stream()
                 .filter(power -> power.itemCondition.test(context.getItemInHand()))
                 .toList();
@@ -66,10 +64,11 @@ public class BlockItemMixin extends Item {
         cir.setReturnValue(context.getLevel().setBlock(context.getClickedPos(), blockState, 11));
     }
 
-    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemPlacementContext;getBlockPos()Lnet/minecraft/util/math/BlockPos;"))
+    @Inject(method = "place", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/context/BlockPlaceContext;getClickedPos()Lnet/minecraft/core/BlockPos;"))
     private void executeActionAfterPlaced(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         if(this.pair == null) return;
-        this.pair.getA().executeAction(Optional.ofNullable(context.getClickedPos()));
+        this.pair.getA().executeAction(Optional.of(context.getClickedPos()));
         this.pair = null;
     }
+
 }

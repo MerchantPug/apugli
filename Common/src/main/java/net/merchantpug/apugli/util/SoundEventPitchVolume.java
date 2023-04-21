@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.util;
 
-import java.util.List;
 import net.minecraft.sounds.SoundEvent;
 
 public class SoundEventPitchVolume {

@@ -2,9 +2,9 @@ package net.merchantpug.apugli.action.factory.block;
 
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.AbstractFurnaceBlockEntityAccessor;
-import com.github.merchantpug.apugli.mixin.xplatforn.common.accessor.BrewingStandBlockEntityAccessor;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.mixin.xplatform.common.accessor.BrewingStandBlockEntityAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
