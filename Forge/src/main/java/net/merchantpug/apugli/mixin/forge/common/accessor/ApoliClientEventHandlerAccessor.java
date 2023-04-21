@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.forge.common;
+package net.merchantpug.apugli.mixin.forge.common.accessor;
 
 import io.github.edwinmindcraft.apoli.client.ApoliClientEventHandler;
 import net.minecraft.client.KeyMapping;

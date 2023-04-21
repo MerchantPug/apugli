@@ -4,8 +4,8 @@
   "package": "net.merchantpug.apugli.mixin.forge",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.ApoliClientEventHandlerAccessor",
-    "common.FabricPowerFactoryAccessor",
+    "common.accessor.ApoliClientEventHandlerAccessor",
+    "common.accessor.FabricPowerFactoryAccessor",
     "common.ItemStackMixin"
   ],
   "injectors": {

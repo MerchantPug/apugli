@@ -3,7 +3,7 @@ package net.merchantpug.apugli.client;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
-import net.merchantpug.apugli.mixin.forge.common.ApoliClientEventHandlerAccessor;
+import net.merchantpug.apugli.mixin.forge.common.accessor.ApoliClientEventHandlerAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.minecraft.client.KeyMapping;

@@ -3,7 +3,7 @@ package net.merchantpug.apugli.platform;
 import io.github.apace100.apoli.power.PowerType;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
-import net.merchantpug.apugli.mixin.forge.common.FabricPowerFactoryAccessor;
+import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.platform.services.IPowerHelper;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;

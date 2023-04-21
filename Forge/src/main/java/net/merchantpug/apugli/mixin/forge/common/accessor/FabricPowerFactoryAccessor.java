@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.forge.common;
+package net.merchantpug.apugli.mixin.forge.common.accessor;
 
 import io.github.apace100.apoli.power.Power;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
