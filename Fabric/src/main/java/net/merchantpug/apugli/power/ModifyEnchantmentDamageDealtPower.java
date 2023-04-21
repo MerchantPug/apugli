@@ -5,13 +5,14 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.power.factory.ModifyBreedingCooldownPowerFactory;
 import net.merchantpug.apugli.power.factory.ModifyEnchantmentDamageDealtPowerFactory;
+import net.merchantpug.apugli.power.factory.ModifyEnchantmentDamagePowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 
 @AutoService(ModifyEnchantmentDamageDealtPowerFactory.class)
 public class ModifyEnchantmentDamageDealtPower extends AbstractValueModifyingPower<ModifyEnchantmentDamageDealtPower.Instance> implements ModifyEnchantmentDamageDealtPowerFactory<ModifyEnchantmentDamageDealtPower.Instance> {
 
     public ModifyEnchantmentDamageDealtPower() {
-        super("modify_breeding_cooldown", ModifyEnchantmentDamageDealtPowerFactory.getSerializableData(),
+        super("modify_breeding_cooldown", ModifyEnchantmentDamagePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }
