@@ -2,6 +2,7 @@ package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.merchantpug.apugli.access.ItemStackAccess;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,6 +52,13 @@ public abstract class EnchantmentHelperMixin {
     @ModifyVariable(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
     private static ListTag getEnchantmentsGetLevel(ListTag original) {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemEnchantmentLevelStack, original);
+    }
+
+    @Inject(method = "getEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/entity/LivingEntity;)I", at = @At("RETURN"), cancellable = true)
+    private static void getEquipmentLevel(Enchantment enchantment, LivingEntity entity, CallbackInfoReturnable<Integer> cir) {
+        int originalReturn = cir.getReturnValue();
+        int newEnchantLevel = (int) Services.PLATFORM.applyModifiers(entity, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), originalReturn, power -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(power, enchantment));
+        cir.setReturnValue(newEnchantLevel);
     }
 
 }
