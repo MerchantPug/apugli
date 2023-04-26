@@ -8,5 +8,8 @@ import java.util.Map;
 
 public interface HitsOnTargetComponent extends ServerTickingComponent {
     Map<Integer, Tuple<Integer, Integer>> getHits();
-    void setHits(Entity entity, int hitValue, int timer);
+    Map<Integer, Tuple<Integer, Integer>> getPreviousHits();
+
+    void setHits(int entityId, int hitValue, int timer);
+    void removeHits(int entityId);
 }

@@ -16,21 +16,15 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
             .add("tick_rate", SerializableDataTypes.INT, 10);
     }
     
-    default void reset(LivingEntity entity) {
-        List<P> powers = Services.POWER.getPowers(entity, this);
-        if(powers.size() > 0) {
-            P power = powers.get(0);
-            if(getValue(power, entity) != 0) {
-                assign(power, entity, 0);
-                sync(entity, power);
-            }
+    default void reset(P power, LivingEntity entity) {
+        if (getValue(power, entity) != 0) {
+            assign(power, entity, 0);
+            sync(entity, power);
         }
     }
     
     default void onTravel(LivingEntity entity, Vec3 movementInput) {
-        List<P> powers = Services.POWER.getPowers(entity, this);
-        if(powers.size() > 0) {
-            P power = powers.get(0);
+        Services.POWER.getPowers(entity, this).forEach(power -> {
             SerializableData.Instance data = getDataFromPower(power);
             int tickRate = Math.max(1, data.getInt("tick_rate"));
             if(!entity.level.isClientSide && entity.tickCount % tickRate == 0) {
@@ -40,7 +34,7 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
                 }
             }
             entity.moveRelative((float) data.getDouble("increase_per_tick") * getValue(power, entity), movementInput);
-        }
+        });
     }
-    
+
 }

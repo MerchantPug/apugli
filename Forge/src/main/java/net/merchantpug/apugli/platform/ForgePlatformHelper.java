@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
@@ -10,14 +12,17 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
+import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
+import net.merchantpug.apugli.util.HudRenderUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
@@ -134,10 +139,31 @@ public class ForgePlatformHelper implements IPlatformHelper {
         return false;
     }
 
-    // TODO: Implement this.
     @Override
     public Tuple<Integer, Integer> getHitsOnTarget(Entity actor, LivingEntity target) {
-        return null;
+        if (target.getCapability(HitsOnTargetCapability.INSTANCE).resolve().isPresent()) {
+            return target.getCapability(HitsOnTargetCapability.INSTANCE).resolve().get().getHits().get(actor.getId());
+        }
+        return new Tuple<>(0, 0);
+    }
+
+    @Override
+    public void setHitsOnTarget(Entity actor, Entity target, int initialChange, int initialTimerChange, ResourceOperation operation, ResourceOperation timerOperation) {
+        target.getCapability(HitsOnTargetCapability.INSTANCE).resolve().ifPresent(capability -> {
+            Tuple<Integer, Integer> valueTimerResetTimePair = capability.getHits().getOrDefault(actor.getId(), new Tuple<>(0, 0));
+
+            int change = operation == ResourceOperation.SET ? initialChange : valueTimerResetTimePair.getA() + initialChange;
+            int timerChange = timerOperation == ResourceOperation.SET ? initialTimerChange : valueTimerResetTimePair.getB() + initialTimerChange;
+
+            capability.setHits(actor.getId(), change, timerChange);
+            if (!(target instanceof ServerPlayer serverPlayer)) return;
+            ApugliPacketHandler.sendS2CTrackingAndSelf(new SyncHitsOnTargetLessenedPacket(target.getId(), capability.getPreviousHits(), capability.getHits()), serverPlayer);
+        });
+    }
+
+    @Override
+    public HudRender getDefaultHudRender() {
+        return HudRenderUtil.DONT_RENDER;
     }
 
 }

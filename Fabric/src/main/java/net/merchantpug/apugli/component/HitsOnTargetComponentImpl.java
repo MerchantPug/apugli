@@ -2,6 +2,9 @@ package net.merchantpug.apugli.component;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.networking.ApugliPackets;
+import net.merchantpug.apugli.networking.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +17,7 @@ import java.util.*;
 
 public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyncedComponent {
     private Map<Integer, Tuple<Integer, Integer>> previousHits = new HashMap<>();
-    private final Map<Integer, Tuple<Integer, Integer>> hits = new HashMap<>();
+    private Map<Integer, Tuple<Integer, Integer>> hits = new HashMap<>();
     private final LivingEntity provider;
 
     public HitsOnTargetComponentImpl(LivingEntity provider) {
@@ -34,45 +37,26 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
 
     @Override
     public void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
-        Map<Integer, Tuple<Integer, Integer>> updateMap = new HashMap<>();
-        Set<Integer> removalMap = new HashSet<>();
-        for (Map.Entry<Integer, Tuple<Integer, Integer>> entry : hits.entrySet()) {
-            if (!previousHits.containsKey(entry.getKey())) {
-                updateMap.put(entry.getKey(), entry.getValue());
-            } else {
-                Tuple<Integer, Integer> currentPair = entry.getValue();
-                Tuple<Integer, Integer> previousPair = previousHits.get(entry.getKey());
-                if ((!currentPair.getA().equals(previousPair.getA()) || !currentPair.getB().equals(currentPair.getB()))) {
-                    updateMap.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-        previousHits.keySet().stream().filter(key -> !hits.containsKey(key)).forEach(removalMap::add);
-        buf.writeInt(updateMap.size());
-        for (Map.Entry<Integer, Tuple<Integer, Integer>> entry : updateMap.entrySet()) {
-            buf.writeInt(entry.getKey());
-            buf.writeInt(entry.getValue().getA());
-            buf.writeInt(entry.getValue().getB());
-        }
-        buf.writeInt(removalMap.size());
-        for (Integer id : removalMap) {
-            buf.writeInt(id);
-        }
+        buf.writeInt(hits.size());
+
+        hits.forEach((entityId, value) -> {
+            buf.writeInt(entityId);
+            buf.writeInt(value.getA());
+            buf.writeInt(value.getB());
+        });
     }
 
     public void applySyncPacket(FriendlyByteBuf buf) {
-        int updateSize = buf.readInt();
-        for (int i = 0; i < updateSize; ++i) {
-            int entityId = buf.readInt();
+        int hitsSize = buf.readInt();
+        Map<Integer, Tuple<Integer, Integer>> hits = new HashMap<>();
+        for (int i = 0; i < hitsSize; ++i) {
+            int otherEntityId = buf.readInt();
             int amount = buf.readInt();
             int ticksLeft = buf.readInt();
-            hits.put(entityId, new Tuple<>(amount, ticksLeft));
+            hits.put(otherEntityId, new Tuple<>(amount, ticksLeft));
         }
-        int removalSize = buf.readInt();
-        for (int i = 0; i < removalSize; ++i) {
-            int entityId = buf.readInt();
-            hits.remove(entityId);
-        }
+
+        this.hits = hits;
     }
 
     @Override
@@ -81,8 +65,18 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
     }
 
     @Override
-    public void setHits(Entity entity, int hitValue, int timer) {
-        hits.put(entity.getId(), new Tuple<>(hitValue, timer));
+    public Map<Integer, Tuple<Integer, Integer>> getPreviousHits() {
+        return previousHits;
+    }
+
+    @Override
+    public void setHits(int entityId, int hitValue, int timer) {
+        hits.put(entityId, new Tuple<>(hitValue, timer));
+    }
+
+    @Override
+    public void removeHits(int entityId) {
+        hits.remove(entityId);
     }
 
     @Override
@@ -95,8 +89,8 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
             int currentTime = entry.getValue().getB();
             if (entity == null || !entity.isAlive() || currentTime > ApugliConfig.resetTimerTicks) {
                 it.remove();
-                if (!it.hasNext()) {
-                    ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.sync(provider);
+                if (!it.hasNext() && provider instanceof ServerPlayer serverPlayer) {
+                    ApugliPackets.sendS2CTrackingAndSelf(new SyncHitsOnTargetLessenedPacket(provider.getId(), previousHits, hits), serverPlayer);
                 }
                 continue;
             }
@@ -104,4 +98,5 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
         }
         previousHits = hits;
     }
+
 }

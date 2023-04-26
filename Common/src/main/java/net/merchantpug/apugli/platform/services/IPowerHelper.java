@@ -1,22 +1,17 @@
 package net.merchantpug.apugli.platform.services;
 
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeReference;
-import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.merchantpug.apugli.power.factory.ValueModifyingPowerFactory;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface IPowerHelper<T> {
@@ -26,16 +21,26 @@ public interface IPowerHelper<T> {
     <F extends SimplePowerFactory<?>> Supplier<F> registerFactory(F factory);
     
     <F extends SpecialPowerFactory<?>> Supplier<F> registerFactory(String name, Class<F> factoryClass);
-    
+
+    <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType);
+
+    <P> ResourceLocation getIdFromPower(LivingEntity entity, P power);
+
     <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory);
-    
+
+    <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive);
+
     <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory);
-    
+
+    <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive);
+
     <P extends Power> boolean hasPower(LivingEntity entity, SimplePowerFactory<P> factory);
     
     <P> boolean hasPower(LivingEntity entity, SpecialPowerFactory<P> factory);
     
     SerializableDataType<T> getPowerTypeDataType();
+
+    <P> boolean isActive(P power, LivingEntity entity);
 
     void syncPower(LivingEntity entity, PowerType<?> factory);
     

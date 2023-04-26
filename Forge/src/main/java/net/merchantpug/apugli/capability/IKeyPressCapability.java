@@ -12,7 +12,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import java.util.Set;
 
 public interface IKeyPressCapability {
-    ResourceLocation IDENTIFIER = Apugli.asResource("key_press");
+    ResourceLocation ID = Apugli.asResource("key_press");
 
     Set<IActivePower.Key> getCurrentlyUsedKeys();
     Set<IActivePower.Key> getPreviouslyUsedKeys();

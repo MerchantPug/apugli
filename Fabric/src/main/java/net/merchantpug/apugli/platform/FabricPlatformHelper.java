@@ -4,15 +4,22 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ModelColorPower;
+import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.apoli.util.ResourceOperation;
+import io.github.apace100.apoli.util.modifier.Modifier;
+import io.github.apace100.apoli.util.modifier.ModifierOperation;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
+import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.networking.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
@@ -65,18 +72,18 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public <M> SerializableDataType<M> getModifierDataType() {
-        return null;
+    public SerializableDataType<Modifier> getModifierDataType() {
+        return Modifier.DATA_TYPE;
     }
 
     @Override
-    public <M> SerializableDataType<List<M>> getModifiersDataType() {
-        return null;
+    public SerializableDataType<List<Modifier>> getModifiersDataType() {
+        return Modifier.LIST_TYPE;
     }
 
     @Override
     public double applyModifiers(Entity entity, List<?> modifiers, double value) {
-        return 0;
+        return ModifierUtil.applyModifiers(entity, (List<Modifier>)modifiers, value);
     }
 
     @Override
@@ -131,6 +138,24 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public Tuple<Integer, Integer> getHitsOnTarget(Entity actor, LivingEntity target) {
         return ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(target).getHits().getOrDefault(actor.getId(), new Tuple<>(0, 0));
+    }
+
+    @Override
+    public void setHitsOnTarget(Entity actor, Entity target, int initialChange, int initialTimerChange, ResourceOperation operation, ResourceOperation timerOperation)  {
+        HitsOnTargetComponent component = ApugliEntityComponents.HITS_ON_TARGET_COMPONENT.get(target);
+        Tuple<Integer, Integer> valueTimerResetTimePair = component.getHits().getOrDefault(actor.getId(), new Tuple<>(0, 0));
+
+        int change = operation == ResourceOperation.SET ? initialChange : valueTimerResetTimePair.getA() + initialChange;
+        int timerChange = timerOperation == ResourceOperation.SET ? initialTimerChange : valueTimerResetTimePair.getB() + initialTimerChange;
+
+        component.setHits(actor.getId(), change, timerChange);
+        if (!(target instanceof ServerPlayer serverPlayer)) return;
+        ApugliPackets.sendS2CTrackingAndSelf(new SyncHitsOnTargetLessenedPacket(target.getId(), component.getPreviousHits(), component.getHits()), serverPlayer);
+    }
+
+    @Override
+    public HudRender getDefaultHudRender() {
+        return HudRender.DONT_RENDER;
     }
 
 }

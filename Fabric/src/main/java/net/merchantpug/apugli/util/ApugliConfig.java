@@ -2,20 +2,17 @@ package net.merchantpug.apugli.util;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 
-// TODO: Introduce an in-house config library to replace MidnightLib.
+// TODO: Introduce an in-house config library.
 public class ApugliConfig extends MidnightConfig {
     @Comment
     public static Comment fileDownloadOptions;
-    @Entry
+    @Entry(name = "apugli.config.fileConnectionTimeout")
     public static String fileSizeLimit = "1MB";
-    @Entry
+    @Entry(name = "apugli.config.fileSizeLimit")
     public static int fileConnectionTimeout = 30000;
 
-    @Comment
-    public static Comment hitsOnTargetOptions;
-    @Entry
+    @Server
     public static int resetTimerTicks = 100;
-
     @Server
     public static boolean performVersionCheck = true;
 }

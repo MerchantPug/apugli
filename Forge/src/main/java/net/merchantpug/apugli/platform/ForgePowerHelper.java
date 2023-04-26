@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.platform;
 
+import com.google.common.collect.ImmutableList;
 import io.github.apace100.apoli.power.PowerType;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
@@ -18,6 +19,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -45,18 +47,43 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     public <F extends SpecialPowerFactory<?>> RegistryObject<F> registerFactory(String name, Class<F> factoryClass) {
         return (RegistryObject<F>)(Object)ApugliRegisters.POWERS.register(name, () -> (io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>)Services.load(factoryClass));
     }
-    
+
+    @Override
+    public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
+        return (P) powerType.getConfiguredPower();
+    }
+
+    @Override
+    public <P> ResourceLocation getIdFromPower(LivingEntity entity, P power) {
+        return ((ConfiguredPower<?, ?>) power).getRegistryName();
+    }
+
     @Override
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory) {
-        return IPowerContainer.getPowers(entity, (FabricPowerFactory<P>) factory.getWrapped()).stream()
-            .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
-            .collect(Collectors.toList());
+        return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped())).orElseGet(ImmutableList::of)
+                .stream()
+                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive) {
+        return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped(), includeInactive)).orElseGet(ImmutableList::of)
+                .stream()
+                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory) {
-        return IPowerContainer.getPowers(entity, (io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>) factory)
-            .stream().map(holder -> (P)holder.get()).collect(Collectors.toList());
+        return IPowerContainer.get(entity).map(x -> x.getPowers((io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>) factory)).orElseGet(ImmutableList::of)
+                .stream().map(holder -> (P)holder.get()).collect(Collectors.toList());
+    }
+
+    @Override
+    public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive) {
+        return IPowerContainer.get(entity).map(x -> x.getPowers((io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>) factory, includeInactive)).orElseGet(ImmutableList::of)
+                .stream().map(holder -> (P)holder.get()).collect(Collectors.toList());
     }
     
     @Override
@@ -72,6 +99,11 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     @Override
     public SerializableDataType<Holder<ConfiguredPower<?, ?>>> getPowerTypeDataType() {
         return ApoliForgeDataTypes.POWER_TYPE;
+    }
+
+    @Override
+    public <P> boolean isActive(P power, LivingEntity entity) {
+        return ((ConfiguredPower<?, ?>)power).isActive(entity);
     }
 
     @Override

@@ -20,4 +20,5 @@ public class ParticleMixin {
     public void apugli$setParticleEffect(ParticleOptions effect) {
         this.apugli$particleEffect = effect;
     }
+
 }

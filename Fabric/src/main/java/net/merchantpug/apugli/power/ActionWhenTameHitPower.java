@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.power;
 
+import net.merchantpug.apugli.power.factory.ActionWhenTameHitPowerFactory;
 import net.merchantpug.apugli.power.factory.TameHitActionPowerFactory;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
@@ -7,8 +8,8 @@ import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(TameHitActionPowerFactory.class)
-public class ActionWhenTameHitPower extends AbstractCooldownPower<ActionWhenTameHitPower.Instance> implements TameHitActionPowerFactory<ActionWhenTameHitPower.Instance> {
+@AutoService(ActionWhenTameHitPowerFactory.class)
+public class ActionWhenTameHitPower extends AbstractCooldownPower<ActionWhenTameHitPower.Instance> implements ActionWhenTameHitPowerFactory<ActionWhenTameHitPower.Instance> {
     
     public ActionWhenTameHitPower() {
         super("action_when_tame_hit", TameHitActionPowerFactory.getSerializableData(),

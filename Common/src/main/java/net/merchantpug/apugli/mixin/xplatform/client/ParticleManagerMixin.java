@@ -18,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class ParticleManagerMixin {
     @Shadow protected ClientLevel level;
 
-    @Inject(method = "createParticle", at = @At("RETURN"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "makeParticle", at = @At("RETURN"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
     private <T extends ParticleOptions> void linkParticleEffectToParticleClass(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ, CallbackInfoReturnable<@Nullable Particle> cir, ParticleProvider<T> factory) {
         if(factory == null) return;
-        Particle particle = factory.createParticle(parameters, this.world, x, y, z, velocityX, velocityY, velocityZ);
+        Particle particle = factory.createParticle(parameters, this.level, x, y, z, velocityX, velocityY, velocityZ);
         if(particle == null) return;
         ((ParticleAccess)particle).setParticleEffect(parameters);
         cir.setReturnValue(particle);

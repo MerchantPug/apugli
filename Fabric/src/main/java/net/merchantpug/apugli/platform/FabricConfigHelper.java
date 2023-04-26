@@ -19,11 +19,6 @@ public class FabricConfigHelper implements IConfigHelper {
     }
 
     @Override
-    public int getResetTimerTicks() {
-        return ApugliConfig.resetTimerTicks;
-    }
-
-    @Override
     public boolean shouldPerformVersionCheck() {
         return ApugliConfig.performVersionCheck;
     }

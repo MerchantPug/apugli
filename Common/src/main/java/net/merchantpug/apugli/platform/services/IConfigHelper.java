@@ -6,8 +6,6 @@ public interface IConfigHelper {
 
     int getFileConnectionTimeout();
 
-    int getResetTimerTicks();
-
     boolean shouldPerformVersionCheck();
 
 }

@@ -59,6 +59,7 @@ public class ApugliPackets {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshake);
         ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
+            ClientPlayNetworking.registerReceiver(SyncHitsOnTargetLessenedPacket.ID, createS2CHandler(SyncHitsOnTargetLessenedPacket::decode, SyncHitsOnTargetLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncRocketJumpExplosionPacket.ID, createS2CHandler(SyncRocketJumpExplosionPacket::decode, SyncRocketJumpExplosionPacket::handle));
             ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
@@ -69,7 +70,7 @@ public class ApugliPackets {
         ServerPlayNetworking.send(player, packet.getFabricId(), packet.toBuf());
     }
 
-    public static void sendS2CTracking(ApugliPacketS2C packet, ServerPlayer player) {
+    public static void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player) {
         for (ServerPlayer otherPlayer : PlayerLookup.tracking(player))
             ApugliPackets.sendS2C(packet, otherPlayer);
         ApugliPackets.sendS2C(packet, player);
@@ -90,10 +91,8 @@ public class ApugliPackets {
     }
 
     public static void registerC2S() {
-        if (ApugliConfig.performVersionCheck) {
-            ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
-            ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
-        }
+        ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
+        ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
         ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
     }
 
@@ -102,6 +101,7 @@ public class ApugliPackets {
     }
 
     private static void handshake(ServerLoginPacketListenerImpl serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
+        if (!ApugliConfig.performVersionCheck) return;
         packetSender.sendPacket(ApugliPackets.HANDSHAKE, PacketByteBufs.empty());
     }
 
@@ -110,7 +110,7 @@ public class ApugliPackets {
     }
 
     private static void handleHandshakeReply(MinecraftServer server, ServerLoginPacketListenerImpl handler, boolean understood, FriendlyByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {
-        boolean shouldCheckVersion = FabricLoader.getInstance().getModContainer(Apugli.ID).isEmpty() || !FabricLoader.getInstance().getModContainer(Apugli.ID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED);
+        boolean shouldCheckVersion = ApugliConfig.performVersionCheck && FabricLoader.getInstance().getModContainer(Apugli.ID).isEmpty() || !FabricLoader.getInstance().getModContainer(Apugli.ID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED);
 
         if (shouldCheckVersion) {
             if (understood) {
@@ -138,4 +138,5 @@ public class ApugliPackets {
             }
         }
     }
+
 }

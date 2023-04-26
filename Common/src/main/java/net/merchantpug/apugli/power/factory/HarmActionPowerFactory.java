@@ -4,6 +4,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public interface HarmActionPowerFactory<P> extends CooldownPowerFactory<P> {
@@ -18,7 +19,7 @@ public interface HarmActionPowerFactory<P> extends CooldownPowerFactory<P> {
                 .add("overflow", SerializableDataTypes.BOOLEAN, false);
     }
 
-    default void execute(P power, LivingEntity powerHolder, DamageSource source, float amount, LivingEntity attacker, LivingEntity target) {
+    default void execute(P power, LivingEntity powerHolder, DamageSource source, float amount, Entity attacker, LivingEntity target) {
         SerializableData.Instance data = getDataFromPower(power);
         if (canUse(power, powerHolder) && (Services.CONDITION.checkDamage(data, "damage_condition", source, amount)) && (Services.CONDITION.checkBiEntity(data, "bientity_condition", attacker, target))) {
             float triggerTimes = data.getBoolean("overflow") ? amount / data.getFloat("amount_to_trigger") : Math.min(target.getHealth(), amount) / data.getFloat("amount_to_trigger");

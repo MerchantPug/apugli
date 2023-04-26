@@ -39,6 +39,10 @@ repositories {
     mavenCentral()
 }
 
+minecraft {
+    accessWideners "src/main/resources/apugli.common.accesswidener"
+}
+
 dependencies {
     //Apoli
     compileOnly "io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}"

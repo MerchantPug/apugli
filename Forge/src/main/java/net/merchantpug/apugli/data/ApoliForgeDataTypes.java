@@ -4,10 +4,9 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import net.minecraft.core.Holder;
-import net.minecraftforge.common.util.Lazy;
 
 public class ApoliForgeDataTypes {
-    
+
     public static final SerializableDataType<Holder<ConfiguredPower<?, ?>>> POWER_TYPE = new SerializableDataType<>(castClass(Holder.class), ConfiguredPower.CODEC_SET.holderRef());
     
     public static final SerializableDataType<ConfiguredBiEntityCondition<?, ?>> BIENTITY_CONDITION = new SerializableDataType<>(castClass(ConfiguredBiEntityCondition.class), ConfiguredBiEntityCondition.CODEC);

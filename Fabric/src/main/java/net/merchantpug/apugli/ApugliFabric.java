@@ -5,6 +5,7 @@ import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.integration.PostPowerReloadCallback;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
@@ -26,6 +27,7 @@ public class ApugliFabric implements ModInitializer {
             }
             Apugli.VERSION = version;
         });
+        Apugli.logInitMessage();
 
         Apugli.init();
         ApugliPackets.registerC2S();
@@ -40,6 +42,11 @@ public class ApugliFabric implements ModInitializer {
             for (ServerPlayer player : Apugli.getServer().getPlayerList().getPlayers()) {
                 ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
             }
+        });
+
+        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
+            if (!joined) return;
+            ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
         });
 
         NamespaceAlias.addAlias("ope", Apugli.ID);

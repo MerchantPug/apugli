@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ServerPlayer.class)
 public interface ServerPlayerEntityAccessor {
-    @Accessor()
+    @Accessor("spawnInvulnerableTime")
     int getJoinInvulnerabilityTicks();
 }

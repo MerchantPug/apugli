@@ -27,7 +27,7 @@ public class FireProjectileAction implements IActionFactory<Entity> {
             .add("sound", SerializableDataTypes.SOUND_EVENT, null)
             .add("entity_type", SerializableDataTypes.ENTITY_TYPE)
             .add("tag", SerializableDataTypes.NBT, null)
-            .add("bientity_action", Services.CONDITION.biEntityDataType(), null);
+            .add("bientity_action", Services.ACTION.biEntityDataType(), null);
     }
     
     @Override

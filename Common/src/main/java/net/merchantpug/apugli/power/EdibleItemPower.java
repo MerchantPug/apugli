@@ -17,11 +17,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class EdibleItemPower extends Power {
-    public final Predicate<ItemStack> predicate;
-    public final FoodProperties foodComponent;
-    public final UseAnim useAction;
-    public final ItemStack returnStack;
-    public final SoundEvent sound;
+    private final Predicate<ItemStack> predicate;
+    private final FoodProperties foodComponent;
+    private final UseAnim useAction;
+    private final ItemStack returnStack;
+    private final SoundEvent sound;
     private final Consumer<Entity> entityActionWhenEaten;
 
     public EdibleItemPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate, FoodProperties foodComponent, UseAnim useAction, ItemStack returnStack, SoundEvent sound, Consumer<Entity> entityActionWhenEaten) {
@@ -36,6 +36,22 @@ public class EdibleItemPower extends Power {
 
     public boolean doesApply(ItemStack stack) {
         return this.predicate.test(stack);
+    }
+
+    public FoodProperties getFoodComponent() {
+        return foodComponent;
+    }
+
+    public UseAnim getUseAction() {
+        return useAction;
+    }
+
+    public ItemStack getReturnStack() {
+        return returnStack;
+    }
+
+    public SoundEvent getSound() {
+        return sound;
     }
 
     public void eat() {

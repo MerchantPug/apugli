@@ -10,7 +10,7 @@ public record FabricCooldownConfiguration(SerializableData.Instance data) implem
     
     @Override
     public int duration() {
-        return data.get("duration");
+        return data.getInt("cooldown");
     }
     
     @Override

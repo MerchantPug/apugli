@@ -28,13 +28,14 @@ import java.util.function.Predicate;
 @Implements(@Interface(iface = ExplosionAccess.class, prefix = "apugli$"))
 public abstract class ExplosionMixin {
     @Unique private boolean apugli$rocketJumpExplosion;
-    @Unique private Entity apugli$affectedEntity;
     @Unique private List<?> apugli$explosionDamageModifiers;
     @Unique private Predicate<Tuple<Entity, Entity>> apugli$rocketJumpBiEntityCondition;
 
     @Shadow @Final private Level level;
 
     @Shadow public abstract @Nullable LivingEntity getSourceMob();
+
+    @Shadow @Final private double z;
 
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float changeDamage(float amount) {
@@ -44,26 +45,29 @@ public abstract class ExplosionMixin {
         return amount;
     }
 
-    @ModifyArgs(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"))
-    private void modifyOtherEntitiesKnockback(Args args) {
+    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 0)
+    private double modifyOtherEntitiesKnockbackX(double x) {
         if (this.apugli$isRocketJump()) {
-            args.set(0, (double)args.get(0) * 0.75);
-            args.set(1, (double)args.get(1) * 0.5);
-            args.set(2, (double)args.get(2) * 0.75);
+            return x * 0.75;
         }
+        return x;
     }
 
-    @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void collectAffectedEntity(CallbackInfo ci, Set $$0, float $$18, int $$19, int $$20, int $$21, int $$22, int $$23, int $$24, List $$25, Vec3 $$26, int $$27, Entity entity) {
-        this.apugli$affectedEntity = entity;
+    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 1)
+    private double modifyOtherEntitiesKnockbackY(double y) {
+        if (this.apugli$isRocketJump()) {
+            return y * 0.75;
+        }
+        return y;
     }
 
-    @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
-    private boolean cancelDamagedEntity(boolean original) {
+
+    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 2)
+    private double modifyOtherEntitiesKnockbackZ(double z) {
         if (this.apugli$isRocketJump()) {
-            return original || this.getSourceMob() != null && apugli$rocketJumpBiEntityCondition != null && !apugli$rocketJumpBiEntityCondition.test(new Tuple<>(this.getSourceMob(), this.apugli$affectedEntity));
+            return z * 0.75;
         }
-        return original;
+        return z;
     }
 
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 5)
@@ -82,6 +86,24 @@ public abstract class ExplosionMixin {
         return pitch;
     }
 
+
+
+    @Unique
+    private Entity apugli$affectedEntity;
+
+    @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void collectAffectedEntity(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2, Entity entity) {
+        this.apugli$affectedEntity = entity;
+    }
+
+    @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
+    private boolean cancelDamagedEntity(boolean original) {
+        if (((ExplosionAccess)(Object)this).isRocketJump()) {
+            return original || this.getSourceMob() != null && ((ExplosionAccess)(Object)this).getBiEntityPredicate() != null && !((ExplosionAccess)(Object)this).getBiEntityPredicate().test(new Tuple<>(this.getSourceMob(), this.apugli$affectedEntity));
+        }
+        return original;
+    }
+
     public void apugli$setRocketJump(boolean value) {
         this.apugli$rocketJumpExplosion = value;
     }
@@ -94,7 +116,15 @@ public abstract class ExplosionMixin {
         this.apugli$explosionDamageModifiers = value;
     }
 
-    public <C> void apugli$setBiEntityPredicate(C value) {
-        this.apugli$rocketJumpBiEntityCondition = Services.CONDITION.biEntityPredicate(value);
+    public List<?> apugli$getExplosionDamageModifiers() {
+        return apugli$explosionDamageModifiers;
+    }
+
+    public void apugli$setBiEntityPredicate(@Nullable Predicate<Tuple<Entity, Entity>> value) {
+        this.apugli$rocketJumpBiEntityCondition = value;
+    }
+
+    public Predicate<Tuple<Entity, Entity>> getBiEntityPredicate() {
+        return apugli$rocketJumpBiEntityCondition;
     }
 }

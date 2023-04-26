@@ -44,7 +44,6 @@
       "badges": ["library"]
     },
     "cardinal-components": [
-      "apugli:attack",
       "apugli:hits_on_target",
       "apugli:keys_pressed"
     ]

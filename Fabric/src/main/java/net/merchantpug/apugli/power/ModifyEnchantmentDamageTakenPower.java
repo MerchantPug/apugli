@@ -10,10 +10,10 @@ import net.merchantpug.apugli.power.factory.ModifyEnchantmentDamageTakenPowerFac
 import net.minecraft.world.entity.LivingEntity;
 
 @AutoService(ModifyEnchantmentDamageTakenPowerFactory.class)
-public class ModifyEnchantmentDamageTakenPower extends AbstractValueModifyingPower<ModifyEnchantmentDamageTakenPower.Instance> implements ModifyEnchantmentDamageDealtPowerFactory<ModifyEnchantmentDamageTakenPower.Instance> {
+public class ModifyEnchantmentDamageTakenPower extends AbstractValueModifyingPower<ModifyEnchantmentDamageTakenPower.Instance> implements ModifyEnchantmentDamageTakenPowerFactory<ModifyEnchantmentDamageTakenPower.Instance> {
 
     public ModifyEnchantmentDamageTakenPower() {
-        super("modify_breeding_cooldown", ModifyEnchantmentDamagePowerFactory.getSerializableData(),
+        super("modify_enchantment_damage_taken", ModifyEnchantmentDamagePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }

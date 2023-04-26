@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.platform.services;
 
+import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
@@ -94,5 +96,12 @@ public interface IPlatformHelper {
     boolean isCurrentlyUsingKey(SerializableData.Instance data, Player player);
 
     Tuple<Integer, Integer> getHitsOnTarget(Entity actor, LivingEntity target);
+
+    void setHitsOnTarget(Entity actor, Entity target, int initialChange, int initialTimerChange, ResourceOperation operation, ResourceOperation timerOperation);
+
+    /*
+    This exists as the default hud render for Origins Forge does not work as intended
+     */
+    HudRender getDefaultHudRender();
 
 }

@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AbstractSoundInstanceMixin {
     @Unique private SoundEvent apugli$soundEvent;
 
-    @Inject(method = "<init>(Lnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;Lnet/minecraft/util/math/random/Random;)V", at = @At("TAIL"))
+    @Inject(method = "<init>(Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;Lnet/minecraft/util/RandomSource;)V", at = @At("TAIL"))
     private void captureSoundEvent(SoundEvent sound, SoundSource category, RandomSource random, CallbackInfo ci) {
         apugli$soundEvent = sound;
     }

@@ -16,6 +16,13 @@
       "operation": "addition",
       "value": 1,
       "resource": "*:*_resource"
+    },
+    "condition": {
+      "type": "apoli:enchantment",
+      "enchantment": "minecraft:protection",
+      "calculation": "max",
+      "comparison": "==",
+      "compare_to": 0
     }
   }
 }

@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.xplatform.common;
+package net.merchantpug.apugli.mixin.fabric.common;
 
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.PreventBreedingPower;
@@ -44,13 +44,12 @@ public abstract class AnimalEntityMixin extends AgeableMob {
     @Inject(method = "mobInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;", shift = At.Shift.BY, by = 2), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     private void preventMobBreeding(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir, ItemStack itemStack) {
         List<PreventBreedingPower> preventBreedingPowerList = Services.POWER.getPowers(player, ApugliPowers.PREVENT_BREEDING.get()).stream().filter(power -> power.doesApply(this)).collect(Collectors.toList());
-        if(preventBreedingPowerList.isEmpty()) return;
-        if(this.isFood(itemStack)) {
+        if(!preventBreedingPowerList.isEmpty() && this.isFood(itemStack)) {
             int i = this.getAge();
             if(i == 0 && this.canFallInLove()) {
                 if(preventBreedingPowerList.stream().anyMatch(PreventBreedingPower::hasAction)) {
                     preventBreedingPowerList.forEach(power -> power.executeAction(this));
-                    this.inLove = (int)Services.PLATFORM.applyModifiers(player, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 600);
+                    this.inLove = (int)Services.PLATFORM.applyModifiers(player, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000);
                     cir.setReturnValue(InteractionResult.SUCCESS);
                 } else {
                     cir.setReturnValue(InteractionResult.FAIL);

@@ -29,9 +29,6 @@ public interface IConditionHelper {
     @Nullable
     Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName);
 
-    @Nullable
-    <C> Predicate<Tuple<Entity, Entity>> biEntityPredicate(C condition);
-
 
     SerializableDataType<?> biomeDataType();
     
@@ -41,9 +38,6 @@ public interface IConditionHelper {
     
     @Nullable
     Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName);
-
-    @Nullable
-    <C> Predicate<Holder<Biome>> biomePredicate(C condition);
 
 
     SerializableDataType<?> blockDataType();
@@ -55,8 +49,6 @@ public interface IConditionHelper {
     @Nullable
     Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName);
 
-    @Nullable
-    <C> Predicate<BlockInWorld> blockPredicate(C condition);
     
     SerializableDataType<?> damageDataType();
     
@@ -66,9 +58,6 @@ public interface IConditionHelper {
     
     @Nullable
     Predicate<Tuple<DamageSource, Float>> damagePredicate(SerializableData.Instance data, String fieldName);
-
-    @Nullable
-    <C> Predicate<Tuple<DamageSource, Float>> damagePredicate(C condition);
 
 
     SerializableDataType<?> entityDataType();
@@ -80,9 +69,6 @@ public interface IConditionHelper {
     @Nullable
     Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName);
 
-    @Nullable
-    <C> Predicate<Entity> entityPredicate(C condition);
-
     
     SerializableDataType<?> fluidDataType();
     
@@ -93,9 +79,6 @@ public interface IConditionHelper {
     @Nullable
     Predicate<FluidState> fluidPredicate(SerializableData.Instance data, String fieldName);
 
-    @Nullable
-    <C> Predicate<FluidState> fluidPredicate(C condition);
-
 
     SerializableDataType<?> itemDataType();
     
@@ -105,8 +88,5 @@ public interface IConditionHelper {
     
     @Nullable
     Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName);
-
-    @Nullable
-    <C> Predicate<ItemStack> itemPredicate(C condition);
 
 }

@@ -12,8 +12,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 @Deprecated
 public class SetTexturePower extends Power {
-    public final ResourceLocation textureLocation;
-    public final PlayerModelType model;
+    private final ResourceLocation textureLocation;
+    private final PlayerModelType model;
 
     public SetTexturePower(PowerType<?> type, LivingEntity entity, ResourceLocation textureLocation, PlayerModelType model) {
         super(type, entity);
@@ -21,10 +21,19 @@ public class SetTexturePower extends Power {
         this.model = model;
     }
 
+    public ResourceLocation getTextureLocation() {
+        return textureLocation;
+    }
+
+
+    public PlayerModelType getModel() {
+        return model;
+    }
+
     public static class Factory extends SimplePowerFactory<SetTexturePower> {
 
         public Factory() {
-            super("prevent_label_render",
+            super("set_texture",
                     new SerializableData()
                             .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
                             .add("player_model", ApugliDataTypes.PLAYER_MODEL_TYPE, null),

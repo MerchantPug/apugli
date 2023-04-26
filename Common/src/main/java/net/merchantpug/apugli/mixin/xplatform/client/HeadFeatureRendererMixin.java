@@ -1,7 +1,8 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.merchantpug.apugli.util.ModifyEquippedItemRenderUtil;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
@@ -19,26 +20,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(CustomHeadLayer.class)
 public abstract class HeadFeatureRendererMixin<T extends LivingEntity, M extends EntityModel<T> & HeadedModel> extends RenderLayer<T, M> {
-    @Shadow @Final private float scaleX;
-
-    @Shadow @Final private float scaleY;
-
-    @Shadow @Final private float scaleZ;
-
-    @Shadow @Final private ItemInHandRenderer heldItemRenderer;
-
     public HeadFeatureRendererMixin(RenderLayerParent<T, M> context) {
         super(context);
     }
 
-    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
     private void preventHeadRender(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = PowerHolderComponent.getPowers(livingEntity, ModifyEquippedItemRenderPower.class);
-        modifyEquippedItemRenderPowers.forEach(power -> {
-            if(power.slot == EquipmentSlot.HEAD) ModifyEquippedItemRenderUtil.renderIndividualStackOnHead((CustomHeadLayer<?, ?>)(Object) this, matrixStack, vertexConsumerProvider, i, livingEntity, f, power.scale * this.scaleX, power.scale * this.scaleY, power.scale * this.scaleZ, power.stack, this.heldItemRenderer);
-        });
-        if(modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && power.slot == EquipmentSlot.HEAD)) ci.cancel();
+        List<ModifyEquippedItemRenderPower> powers = Services.POWER.getPowers(livingEntity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
+        if(powers.stream().anyMatch(p -> p.shouldOverride() && p.getSlot() == EquipmentSlot.HEAD)) {
+            ci.cancel();
+        }
     }
 }

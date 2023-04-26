@@ -8,10 +8,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 public class EntityTextureOverlayPower extends TextureOrUrlPower {
-    public final boolean showFirstPerson;
-    public final boolean usesRenderingPowers;
+    private final boolean showFirstPerson;
+    private final boolean usesRenderingPowers;
     private final boolean renderPlayerOuterLayer;
-    public final boolean renderOriginalModel;
+    private final boolean renderOriginalModel;
 
     public EntityTextureOverlayPower(PowerType<?> type, LivingEntity entity, ResourceLocation textureLocation, String textureUrl, boolean showFirstPerson, boolean usesRenderingPowers, boolean renderPlayerOuterLayer, boolean renderOriginalModel) {
         super(type, entity, textureLocation, textureUrl);

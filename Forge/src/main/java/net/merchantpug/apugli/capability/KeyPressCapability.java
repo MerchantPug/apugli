@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -100,7 +101,7 @@ public class KeyPressCapability implements IKeyPressCapability, ICapabilityProvi
 
     public void sync() {
         if (provider.level.isClientSide) return;
-        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> provider), new UpdateKeysPressedPacket(this.currentlyUsedKeys, this.previouslyUsedKeys));
+        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> provider), new SyncKeyPressCapabilityPacket(provider.getId(), keysToCheck, currentlyUsedKeys));
     }
 
     @Override

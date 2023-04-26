@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.xplatform.client;
+package net.merchantpug.apugli.mixin.fabric.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.merchantpug.apugli.platform.Services;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<T extends Entity> {
+
     @Inject(method = "renderNameTag", at = @At("HEAD"), cancellable = true)
     private void cancelLabelRender(T entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if(!(entity instanceof Player player)) return;
@@ -25,4 +26,5 @@ public abstract class EntityRendererMixin<T extends Entity> {
             ci.cancel();
         }
     }
+
 }

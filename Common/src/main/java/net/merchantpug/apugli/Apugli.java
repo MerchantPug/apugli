@@ -24,6 +24,12 @@ public class Apugli {
     private static MinecraftServer server;
     
     public static void init() {
+        String[] splitVersion = VERSION.split("\\.");
+        SEMVER = new int[splitVersion.length];
+        for(int i = 0; i < SEMVER.length; i++) {
+            SEMVER[i] = Integer.parseInt(splitVersion[i]);
+        }
+
         ApugliBiEntityActions.registerAll();
         ApugliBlockActions.registerAll();
         ApugliEntityActions.registerAll();
@@ -35,6 +41,10 @@ public class Apugli {
         ApugliDamageConditions.registerAll();
 
         ApugliPowers.registerAll();
+    }
+
+    public static void logInitMessage() {
+        Apugli.LOG.info("Apugli " + Apugli.VERSION + " has initialized. Powering up your powered up game.");
     }
 
     public static MinecraftServer getServer() {

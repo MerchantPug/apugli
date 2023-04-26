@@ -10,9 +10,11 @@ public class ApugliEntityActions {
     public static void registerAll() {
         register("explode", new ExplodeAction());
         register("fire_projectile", new FireProjectileAction());
-        register("ray_cast", new RaycastAction());
+        register("raycast", new RaycastAction());
+        register("resource_transfer", new ResourceTransferAction());
         register("set_no_gravity", new SetNoGravityAction());
         register("spawn_item", new SpawnItemAction());
+        register("spawn_particles", new SpawnParticlesAction());
         register("zombify_villager", new ZombifyVillagerAction());
     }
     

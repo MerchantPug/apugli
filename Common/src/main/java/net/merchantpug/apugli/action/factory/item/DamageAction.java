@@ -25,9 +25,11 @@ package net.merchantpug.apugli.action.factory.item;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.ActionOnDurabilityChangePower;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -41,7 +43,6 @@ import org.apache.commons.lang3.mutable.Mutable;
 
 import java.util.function.Consumer;
 
-//TODO: fix ActionOnDurabilityChange
 public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemStack>>> {
     
     @Override
@@ -72,10 +73,10 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
         int newDamage = stack.getDamageValue() + damage;
         if(newDamage >= stack.getMaxDamage()) {
             if(entity instanceof LivingEntity holder) {
-                PowerHolderComponent.getPowers(holder, ActionOnDurabilityChange.class)
+                Services.POWER.getPowers(holder, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get())
                     .stream()
                     .filter(p -> p.doesApply(stack))
-                    .forEach(ActionOnDurabilityChange::executeBreakAction);
+                    .forEach(ActionOnDurabilityChangePower::executeBreakAction);
                 EquipmentSlot equipmentSlot = null;
                 for(EquipmentSlot slotValue : EquipmentSlot.values()) {
                     ItemStack slotStack = holder.getItemBySlot(slotValue);
@@ -94,18 +95,6 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
             stack.setDamageValue(0);
         } else {
             stack.setDamageValue(newDamage);
-            if(entity instanceof LivingEntity holder) {
-                if(amount < 0) {
-                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class)
-                        .stream()
-                        .filter(p -> p.doesApply(stack))
-                        .forEach(ActionOnDurabilityChange::executeIncreaseAction);
-                } else {
-                    PowerHolderComponent.getPowers(stackHolder, ActionOnDurabilityChange.class)
-                        .stream().filter(p -> p.doesApply(stack))
-                        .forEach(ActionOnDurabilityChange::executeDecreaseAction);
-                }
-            }
         }
     }
 

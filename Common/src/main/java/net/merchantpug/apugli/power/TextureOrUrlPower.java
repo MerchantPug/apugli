@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public abstract class TextureOrUrlPower extends Power {
-    public final ResourceLocation textureLocation;
-    public final String textureUrl;
+    protected final ResourceLocation textureLocation;
+    protected final String textureUrl;
 
     public TextureOrUrlPower(PowerType<?> type, LivingEntity entity, ResourceLocation textureLocation, String textureUrl) {
         super(type, entity);

@@ -39,10 +39,9 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
         //Furnace-like
         if(
             data.isPresent("burn_time") &&
-            state.getBlock() instanceof AbstractFurnaceBlock &&
             level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntityAccessor furnace
         ) {
-            level.setBlock(pos, state.setValue(LIT, true).setValue(LIT, true), 2);
+            level.setBlock(pos, state.setValue(LIT, true), 2);
             int burnTime = data.getInt("burn_time");
             if(furnace.getCookingProgress() < burnTime) {
                 furnace.setLitTime(burnTime);
@@ -54,7 +53,7 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
             state.getBlock() instanceof CampfireBlock &&
             state.getValue(LIT)
         ) {
-            level.setBlock(block.getMiddle(), state.setValue(LIT, true).setValue(LIT, true), 2);
+            level.setBlock(block.getMiddle(), state.setValue(LIT, true), 2);
         //Brewing Stand
         } else if(
             data.isPresent("brew_time") &&

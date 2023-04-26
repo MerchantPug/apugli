@@ -52,13 +52,6 @@ public class FabricConditionHelper implements IConditionHelper {
         return data.get(fieldName);
     }
 
-    @Override
-    public @Nullable <C> Predicate<Tuple<Entity, Entity>> biEntityPredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
-    }
 
     @Override
     public SerializableDataType<?> biomeDataType() {
@@ -80,14 +73,6 @@ public class FabricConditionHelper implements IConditionHelper {
     @Nullable
     public Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
-    }
-
-    @Override
-    public @Nullable <C> Predicate<Holder<Biome>> biomePredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
     }
 
 
@@ -113,14 +98,6 @@ public class FabricConditionHelper implements IConditionHelper {
         return data.get(fieldName);
     }
 
-    @Override
-    public @Nullable <C> Predicate<BlockInWorld> blockPredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
-    }
-
 
     @Override
     public SerializableDataType<?> damageDataType() {
@@ -144,13 +121,6 @@ public class FabricConditionHelper implements IConditionHelper {
         return data.get(fieldName);
     }
 
-    @Override
-    public @Nullable <C> Predicate<Tuple<DamageSource, Float>> damagePredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
-    }
 
     @Override
     public SerializableDataType<?> entityDataType() {
@@ -173,14 +143,6 @@ public class FabricConditionHelper implements IConditionHelper {
     @Nullable
     public Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
-    }
-
-    @Override
-    public @Nullable <C> Predicate<Entity> entityPredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
     }
 
 
@@ -206,14 +168,6 @@ public class FabricConditionHelper implements IConditionHelper {
         return data.get(fieldName);
     }
 
-    @Override
-    public @Nullable <C> Predicate<FluidState> fluidPredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
-    }
-
 
     @Override
     public SerializableDataType<?> itemDataType() {
@@ -235,14 +189,6 @@ public class FabricConditionHelper implements IConditionHelper {
     @Nullable
     public Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
-    }
-
-    @Override
-    public @Nullable <C> Predicate<ItemStack> itemPredicate(C condition) {
-        if (!(condition instanceof ConditionFactory.Instance predicate)) {
-            return null;
-        }
-        return predicate;
     }
 
 }

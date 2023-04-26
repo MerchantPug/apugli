@@ -8,8 +8,8 @@ public class AttackTargetConditionCondition extends AttackConditionsCondition {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        if (entity instanceof LivingEntity living && living.getLastHurtByMob() != null) {
-            return check(data, living.getLastHurtByMob(), living);
+        if (entity instanceof LivingEntity living && living.getLastHurtMob() != null) {
+            return check(data, living, living.getLastHurtMob());
         }
         return false;
     }

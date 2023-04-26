@@ -12,6 +12,7 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -37,20 +38,55 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         F factory = Services.load(factoryClass);
         return (RegistryObject<F>)(Object)ApugliRegisters.POWERS.register(name, () -> (PowerFactory<?>) factory);
     }
-    
+
+    @Override
+    public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
+        return (P) powerType.get(entity);
+    }
+
+    @Override
+    public <P> ResourceLocation getIdFromPower(LivingEntity entity, P power) {
+        return ((Power)power).getType().getIdentifier();
+    }
+
     @Override
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory) {
         return PowerHolderComponent.getPowers(entity, factory.getPowerClass());
     }
-    
+
+    @Override
+    public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive) {
+        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+            return PowerHolderComponent.KEY.get(entity).getPowers(factory.getPowerClass(), includeInactive);
+        }
+        return List.of();
+    }
+
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory) {
-        List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers();
-        Class<P> cls = factory.getPowerClass();
         List<P> list = new LinkedList<>();
-        for(Power power : powers) {
-            if(cls.isAssignableFrom(power.getClass()) && power.isActive()) {
-                list.add((P)power);
+        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+            List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers(Power.class);
+            Class<P> cls = factory.getPowerClass();
+            for(Power power : powers) {
+                if(cls.isAssignableFrom(power.getClass()) && power.isActive()) {
+                    list.add((P)power);
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive) {
+        List<P> list = new LinkedList<>();
+        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+            List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers(Power.class, includeInactive);
+            Class<P> cls = factory.getPowerClass();
+            for(Power power : powers) {
+                if(cls.isAssignableFrom(power.getClass()) && (includeInactive || power.isActive())) {
+                    list.add((P)power);
+                }
             }
         }
         return list;
@@ -77,6 +113,11 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public SerializableDataType<PowerTypeReference> getPowerTypeDataType() {
         return ApoliDataTypes.POWER_TYPE;
+    }
+
+    @Override
+    public <P> boolean isActive(P power, LivingEntity entity) {
+        return ((Power)power).isActive();
     }
 
     @Override

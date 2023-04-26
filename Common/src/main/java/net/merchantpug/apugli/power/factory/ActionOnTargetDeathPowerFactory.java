@@ -17,8 +17,8 @@ public interface ActionOnTargetDeathPowerFactory<P> extends CooldownPowerFactory
             .add("includes_prime_adversary", SerializableDataTypes.BOOLEAN, true);
     }
     
-    default void onTargetDeath(LivingEntity actor, Entity target, DamageSource damageSource, float damageAmount) {
-        for(P power : Services.POWER.getPowers(actor, this)) {
+    default void onTargetDeath(LivingEntity actor, Entity target, DamageSource damageSource, float damageAmount, boolean primeAdversary) {
+        for(P power : Services.POWER.getPowers(actor, this).stream().filter(p -> !primeAdversary || getDataFromPower(p).getBoolean("includes_prime_adversary")).toList()) {
             if(canUse(power, actor)) {
                 SerializableData.Instance data = getDataFromPower(power);
                 if(Services.CONDITION.checkBiEntity(data, "bientity_condition", actor, target) &&

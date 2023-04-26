@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ModifyEnchantmentDamageDealtPower extends AbstractValueModifyingPower<ModifyEnchantmentDamageDealtPower.Instance> implements ModifyEnchantmentDamageDealtPowerFactory<ModifyEnchantmentDamageDealtPower.Instance> {
 
     public ModifyEnchantmentDamageDealtPower() {
-        super("modify_breeding_cooldown", ModifyEnchantmentDamagePowerFactory.getSerializableData(),
+        super("modify_enchantment_damage_dealt", ModifyEnchantmentDamagePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }

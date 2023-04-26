@@ -9,17 +9,15 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
-        classpath group: 'gradle.plugin.com.github.johnrengelman', name: 'shadow', version: '7.1.2'
     }
 }
 apply plugin: 'java'
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
-archivesBaseName = "${mod_id}-forge-${minecraft_version}"
+archivesBaseName = "${mod_id}-forge"
 version = "${rootProject.version}+${rootProject.minecraft_version}-forge"
 
 repositories {
@@ -30,16 +28,12 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+
+    maven { url 'https://maven.theillusivec4.top' }
+
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
     }
     flatDir {
         dirs "$rootDir/libs"
@@ -64,26 +58,24 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
+            ideaModule "${rootProject.name}.${project.name}.test"
             taskName 'Client'
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
                 modClientRun {
                     source sourceSets.main
-                    source project(":Common").sourceSets.main
                 }
             }
         }
 
         server {
             workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
+            ideaModule "${rootProject.name}.${project.name}.test"
             taskName 'Server'
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
                 modServerRun {
                     source sourceSets.main
-                    source project(":Common").sourceSets.main
                 }
             }
         }
@@ -97,7 +89,9 @@ minecraft {
             mods {
                 modDataRun {
                     source sourceSets.main
+                    source sourceSets.test
                     source project(":Common").sourceSets.main
+                    source project(":Common").sourceSets.test
                 }
             }
         }
@@ -112,8 +106,11 @@ dependencies {
     //Apoli
     implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
     implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
+    // Caelus
+    implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
-    implementation "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    minecraftLibrary "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    jarJar(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: '[0.0.,0.1)')
     annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
     //Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -142,22 +139,12 @@ processResources {
     }
 }
 
-jar.finalizedBy('reobfJar')
-
-shadowJar {
-    classifier ''
-    configurations = [project.configurations.compileClasspath]
-    dependencies {
-        include(dependency {
-            it.moduleGroup == 'com.github.merchantpug'
-        })
-        include dependency("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
-    }
-    relocate 'com.llamalad7.mixinextras', 'com.github.merchantpug.apugli.shadow.llamalad7.mixinextras'
+processTestResources {
+    outputs.upToDateWhen { false }
+    from project(":Common").sourceSets.test.resources
 }
 
-shadowJar.finalizedBy(reobf.maybeCreate('shadowJar'))
-build.dependsOn('shadowJar')
+jar.finalizedBy('reobfJar')
 
 publishing {
     publications {

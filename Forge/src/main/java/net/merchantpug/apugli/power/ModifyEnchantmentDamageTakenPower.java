@@ -8,7 +8,7 @@ import net.merchantpug.apugli.power.factory.ModifyBreedingCooldownPowerFactory;
 import net.merchantpug.apugli.power.factory.ModifyEnchantmentDamageDealtPowerFactory;
 import net.merchantpug.apugli.power.factory.ModifyEnchantmentDamageTakenPowerFactory;
 
-@AutoService(ModifyEnchantmentDamageTakenPower.class)
+@AutoService(ModifyEnchantmentDamageTakenPowerFactory.class)
 public class ModifyEnchantmentDamageTakenPower extends AbstractValueModifyingPower implements ModifyEnchantmentDamageTakenPowerFactory<ConfiguredPower<FabricValueModifyingConfiguration, ?>> {
 
     public ModifyEnchantmentDamageTakenPower() {

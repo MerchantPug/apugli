@@ -17,7 +17,7 @@ public class ResourceTransferAction implements IActionFactory<Entity> {
         return new SerializableData()
             .add("resource", Services.POWER.getPowerTypeDataType())
             .add("provider", Services.POWER.getPowerTypeDataType())
-            .add("operation", ApoliDataTypes.RESOURCE_OPERATION);
+            .add("operation", ApoliDataTypes.RESOURCE_OPERATION, ResourceOperation.ADD);
     }
     
     public void execute(SerializableData.Instance data, Entity entity) {

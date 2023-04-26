@@ -13,9 +13,13 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(HumanoidArmorLayer.class)
 public interface ArmorFeatureRendererAccessor<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> {
-    @Invoker
+    @Invoker("setPartVisibility")
     void invokeSetVisible(A bipedModel, EquipmentSlot slot);
 
-    @Invoker
+    @Invoker("renderModel")
     void invokeRenderArmorParts(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, boolean usesSecondLayer, A model, boolean legs, float red, float green, float blue, @Nullable String overlay);
+
+    @Invoker
+    A invokeGetArmorModel(EquipmentSlot slot);
+
 }
