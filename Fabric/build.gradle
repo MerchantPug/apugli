@@ -95,12 +95,14 @@ loom {
     runs {
         client {
             client()
+            source(sourceSets.test)
             setConfigName("Fabric Client")
             ideConfigGenerated(true)
             runDir("run")
         }
         server {
             server()
+            source(sourceSets.test)
             setConfigName("Fabric Server")
             ideConfigGenerated(true)
             runDir("run")
