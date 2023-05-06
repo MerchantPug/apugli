@@ -7,14 +7,13 @@ import net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<ModifyEnchantmentLevelPower.Instance> implements ModifyEnchantmentLevelPowerFactory<ModifyEnchantmentLevelPower.Instance> {
     private static final ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ConcurrentHashMap<Instance, Pair<Integer, Boolean>>>> PREVIOUS_POWER_STATE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Integer>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
         super("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.getSerializableData(),
@@ -32,15 +31,19 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
         return ENTITY_ITEM_ENCHANTS;
     }
 
-    @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ConcurrentHashMap<Instance, Pair<Integer, Boolean>>>> getPreviousPowerState() {
-        return PREVIOUS_POWER_STATE;
+    public ConcurrentHashMap<String, ConcurrentHashMap<Instance, Integer>> getPowerModifierCache() {
+        return POWER_MODIFIER_CACHE;
     }
 
     public static class Instance extends AbstractValueModifyingPower.Instance {
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
+        }
+
+        @Override
+        public void onAdded() {
+            ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(this, entity);
         }
 
         @Override
