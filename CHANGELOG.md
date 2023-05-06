@@ -11,7 +11,7 @@
 
 **Entity Action Types**
 - `apugli:explode` no longer removes effects within the `apugli:charged` tag mob effect tag upon being triggered. Please do this yourself.
-- `apugli:raycast` will now act upon entity raycasts before block raycasts, block raycasts no longer run upon a successful entity raycast.
+- `apugli:raycast` will now act upon entity raycasts before block raycasts, block raycasts will no longer run upon a successful entity raycast.
 
 **Entity Condition Types**
 - `apugli:raycast` now prioritises an entity raycast if one is found.
