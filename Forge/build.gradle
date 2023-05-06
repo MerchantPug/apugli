@@ -17,8 +17,10 @@ apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
-archivesBaseName = "${mod_id}-forge"
-version = "${rootProject.version}+${rootProject.minecraft_version}-forge"
+archivesBaseName = "${mod_name}"
+version = "${rootProject.version}+${minecraft_version}-forge"
+
+jarJar.enable()
 
 repositories {
     maven {
@@ -142,6 +144,14 @@ processResources {
 processTestResources {
     outputs.upToDateWhen { false }
     from project(":Common").sourceSets.test.resources
+}
+
+tasks.jarJar.configure {
+    archiveClassifier = ""
+}
+
+reobf {
+    jarJar {}
 }
 
 jar.finalizedBy('reobfJar')

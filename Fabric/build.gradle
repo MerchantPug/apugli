@@ -4,8 +4,8 @@ plugins {
     id 'idea'
 }
 
-archivesBaseName = "${mod_id}-fabric-${minecraft_version}"
-version = "${rootProject.version}+${rootProject.minecraft_version}-fabric"
+archivesBaseName = "${mod_name}"
+version = "${rootProject.version}+${minecraft_version}-fabric"
 
 loom {
     accessWidenerPath = file("src/main/resources/apugli.accesswidener")
