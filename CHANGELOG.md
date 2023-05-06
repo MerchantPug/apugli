@@ -21,6 +21,7 @@
 
 **Bugfixes**
 - Fixed `apugli:modify_damage_taken` running more times than what was necessary.
-- Fixed `performVersionCheck` not mattering in the serversided config.
+- Fixed `performVersionCheck` not mattering in the serversided config. #29
 - Fixed `apugli:prevent_breeding` bientity actions setting the love ticks value to too little.
-- Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition.
+- Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition. #21 
+  - PR #30 - Jarva

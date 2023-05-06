@@ -13,12 +13,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-// TODO: Correct my attempt at caching.
 public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPowerFactory<P> {
 
     static SerializableData getSerializableData() {
@@ -42,7 +40,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default boolean doesApply(P power, Enchantment enchantment, ItemStack self) {
-        return enchantment.equals(getDataFromPower(power).get("enchantment")) && Services.CONDITION.checkItem(getDataFromPower(power), "item_condition", self);
+        return enchantment.equals(getDataFromPower(power).get("enchantment")) && checkItemCondition(power, self);
     }
 
     default boolean checkItemCondition(P power, ItemStack self) {
@@ -96,7 +94,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living) {
             ConcurrentHashMap<ListTag, ListTag> itemEnchants = getEntityItemEnchants().computeIfAbsent(entity.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
-            if (shouldReapplyEnchantments(living, self, originalTag)) {
+            if (shouldReapplyEnchantments(living)) {
                 return itemEnchants.compute(originalTag, (tag, tag2) -> generateEnchantments(tag, self));
             }
             return itemEnchants.getOrDefault(originalTag, originalTag);
@@ -112,7 +110,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         return false;
     }
 
-    default boolean shouldReapplyEnchantments(LivingEntity living, ItemStack self, ListTag originalTag) {
+    default boolean shouldReapplyEnchantments(LivingEntity living) {
         List<P> powers = Services.POWER.getPowers(living, this, true);
         ConcurrentHashMap<P, Integer> cache = getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
         return powers.stream().anyMatch(power -> updateIfDifferent(cache, power, (int) Services.PLATFORM.applyModifiers(living, getModifiers(power, living), 0)));

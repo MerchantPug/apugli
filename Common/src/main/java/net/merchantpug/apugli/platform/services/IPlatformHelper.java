@@ -14,7 +14,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -73,9 +72,8 @@ public interface IPlatformHelper {
 
     double applyModifiers(Entity entity, List<?> modifiers, double value);
 
-    default <M, P> double applyModifiers(LivingEntity entity, ValueModifyingPowerFactory<P> power, double value, Predicate<P> predicate) {
-        List<M> modifierList = new ArrayList<>();
-        Services.POWER.getPowers(entity, power).stream().filter(p -> predicate == null || predicate.test(p)).forEach(p -> modifierList.addAll((List<M>)power.getModifiers(p, entity)));
+    default <P> double applyModifiers(LivingEntity entity, ValueModifyingPowerFactory<P> power, double value, Predicate<P> predicate) {
+        List<?> modifierList = Services.POWER.getPowers(entity, power).stream().filter(p -> predicate == null || predicate.test(p)).map(p -> power.getModifiers(p, entity)).flatMap(List::stream).toList();;
         return applyModifiers(entity, modifierList, value);
     }
 
