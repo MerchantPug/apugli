@@ -6,6 +6,7 @@
 - Added `apugli:action_when_projectile_hit` power type.
 - `apugli:bunny_hop` now stacks when you have multiple powers with this power type.
 - Added `entity_action` and `damage_condition` fields to `apugli:action_on_harm` and `apugli:action_when_harmed` powser types.
+- Added `item_condition` field to `apugli:modify_enchantment_level`.
 - Removed `target_condition`, `self_action` and `target_action` fields from `apugli:modify_enchantment_damage_taken` as they didn't do anything and weren't present in `apugli:modify_enchantment_damage_dealt`.
 
 **Entity Action Types**

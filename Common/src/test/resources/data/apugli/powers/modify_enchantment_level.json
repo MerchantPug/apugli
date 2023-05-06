@@ -14,13 +14,19 @@
     "enchantment": "minecraft:fortune",
     "modifier": {
       "operation": "addition",
-      "value": 1,
+      "value": 25,
       "resource": "*:*_resource"
     },
     "condition": {
       "type": "apoli:enchantment",
       "enchantment": "minecraft:protection",
       "calculation": "max",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "item_condition": {
+      "type": "apoli:enchantment",
+      "enchantment": "minecraft:silk_touch",
       "comparison": "==",
       "compare_to": 0
     }
