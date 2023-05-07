@@ -1,0 +1,9 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "slot": "OFFHAND",
+  "decrease_action": {
+    "type": "apoli:damage",
+    "amount": -1,
+    "ignore_unbreaking": true
+  }
+}

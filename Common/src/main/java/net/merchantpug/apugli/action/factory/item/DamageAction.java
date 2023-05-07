@@ -76,7 +76,7 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
                 Services.POWER.getPowers(holder, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get())
                     .stream()
                     .filter(p -> p.doesApply(stack))
-                    .forEach(ActionOnDurabilityChangePower::executeBreakAction);
+                    .forEach(p -> p.executeBreakAction(stack));
                 EquipmentSlot equipmentSlot = null;
                 for(EquipmentSlot slotValue : EquipmentSlot.values()) {
                     ItemStack slotStack = holder.getItemBySlot(slotValue);

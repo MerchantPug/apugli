@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.power.ActionOnDurabilityChangePower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
@@ -58,12 +57,11 @@ public abstract class ItemStackMixin {
         int damageDifference = newDamage - previousDamage;
         Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(power -> {
             if (damageDifference > 0) {
-                power.executeDecreaseAction();
+                power.executeDecreaseAction((ItemStack)(Object)this);
             } else if (damageDifference < 0) {
-                power.executeIncreaseAction();
+                power.executeIncreaseAction((ItemStack)(Object)this);
             }
         });
-
     }
 
     public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
@@ -75,7 +73,7 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "hurtAndBreak", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
     private <T extends LivingEntity> void executeActionBroken(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
-        Services.POWER.getPowers(entity, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(ActionOnDurabilityChangePower::executeBreakAction);
+        Services.POWER.getPowers(entity, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(p -> p.executeBreakAction((ItemStack)(Object)this));
     }
 
 

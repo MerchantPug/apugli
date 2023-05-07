@@ -1,0 +1,14 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "item_condition": {
+    "type": "apoli:ingredient",
+    "ingredient": {
+      "tag": "apugli:pickaxes"
+    }
+  },
+  "decrease_action": {
+    "type": "apoli:damage",
+    "amount": -1,
+    "ignore_unbreaking": true
+  }
+}

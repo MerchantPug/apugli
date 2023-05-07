@@ -10,7 +10,6 @@
     "common.BlockItemMixin",
     "common.EntityMixin",
     "common.ExplosionMixin",
-    "common.ItemConditionsMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
     "common.PlayerEntityMixin",
