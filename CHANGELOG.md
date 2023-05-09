@@ -8,6 +8,7 @@
 - Re-added `slot` field to `apugli:action_on_durability_change` power type.
 - Added `increase_item_action`, `decrease_item_action`, and `break_item_action` to `apugli:action_on_durability_change` power type.
 - Internally rewrote `apugli:action_on_durability_change` power type.
+- `apugli:action_on_durability_change` now only executes one action per power to prevent .
 - Added `entity_action` and `damage_condition` fields to `apugli:action_on_harm` and `apugli:action_when_harmed` power types.
 - Added `item_condition` field to `apugli:modify_enchantment_level` power type.
 - Removed `target_condition`, `self_action` and `target_action` fields from `apugli:modify_enchantment_damage_taken` as they didn't do anything and weren't present in `apugli:modify_enchantment_damage_dealt`.
