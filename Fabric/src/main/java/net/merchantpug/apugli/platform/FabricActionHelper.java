@@ -115,7 +115,7 @@ public class FabricActionHelper implements IActionHelper {
     
     @Override
     public Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName) {
-        return (levelAndStack) -> ((Consumer<ItemStack>)data.get(fieldName)).accept(levelAndStack.getB().getValue());
+        return (data.isPresent(fieldName)) ? (levelAndStack) -> ((Consumer<Tuple<Level, ItemStack>>)data.get(fieldName)).accept(new Tuple<>(levelAndStack.getA(), levelAndStack.getB().getValue())) : null;
     }
     
 }
