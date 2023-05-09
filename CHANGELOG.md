@@ -1,6 +1,6 @@
 **Rewrite**
 - Apugli is now a multiloader mod. This means that it is now able to be simultaneously developed for Fabric and Forge.
-    - Origins Fabric based development should not end up waiting for Origins Forge to update as I'll be making rough ports to Fabric only branches.
+    - Origins Fabric based development should not end up waiting for Origins Forge to update as I can detach the Forge module at any time.
 
 **Power Types**
 - Added `apugli:action_when_projectile_hit` power type.
