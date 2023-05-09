@@ -1,15 +1,11 @@
 plugins {
     id 'java'
-    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
 }
 
 archivesBaseName = "${mod_name}"
 version = "${rootProject.version}+${minecraft_version}-common"
-
-minecraft {
-    version(minecraft_version)
-}
 
 repositories {
     maven {
@@ -17,15 +13,34 @@ repositories {
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
     maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
+        name = "Ladysnake Libs"
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
+    }
+    maven {
+        name = "Cafeteria"
+        url = 'https://maven.cafeteria.dev'
+        content {
+            includeGroup 'net.adriantodt.fabricmc'
+        }
+    }
+    maven {
+        name = "Jamie's White Shirt"
+        url "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
+    maven {
+        name = "Shedaniel"
+        url "https://maven.shedaniel.me/"
+    }
+    maven {
+        name = "TerraformersMC"
+        url "https://maven.terraformersmc.com/"
     }
     maven {
         name = "Modrinth"
@@ -40,16 +55,24 @@ repositories {
     mavenCentral()
 }
 
-minecraft {
-    accessWideners "src/main/resources/apugli.common.accesswidener"
+loom {
+    shareCaches()
+    remapArchives = false
+    mixin {
+        useLegacyMixinAp = false
+    }
+    accessWidenerPath = file("src/main/resources/apugli.common.accesswidener")
 }
 
 dependencies {
+    // Minecraft
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
     //Apoli
-    compileOnly "io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}"
-    compileOnly "io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}"
+    modCompileOnly "com.github.eggohito:apoli:${apoli_version}"
     //MixinExtras
     compileOnly "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
     //Mixin
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'
