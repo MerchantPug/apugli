@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 @Implements(@Interface(iface = ItemStackAccess.class, prefix = "apugli$"))
@@ -34,6 +33,8 @@ public abstract class ItemStackMixin {
     @Shadow public abstract CompoundTag getOrCreateTag();
 
     @Shadow public abstract ItemStack copy();
+
+    @Shadow public abstract int getMaxDamage();
 
     @Unique
     public Entity apugli$entity;
@@ -51,14 +52,16 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "setDamageValue", at = @At(value = "HEAD"))
-    private void executeDurabilityChangeActions(int newDamage, CallbackInfo ci) {
+    private void executeDurabilityChangeActions(int addition, CallbackInfo ci) {
         if (!(apugli$getEntity() instanceof LivingEntity living)) return;
         int previousDamage = this.getOrCreateTag().getInt("Damage");
-        int damageDifference = newDamage - previousDamage;
+        int newDamage = previousDamage + addition;
         Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(power -> {
-            if (damageDifference > 0) {
+            if (newDamage >= this.getMaxDamage()) {
+                power.executeBreakAction((ItemStack)(Object)this);
+            } if (newDamage > 0) {
                 power.executeDecreaseAction((ItemStack)(Object)this);
-            } else if (damageDifference < 0) {
+            } else if (newDamage < 0) {
                 power.executeIncreaseAction((ItemStack)(Object)this);
             }
         });
@@ -69,13 +72,6 @@ public abstract class ItemStackMixin {
     public Entity apugli$getEntity() {
         return this.apugli$entity;
     }
-
-
-    @Inject(method = "hurtAndBreak", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
-    private <T extends LivingEntity> void executeActionBroken(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
-        Services.POWER.getPowers(entity, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(p -> p.executeBreakAction((ItemStack)(Object)this));
-    }
-
 
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
     private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {

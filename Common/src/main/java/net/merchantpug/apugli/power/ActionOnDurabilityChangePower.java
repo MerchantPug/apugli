@@ -1,7 +1,7 @@
 package net.merchantpug.apugli.power;
 
+import com.mojang.datafixers.util.Either;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.Power;
@@ -19,6 +19,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -31,6 +32,8 @@ public class ActionOnDurabilityChangePower extends Power {
     @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemDecreaseAction;
     @Nullable private final Consumer<Entity> breakAction;
     @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemBreakAction;
+
+    Set<Either<EquipmentSlot, Integer>> operatedStacks = new HashSet<>();
 
     public ActionOnDurabilityChangePower(PowerType<?> type, LivingEntity entity,
                                          @Nullable EquipmentSlot slot,
@@ -50,89 +53,81 @@ public class ActionOnDurabilityChangePower extends Power {
         this.itemDecreaseAction = itemDecreaseAction;
         this.breakAction = breakAction;
         this.itemBreakAction = itemBreakAction;
+        this.setTicking();
+    }
+
+    @Override
+    public void tick() {
+        operatedStacks.clear();
+    }
+
+    @Override
+    public void onRemoved() {
+        operatedStacks.clear();
     }
 
     public boolean doesApply(ItemStack stack) {
         return (slot == null || entity.getItemBySlot(slot).equals(stack)) && (this.itemCondition == null || this.itemCondition.test(stack));
     }
 
-    public void executeIncreaseAction(ItemStack stack) {
-        Mutable<ItemStack> mutable = new MutableObject<>(stack);
-        if(increaseAction != null) {
-            this.increaseAction.accept(entity);
-        }
-        if(itemIncreaseAction != null) {
-            this.itemIncreaseAction.accept(new Tuple<>(entity.level, mutable));
-        }
-        boolean succeededCheck = false;
+    private void executeAction(ItemStack stack,
+                               Consumer<Entity> entityAction,
+                               Consumer<Tuple<Level, Mutable<ItemStack>>> itemAction) {
+        Optional<EquipmentSlot> equipmentSlot = Optional.empty();
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (entity.getItemBySlot(slot).equals(stack)) {
-                entity.setItemSlot(slot, mutable.getValue());
-                succeededCheck = true;
+            if (ItemStack.matches(stack, entity.getItemBySlot(slot))) {
+                equipmentSlot = Optional.of(slot);
                 break;
             }
         }
-        if (!succeededCheck && entity instanceof Player player) {
+        Optional<EquipmentSlot> finalEquipmentSlot = equipmentSlot;
+
+        Optional<Integer> playerInventoryIndex = Optional.empty();
+        if (equipmentSlot.isEmpty() && entity instanceof Player player) {
             for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (player.getInventory().items.get(i).equals(stack)) {
-                    player.getInventory().items.set(i, mutable.getValue());
+                if (ItemStack.matches(stack, player.getInventory().items.get(i))) {
+                    playerInventoryIndex = Optional.of(i);
+                    break;
                 }
             }
         }
+        Optional<Integer> finalPlayerInventoryIndex = playerInventoryIndex;
+
+        if (equipmentSlot.isEmpty() && playerInventoryIndex.isEmpty() || finalEquipmentSlot.isPresent() && operatedStacks.stream().anyMatch(either -> either.left().isPresent() && either.left().get().equals(finalEquipmentSlot.get())) || entity instanceof Player && finalPlayerInventoryIndex.isPresent() && operatedStacks.stream().anyMatch(either -> either.right().isPresent() && either.right().get() == finalPlayerInventoryIndex.get().intValue())) return;
+
+        equipmentSlot.ifPresent(slot1 -> operatedStacks.add(Either.left(slot1)));
+        playerInventoryIndex.ifPresent(index -> operatedStacks.add(Either.right(index)));
+
+        Mutable<ItemStack> mutable = new MutableObject<>(stack);
+
+        if(entityAction != null) {
+            entityAction.accept(entity);
+        }
+        if(itemAction != null) {
+            itemAction.accept(new Tuple<>(entity.level, mutable));
+        }
+
+        if (equipmentSlot.isPresent()) {
+            entity.setItemSlot(equipmentSlot.get(), mutable.getValue());
+        } else if (entity instanceof Player player) {
+            player.getInventory().items.set(playerInventoryIndex.get(), mutable.getValue());
+        }
+    }
+
+    public void executeIncreaseAction(ItemStack stack) {
+        executeAction(stack, increaseAction, itemIncreaseAction);
     }
 
     public void executeDecreaseAction(ItemStack stack) {
-        Mutable<ItemStack> mutable = new MutableObject<>(stack);
-        if (decreaseAction != null) {
-            this.decreaseAction.accept(entity);
-        }
-        if (itemDecreaseAction != null) {
-            this.itemDecreaseAction.accept(new Tuple<>(entity.level, mutable));
-        }
-        boolean succeededCheck = false;
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (entity.getItemBySlot(slot).equals(stack)) {
-                entity.setItemSlot(slot, mutable.getValue());
-                succeededCheck = true;
-                break;
-            }
-        }
-        if (!succeededCheck && entity instanceof Player player) {
-            for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (player.getInventory().items.get(i).equals(stack)) {
-                    player.getInventory().items.set(i, mutable.getValue());
-                }
-            }
-        }
+        executeAction(stack, decreaseAction, itemDecreaseAction);
     }
 
     public void executeBreakAction(ItemStack stack) {
-        Mutable<ItemStack> mutable = new MutableObject<>(stack);
-        if(breakAction != null) {
-            this.breakAction.accept(entity);
-        }
-        if(itemBreakAction != null) {
-            this.itemBreakAction.accept(new Tuple<>(entity.level, mutable));
-        }
-        boolean succeededCheck = false;
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (entity.getItemBySlot(slot).equals(stack)) {
-                entity.setItemSlot(slot, mutable.getValue());
-                succeededCheck = true;
-                break;
-            }
-        }
-        if (!succeededCheck && entity instanceof Player player) {
-            for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (player.getInventory().items.get(i).equals(stack)) {
-                    player.getInventory().items.set(i, mutable.getValue());
-                }
-            }
-        }
+        executeAction(stack, breakAction, itemBreakAction);
     }
-    
+
     public static class Factory extends SimplePowerFactory<ActionOnDurabilityChangePower> {
-    
+
         public Factory() {
             super("action_on_durability_change",
                 new SerializableData()
@@ -156,12 +151,12 @@ public class ActionOnDurabilityChangePower extends Power {
                 ));
             allowCondition();
         }
-    
+
         @Override
         public @NotNull Class<ActionOnDurabilityChangePower> getPowerClass() {
             return ActionOnDurabilityChangePower.class;
         }
-        
+
     }
 
 }

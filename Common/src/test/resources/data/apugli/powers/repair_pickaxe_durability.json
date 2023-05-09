@@ -6,7 +6,7 @@
       "tag": "apugli:pickaxes"
     }
   },
-  "decrease_action": {
+  "decrease_item_action": {
     "type": "apoli:damage",
     "amount": -1,
     "ignore_unbreaking": true
