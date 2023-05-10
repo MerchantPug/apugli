@@ -2,6 +2,9 @@
 - Apugli is now a multiloader mod. This means that it is now able to be simultaneously developed for Fabric and Forge.
     - Origins Fabric based development should not end up waiting for Origins Forge to update as I can detach the Forge module at any time.
 
+**Licensing**
+- Apugli is now licensed as MIT again. (Previously LGPL-3.0-only).
+
 **Power Types**
 - Added `apugli:action_when_projectile_hit` power type.
 - `apugli:bunny_hop` now stacks when you have multiple powers with this power type.
