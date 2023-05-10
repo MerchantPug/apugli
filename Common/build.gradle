@@ -49,8 +49,9 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    flatDir {
-        dirs "$rootDir/libs"
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
     }
     mavenCentral()
 }
@@ -67,7 +68,10 @@ loom {
 dependencies {
     // Minecraft
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+    }
     //Apoli
     modCompileOnly "com.github.eggohito:apoli:${apoli_version}"
     //MixinExtras

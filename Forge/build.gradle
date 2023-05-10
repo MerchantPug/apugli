@@ -3,6 +3,7 @@ buildscript {
         maven { url 'https://maven.minecraftforge.net' }
         maven { url 'https://repo.spongepowered.org/repository/maven-public/' }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -11,11 +12,15 @@ buildscript {
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'maven-publish'
+
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '5.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'eclipse'
+    id 'org.spongepowered.mixin' version '0.+'
+    id 'maven-publish'
+}
 
 archivesBaseName = "${mod_name}"
 version = "${rootProject.version}+${minecraft_version}-forge"
@@ -50,7 +55,7 @@ mixin {
 }
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 
     if(project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
         accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
