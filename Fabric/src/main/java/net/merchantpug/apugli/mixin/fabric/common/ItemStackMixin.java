@@ -4,19 +4,13 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.BucketItemAccessor;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.ItemAccessor;
-import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
-import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
@@ -24,7 +18,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -52,15 +45,6 @@ public abstract class ItemStackMixin {
             }
         }
 
-    }
-    @Inject(method = "finishUsingItem", at = @At("RETURN"))
-    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack stack = (ItemStack)(Object)this;
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
-        if (power.isPresent()) {
-            PowerHolderComponent.KEY.get(user).getPowers(EdibleItemPower.class).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(EdibleItemPower::eat);
-        }
     }
 
 }

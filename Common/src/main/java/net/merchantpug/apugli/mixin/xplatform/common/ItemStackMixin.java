@@ -73,32 +73,6 @@ public abstract class ItemStackMixin {
         return this.apugli$entity;
     }
 
-    @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
-    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack stack = (ItemStack)(Object)this;
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
-        if (power.isPresent()) {
-            ItemStack newStack = this.copy();
-            newStack = user.eat(world, newStack);
-            if (user instanceof Player player && !player.getAbilities().instabuild) {
-                if (power.get().getReturnStack() != null && newStack.isEmpty()) {
-                    cir.setReturnValue(power.get().getReturnStack().copy());
-                } else {
-                    if (power.get().getReturnStack() != null) {
-                        ItemStack stack2 = power.get().getReturnStack().copy();
-                        if (!player.addItem(stack2)) {
-                            player.drop(stack2, false);
-                        }
-                    }
-                    cir.setReturnValue(newStack);
-                }
-            } else {
-                cir.setReturnValue(newStack);
-            }
-        }
-    }
-
     @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
     private void getUseAction(CallbackInfoReturnable<UseAnim> cir) {
         ItemStack stack = (ItemStack)(Object)this;
@@ -129,6 +103,36 @@ public abstract class ItemStackMixin {
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack) && p.getSound() != null).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
+    }
+
+    @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
+    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack stack = (ItemStack)(Object)this;
+        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
+        if (power.isPresent()) {
+            Services.POWER.getPowers(user, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply((ItemStack) (Object) this)).forEach(EdibleItemPower::eat);
+            ItemStack newStack = this.copy();
+            newStack = user.eat(world, newStack);
+            if (Services.PLATFORM.getPlatformName().equals("Fabric")) {
+                newStack.shrink(1);
+            }
+            if (user instanceof Player player && !player.getAbilities().instabuild) {
+                if (power.get().getReturnStack() != null && newStack.isEmpty()) {
+                    cir.setReturnValue(power.get().getReturnStack().copy());
+                } else {
+                    if (power.get().getReturnStack() != null) {
+                        ItemStack stack2 = power.get().getReturnStack().copy();
+                        if (!player.addItem(stack2)) {
+                            player.drop(stack2, false);
+                        }
+                    }
+                    cir.setReturnValue(newStack);
+                }
+            } else {
+                cir.setReturnValue(newStack);
+            }
+        }
     }
 
 }

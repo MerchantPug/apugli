@@ -4,17 +4,19 @@
   "package": "net.merchantpug.apugli.mixin.forge",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.FoodDataMixin",
     "common.ItemStackMixin",
+    "common.LivingEntityMixin",
     "common.accessor.ApoliClientEventHandlerAccessor",
     "common.accessor.FabricPowerFactoryAccessor"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "refmap": "apugli.refmap.json",
   "client": [
     "client.ElytraFeatureRendererMixin",
     "client.accessor.EntityRenderersEventAddLayersAccessor",
     "client.accessor.PlayerModelAccessor"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "apugli.refmap.json"
 }

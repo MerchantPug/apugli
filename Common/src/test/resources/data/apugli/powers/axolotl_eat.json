@@ -10,7 +10,15 @@
     "hunger": 4,
     "saturation": 1,
     "meat": true,
-    "always_edible": true
+    "always_edible": true,
+    "effect": {
+      "effect": {
+        "effect": "minecraft:regeneration",
+        "amplifier": 0,
+        "duration": 80
+      },
+      "chance": 0.8
+    }
   },
   "use_action": "eat",
   "return_stack": {

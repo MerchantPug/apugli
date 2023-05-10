@@ -7,10 +7,6 @@ buildscript {
         mavenCentral()
         gradlePluginPortal()
     }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
-    }
 }
 
 plugins {
@@ -18,7 +14,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'eclipse'
-    id 'org.spongepowered.mixin' version '0.+'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -65,24 +61,30 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.test"
+            ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Client'
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
-                modClientRun {
+                create(mod_id) {
                     source sourceSets.main
+                    source sourceSets.test
+                    source project(":Common").sourceSets.main
+                    source project(":Common").sourceSets.test
                 }
             }
         }
 
         server {
             workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.test"
+            ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Server'
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
-                modServerRun {
+                create(mod_id) {
                     source sourceSets.main
+                    source sourceSets.test
+                    source project(":Common").sourceSets.main
+                    source project(":Common").sourceSets.test
                 }
             }
         }
@@ -94,7 +96,7 @@ minecraft {
             taskName 'Data'
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
-                modDataRun {
+                create(mod_id) {
                     source sourceSets.main
                     source sourceSets.test
                     source project(":Common").sourceSets.main

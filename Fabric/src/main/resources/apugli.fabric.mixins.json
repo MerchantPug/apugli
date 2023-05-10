@@ -8,6 +8,7 @@
     "common.EnchantmentHelperMixin",
     "common.HungerManagerMixin",
     "common.ItemActionsMixin",
+    "common.ItemConditionsMixin",
     "common.ItemPredicateMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",

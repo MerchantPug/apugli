@@ -56,7 +56,7 @@ public class ApugliForgeClientEventHandler {
         ((EntityRenderersEventAddLayersAccessor)event).getRenderers().forEach((entityType, entityRenderer) -> {
             if (!(entityRenderer instanceof LivingEntityRenderer livingEntityRenderer)) return;
             livingEntityRenderer.addLayer(new EnergySwirlLayer(livingEntityRenderer));
-            livingEntityRenderer.addLayer(new EntityTextureOverlayLayer(livingEntityRenderer, ((PlayerModelAccessor)livingEntityRenderer.getModel()).isSlim(), event.getEntityModels()));
+            livingEntityRenderer.addLayer(new EntityTextureOverlayLayer(livingEntityRenderer, false, event.getEntityModels()));
         });
 
         LivingEntityRenderer<Player, EntityModel<Player>> playerRenderer = event.getRenderer(EntityType.PLAYER);

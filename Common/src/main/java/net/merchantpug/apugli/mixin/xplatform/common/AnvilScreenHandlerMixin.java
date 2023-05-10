@@ -1,8 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.power.AllowAnvilEnchantPower;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AnvilMenu;
