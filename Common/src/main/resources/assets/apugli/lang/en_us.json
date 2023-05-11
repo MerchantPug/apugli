@@ -4,6 +4,7 @@
   "apugli.midnightconfig.title": "Apugli Configuration",
   "apugli.config.fileDownloadOptions": "§nFile Download Options§r",
   "apugli.config.fileConnectionTimeout": "Connection Timeout (Milliseconds)",
-  "apugli.midnightconfig.fileSizeLimit": "File Size Limit",
-  "apugli.config.hitsOnTargetOptions": "§nHits on Target Options§r"
+  "apugli.config.fileSizeLimit": "File Size Limit",
+  "apugli.config.hitsOnTargetOptions": "§nHits on Target Options§r",
+  "apugli.config.resetTimerTicks": "Reset Timer Ticks"
 }

@@ -18,9 +18,4 @@ public class FabricConfigHelper implements IConfigHelper {
         return ApugliConfig.fileConnectionTimeout;
     }
 
-    @Override
-    public boolean shouldPerformVersionCheck() {
-        return ApugliConfig.performVersionCheck;
-    }
-
 }

@@ -16,8 +16,4 @@ public class ForgeConfigHelper implements IConfigHelper {
         return ApugliConfigs.CLIENT.fileDownloadOptions.getFileConnectionTimeout();
     }
 
-    @Override
-    public boolean shouldPerformVersionCheck() {
-        return ApugliConfigs.SERVER.shouldPerformVersionCheck();
-    }
 }

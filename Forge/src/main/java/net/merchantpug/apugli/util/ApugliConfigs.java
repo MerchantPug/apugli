@@ -10,18 +10,10 @@ public class ApugliConfigs {
 
         public final HitsOnTargetOptions hitsOnTargetOptions;
 
-        private final ForgeConfigSpec.BooleanValue performVersionCheck;
-
         public Server(ForgeConfigSpec.Builder builder) {
             builder.push("hitsOnTarget");
             this.hitsOnTargetOptions = new HitsOnTargetOptions(builder);
             builder.pop();
-            this.performVersionCheck = builder
-                    .define("performVersionCheck", false);
-        }
-
-        public boolean shouldPerformVersionCheck() {
-            return performVersionCheck.get();
         }
 
         public static class HitsOnTargetOptions {
@@ -30,6 +22,7 @@ public class ApugliConfigs {
 
             public HitsOnTargetOptions(ForgeConfigSpec.Builder builder) {
                 this.resetTimerTicks = builder
+                        .translation("apugli.config.resetTimerTicks")
                         .defineInRange("resetTimerTicks", 0, 0, Integer.MAX_VALUE);
             }
 
@@ -57,7 +50,7 @@ public class ApugliConfigs {
 
             public FileDownloadOptions(ForgeConfigSpec.Builder builder) {
                 this.fileSizeLimit = builder
-                        .translation("apugli.config.fileDownloadOptions")
+                        .translation("apugli.config.fileSizeLimit")
                         .define("fileSizeLimit", "1MB");
                 this.fileConnectionTimeout = builder
                         .translation("apugli.config.fileConnectionTimeout")
