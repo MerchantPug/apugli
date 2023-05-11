@@ -22,8 +22,8 @@ public class FoodDataMixin {
         apugli$capturedEntity = entity;
     }
 
-    // We cannot use a ModifyExpressionValue from MixinExtras here because that does not seem to like non remapped methods.
-    @Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"), remap = false)
+    // We cannot use a ModifyExpressionValue from MixinExtras here because that does not seem to like Forge.
+    @Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
     private boolean isEdibleWithPower(Item instance) {
         return instance.isEdible() || CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity);
     }
