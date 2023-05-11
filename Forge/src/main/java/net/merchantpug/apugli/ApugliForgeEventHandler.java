@@ -1,21 +1,21 @@
 package net.merchantpug.apugli;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.integration.PowerLoadEvent;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.fabric.FabricPowerConfiguration;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
+import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
-import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
+import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.power.HoverPower;
-import net.merchantpug.apugli.power.MobsIgnorePower;
-import net.merchantpug.apugli.power.PreventBreedingPower;
+import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.ApugliConfigs;
+import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,9 +26,9 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -38,7 +38,6 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -204,6 +203,19 @@ public class ApugliForgeEventHandler {
         if (!(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) return;
         parentA.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
         parentB.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
+    }
+
+    @SubscribeEvent
+    public static void postPowerLoad(PowerLoadEvent.Post event) {
+        ConfiguredPower<?, ?> power = event.getPower();
+        if (power.getConfiguration() instanceof FabricPowerConfiguration<?> configuration && ((FabricPowerFactoryAccessor)(Object)power.getFactory()).invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower) {
+            TextureUtil.handleUrlTexture(event.getId(), texturePower);
+        }
+    }
+
+    @SubscribeEvent
+    public static void postPowerReload(OnDatapackSyncEvent event) {
+        ApugliPacketHandler.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), event.getPlayer());
     }
 
 }

@@ -2,7 +2,6 @@ package net.merchantpug.apugli;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
-import io.github.apace100.apoli.integration.PostPowerReloadCallback;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -12,7 +11,6 @@ import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.TextureUtil;
-import net.minecraft.server.level.ServerPlayer;
 
 public class ApugliFabric implements ModInitializer {
     @Override
@@ -37,15 +35,7 @@ public class ApugliFabric implements ModInitializer {
             TextureUtil.handleUrlTexture(powerId, texturePower);
         });
 
-        PostPowerReloadCallback.EVENT.register(() -> {
-            if (Apugli.getServer() == null) return;
-            for (ServerPlayer player : Apugli.getServer().getPlayerList().getPlayers()) {
-                ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
-            }
-        });
-
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
-            if (!joined) return;
             ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
         });
 
