@@ -88,6 +88,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         return newEnchants;
     }
 
+    // TODO: Generate enchantments when item condition state changes or when the power's active state changes.
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living) {

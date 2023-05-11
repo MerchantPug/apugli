@@ -10,5 +10,18 @@
       "operation": "multiply_total",
       "value": 1
     }
-  ]
+  ],
+  "item_condition": {
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apoli:amount",
+        "comparison": ">=",
+        "compare_to": 3
+      },
+      {
+        "type": "apoli:meat"
+      }
+    ]
+  }
 }
