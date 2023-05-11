@@ -7,9 +7,48 @@ var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode')
 var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode')
 var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode')
 
-// TODO: Add Modify Enchantment Level functions.
 function initializeCoreMod() {
     return {
+        'apugli_enchantment_level_modification': {
+            'target': {
+                'type': 'METHOD',
+                'class': 'net.minecraftforge.common.extensions.IForgeItemStack',
+                'methodName': 'getEnchantmentLevel',
+                'methodDesc': '(Lnet/minecraft/world/item/enchantment/Enchantment;)I'
+            },
+            'transformer': function(node) {
+                // return CoreUtil.getModifiedEnchantments(this.self());
+                var ls = new InsnList();
+                // this.self()
+                ls.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
+                // enchantment
+                ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantmentLevel", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/enchantment/Enchantment;)I"));
+                ls.add(new InsnNode(Opcodes.IRETURN));
+				node.instructions.insert(ls);
+				return node;
+            }
+        },
+        'apugli_all_enchantments_modification': {
+            'target': {
+                'type': 'METHOD',
+                'class': 'net.minecraftforge.common.extensions.IForgeItemStack',
+                'methodName': 'getAllEnchantments',
+                'methodDesc': '()Ljava/util/Map;'
+            },
+            'transformer': function(node) {
+                // return CoreUtil.getModifiedEnchantments(this.self());
+                var ls = new InsnList();
+                // this.self()
+                ls.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
+                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantments", "(Lnet/minecraft/world/item/ItemStack;)Ljava/util/Map;"));
+                ls.add(new InsnNode(Opcodes.ARETURN));
+				node.instructions.insert(ls);
+				return node;
+            }
+        },
         'apugli_edible_item': {
             'target': {
                 'type': 'METHOD',
@@ -36,7 +75,7 @@ function initializeCoreMod() {
                 ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getEdibleItemPowerFoodProperties", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/food/FoodProperties;"));
 				ls.add(new InsnNode(Opcodes.ARETURN));
 				ls.add(label);
-				node.instructions.insertBefore(ASMAPI.findFirstInstruction(node, Opcodes.ARETURN), ls);
+				node.instructions.insert(ls);
                 return node;
             }
         }

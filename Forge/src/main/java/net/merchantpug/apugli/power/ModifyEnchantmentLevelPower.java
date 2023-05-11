@@ -24,12 +24,12 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower imp
 
     @Override
     public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> configuration, Entity entity) {
-        ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(configuration, entity);
+        ModifyEnchantmentLevelPowerFactory.super.onAdded(configuration, entity);
     }
 
     @Override
     public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> configuration, Entity entity) {
-        ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(configuration, entity);
+        ModifyEnchantmentLevelPowerFactory.super.onRemoved(configuration, entity);
     }
 
     @Override

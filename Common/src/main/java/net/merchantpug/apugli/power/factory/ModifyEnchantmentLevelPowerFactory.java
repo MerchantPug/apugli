@@ -22,7 +22,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     static SerializableData getSerializableData() {
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("enchantment", SerializableDataTypes.ENCHANTMENT)
-                .add("item_condition", Services.CONDITION.itemDataType());
+                .add("item_condition", Services.CONDITION.itemDataType(), null);
     }
 
     default void onAdded(P power, Entity entity) {
@@ -34,7 +34,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     default void onRemoved(P power, Entity entity) {
         if (!(entity instanceof LivingEntity living)) return;
         getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>()).remove(power);
-        if (!Services.POWER.hasPower(living, this)) {
+        if (Services.POWER.getPowers(living, this).size() - 1 <= 0) {
             getEntityItemEnchants().remove(entity.getStringUUID());
         }
     }
@@ -44,7 +44,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default boolean checkItemCondition(P power, ItemStack self) {
-        return Services.CONDITION.checkItem(getDataFromPower(power), "item_condition", self);
+        return !getDataFromPower(power).isPresent("item_condition") || Services.CONDITION.checkItem(getDataFromPower(power), "item_condition", self);
     }
 
     default Optional<Integer> findEnchantIndex(ResourceLocation id, ListTag enchants) {
@@ -65,11 +65,9 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
         ListTag newEnchants = enchants.copy();
 
-        List<P> powers = Services.POWER.getPowers(living, this, true);
+        List<P> powers = Services.POWER.getPowers(living, this);
 
         for (P power : powers) {
-            if (!Services.POWER.isActive(power, living)) continue;
-
             Enchantment enchantment = getDataFromPower(power).get("enchantment");
             ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
@@ -94,7 +92,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living) {
             ConcurrentHashMap<ListTag, ListTag> itemEnchants = getEntityItemEnchants().computeIfAbsent(entity.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
-            if (shouldReapplyEnchantments(living)) {
+            if (shouldReapplyEnchantments(living, originalTag)) {
+                itemEnchants.computeIfAbsent(originalTag, tag -> tag);
                 return itemEnchants.compute(originalTag, (tag, tag2) -> generateEnchantments(tag, self));
             }
             return itemEnchants.getOrDefault(originalTag, originalTag);
@@ -110,10 +109,11 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         return false;
     }
 
-    default boolean shouldReapplyEnchantments(LivingEntity living) {
+    default boolean shouldReapplyEnchantments(LivingEntity living, ListTag originalTag) {
         List<P> powers = Services.POWER.getPowers(living, this, true);
+        ConcurrentHashMap<ListTag, ListTag> enchants = getEntityItemEnchants().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
         ConcurrentHashMap<P, Integer> cache = getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
-        return powers.stream().anyMatch(power -> updateIfDifferent(cache, power, (int) Services.PLATFORM.applyModifiers(living, getModifiers(power, living), 0)));
+        return !enchants.containsKey(originalTag) || powers.stream().anyMatch(power -> updateIfDifferent(cache, power, (int) Services.PLATFORM.applyModifiers(living, getModifiers(power, living), 0)));
     }
 
     ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> getEntityItemEnchants();

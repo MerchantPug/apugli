@@ -34,8 +34,6 @@ import java.util.Optional;
 @Mixin(ItemStack.class)
 @Implements(@Interface(iface = ItemStackLevelAccess.class, prefix = "apugli$"))
 public abstract class ItemStackMixin {
-    @Shadow public abstract ItemStack copy();
-
     @Shadow public abstract Item getItem();
 
     public Level apugli$level;

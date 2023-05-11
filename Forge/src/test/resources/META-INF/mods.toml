@@ -1,7 +1,28 @@
 modLoader="javafml"
 loaderVersion="[43,)"
 license="MIT"
-issueTrackerURL="https://github.com/MerchantPug/apugli/issues"
+
+[[mods]]
+modId="test"
+version="1.0.0"
+displayName="Coremod Test"
+logoFile="pack.png"
+authors="MerchantPug"
+description="A test for Modify Enchantment Level coremods."
+
+[[dependencies.test]]
+    modId="forge"
+    mandatory=true
+    versionRange="[43.2,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.test]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
 
 [[mods]]
 modId="apugli"
@@ -23,7 +44,7 @@ description="Pug's extension to A Power Library."
 [[dependencies.apugli]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.19.3)"
+    versionRange="[1.19.2,1.20)"
     ordering="NONE"
     side="BOTH"
 

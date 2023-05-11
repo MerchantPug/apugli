@@ -1,8 +1,11 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.merchantpug.apugli.access.ItemStackAccess;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;

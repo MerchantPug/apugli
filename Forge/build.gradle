@@ -119,7 +119,9 @@ dependencies {
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
     minecraftLibrary "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    jarJar(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: '[0.0.,0.1)')
+    jarJar(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "[${mixin_extras_version},)") {
+        jarJar.pin(it, mixin_extras_version)
+    }
     annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
     //Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -151,6 +153,10 @@ processResources {
 processTestResources {
     outputs.upToDateWhen { false }
     from project(":Common").sourceSets.test.resources
+
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
+    }
 }
 
 tasks.jarJar.configure {
