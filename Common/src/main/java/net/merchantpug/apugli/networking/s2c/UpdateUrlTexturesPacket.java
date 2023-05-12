@@ -1,10 +1,10 @@
 package net.merchantpug.apugli.networking.s2c;
 
 import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
-import net.merchantpug.apugli.util.TextureUtilClient;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -41,7 +41,7 @@ public record UpdateUrlTexturesPacket(Set<ResourceLocation> powerTypes) implemen
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             powerTypes.forEach(identifier -> {
-                Power power = PowerTypeRegistry.get(identifier).create(null);
+                Power power = Services.POWER.createPowerFromId(identifier);
                 if (!(power instanceof TextureOrUrlPower texturePower)) {
                     Apugli.LOG.warn("Tried updating texture from non TexturePower power.");
                     return;

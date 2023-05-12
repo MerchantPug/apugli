@@ -6,6 +6,7 @@
 - Apugli is now licensed as MIT again. (Previously LGPL-3.0-only).
 
 **Power Types**
+- Added `item_action` field to `apugli:edible_item` power type.
 - Added `apugli:action_when_projectile_hit` power type.
 - `apugli:bunny_hop` now stacks when you have multiple powers with this power type.
 - Re-added `slot` field to `apugli:action_on_durability_change` power type.
@@ -28,6 +29,7 @@
 
 **Bugfixes**
 - Fixed `apugli:modify_enchantment_damage_taken` running more times than what was necessary.
+- Fixed `apugli:velocity` comparing the `compare_to` value to the velocity value instead of the other way around.
 - Fixed `performVersionCheck` not mattering in the serversided config. #29
 - Fixed `apugli:prevent_breeding` bientity actions setting the love ticks value to too little.
 - Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition. #21 (PR #30 - Jarva)

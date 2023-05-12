@@ -30,14 +30,6 @@ public class ServerPlayNetworkHandlerMixin {
         return original && !Services.POWER.hasPower(this.player, ApugliPowers.HOVER.get());
     }
 
-    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;clientVehicleIsFloating:Z", ordinal = 1))
-    private boolean doNotKickIfVehicleUsingHoverPower(boolean original) {
-        if (!(this.player.getRootVehicle() instanceof LivingEntity livingVehicle)) {
-            return original;
-        }
-        return original && !Services.POWER.hasPower(livingVehicle, ApugliPowers.HOVER.get());
-    }
-
     @Inject(method = "handleResourcePackResponse", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;getAction()Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket$Action;"))
     private void sendUrlTexturesToPlayerAfterResourceLoad(ServerboundResourcePackPacket packet, CallbackInfo ci) {
         if (packet.getAction() == ServerboundResourcePackPacket.Action.DECLINED && this.server.isResourcePackRequired()) return;

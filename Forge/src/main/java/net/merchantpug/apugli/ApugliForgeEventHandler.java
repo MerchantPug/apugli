@@ -1,10 +1,10 @@
 package net.merchantpug.apugli;
 
 import io.github.apace100.apoli.integration.PowerLoadEvent;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.fabric.FabricPowerConfiguration;
+import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -15,6 +15,7 @@ import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +27,6 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -208,13 +208,18 @@ public class ApugliForgeEventHandler {
     @SubscribeEvent
     public static void postPowerLoad(PowerLoadEvent.Post event) {
         ConfiguredPower<?, ?> power = event.getPower();
-        if (power.getConfiguration() instanceof FabricPowerConfiguration<?> configuration && ((FabricPowerFactoryAccessor)(Object)power.getFactory()).invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower) {
-            TextureUtil.handleUrlTexture(event.getId(), texturePower);
-        }
+        ResourceLocation id = ((PowerLoadEventPostAccess)event).getFixedId() != null ? ((PowerLoadEventPostAccess)event).getFixedId() : event.getId();
+        handleUrlPower(id, power);
+    }
+
+    private static void handleUrlPower(ResourceLocation id, ConfiguredPower<?, ?> power) {
+        if (!(power.getFactory() instanceof FabricPowerFactory<?>) || !(((FabricPowerFactoryAccessor)power.getFactory()).invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower) || texturePower.getTextureUrl() == null) return;
+        TextureUtil.handleUrlTexture(id, texturePower);
     }
 
     @SubscribeEvent
     public static void postPowerReload(OnDatapackSyncEvent event) {
+        if (event.getPlayer() == null) return;
         ApugliPacketHandler.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), event.getPlayer());
     }
 

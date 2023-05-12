@@ -11,5 +11,9 @@
     "saturation": 1,
     "meat": true
   },
-  "use_action": "eat"
+  "use_action": "eat",
+  "item_action": {
+    "type": "apoli:consume",
+    "amount": 1
+  }
 }

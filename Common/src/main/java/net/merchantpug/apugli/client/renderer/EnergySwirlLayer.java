@@ -31,6 +31,8 @@ public class EnergySwirlLayer<T extends LivingEntity, M extends EntityModel<T>> 
     }
 
     public void renderOverlay(EnergySwirlPower power, PoseStack matrices, MultiBufferSource vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        if (power.getTextureLocation() == null && power.getTextureUrl() == null) return;
+
         float f = (float)entity.tickCount + tickDelta;
 
         VertexConsumer vertexConsumer = null;

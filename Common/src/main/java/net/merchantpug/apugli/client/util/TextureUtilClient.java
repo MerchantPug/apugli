@@ -1,10 +1,11 @@
-package net.merchantpug.apugli.util;
+package net.merchantpug.apugli.client.util;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.mixin.xplatform.client.accessor.TextureManagerAccessor;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -33,7 +34,7 @@ public class TextureUtilClient {
 
         String sha256Hash = Hashing.sha256().hashBytes(bytes).toString();
 
-        if (!TextureUtil.TEXTURE_TO_SHA256.containsKey(textureId) || !TextureUtil.TEXTURE_TO_SHA256.get(textureId).equals(sha256Hash) || refresh) {
+        if (!TextureUtil.getTextureToSha256().containsKey(textureId) || !TextureUtil.getTextureToSha256().get(textureId).equals(sha256Hash) || refresh) {
             NativeImage texture;
             try {
                 texture = NativeImage.read(new ByteArrayInputStream(bytes));
@@ -67,7 +68,7 @@ public class TextureUtilClient {
     public static void update() {
         TextureUtil.getRegisteredTextures().keySet().removeIf(entry -> !TEMP_REGISTERED_TEXTURES.containsKey(entry));
         TextureUtil.getPowerIdToUrl().keySet().removeIf(entry -> !TEMP_POWER_ID_TO_URL.containsKey(entry));
-        TextureUtil.TEXTURE_TO_SHA256.keySet().removeIf(entry -> !TEMP_TEXTURE_TO_SHA256.containsKey(entry));
+        TextureUtil.getTextureToSha256().keySet().removeIf(entry -> !TEMP_TEXTURE_TO_SHA256.containsKey(entry));
         clearTempMaps();
         fileSizeLimit = Long.MIN_VALUE;
     }

@@ -118,11 +118,10 @@ dependencies {
     // Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
-    minecraftLibrary "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    jarJar(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "[${mixin_extras_version},)") {
-        jarJar.pin(it, mixin_extras_version)
+    implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
+    implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
+        jarJar.ranged(it, "[${mixin_extras_version},)")
     }
-    annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
     //Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     //Service

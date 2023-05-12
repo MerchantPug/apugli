@@ -33,19 +33,19 @@ public class VelocityCondition implements IConditionFactory<Entity> {
             double compareTo = data.getDouble("compare_to");
             for(Direction.Axis axis : axes) {
                 if(!switch(axis) {
-                    case X -> comparison.compare(compareTo, velocity.x);
-                    case Y -> comparison.compare(compareTo, velocity.y);
-                    case Z -> comparison.compare(compareTo, velocity.z);
+                    case X -> comparison.compare(velocity.x, compareTo);
+                    case Y -> comparison.compare(velocity.y, compareTo);
+                    case Z -> comparison.compare(velocity.z, compareTo);
                 }) return false;
             }
         }
-        if(data.isPresent("x") && comparison.compare(data.getDouble("x"), velocity.x)) {
+        if(data.isPresent("x") && !comparison.compare(velocity.x, data.getDouble("x"))) {
             return false;
         }
-        if(data.isPresent("y") && comparison.compare(data.getDouble("y"), velocity.y)) {
+        if(data.isPresent("y") && !comparison.compare(velocity.y, data.getDouble("y"))) {
             return false;
         }
-        if(data.isPresent("z") && comparison.compare(data.getDouble("z"), velocity.z)) {
+        if(data.isPresent("z") && !comparison.compare(velocity.z, data.getDouble("z"))) {
             return false;
         }
         return true;

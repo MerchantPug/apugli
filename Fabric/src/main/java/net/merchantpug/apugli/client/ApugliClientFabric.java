@@ -12,7 +12,7 @@ import net.merchantpug.apugli.mixin.fabric.client.accessor.ApoliClientAccessor;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.util.ApugliClassDataClient;
-import net.merchantpug.apugli.util.TextureUtilClient;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -31,13 +31,9 @@ public class ApugliClientFabric implements ClientModInitializer {
 		ApugliPackets.registerS2C();
 		ApugliClassDataClient.registerAll();
 
-		ClientTickEvents.START_CLIENT_TICK.register(tick -> {
-			ApugliClientFabric.handleActiveKeys();
-		});
+		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
 
-		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
-			TextureUtilClient.clear();
-		});
+		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> TextureUtilClient.clear());
 	}
 
 	public static void handleActiveKeys() {

@@ -6,12 +6,17 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -23,8 +28,16 @@ public class EdibleItemPower extends Power {
     private final ItemStack returnStack;
     private final SoundEvent sound;
     private final Consumer<Entity> entityActionWhenEaten;
+    private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemActionWhenEaten;
 
-    public EdibleItemPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> predicate, FoodProperties foodComponent, UseAnim useAction, ItemStack returnStack, SoundEvent sound, Consumer<Entity> entityActionWhenEaten) {
+    public EdibleItemPower(PowerType<?> type, LivingEntity entity,
+                           Predicate<ItemStack> predicate,
+                           FoodProperties foodComponent,
+                           UseAnim useAction,
+                           ItemStack returnStack,
+                           SoundEvent sound,
+                           Consumer<Entity> entityActionWhenEaten,
+                           Consumer<Tuple<Level, Mutable<ItemStack>>> itemActionWhenEaten) {
         super(type, entity);
         this.predicate = predicate;
         this.foodComponent = foodComponent;
@@ -32,6 +45,7 @@ public class EdibleItemPower extends Power {
         this.returnStack = returnStack;
         this.sound = sound;
         this.entityActionWhenEaten = entityActionWhenEaten;
+        this.itemActionWhenEaten = itemActionWhenEaten;
     }
 
     public boolean doesApply(ItemStack stack) {
@@ -54,10 +68,14 @@ public class EdibleItemPower extends Power {
         return sound;
     }
 
-    public void eat() {
-        if(entityActionWhenEaten != null) {
-            entityActionWhenEaten.accept(entity);
-        }
+    public static void executeEntityActions(LivingEntity entity, ItemStack stack) {
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack) && p.entityActionWhenEaten != null).forEach(p -> p.entityActionWhenEaten.accept(entity));
+    }
+
+    public static ItemStack executeItemActions(LivingEntity entity, ItemStack stack) {
+        Mutable<ItemStack> mutable = new MutableObject<>(stack);
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack) && p.itemActionWhenEaten != null).forEach(p -> p.itemActionWhenEaten.accept(new Tuple<>(entity.level, mutable)));
+        return mutable.getValue();
     }
 
     public static class Factory extends SimplePowerFactory<EdibleItemPower> {
@@ -70,14 +88,16 @@ public class EdibleItemPower extends Power {
                             .add("use_action", SerializableDataTypes.USE_ACTION, null)
                             .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
                             .add("sound", SerializableDataTypes.SOUND_EVENT, null)
-                            .add("entity_action", Services.ACTION.entityDataType(), null),
+                            .add("entity_action", Services.ACTION.entityDataType(), null)
+                            .add("item_action", Services.ACTION.itemDataType(), null),
                     data -> (type, player) -> new EdibleItemPower(type, player,
                             Services.CONDITION.itemPredicate(data, "item_condition"),
                             data.get("food_component"),
                             data.get("use_action"),
                             data.get("return_stack"),
                             data.get("sound"),
-                            Services.ACTION.entityConsumer(data, "entity_action")));
+                            Services.ACTION.entityConsumer(data, "entity_action"),
+                            Services.ACTION.itemConsumer(data, "item_action")));
             allowCondition();
         }
 

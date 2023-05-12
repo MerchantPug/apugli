@@ -9,7 +9,7 @@
         {
           "type": "apugli:velocity",
           "y": 0.0,
-          "comparison": ">="
+          "comparison": "<="
         },
         {
           "type": "apugli:key_pressed",

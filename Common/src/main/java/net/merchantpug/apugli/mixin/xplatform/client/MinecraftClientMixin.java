@@ -1,11 +1,11 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
 import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.util.TextureUtil;
-import net.merchantpug.apugli.util.TextureUtilClient;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +23,7 @@ public class MinecraftClientMixin {
         for (Map.Entry<ResourceLocation, String> entry : TextureUtil.getPowerIdToUrl().entrySet()) {
             ResourceLocation id = entry.getKey();
             String url = entry.getValue();
-            Power power = PowerTypeRegistry.get(id).create(null);
+            Power power = Services.POWER.createPowerFromId(id);
             if (!(power instanceof TextureOrUrlPower textureOrUrl)) {
                 Apugli.LOG.warn("Tried reloading URL textures from power '{}' but couldn't as its power type does not implement TextureOrUrl.", id);
             } else if (textureOrUrl.getTextureLocation() == null || !TextureUtilClient.doesTextureExist(textureOrUrl.getTextureLocation())) {

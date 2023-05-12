@@ -12,6 +12,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.merchantpug.apugli.ApugliForgeEventHandler;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
@@ -22,6 +23,7 @@ import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
+import net.merchantpug.apugli.util.ActiveKeyUtil;
 import net.merchantpug.apugli.util.HudRenderUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -113,7 +115,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
             float alpha = modelColorPowers.stream().map(holder -> holder.get().getConfiguration().alpha()).min(Float::compare).get();
             return new float[] { red, green, blue, alpha };
         }
-        return new float[0];
+        return new float[] { 1.0F, 1.0F, 1.0F, 1.0F };
     }
 
     @Override
@@ -124,7 +126,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
                 cap.addKeyToCheck(key);
                 cap.changePreviousKeysToCheckToCurrent();
             } else if (player.level.isClientSide && player instanceof LocalPlayer) {
-                ApugliForgeClientEventHandler.handleActiveKeys();
+                ApugliForgeClientEventHandler.ForgeEvents.handleActiveKeys();
             }
         });
     }
@@ -134,7 +136,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
         Optional<KeyPressCapability> capability = player.getCapability(KeyPressCapability.INSTANCE).resolve();
         if (capability.isPresent()) {
             IActivePower.Key key = data.get("key");
-            return capability.get().getCurrentlyUsedKeys().contains(key);
+            return capability.get().getCurrentlyUsedKeys().stream().anyMatch(otherKey -> ActiveKeyUtil.equals(key, otherKey));
         }
         return false;
     }

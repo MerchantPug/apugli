@@ -4,6 +4,7 @@
   "package": "net.merchantpug.apugli.mixin.fabric",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.ActiveKeyMixin",
     "common.BoneMealItemMixin",
     "common.EnchantmentHelperMixin",
     "common.HungerManagerMixin",
@@ -14,6 +15,7 @@
     "common.LivingEntityMixin",
     "common.MobEntityMixin",
     "common.ProjectileEntityMixin",
+    "common.ServerPlayNetworkHandlerMixin",
     "common.accessor.BucketItemAccessor"
   ],
   "client": [

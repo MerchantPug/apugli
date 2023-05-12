@@ -2,6 +2,7 @@ package net.merchantpug.apugli.power;
 
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.resources.ResourceLocation;

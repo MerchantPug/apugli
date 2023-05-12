@@ -4,17 +4,20 @@
   "package": "net.merchantpug.apugli.mixin.forge",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.EnchantmentHelperMixin",
     "common.FoodDataMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
+    "common.MultiplePowerMixin",
+    "common.PowerLoadEventPostMixin",
+    "common.ServerGamePacketListenerImplMixin",
     "common.accessor.ApoliClientEventHandlerAccessor",
     "common.accessor.FabricPowerFactoryAccessor"
   ],
   "client": [
     "client.ElytraFeatureRendererMixin",
     "client.accessor.EntityRenderersEventAddLayersAccessor",
-    "client.accessor.PlayerModelAccessor"
+    "client.accessor.PlayerModelAccessor",
+    "common.HumanoidMobRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

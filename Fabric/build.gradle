@@ -100,9 +100,7 @@ dependencies {
     modImplementation "maven.modrinth:midnightlib:${midnightlib_version}"
     include "maven.modrinth:midnightlib:${midnightlib_version}"
     //MixinExtras
-    implementation "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    include "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    annotationProcessor "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${mixin_extras_version}")))
     //JSR305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     //Service

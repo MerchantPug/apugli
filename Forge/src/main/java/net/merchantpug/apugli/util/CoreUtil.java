@@ -1,11 +1,9 @@
 package net.merchantpug.apugli.util;
 
-import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +11,6 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,7 +31,7 @@ public class CoreUtil {
         return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, serializedEnchantments));
     }
 
-    public static ListTag serializeEnchantments(Map<Enchantment, Integer> deserialized) {
+    private static ListTag serializeEnchantments(Map<Enchantment, Integer> deserialized) {
         ListTag tag = new ListTag();
         List<Map.Entry<Enchantment, Integer>> entryList = deserialized.entrySet().stream().toList();
         for (int i = 0; i < entryList.size(); ++i) {

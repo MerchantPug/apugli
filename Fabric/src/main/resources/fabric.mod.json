@@ -25,9 +25,6 @@
     "client": [
       "net.merchantpug.apugli.client.ApugliClientFabric"
     ],
-    "preLaunch": [
-      "net.merchantpug.apugli.ApugliPreLaunchFabric"
-    ],
     "modmenu": [
       "net.merchantpug.apugli.integration.ApugliModMenuIntegration"
     ],

@@ -2,6 +2,8 @@ package net.merchantpug.apugli.platform;
 
 import com.google.common.collect.ImmutableList;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -46,6 +48,16 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     @Override
     public <F extends SpecialPowerFactory<?>> RegistryObject<F> registerFactory(String name, Class<F> factoryClass) {
         return (RegistryObject<F>)(Object)ApugliRegisters.POWERS.register(name, () -> (io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>)Services.load(factoryClass));
+    }
+
+    @Override
+    public Power createPowerFromId(ResourceLocation key) {
+        Optional<ConfiguredPower<?, ?>> power = ApoliAPI.getPowers().getOptional(key);
+        if (power.isPresent() && power.get().getFactory() instanceof FabricPowerFactory<?> factory) {
+            return ((FabricPowerFactoryAccessor)factory).invokeGetPower(power.get(), null);
+        }
+        Apugli.LOG.error("Tried getting Fabric Power class from non Fabric Power.");
+        return null;
     }
 
     @Override

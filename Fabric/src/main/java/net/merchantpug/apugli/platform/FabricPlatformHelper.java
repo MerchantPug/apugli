@@ -113,7 +113,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
             float alpha = modelColorPowers.stream().map(ModelColorPower::getAlpha).min(Float::compare).get();
             return new float[] { red, green, blue, alpha };
         }
-        return new float[0];
+        return new float[] { 1.0F, 1.0F, 1.0F, 1.0F };
     }
 
     @Override

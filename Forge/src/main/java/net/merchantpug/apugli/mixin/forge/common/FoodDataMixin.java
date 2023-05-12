@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.forge.common;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.merchantpug.apugli.util.CoreUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodData;
@@ -23,9 +24,9 @@ public class FoodDataMixin {
     }
 
     // We cannot use a ModifyExpressionValue from MixinExtras here because that does not seem to like Forge.
-    @Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
-    private boolean isEdibleWithPower(Item instance) {
-        return instance.isEdible() || CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity);
+    @ModifyExpressionValue(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
+    private boolean isEdibleWithPower(boolean original) {
+        return original || CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity);
     }
 
 }

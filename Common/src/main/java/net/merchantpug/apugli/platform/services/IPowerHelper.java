@@ -22,6 +22,8 @@ public interface IPowerHelper<T> {
     
     <F extends SpecialPowerFactory<?>> Supplier<F> registerFactory(String name, Class<F> factoryClass);
 
+    Power createPowerFromId(ResourceLocation key);
+
     <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType);
 
     <P> ResourceLocation getIdFromPower(LivingEntity entity, P power);

@@ -25,5 +25,9 @@
     "item": "minecraft:water_bucket",
     "amount": 1
   },
-  "sound": "minecraft:entity.axolotl.hurt"
+  "sound": "minecraft:entity.axolotl.hurt",
+  "item_action": {
+    "type": "apoli:modify",
+    "modifier": "apugli:cat_smirk"
+  }
 }

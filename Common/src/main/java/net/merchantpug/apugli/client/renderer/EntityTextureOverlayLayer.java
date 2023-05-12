@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.client.renderer;
 
+import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.TextureUtil;
