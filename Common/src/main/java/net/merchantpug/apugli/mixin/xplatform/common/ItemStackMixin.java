@@ -32,8 +32,6 @@ public abstract class ItemStackMixin {
 
     @Shadow public abstract CompoundTag getOrCreateTag();
 
-    @Shadow public abstract ItemStack copy();
-
     @Shadow public abstract int getMaxDamage();
 
     @Unique
@@ -103,38 +101,6 @@ public abstract class ItemStackMixin {
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack) && p.getSound() != null).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
-    }
-
-    @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
-    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack stack = (ItemStack)(Object)this;
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
-        if (power.isPresent()) {
-            EdibleItemPower.executeEntityActions(user, stack);
-            ItemStack newStack = this.copy();
-            newStack = user.eat(world, newStack);
-            if (Services.PLATFORM.getPlatformName().equals("Fabric") && (!(user instanceof Player player) || !player.getAbilities().instabuild)) {
-                newStack.shrink(1);
-            }
-            if (user instanceof Player player && !player.getAbilities().instabuild) {
-                if (power.get().getReturnStack() != null && newStack.isEmpty()) {
-                    ItemStack returnStack = power.get().getReturnStack().copy();
-                    cir.setReturnValue(EdibleItemPower.executeItemActions(user, returnStack));
-                } else {
-                    if (power.get().getReturnStack() != null) {
-                        ItemStack returnStack = power.get().getReturnStack().copy();
-                        ItemStack stack2 = EdibleItemPower.executeItemActions(user, returnStack);
-                        if (!player.addItem(stack2)) {
-                            player.drop(stack2, false);
-                        }
-                    }
-                    cir.setReturnValue(EdibleItemPower.executeItemActions(user, newStack));
-                }
-            } else {
-                cir.setReturnValue(EdibleItemPower.executeItemActions(user, newStack));
-            }
-        }
     }
 
 }

@@ -4,6 +4,7 @@ import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
@@ -40,6 +42,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Apugli.ID)
@@ -51,6 +54,32 @@ public class ApugliForgeEventHandler {
             event.addCapability(KeyPressCapability.ID, new KeyPressCapability(player));
         if (event.getObject() instanceof LivingEntity living)
             event.addCapability(HitsOnTargetCapability.ID, new HitsOnTargetCapability(living));
+    }
+
+    @SubscribeEvent
+    public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
+        ItemStack stack = event.getItem().copy();
+        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
+        if (power.isPresent()) {
+            EdibleItemPower.executeEntityActions(event.getEntity(), stack);
+            ItemStack newStack = event.getEntity().eat(event.getEntity().getLevel(), stack);
+            if (event.getEntity() instanceof Player player && !player.getAbilities().instabuild) {
+                if (power.get().getReturnStack() != null) {
+                    ItemStack returnStack = power.get().getReturnStack().copy();
+                    if (newStack.isEmpty()) {
+                        event.setResultStack(EdibleItemPower.executeItemActions(event.getEntity(), returnStack, stack));
+                    } else {
+                        ItemStack stack2 = EdibleItemPower.executeItemActions(event.getEntity(), returnStack, stack);
+                        if (!player.addItem(stack2)) {
+                            player.drop(stack2, false);
+                        }
+                    }
+                } else {
+                    event.setResultStack(EdibleItemPower.executeItemActions(event.getEntity(), newStack, stack));
+                }
+            }
+        }
     }
 
     /*

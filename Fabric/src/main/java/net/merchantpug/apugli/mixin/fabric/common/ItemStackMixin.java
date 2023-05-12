@@ -4,9 +4,12 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.BucketItemAccessor;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.ItemAccessor;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -29,6 +32,8 @@ public abstract class ItemStackMixin {
 
     @Shadow public abstract Item getItem();
 
+    @Shadow public abstract ItemStack copy();
+
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
@@ -45,6 +50,35 @@ public abstract class ItemStackMixin {
             }
         }
 
+    }
+
+
+
+    @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
+    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack stack = (ItemStack)(Object)this;
+        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
+        if (power.isPresent()) {
+            EdibleItemPower.executeEntityActions(user, stack);
+            ItemStack newStack = this.copy();
+            newStack = user.eat(world, newStack);
+            if (user instanceof Player player && !player.getAbilities().instabuild) {
+                if (power.get().getReturnStack() != null) {
+                    ItemStack returnStack = power.get().getReturnStack().copy();
+                    if (newStack.isEmpty()) {
+                        cir.setReturnValue(EdibleItemPower.executeItemActions(user, returnStack, stack));
+                    } else {
+                        ItemStack stack2 = EdibleItemPower.executeItemActions(user, returnStack, stack);
+                        if (!player.addItem(stack2)) {
+                            player.drop(stack2, false);
+                        }
+                    }
+                } else {
+                    cir.setReturnValue(EdibleItemPower.executeItemActions(user, newStack, stack));
+                }
+            }
+        }
     }
 
 }
