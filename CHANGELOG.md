@@ -1,6 +1,6 @@
 **Rewrite**
-- Apugli is now a multiloader mod. This means that it is now able to be simultaneously developed for Fabric and Forge.
-    - Origins Fabric based development should not end up waiting for Origins Forge to update as I can detach the Forge module at any time.
+- Apugli is now a multiloader mod. This means that it is now able to be simultaneously developed for Fabric and Forge. (PR #25 - RaymondBlaze)
+  - Origins Fabric based development should not end up waiting for Origins Forge to update as I can detach the Forge module at any time.
 
 **Licensing**
 - Apugli is now licensed as MIT again. (Previously LGPL-3.0-only).
@@ -30,5 +30,4 @@
 - Fixed `apugli:modify_enchantment_damage_taken` running more times than what was necessary.
 - Fixed `performVersionCheck` not mattering in the serversided config. #29
 - Fixed `apugli:prevent_breeding` bientity actions setting the love ticks value to too little.
-- Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition. #21
-  - PR #30 - Jarva
+- Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition. #21 (PR #30 - Jarva)
