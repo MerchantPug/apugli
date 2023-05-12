@@ -114,7 +114,7 @@ public abstract class ItemStackMixin {
             Services.POWER.getPowers(user, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply((ItemStack) (Object) this)).forEach(EdibleItemPower::eat);
             ItemStack newStack = this.copy();
             newStack = user.eat(world, newStack);
-            if (Services.PLATFORM.getPlatformName().equals("Fabric")) {
+            if (Services.PLATFORM.getPlatformName().equals("Fabric") && (!(user instanceof Player player) || !player.getAbilities().instabuild)) {
                 newStack.shrink(1);
             }
             if (user instanceof Player player && !player.getAbilities().instabuild) {
