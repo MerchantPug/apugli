@@ -105,8 +105,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity().getCapability(KeyPressCapability.INSTANCE).isPresent())
-            event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
+        event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
         if (event.getEntity().isDeadOrDying()) return;
 
