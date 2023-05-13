@@ -63,6 +63,9 @@ public abstract class ItemStackMixin {
             EdibleItemPower.executeEntityActions(user, stack);
             ItemStack newStack = this.copy();
             newStack = user.eat(world, newStack);
+            if (!(user instanceof Player player) || !player.getAbilities().instabuild) {
+                newStack.shrink(1);
+            }
             if (user instanceof Player player && !player.getAbilities().instabuild) {
                 if (power.get().getReturnStack() != null) {
                     ItemStack returnStack = power.get().getReturnStack().copy();
