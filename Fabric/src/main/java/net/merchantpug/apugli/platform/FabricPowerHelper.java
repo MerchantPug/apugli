@@ -71,12 +71,10 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory) {
         List<P> list = new LinkedList<>();
         if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
-            List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers(Power.class);
             Class<P> cls = factory.getPowerClass();
+            List<? extends Power> powers = PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls);
             for(Power power : powers) {
-                if(cls.isAssignableFrom(power.getClass()) && power.isActive()) {
-                    list.add((P)power);
-                }
+                list.add((P)power);
             }
         }
         return list;
@@ -86,10 +84,10 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive) {
         List<P> list = new LinkedList<>();
         if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
-            List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers(Power.class, includeInactive);
             Class<P> cls = factory.getPowerClass();
+            List<? extends Power> powers = PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls, includeInactive);
             for(Power power : powers) {
-                if(cls.isAssignableFrom(power.getClass()) && (includeInactive || power.isActive())) {
+                if(includeInactive || power.isActive()) {
                     list.add((P)power);
                 }
             }
