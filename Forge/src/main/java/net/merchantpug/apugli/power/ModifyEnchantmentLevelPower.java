@@ -6,14 +6,16 @@ import net.merchantpug.apugli.power.configuration.FabricValueModifyingConfigurat
 import net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower implements ModifyEnchantmentLevelPowerFactory<ConfiguredPower<FabricValueModifyingConfiguration, ?>> {
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Integer>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ConcurrentHashMap<ItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
         super(ModifyEnchantmentLevelPowerFactory.getSerializableData().xmap(
@@ -33,12 +35,12 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower imp
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> getEntityItemEnchants() {
+    public ConcurrentHashMap<String, ConcurrentHashMap<ItemStack, ListTag>> getEntityItemEnchants() {
         return ENTITY_ITEM_ENCHANTS;
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Integer>> getPowerModifierCache() {
+    public ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> getPowerModifierCache() {
         return POWER_MODIFIER_CACHE;
     }
 

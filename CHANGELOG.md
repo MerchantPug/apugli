@@ -29,7 +29,7 @@
 
 **Bugfixes**
 - Fixed `apugli:modify_enchantment_damage_taken` running more times than what was necessary.
-- Fixed `apugli:velocity` comparing the `compare_to` value to the velocity value instead of the other way around.
+- Fixed `apugli:velocity` comparing the `compare_to` value to the velocity value instead of the other way around. Please update your conditions if you are using this one.
 - Fixed `performVersionCheck` not mattering in the serversided config. #29
 - Fixed `apugli:prevent_breeding` bientity actions setting the love ticks value to too little.
 - Fixed `apugli:modify_enchantment_level` crashing if used with an `apoli:enchantment` entity condition and item condition. #21 (PR #30 - Jarva)

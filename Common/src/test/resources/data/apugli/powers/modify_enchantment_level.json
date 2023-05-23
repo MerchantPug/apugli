@@ -26,7 +26,7 @@
     },
     "item_condition": {
       "type": "apoli:enchantment",
-      "enchantment": "minecraft:silk_touch",
+      "enchantment": "minecraft:unbreaking",
       "comparison": "==",
       "compare_to": 0
     }
