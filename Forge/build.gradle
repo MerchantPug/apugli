@@ -43,9 +43,6 @@ repositories {
         name = "JitPack"
         url = 'https://jitpack.io'
     }
-    flatDir {
-        dirs "$projectDir/libs"
-    }
 }
 
 mixin {
@@ -116,12 +113,7 @@ dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     //Apoli\
-    if (file("${projectDir}/libs/calio-forge-${minecraft_version}-${calio_forge_version}").exists()) {
-        implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
-    }
-    if (file("${projectDir}/libs/apoli-forge-${minecraft_version}-${apoli_forge_version}").exists()) {
-        implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
-    }
+    implementation fg.deobf(fileTree(dir: "$projectDir/libs", include: "*.jar"))
     // Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
@@ -174,15 +166,17 @@ jar.finalizedBy('reobfJar')
 
 tasks.register('downloadOriginsLibs', Download) {
     doFirst {
-        delete file("${projectDir}/libs/")
+        delete file("$projectDir/libs/")
     }
     src([
             "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/calio-forge-${minecraft_version}-${calio_forge_version}.jar",
             "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/apoli-forge-${minecraft_version}-${apoli_forge_version}.jar",
     ])
-    dest file("${projectDir}/libs/")
+    dest file("$projectDir/libs/")
     overwrite false
 }
+
+compileJava.dependsOn tasks.named('downloadOriginsLibs')
 
 publishing {
     publications {
