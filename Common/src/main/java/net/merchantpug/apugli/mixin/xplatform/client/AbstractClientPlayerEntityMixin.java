@@ -38,7 +38,7 @@ public abstract class AbstractClientPlayerEntityMixin extends Player {
         }
         if(playerModelTypePowers.size() > 0) {
             cir.setReturnValue(Services.POWER.getPowers(this, ApugliPowers.PLAYER_MODEL_TYPE.get()).get(0).getModel().toString());
-        } else if(setTexturePowers.size() > 0) {
+        } else if (setTexturePowers.size() > 0) {
             cir.setReturnValue(Services.POWER.getPowers(this, ApugliPowers.SET_TEXTURE.get()).get(0).getModel().toString());
         }
     }
