@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.EnchantmentConfigurationMixin",
+    "common.EnchantmentHelperMixin",
     "common.FoodDataMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",

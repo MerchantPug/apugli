@@ -8,6 +8,7 @@
     "common.BeehiveBlockEntityMixin",
     "common.BeehiveBlockMixin",
     "common.BlockItemMixin",
+    "common.EnchantmentHelperMixin",
     "common.EntityMixin",
     "common.ExplosionMixin",
     "common.ItemStackMixin",
