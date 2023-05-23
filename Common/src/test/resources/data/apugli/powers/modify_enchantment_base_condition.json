@@ -1,0 +1,31 @@
+{
+  "type": "apoli:multiple",
+  "fortune": {
+    "type": "apugli:modify_enchantment_level",
+    "enchantment": "minecraft:fortune",
+    "modifier": {
+      "operation": "addition",
+      "value": 1
+    },
+    "item_condition": {
+      "type": "apugli:base_enchantment",
+      "enchantment": "minecraft:fortune",
+      "comparison": "==",
+      "compare_to": 0
+    }
+  },
+  "protection": {
+    "type": "apugli:modify_enchantment_level",
+    "enchantment": "minecraft:protection",
+    "modifier": {
+      "operation": "addition",
+      "value": 1
+    },
+    "condition": {
+      "type": "apugli:base_enchantment",
+      "enchantment": "minecraft:protection",
+      "comparison": "==",
+      "compare_to": 0
+    }
+  }
+}

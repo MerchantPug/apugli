@@ -10,6 +10,7 @@ public class ApugliEntityConditions {
     public static void registerAll() {
         register("attacker_condition", new AttackerConditionCondition());
         register("attack_target_condition", new AttackTargetConditionCondition());
+        register("base_enchantment", new BaseEnchantmentCondition());
         register("can_have_effect", new CanHaveEffectCondition());
         register("can_take_damage", new CanTakeDamageCondition());
         register("compare_resource", new CompareResourceCondition());
