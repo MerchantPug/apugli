@@ -23,6 +23,10 @@
 
 **Entity Condition Types**
 - `apugli:raycast` now prioritises an entity raycast if one is found.
+- Added `apugli:base_enchantment` entity condition type.
+
+**Item Condition Types**
+- Added `apugli:base_enchantment` item condition type.`
 
 **Config**
 - Reset Timer Ticks is now a serverside setting within the Apugli config.
