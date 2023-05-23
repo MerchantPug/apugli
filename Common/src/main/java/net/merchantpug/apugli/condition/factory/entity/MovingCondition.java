@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity;
 public class MovingCondition implements IConditionFactory<Entity> {
 
     public boolean check(SerializableData.Instance data, Entity entity) {
-        return ((EntityAccess)entity).isMoving();
+        return ((EntityAccess)entity).apugli$isMoving();
     }
 
 }

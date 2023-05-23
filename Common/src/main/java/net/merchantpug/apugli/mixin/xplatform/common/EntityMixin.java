@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(Entity.class)
-@Implements(@Interface(iface = EntityAccess.class, prefix = "apugli$"))
-public abstract class EntityMixin {
+public abstract class EntityMixin implements EntityAccess {
     @Shadow public abstract AABB getBoundingBox();
 
     @Shadow public Level level;
