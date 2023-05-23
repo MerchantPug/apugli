@@ -165,7 +165,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
     def mainFile = upload(cf_project_id, remapJar)
-    mainFile.displayName = "Fabric ${rootProject.version}+${minecraft_version}"
+    mainFile.displayName = "Fabric v${rootProject.version}+${minecraft_version}"
     mainFile.releaseType = "release"
     mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     mainFile.changelogType = "markdown"
@@ -191,7 +191,7 @@ modrinth {
     projectId = mr_project_id
     versionNumber = "${version}-fabric"
     versionType = "release"
-    versionName = "Fabric/Quilt v$version"
+    versionName = "Fabric/Quilt v${rootProject.version}+${minecraft_version}"
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = remapJar
     gameVersions = fabric_game_versions.split(", ").toList()

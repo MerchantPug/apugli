@@ -213,7 +213,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
     def mainFile = upload(cf_project_id, jar)
-    mainFile.displayName = "Forge ${rootProject.version}+${minecraft_version}"
+    mainFile.displayName = "Forge v${rootProject.version}+${minecraft_version}"
     mainFile.releaseType = "release"
     mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     mainFile.changelogType = "markdown"
@@ -239,7 +239,7 @@ modrinth {
     projectId = mr_project_id
     versionNumber = "${version}"
     versionType = "release"
-    versionName = "Forge v$version"
+    versionName = "Forge v${rootProject.version}+${minecraft_version}"
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = jar
     gameVersions = forge_game_versions.split(", ").toList()
