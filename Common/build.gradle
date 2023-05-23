@@ -111,9 +111,9 @@ githubRelease {
     token = System.getenv("GITHUB_TOKEN")
     owner = gh_owner
     repo = gh_repo
-    tagName = version
+    tagName = ${rootProject.version}+${minecraft_version}
     targetCommitish = gh_commitish
-    releaseName = "$project.mod_name v$project.version"
+    releaseName = "$project.mod_name v${rootProject.version}+${minecraft_version}"
     body {
         new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
