@@ -26,7 +26,7 @@
     "client.PlayerEntityRendererMixin",
     "client.accessor.ApoliClientAccessor"
   ],
-  "refmap": "${refmap_target}refmap.json",
+  "refmap": "${refmap_target}.refmap.json",
   "injectors": {
     "defaultRequire": 1
   }
