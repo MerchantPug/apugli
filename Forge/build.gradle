@@ -43,6 +43,9 @@ repositories {
         name = "JitPack"
         url = 'https://jitpack.io'
     }
+    flatDir {
+        dirs "$projectDir/libs"
+    }
 }
 
 mixin {
@@ -113,7 +116,12 @@ dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     //Apoli\
-    implementation fg.deobf(fileTree(dir: "$projectDir/libs", include: "*.jar"))
+    if (System.getenv("ENVIRONMENT") == "publishing")
+        implementation fg.deobf(fileTree(dir: "$projectDir/libs", include: "*.jar"))
+    else {
+        implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
+        implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
+    }
     // Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
