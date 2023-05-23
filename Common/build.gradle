@@ -111,7 +111,7 @@ githubRelease {
     token = System.getenv("GITHUB_TOKEN")
     owner = gh_owner
     repo = gh_repo
-    tagName = ${rootProject.version}+${minecraft_version}
+    tagName = "${rootProject.version}+${minecraft_version}"
     targetCommitish = gh_commitish
     releaseName = "$project.mod_name v${rootProject.version}+${minecraft_version}"
     body {
