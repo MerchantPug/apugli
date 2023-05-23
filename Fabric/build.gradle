@@ -120,6 +120,8 @@ dependencies {
 
 processResources {
     from project(":Common").sourceSets.main.resources
+    exclude "apugli.common.accesswidener"
+
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
@@ -163,7 +165,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
     def mainFile = upload(cf_project_id, remapJar)
-    displayName = "Fabric/Quilt v$version"
+    mainFile.displayName = "Fabric ${rootProject.version}+${minecraft_version}"
     mainFile.releaseType = "release"
     mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     mainFile.changelogType = "markdown"
