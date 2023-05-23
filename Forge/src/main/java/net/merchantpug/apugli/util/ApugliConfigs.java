@@ -23,7 +23,7 @@ public class ApugliConfigs {
             public HitsOnTargetOptions(ForgeConfigSpec.Builder builder) {
                 this.resetTimerTicks = builder
                         .translation("apugli.config.resetTimerTicks")
-                        .defineInRange("resetTimerTicks", 0, 0, Integer.MAX_VALUE);
+                        .defineInRange("resetTimerTicks", 100, 0, Integer.MAX_VALUE);
             }
 
             public int getResetTimerTicks() {
