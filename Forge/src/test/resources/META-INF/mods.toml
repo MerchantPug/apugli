@@ -31,7 +31,7 @@ displayName="Apugli"
 #updateJSONURL=""
 displayURL="https://github.com/MerchantPug/apugli"
 logoFile="pack.png"
-authors="MerchantPug, LimonBlaze"
+authors="MerchantPug, RaymondBlaze"
 description="Pug's extension to A Power Library."
 
 [[dependencies.apugli]]
