@@ -11,6 +11,8 @@ version = "${rootProject.version}+${minecraft_version}-fabric"
 loom {
     shareCaches()
     accessWidenerPath = file("src/main/resources/apugli.accesswidener")
+    mixin.defaultRefmapName = "apugli.refmap.json"
+
     mods {
         register("apugli") {
             sourceSet(project(":Common").sourceSets.main)
@@ -118,10 +120,6 @@ processResources {
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version
-    }
-
-    filesMatching('*.mixins.json') {
-        expand "refmap_target": mod_id
     }
 }
 

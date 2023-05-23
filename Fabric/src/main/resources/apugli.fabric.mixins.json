@@ -26,8 +26,8 @@
     "client.PlayerEntityRendererMixin",
     "client.accessor.ApoliClientAccessor"
   ],
-  "refmap": "${refmap_target}.refmap.json",
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "apugli.refmap.json"
 }

@@ -53,5 +53,5 @@
     "defaultRequire": 1,
     "maxShiftBy": 5
   },
-  "refmap": "${refmap_target}refmap.json"
+  "refmap": "apugli.refmap.json"
 }

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ItemActions.class)
+@Mixin(ItemActions.class)
 public class ItemActionsMixin {
     @Inject(method = "lambda$register$3", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
     private static void handleBreakAction(SerializableData.Instance data, Tuple<Level, ItemStack> worldAndStack, CallbackInfo ci) {
