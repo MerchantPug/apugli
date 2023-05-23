@@ -31,9 +31,6 @@ import java.util.List;
 public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
-    public abstract boolean isFallFlying();
-
-    @Shadow
     protected abstract void defineSynchedData();
 
     @Shadow
@@ -44,8 +41,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
     protected abstract boolean onSoulSpeedBlock();
-
-    @Shadow public abstract boolean isDeadOrDying();
 
     public LivingEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
         super(entityType, world);
