@@ -18,6 +18,7 @@ plugins {
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
+    id "de.undercouch.download" version "5.4.0"
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -43,7 +44,7 @@ repositories {
         url = 'https://jitpack.io'
     }
     flatDir {
-        dirs "$rootDir/libs"
+        dirs "$projectDir/libs"
     }
 }
 
@@ -114,9 +115,13 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //Apoli
-    implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
-    implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
+    //Apoli\
+    if (file("${projectDir}/libs/calio-forge-${minecraft_version}-${calio_forge_version}").exists()) {
+        implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
+    }
+    if (file("${projectDir}/libs/apoli-forge-${minecraft_version}-${apoli_forge_version}").exists()) {
+        implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
+    }
     // Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
@@ -166,6 +171,18 @@ reobf {
 }
 
 jar.finalizedBy('reobfJar')
+
+tasks.register('downloadOriginsLibs', Download) {
+    doFirst {
+        delete file("${projectDir}/libs/")
+    }
+    src([
+            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/calio-forge-${minecraft_version}-${calio_forge_version}.jar",
+            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/apoli-forge-${minecraft_version}-${apoli_forge_version}.jar",
+    ])
+    dest file("${projectDir}/libs/")
+    overwrite false
+}
 
 publishing {
     publications {
