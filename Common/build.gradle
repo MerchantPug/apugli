@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
+    id "com.github.breadmoirai.github-release" version "2.4.1"
 }
 
 archivesBaseName = "${mod_name}"
@@ -95,7 +96,25 @@ publishing {
 
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            name = "merchantpug"
+            url = "https://maven.merchantpug.net/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                create("basic", BasicAuthentication)
+            }
         }
+    }
+}
+
+githubRelease {
+    if (System.getenv("GITHUB_TOKEN") == null) return
+    token = System.getenv("GITHUB_TOKEN")
+    owner = gh_owner
+    repo = gh_repo
+    tagName = version
+    targetCommitish = gh_commitish
+    releaseName = "$project.mod_name v$project.version"
+    body {
+        new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
 }

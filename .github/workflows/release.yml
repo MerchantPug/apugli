@@ -5,7 +5,8 @@ permissions:
   contents: write
 
 env:
-  ENVIRONMENT: production
+  ORG_GRADLE_PROJECT_merchantpugUsername: ${{ secrets.MAVEN_NAME }}
+  ORG_GRADLE_PROJECT_merchantpugPassword: ${{ secrets.MAVEN_TOKEN }}
   CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
@@ -26,4 +27,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Upload releases
-        run: ./gradlew build curseforge github modrinth --stacktrace
+        run: ./gradlew build github publishCurseForge modrinth publish --stacktrace

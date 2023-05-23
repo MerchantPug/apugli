@@ -1,7 +1,11 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
     id 'idea'
+    id "net.darkhax.curseforgegradle" version "1.0.7"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 archivesBaseName = "${mod_name}"
@@ -144,7 +148,59 @@ publishing {
 
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            name = "merchantpug"
+            url = "https://maven.merchantpug.net/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                create("basic", BasicAuthentication)
+            }
+        }
+    }
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    disableVersionDetection()
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def mainFile = upload(cf_project_id, remapJar)
+    displayName = "Fabric/Quilt v$version"
+    mainFile.releaseType = "release"
+    mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+    mainFile.changelogType = "markdown"
+    fabric_mod_loaders.split(", ").each {
+        mainFile.addModLoader(it)
+    }
+    fabric_game_versions.split(", ").each {
+        mainFile.addGameVersion(it)
+    }
+    java_versions.split(", ").each {
+        mainFile.addJavaVersion(it)
+    }
+    fabric_required_deps.split(", ").each {
+        mainFile.addRequirement(it)
+    }
+    fabric_embedded_deps.split(", ").each {
+        mainFile.addEmbedded(it)
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = mr_project_id
+    versionNumber = "${version}-fabric"
+    versionType = "release"
+    versionName = "Fabric/Quilt v$version"
+    changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+    uploadFile = remapJar
+    gameVersions = fabric_game_versions.split(", ").toList()
+    loaders = fabric_mod_loaders.split(", ").toList()
+    dependencies {
+        fabric_required_deps.split(", ").each { String project ->
+            required.project project
+        }
+
+        fabric_embedded_deps.split(", ").each { String project ->
+            embedded.project project
         }
     }
 }

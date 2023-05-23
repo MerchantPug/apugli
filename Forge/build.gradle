@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 buildscript {
     repositories {
         maven { url 'https://maven.minecraftforge.net' }
@@ -16,6 +18,8 @@ plugins {
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
+    id "net.darkhax.curseforgegradle" version "1.0.7"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 archivesBaseName = "${mod_name}"
@@ -171,9 +175,52 @@ publishing {
             artifact jar
         }
     }
+
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            name = "merchantpug"
+            url = "https://maven.merchantpug.net/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                create("basic", BasicAuthentication)
+            }
         }
     }
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    disableVersionDetection()
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    def mainFile = upload(cf_project_id, jar)
+    mainFile.releaseType = "release"
+    mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+    mainFile.changelogType = "markdown"
+    forge_mod_loaders.split(", ").each {
+        mainFile.addModLoader(it)
+    }
+    forge_game_versions.split(", ").each {
+        mainFile.addGameVersion(it)
+    }
+    java_versions.split(", ").each {
+        mainFile.addJavaVersion(it)
+    }
+    cf_forge_required_deps.split(", ").each {
+        mainFile.addRequirement(it)
+    }
+    cf_forge_optional_deps.split(", ").each {
+        mainFile.addOptional(it)
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = mr_project_id
+    versionNumber = "${version}"
+    versionType = "release"
+    versionName = "Forge v$version"
+    changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
+    uploadFile = jar
+    gameVersions = forge_game_versions.split(", ").toList()
+    loaders = forge_mod_loaders.split(", ").toList()
 }
