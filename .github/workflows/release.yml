@@ -10,7 +10,6 @@ env:
   CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-  ENVIRONMENT: publishing
 
 jobs:
   release:
@@ -28,4 +27,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Upload releases
-        run: ./gradlew downloadOriginsLibs build github publishCurseForge modrinth publish --stacktrace
+        run: ./gradlew build github publishCurseForge modrinth publish --stacktrace

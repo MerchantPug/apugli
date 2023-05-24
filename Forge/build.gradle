@@ -29,22 +29,11 @@ version = "${rootProject.version}+${minecraft_version}-forge"
 jarJar.enable()
 
 repositories {
-    maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-
     maven { url 'https://maven.theillusivec4.top' }
 
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
-    }
-    flatDir {
-        dirs "$projectDir/libs"
     }
 }
 
@@ -115,14 +104,10 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //Apoli\
-    if (System.getenv("ENVIRONMENT") == "publishing")
-        implementation fg.deobf(fileTree(dir: "$projectDir/libs", include: "*.jar"))
-    else {
-        implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
-        implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
-    }
-    // Caelus
+    //Apoli
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:calio-forge:${origins_forge_commit_hash}")
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:apoli-forge:${origins_forge_commit_hash}")
+    //Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
     //MixinExtras
     implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
@@ -172,20 +157,6 @@ reobf {
 
 jar.finalizedBy('reobfJar')
 
-tasks.register('downloadOriginsLibs', Download) {
-    doFirst {
-        delete file("$projectDir/libs/")
-    }
-    src([
-            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/calio-forge-${minecraft_version}-${calio_forge_version}.jar",
-            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/apoli-forge-${minecraft_version}-${apoli_forge_version}.jar",
-    ])
-    dest file("$projectDir/libs/")
-    overwrite false
-}
-
-compileJava.dependsOn tasks.named('downloadOriginsLibs')
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -205,6 +176,7 @@ publishing {
                 create("basic", BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 

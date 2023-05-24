@@ -157,6 +157,7 @@ publishing {
                 create("basic", BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 
