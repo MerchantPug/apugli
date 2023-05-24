@@ -9,7 +9,7 @@ It's recommended to have some knowledge about either mod before doing so.
 
 # Implementing the library into your project
 
-## Pug's Maven
+## MerchantPug's Maven
 
 Depending on Apugli has changed ever since v2.0.0, as the mod is now built very differently to what it was prior to this update.
 
