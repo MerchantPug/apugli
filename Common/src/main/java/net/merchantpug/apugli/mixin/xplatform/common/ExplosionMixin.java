@@ -124,7 +124,7 @@ public abstract class ExplosionMixin {
         this.apugli$rocketJumpBiEntityCondition = value;
     }
 
-    public Predicate<Tuple<Entity, Entity>> getBiEntityPredicate() {
+    public Predicate<Tuple<Entity, Entity>> apugli$getBiEntityPredicate() {
         return apugli$rocketJumpBiEntityCondition;
     }
 }
