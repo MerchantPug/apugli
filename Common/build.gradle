@@ -89,7 +89,8 @@ publishing {
             groupId project.group
             artifactId project.archivesBaseName
             version project.version
-            from components.java
+            artifact jar
+            artifact sourcesJar
         }
     }
 
