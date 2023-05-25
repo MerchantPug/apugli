@@ -1,8 +1,11 @@
 package net.merchantpug.apugli.condition.factory.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -13,16 +16,17 @@ public class CanTakeDamageCondition implements IConditionFactory<Entity> {
     @Override
     public SerializableData getSerializableData() {
         return new SerializableData()
-                .add("source", SerializableDataTypes.DAMAGE_SOURCE);
+                .add("damage_type", SerializableDataTypes.DAMAGE_TYPE, null)
+                .add("source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null);
     }
 
     @Override
     public boolean check(SerializableData.Instance data, Entity instance) {
-        DamageSource source = data.get("source");
+        DamageSource source = MiscUtil.createDamageSource(instance.damageSources(), data.get("source"), data.get("damage_type"));
         if (instance.isInvulnerableTo(source))
             return false;
         else if (instance instanceof LivingEntity living)
-            return !source.isFire() || !living.hasEffect(MobEffects.FIRE_RESISTANCE);
+            return !source.is(DamageTypeTags.IS_FIRE) || !living.hasEffect(MobEffects.FIRE_RESISTANCE);
         return true;
     }
 

@@ -56,7 +56,7 @@ mixin {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+    mappings channel: 'official', version: minecraft_version
 
     if(project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
         accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -205,6 +205,7 @@ publishing {
                 create("basic", BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 
@@ -243,5 +244,5 @@ modrinth {
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = jar
     gameVersions = forge_game_versions.split(", ").toList()
-    loaders = fabric_mod_loaders.split(", ").collect { it.toLowerCase(Locale.ROOT) }
+    loaders = forge_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
 }

@@ -26,8 +26,8 @@ public class CustomFootstepPower extends CustomSoundPower {
         
         public Factory() {
             super("custom_footstep",
-                getSerializableData(),
-                data -> (type, entity) -> new CustomFootstepPower(type, entity, data)
+                    CustomSoundPower.getSerializableData(),
+                    data -> (type, entity) -> new CustomFootstepPower(type, entity, data)
             );
             allowCondition();
         }

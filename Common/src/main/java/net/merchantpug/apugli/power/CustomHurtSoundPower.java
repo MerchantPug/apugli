@@ -30,8 +30,8 @@ public class CustomHurtSoundPower extends CustomSoundPower {
         
         public Factory() {
             super("custom_hurt_sound",
-                getSerializableData(),
-                data -> (type, entity) -> new CustomHurtSoundPower(type, entity, data)
+                    CustomSoundPower.getSerializableData(),
+                    data -> (type, entity) -> new CustomHurtSoundPower(type, entity, data)
             );
             allowCondition();
         }

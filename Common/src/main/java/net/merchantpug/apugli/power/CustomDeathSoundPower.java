@@ -30,8 +30,8 @@ public class CustomDeathSoundPower extends CustomSoundPower {
         
         public Factory() {
             super("custom_death_sound",
-                getSerializableData(),
-                data -> (type, entity) -> new CustomDeathSoundPower(type, entity, data)
+                    CustomSoundPower.getSerializableData(),
+                    data -> (type, entity) -> new CustomDeathSoundPower(type, entity, data)
             );
             allowCondition();
         }

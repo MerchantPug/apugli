@@ -9,6 +9,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -19,8 +20,8 @@ import java.util.List;
 
 public class PowerHumanoidArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends HumanoidArmorLayer<T, M, A> {
 
-    public PowerHumanoidArmorLayer(RenderLayerParent<T, M> parent, A innerModel, A outerModel) {
-        super(parent, innerModel, outerModel);
+    public PowerHumanoidArmorLayer(RenderLayerParent<T, M> parent, A innerModel, A outerModel, ModelManager modelManager) {
+        super(parent, innerModel, outerModel, modelManager);
     }
 
     public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
@@ -34,7 +35,7 @@ public class PowerHumanoidArmorLayer<T extends LivingEntity, M extends HumanoidM
 
     public void renderArmor(ItemStack stack, PoseStack matrices, MultiBufferSource vertexConsumers, EquipmentSlot armorSlot, int light, HumanoidModel model) {
         if(stack.getItem() instanceof ArmorItem armorItem) {
-            if(armorItem.getSlot() == armorSlot) {
+            if(armorItem.getEquipmentSlot() == armorSlot) {
                 this.getParentModel().copyPropertiesTo(model);
                 ((ArmorFeatureRendererAccessor)this).invokeSetVisible(model, armorSlot);
                 boolean bl = armorSlot == EquipmentSlot.LEGS;

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
     id "com.github.breadmoirai.github-release" version "2.4.1"
 }
@@ -58,8 +58,6 @@ repositories {
 }
 
 loom {
-    shareCaches()
-    remapArchives = false
     mixin {
         useLegacyMixinAp = false
     }
@@ -71,15 +69,13 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+        parchment("org.parchmentmc.data:parchment-1.19.3:${parchment_version}@zip")
     }
     //Apoli
-    modCompileOnly "com.github.eggohito:apoli:${apoli_version}"
+    // modCompileOnlyApi "com.github.apace100:apoli:${apoli_version}"
+    modCompileOnlyApi "com.github.MerchantPug:apoli:${apoli_version}"
     //MixinExtras
     annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
-    //Mixin
-    compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
-    compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'
     //JSR305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 }
@@ -90,7 +86,8 @@ publishing {
             groupId project.group
             artifactId project.archivesBaseName
             version project.version
-            from components.java
+            artifact jar
+            artifact sourcesJar
         }
     }
 
@@ -103,6 +100,7 @@ publishing {
                 create("basic", BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 
@@ -117,4 +115,12 @@ githubRelease {
     body {
         new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
+}
+
+tasks.remapJar {
+    enabled = false
+}
+
+tasks.remapSourcesJar {
+    enabled = false
 }

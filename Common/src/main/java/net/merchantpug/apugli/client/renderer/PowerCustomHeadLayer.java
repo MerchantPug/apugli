@@ -2,7 +2,9 @@ package net.merchantpug.apugli.client.renderer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import net.minecraft.world.item.*;
+import net.minecraft.world.phys.Vec3;
 import net.merchantpug.apugli.mixin.xplatform.client.accessor.HeadFeatureRendererAccessor;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
@@ -24,10 +26,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 
@@ -78,14 +76,14 @@ public class PowerCustomHeadLayer<T extends LivingEntity, M extends EntityModel<
                 SkullModelBase skullBlockEntityModel = ((HeadFeatureRendererAccessor)this).getHeadModels().get(skullType);
                 RenderType renderLayer = SkullBlockRenderer.getRenderType(skullType, gameProfile);
                 SkullBlockRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
-            } else if(!(item instanceof ArmorItem) || ((ArmorItem) item).getSlot() != EquipmentSlot.HEAD) {
+            } else if(!(item instanceof ArmorItem) || ((ArmorItem) item).getEquipmentSlot() != EquipmentSlot.HEAD) {
                 matrixStack.translate(0.0D, -0.25D, 0.0D);
-                matrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 matrixStack.scale(0.625F, -0.625F, -0.625F);
                 if(bl) {
                     matrixStack.translate(0.0D, 0.1875D, 0.0D);
                 }
-                heldItemRenderer.renderItem(livingEntity, stack, ItemTransforms.TransformType.HEAD, false, matrixStack, vertexConsumerProvider, i);
+                heldItemRenderer.renderItem(livingEntity, stack, ItemDisplayContext.HEAD, false, matrixStack, vertexConsumerProvider, i);
             }
             matrixStack.popPose();
         }

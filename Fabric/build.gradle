@@ -1,7 +1,7 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
     id 'idea'
     id "net.darkhax.curseforgegradle" version "1.0.7"
@@ -13,7 +13,6 @@ version = "${rootProject.version}+${minecraft_version}-fabric"
 
 
 loom {
-    shareCaches()
     accessWidenerPath = file("src/main/resources/apugli.accesswidener")
     mixin.defaultRefmapName = "apugli.refmap.json"
 
@@ -91,7 +90,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+        parchment("org.parchmentmc.data:parchment-1.19.3:${parchment_version}@zip")
     }
     //Fabric
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
@@ -99,12 +98,14 @@ dependencies {
     //ModMenu
     modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
     //Apoli
-    modImplementation "com.github.eggohito:apoli:${apoli_version}"
+    // modImplementation "com.github.apace100:apoli:${apoli_version}"
+    modApi "com.github.MerchantPug:apoli:${apoli_version}"
     //REA
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
+    modApi "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     //MidNightLib
-    modImplementation "maven.modrinth:midnightlib:${midnightlib_version}"
-    include "maven.modrinth:midnightlib:${midnightlib_version}"
+    include(modApi("maven.modrinth:midnightlib:${midnightlib_version}")) {
+        exclude group: "net.fabricmc.fabricapi"
+    }
     //MixinExtras
     include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${mixin_extras_version}")))
     //JSR305
@@ -157,6 +158,7 @@ publishing {
                 create("basic", BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 
@@ -195,14 +197,14 @@ modrinth {
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = remapJar
     gameVersions = fabric_game_versions.split(", ").toList()
-    loaders = fabric_mod_loaders.split(", ").collect { it.toLowerCase(Locale.ROOT) }
+    loaders = fabric_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
     dependencies {
-        fabric_required_deps.split(", ").each { String project ->
-            required.project project
+        fabric_required_deps.split(", ").each {
+            required.project it
         }
 
-        fabric_embedded_deps.split(", ").each { String project ->
-            embedded.project project
+        fabric_embedded_deps.split(", ").each {
+            embedded.project it
         }
     }
 }

@@ -4,6 +4,7 @@ import net.merchantpug.apugli.action.factory.IActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -21,12 +22,12 @@ public class ZombifyVillagerAction implements IActionFactory<Entity> {
         if(zombieVillagerEntity != null) {
             zombieVillagerEntity.finalizeSpawn((ServerLevelAccessor) zombieVillagerEntity.level, zombieVillagerEntity.level.getCurrentDifficultyAt(zombieVillagerEntity.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-            zombieVillagerEntity.setGossips(villagerEntity.getGossips().store(NbtOps.INSTANCE).getValue());
+            zombieVillagerEntity.setGossips(villagerEntity.getGossips().store(NbtOps.INSTANCE));
             zombieVillagerEntity.setTradeOffers(villagerEntity.getOffers().createTag());
             zombieVillagerEntity.setVillagerXp(villagerEntity.getVillagerXp());
         }
-        if(villagerEntity.getLastHurtByMob() != null) villagerEntity.hurt(DamageSource.mobAttack(villagerEntity.getLastHurtByMob()), Float.MAX_VALUE);
-        else villagerEntity.hurt(DamageSource.GENERIC, Float.MAX_VALUE);
+        if(villagerEntity.getLastHurtByMob() != null) villagerEntity.hurt(entity.damageSources().mobAttack(villagerEntity.getLastHurtByMob()), Float.MAX_VALUE);
+        else villagerEntity.hurt(entity.damageSources().source(DamageTypes.GENERIC), Float.MAX_VALUE);
         entity.level.levelEvent(null, LevelEvent.SOUND_ZOMBIE_INFECTED, entity.blockPosition(), 0);
     }
 

@@ -25,7 +25,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         this.addLayer(new EntityTextureOverlayLayer<>(this, slim, ctx.getModelSet()));
         this.addLayer(new PowerItemInHandLayer<>(this, ctx.getItemInHandRenderer()));
         this.addLayer(new PowerCustomHeadLayer<>(this, ctx.getModelSet(), ctx.getItemInHandRenderer()));
-        this.addLayer(new PowerHumanoidArmorLayer<>(this, this.getModel(), this.getModel()));
+        this.addLayer(new PowerHumanoidArmorLayer<>(this, this.getModel(), this.getModel(), ctx.getModelManager()));
     }
 
 }

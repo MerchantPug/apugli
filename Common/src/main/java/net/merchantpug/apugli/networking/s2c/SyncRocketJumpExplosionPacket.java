@@ -4,7 +4,6 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.damage.JumpExplosionPlayerDamageSource;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.client.Minecraft;
@@ -56,7 +55,7 @@ public record SyncRocketJumpExplosionPacket(int userId,
                 Apugli.LOG.warn("Received unknown rocket jumping entity.");
             } else {
                 PowerType<?> powerType = PowerTypeRegistry.get(powerId);
-                Explosion explosion = new Explosion(user.level, user, new JumpExplosionPlayerDamageSource(living), null, x, y, z, radius, false, Explosion.BlockInteraction.NONE);
+                Explosion explosion = new Explosion(user.level, user, x, y, z, radius, false, Explosion.BlockInteraction.KEEP);
                 ((ExplosionAccess) explosion).setRocketJump(true);
                 ((ExplosionAccess) explosion).setExplosionDamageModifiers(ApugliPowers.ROCKET_JUMP.get().damageModifiers(Services.POWER.getPowerFromType(living, powerType), living));
                 ((ExplosionAccess) explosion).setBiEntityPredicate(Services.CONDITION.biEntityPredicate(ApugliPowers.ROCKET_JUMP.get().getDataFromPower(Services.POWER.getPowerFromType(living, powerType)), "damage_bientity_condition"));

@@ -99,7 +99,7 @@ public abstract class LivingEntityMixin extends Entity {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
-        if (source.getEntity() != null && source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
+        if (source.getEntity() != null && source.getEntity() instanceof LivingEntity attacker && !source.isIndirect()) {
             additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 

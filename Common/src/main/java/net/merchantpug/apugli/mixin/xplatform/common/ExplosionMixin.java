@@ -33,41 +33,22 @@ public abstract class ExplosionMixin {
 
     @Shadow @Final private Level level;
 
-    @Shadow public abstract @Nullable LivingEntity getSourceMob();
-
-    @Shadow @Final private double z;
+    @Shadow public abstract @Nullable Entity getDirectSourceEntity();
 
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float changeDamage(float amount) {
         if (this.apugli$isRocketJump()) {
-            return amount = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionDamageModifiers, amount);
+            return amount = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionDamageModifiers, amount);
         }
         return amount;
     }
 
-    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 0)
-    private double modifyOtherEntitiesKnockbackX(double x) {
+    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"))
+    private Vec3 modifyOtherEntitiesKnockbackZ(Vec3 original) {
         if (this.apugli$isRocketJump()) {
-            return x * 0.75;
+            return new Vec3(original.x() * 0.75, original.y() * 0.75, original.z() * 0.75);
         }
-        return x;
-    }
-
-    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 1)
-    private double modifyOtherEntitiesKnockbackY(double y) {
-        if (this.apugli$isRocketJump()) {
-            return y * 0.75;
-        }
-        return y;
-    }
-
-
-    @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 2)
-    private double modifyOtherEntitiesKnockbackZ(double z) {
-        if (this.apugli$isRocketJump()) {
-            return z * 0.75;
-        }
-        return z;
+        return original;
     }
 
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 5)
@@ -92,14 +73,14 @@ public abstract class ExplosionMixin {
     private Entity apugli$affectedEntity;
 
     @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2, Entity entity) {
+    private void collectAffectedEntity(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List list, Vec3 vec3, int v, Entity entity) {
         this.apugli$affectedEntity = entity;
     }
 
     @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
     private boolean cancelDamagedEntity(boolean original) {
         if (((ExplosionAccess)(Object)this).isRocketJump()) {
-            return original || this.getSourceMob() != null && ((ExplosionAccess)(Object)this).getBiEntityPredicate() != null && !((ExplosionAccess)(Object)this).getBiEntityPredicate().test(new Tuple<>(this.getSourceMob(), this.apugli$affectedEntity));
+            return original || this.getDirectSourceEntity() != null && ((ExplosionAccess)(Object)this).getBiEntityPredicate() != null && !((ExplosionAccess)(Object)this).getBiEntityPredicate().test(new Tuple<>(this.getDirectSourceEntity(), this.apugli$affectedEntity));
         }
         return original;
     }
@@ -124,7 +105,7 @@ public abstract class ExplosionMixin {
         this.apugli$rocketJumpBiEntityCondition = value;
     }
 
-    public Predicate<Tuple<Entity, Entity>> getBiEntityPredicate() {
+    public Predicate<Tuple<Entity, Entity>> apugli$getBiEntityPredicate() {
         return apugli$rocketJumpBiEntityCondition;
     }
 }
