@@ -4,4 +4,4 @@
 - `apugli:rocket_jump` no longer uses a custom damage type for the explosion.
 
 **Bugfixes**
-- Fixed an issue where `apugli:rocket_jump` explosions' `bientity_condition` field doesn't function properly.
+- Fixed an issue where apugli:rocket_jump explosions' `damage_bientity_condition` field doesn't function properly.
