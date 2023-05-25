@@ -59,7 +59,6 @@ repositories {
 
 loom {
     shareCaches()
-    remapArchives = false
     mixin {
         useLegacyMixinAp = false
     }
@@ -118,4 +117,12 @@ githubRelease {
     body {
         new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
+}
+
+tasks.remapJar {
+    enabled = false
+}
+
+tasks.remapSourcesJar {
+    enabled = false
 }

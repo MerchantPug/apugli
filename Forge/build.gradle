@@ -18,7 +18,6 @@ plugins {
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
-    id "de.undercouch.download" version "5.4.0"
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -215,5 +214,5 @@ modrinth {
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = jar
     gameVersions = forge_game_versions.split(", ").toList()
-    loaders = fabric_mod_loaders.split(", ").collect { it.toLowerCase(Locale.ROOT) }
+    loaders = fabric_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
 }

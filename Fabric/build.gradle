@@ -196,14 +196,14 @@ modrinth {
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = remapJar
     gameVersions = fabric_game_versions.split(", ").toList()
-    loaders = fabric_mod_loaders.split(", ").collect { it.toLowerCase(Locale.ROOT) }
+    loaders = fabric_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
     dependencies {
-        fabric_required_deps.split(", ").each { String project ->
-            required.project project
+        fabric_required_deps.split(", ").each {
+            required.project it
         }
 
-        fabric_embedded_deps.split(", ").each { String project ->
-            embedded.project project
+        fabric_embedded_deps.split(", ").each {
+            embedded.project it
         }
     }
 }
