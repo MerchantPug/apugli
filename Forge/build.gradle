@@ -214,5 +214,5 @@ modrinth {
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = jar
     gameVersions = forge_game_versions.split(", ").toList()
-    loaders = fabric_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
+    loaders = forge_mod_loaders.split(", ").collect { return it.toLowerCase(Locale.ROOT) }
 }
