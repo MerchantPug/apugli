@@ -18,7 +18,6 @@ plugins {
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
-    id "de.undercouch.download" version "5.4.0"
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -29,22 +28,11 @@ version = "${rootProject.version}+${minecraft_version}-forge"
 jarJar.enable()
 
 repositories {
-    maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-
     maven { url 'https://maven.theillusivec4.top' }
 
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
-    }
-    flatDir {
-        dirs "$projectDir/libs"
     }
 }
 
@@ -56,7 +44,7 @@ mixin {
 }
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 
     if(project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
         accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -115,15 +103,15 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //Apoli\
-    if (System.getenv("ENVIRONMENT") == "publishing")
-        implementation fg.deobf(fileTree(dir: "$projectDir/libs", include: "*.jar"))
-    else {
-        implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}")
-        implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}")
-    }
-    // Caelus
+    //Apoli
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:calio-forge:${origins_forge_version}")
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:apoli-forge:${origins_forge_version}")
+    //Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
+    // AdditionalEntityAttributes
+    implementation(fg.deobf("com.github.EdwinMindcraft.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
+        exclude group: 'net.minecraftforge'
+    })
     //MixinExtras
     implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
@@ -172,20 +160,6 @@ reobf {
 
 jar.finalizedBy('reobfJar')
 
-tasks.register('downloadOriginsLibs', Download) {
-    doFirst {
-        delete file("$projectDir/libs/")
-    }
-    src([
-            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/calio-forge-${minecraft_version}-${calio_forge_version}.jar",
-            "https://github.com/EdwinMindcraft/origins-architectury/releases/download/${origins_forge_release_version}/apoli-forge-${minecraft_version}-${apoli_forge_version}.jar",
-    ])
-    dest file("$projectDir/libs/")
-    overwrite false
-}
-
-compileJava.dependsOn tasks.named('downloadOriginsLibs')
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -226,9 +200,6 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     }
     java_versions.split(", ").each {
         mainFile.addJavaVersion(it)
-    }
-    cf_forge_required_deps.split(", ").each {
-        mainFile.addRequirement(it)
     }
     cf_forge_optional_deps.split(", ").each {
         mainFile.addOptional(it)
