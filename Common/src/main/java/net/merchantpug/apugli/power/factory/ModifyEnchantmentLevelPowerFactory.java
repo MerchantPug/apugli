@@ -4,7 +4,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -116,6 +115,15 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         }
 
         return i;
+    }
+
+    default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
+        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
+            ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+            return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags));
+        }
+        return EnchantmentHelper.getEnchantments(self);
     }
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
