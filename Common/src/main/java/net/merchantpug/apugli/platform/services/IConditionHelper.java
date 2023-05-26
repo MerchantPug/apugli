@@ -5,7 +5,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -83,10 +82,10 @@ public interface IConditionHelper {
     SerializableDataType<?> itemDataType();
     
     void registerItem(String name, IConditionFactory<ItemStack> condition);
-    
-    boolean checkItem(SerializableData.Instance data, String fieldName, ItemStack stack);
-    
+
+    boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack);
+
     @Nullable
-    Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName);
+    Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName);
 
 }

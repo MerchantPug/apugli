@@ -9,10 +9,12 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -22,13 +24,13 @@ import java.util.function.Predicate;
 
 public class AllowAnvilEnchantPower extends Power {
     @Nullable
-    private final Predicate<ItemStack> itemCondition;
+    private final Predicate<Tuple<Level, ItemStack>> itemCondition;
     private final List<Enchantment> enchantments = new ArrayList<>();
     public Comparison comparison;
     public int compareTo;
     
     public AllowAnvilEnchantPower(PowerType<?> type, LivingEntity entity,
-                                  @Nullable Predicate<ItemStack> itemCondition,
+                                  @Nullable Predicate<Tuple<Level, ItemStack>>itemCondition,
                                   Comparison comparison, int compareTo) {
         super(type, entity);
         this.itemCondition = itemCondition;
@@ -38,7 +40,7 @@ public class AllowAnvilEnchantPower extends Power {
     
     public boolean doesApply(Enchantment enchantment, ItemStack stackA, ItemStack stackB) {
         if(!enchantments.contains(enchantment)) return false;
-        if(itemCondition != null && !itemCondition.test(stackA)) return false;
+        if(itemCondition != null && !itemCondition.test(new Tuple<>(entity.level, stackA))) return false;
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stackB);
         if(!map.containsKey(enchantment)) return false;
         return comparison.compare(map.get(enchantment), compareTo);

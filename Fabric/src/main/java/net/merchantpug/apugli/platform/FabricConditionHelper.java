@@ -12,7 +12,6 @@ import io.github.apace100.calio.data.SerializableDataType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
@@ -179,16 +178,19 @@ public class FabricConditionHelper implements IConditionHelper {
         ResourceLocation id = Apugli.asResource(name);
         Registry.register(ApoliRegistries.ITEM_CONDITION, id, new ConditionFactory<>(id, condition.getSerializableData(), condition::check));
     }
-    
+
     @Override
-    public boolean checkItem(SerializableData.Instance data, String fieldName, ItemStack stack) {
+    public boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack) {
         return !data.isPresent(fieldName) || ((Predicate<ItemStack>)data.get(fieldName)).test(stack);
     }
-    
+
     @Override
-    @Nullable
-    public Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName) {
-        return data.get(fieldName);
+    @javax.annotation.Nullable
+    public Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName) {
+        if (!data.isPresent(fieldName)) {
+            return null;
+        }
+        return levelAndStack -> ((Predicate<ItemStack>)data.get(fieldName)).test(levelAndStack.getB());
     }
 
 }

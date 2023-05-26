@@ -38,12 +38,12 @@ public class BlockItemMixin extends Item {
         ItemStack heldItem = context.getItemInHand();
         BlockPos pos = context.getClickedPos();
         Services.POWER.getPowers(player, ApugliPowers.ACTION_ON_BLOCK_PLACED.get()).stream()
-            .filter(power -> power.itemCondition.test(heldItem))
+            .filter(power -> power.itemCondition.test(new Tuple<>(context.getLevel(), heldItem)))
             .forEach(power -> power.executeAction(pos));
 
         List<ModifyBlockPlacedPower> powers = Services.POWER.getPowers(context.getPlayer(), ApugliPowers.MODIFY_BLOCK_PLACED.get())
                 .stream()
-                .filter(power -> power.itemCondition.test(context.getItemInHand()))
+                .filter(power -> power.itemCondition.test(new Tuple<>(context.getLevel(), context.getItemInHand())))
                 .toList();
         List<Tuple<ModifyBlockPlacedPower, BlockState>> pairs = new ArrayList<>();
         for(ModifyBlockPlacedPower modifyBlockPlacedPower : powers) {

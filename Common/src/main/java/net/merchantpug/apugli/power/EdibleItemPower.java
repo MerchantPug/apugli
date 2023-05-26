@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class EdibleItemPower extends Power {
-    private final Predicate<ItemStack> predicate;
+    private final Predicate<Tuple<Level, ItemStack>> predicate;
     private final FoodProperties foodComponent;
     private final UseAnim useAction;
     private final ItemStack returnStack;
@@ -31,7 +31,7 @@ public class EdibleItemPower extends Power {
     private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemActionWhenEaten;
 
     public EdibleItemPower(PowerType<?> type, LivingEntity entity,
-                           Predicate<ItemStack> predicate,
+                           Predicate<Tuple<Level, ItemStack>> predicate,
                            FoodProperties foodComponent,
                            UseAnim useAction,
                            ItemStack returnStack,
@@ -48,8 +48,8 @@ public class EdibleItemPower extends Power {
         this.itemActionWhenEaten = itemActionWhenEaten;
     }
 
-    public boolean doesApply(ItemStack stack) {
-        return this.predicate.test(stack);
+    public boolean doesApply(Level level, ItemStack stack) {
+        return this.predicate.test(new Tuple<>(level, stack));
     }
 
     public FoodProperties getFoodComponent() {
@@ -69,12 +69,12 @@ public class EdibleItemPower extends Power {
     }
 
     public static void executeEntityActions(LivingEntity entity, ItemStack stack) {
-        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack) && p.entityActionWhenEaten != null).forEach(p -> p.entityActionWhenEaten.accept(entity));
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, stack) && p.entityActionWhenEaten != null).forEach(p -> p.entityActionWhenEaten.accept(entity));
     }
 
     public static ItemStack executeItemActions(LivingEntity entity, ItemStack stack, ItemStack originalStack) {
         Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
-        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(originalStack) && p.itemActionWhenEaten != null).forEach(p -> p.itemActionWhenEaten.accept(new Tuple<>(entity.level, mutable)));
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, originalStack) && p.itemActionWhenEaten != null).forEach(p -> p.itemActionWhenEaten.accept(new Tuple<>(entity.level, mutable)));
         return mutable.getValue();
     }
 

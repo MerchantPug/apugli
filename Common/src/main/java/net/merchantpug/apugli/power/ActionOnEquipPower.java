@@ -5,10 +5,12 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
@@ -17,11 +19,11 @@ import java.util.function.Predicate;
 
 
 public class ActionOnEquipPower extends Power {
-    private final EnumMap<EquipmentSlot, Predicate<ItemStack>> armorConditions;
+    private final EnumMap<EquipmentSlot, Predicate<Tuple<Level, ItemStack>>> armorConditions;
     private final Consumer<Entity> entityAction;
 
     public ActionOnEquipPower(PowerType<?> type, LivingEntity entity,
-                              EnumMap<EquipmentSlot, Predicate<ItemStack>> armorConditions,
+                              EnumMap<EquipmentSlot, Predicate<Tuple<Level, ItemStack>>> armorConditions,
                               Consumer<Entity> entityAction) {
         super(type, entity);
         this.armorConditions = armorConditions;
@@ -29,7 +31,7 @@ public class ActionOnEquipPower extends Power {
     }
 
     public void executeAction(EquipmentSlot slot, ItemStack stack) {
-        if(!armorConditions.containsKey(slot) || armorConditions.get(slot).test(stack)) {
+        if(!armorConditions.containsKey(slot) || armorConditions.get(slot).test(new Tuple<>(entity.level, stack))) {
             entityAction.accept(this.entity);
         }
     }
@@ -46,7 +48,7 @@ public class ActionOnEquipPower extends Power {
                     .add("offhand", Services.CONDITION.itemDataType(), null)
                     .add("action", Services.ACTION.entityDataType()),
                 data -> (type, player) -> {
-                    EnumMap<EquipmentSlot, Predicate<ItemStack>> conditions = new EnumMap<>(EquipmentSlot.class);
+                    EnumMap<EquipmentSlot, Predicate<Tuple<Level, ItemStack>>> conditions = new EnumMap<>(EquipmentSlot.class);
                     if(data.isPresent("head")) {
                         conditions.put(EquipmentSlot.HEAD, Services.CONDITION.itemPredicate(data, "head"));
                     }

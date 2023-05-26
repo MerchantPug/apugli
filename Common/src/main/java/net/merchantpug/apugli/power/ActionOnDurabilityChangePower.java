@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 
 public class ActionOnDurabilityChangePower extends Power {
     @Nullable private final EquipmentSlot slot;
-    @Nullable private final Predicate<ItemStack> itemCondition;
+    @Nullable private final Predicate<Tuple<Level, ItemStack>> itemCondition;
     @Nullable private final Consumer<Entity> increaseAction;
     @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemIncreaseAction;
     @Nullable private final Consumer<Entity> decreaseAction;
@@ -37,7 +37,7 @@ public class ActionOnDurabilityChangePower extends Power {
 
     public ActionOnDurabilityChangePower(PowerType<?> type, LivingEntity entity,
                                          @Nullable EquipmentSlot slot,
-                                         @Nullable Predicate<ItemStack> itemCondition,
+                                         @Nullable Predicate<Tuple<Level, ItemStack>> itemCondition,
                                          @Nullable Consumer<Entity> increaseAction,
                                          @Nullable Consumer<Tuple<Level, Mutable<ItemStack>>> itemIncreaseAction,
                                          @Nullable Consumer<Entity> decreaseAction,
@@ -67,7 +67,7 @@ public class ActionOnDurabilityChangePower extends Power {
     }
 
     public boolean doesApply(ItemStack stack) {
-        return (slot == null || entity.getItemBySlot(slot).equals(stack)) && (this.itemCondition == null || this.itemCondition.test(stack));
+        return (slot == null || ItemStack.matches(entity.getItemBySlot(slot), stack)) && (this.itemCondition == null || this.itemCondition.test(new Tuple<>(entity.level, stack)));
     }
 
     private void executeAction(ItemStack stack,
@@ -98,7 +98,7 @@ public class ActionOnDurabilityChangePower extends Power {
         equipmentSlot.ifPresent(slot1 -> operatedStacks.add(Either.left(slot1)));
         playerInventoryIndex.ifPresent(index -> operatedStacks.add(Either.right(index)));
 
-        Mutable<ItemStack> mutable = new MutableObject<>(stack);
+        Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
 
         if(entityAction != null) {
             entityAction.accept(entity);
