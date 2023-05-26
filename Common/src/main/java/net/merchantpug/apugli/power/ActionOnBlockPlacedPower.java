@@ -7,6 +7,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -19,11 +20,11 @@ import java.util.function.Predicate;
 
 public class ActionOnBlockPlacedPower extends Power {
     @Nullable private final Consumer<Triple<Level, BlockPos, Direction>> blockAction;
-    public final Predicate<ItemStack> itemCondition;
+    public final Predicate<Tuple<Level, ItemStack>> itemCondition;
     
     public ActionOnBlockPlacedPower(PowerType<?> type, LivingEntity entity,
                                     @Nullable Consumer<Triple<Level, BlockPos, Direction>> blockAction,
-                                    Predicate<ItemStack> itemCondition) {
+                                    Predicate<Tuple<Level, ItemStack>> itemCondition) {
         super(type, entity);
         this.itemCondition = itemCondition;
         this.blockAction = blockAction;

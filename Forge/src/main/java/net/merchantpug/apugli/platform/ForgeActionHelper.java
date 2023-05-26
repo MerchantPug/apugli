@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.access.ItemStackLevelAccess;
 import net.merchantpug.apugli.action.FabricEntityAction;
 import net.merchantpug.apugli.action.FabricItemAction;
 import net.merchantpug.apugli.action.factory.IActionFactory;
@@ -131,7 +130,6 @@ public class ForgeActionHelper implements IActionHelper {
         return (levelAndStack) -> {
             Level level = levelAndStack.getA();
             Mutable<ItemStack> stack = levelAndStack.getB();
-            if(level == null) level = ((ItemStackLevelAccess)(Object)stack.getValue()).getLevel();
             action.execute(level, stack);
         };
     }

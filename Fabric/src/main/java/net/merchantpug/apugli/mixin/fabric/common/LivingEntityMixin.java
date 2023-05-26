@@ -130,7 +130,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "eat", at = @At("HEAD"))
     private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (((ItemStackAccess) (Object) stack).getEntity() instanceof LivingEntity living) {
-            Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
+            Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
                 world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
                 List<Pair<MobEffectInstance, Float>> list = p.getFoodComponent().getEffects();

@@ -104,10 +104,14 @@ dependencies {
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     //Apoli
-    implementation fg.deobf("com.github.MerchantPug.origins-forge:calio-forge:${origins_forge_commit_hash}")
-    implementation fg.deobf("com.github.MerchantPug.origins-forge:apoli-forge:${origins_forge_commit_hash}")
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:calio-forge:${origins_forge_version}")
+    implementation fg.deobf("com.github.MerchantPug.origins-forge:apoli-forge:${origins_forge_version}")
     //Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
+    // AdditionalEntityAttributes
+    implementation(fg.deobf("com.github.EdwinMindcraft.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
+        exclude group: 'net.minecraftforge'
+    })
     //MixinExtras
     implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {

@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,11 +28,11 @@ import java.util.function.Predicate;
 
 public class ModifyBlockPlacedPower extends Power {
     private final List<BlockState> blockStates = new ArrayList<>();
-    public final Predicate<ItemStack> itemCondition;
+    public final Predicate<Tuple<Level, ItemStack>> itemCondition;
     private final Consumer<Triple<Level, BlockPos, Direction>> blockAction;
     private int seed = (int)(Math.random() * Integer.MAX_VALUE);
 
-    public ModifyBlockPlacedPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Consumer<Triple<Level, BlockPos, Direction>> blockAction) {
+    public ModifyBlockPlacedPower(PowerType<?> type, LivingEntity entity, Predicate<Tuple<Level, ItemStack>> itemCondition, Consumer<Triple<Level, BlockPos, Direction>> blockAction) {
         super(type, entity);
         this.itemCondition = itemCondition;
         this.blockAction = blockAction;

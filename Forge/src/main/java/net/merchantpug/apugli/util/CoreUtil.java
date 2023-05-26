@@ -21,7 +21,7 @@ public class CoreUtil {
 
     public static int getModifiedEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living) {
-            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), stack.getItem().getEnchantmentLevel(stack, enchantment), p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, stack));
+            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), stack.getItem().getEnchantmentLevel(stack, enchantment), p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));
         }
         return stack.getItem().getEnchantmentLevel(stack, enchantment);
     }
@@ -43,11 +43,14 @@ public class CoreUtil {
     }
 
     public static boolean doEdibleItemPowersApply(ItemStack stack, @Nullable LivingEntity entity) {
-        return entity != null && Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(p -> p.doesApply(stack));
+        return entity != null && Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(p -> p.doesApply(entity.level, stack));
     }
 
     public static FoodProperties getEdibleItemPowerFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(stack)).findFirst();
+        if (entity == null) {
+            return stack.getItem().getFoodProperties(stack, null);
+        }
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, stack)).findFirst();
         return power.map(EdibleItemPower::getFoodComponent).orElse(stack.getItem().getFoodProperties(stack, entity));
     }
 

@@ -1,2 +1,3 @@
 **Bugfixes**
-- Fixed an issue where apugli:rocket_jump explosions' `damage_bientity_condition` field doesn't function properly.
+- Fixed `apugli:action_on_durability_change` not applying correctly.
+- [FORGE] Fixed item conditions not working properly on non player entities.

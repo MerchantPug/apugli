@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.access.ItemStackLevelAccess;
 import net.merchantpug.apugli.condition.*;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
@@ -188,17 +187,16 @@ public class ForgeConditionHelper implements IConditionHelper {
     }
     
     @Override
-    public boolean checkItem(SerializableData.Instance data, String fieldName, ItemStack stack) {
-        return !data.isPresent(fieldName) || ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(((ItemStackLevelAccess)(Object)stack).getLevel(), stack);
+    public boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack) {
+        return !data.isPresent(fieldName) || ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(level, stack);
     }
     
     @Override
-    @Nullable
-    public Predicate<ItemStack> itemPredicate(SerializableData.Instance data, String fieldName) {
+    public @Nullable Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
             return null;
         }
-        return item -> ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(((ItemStackLevelAccess)(Object)item).getLevel(), item);
+        return levelAndStack -> ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(levelAndStack.getA(), levelAndStack.getB());
     }
 
 }

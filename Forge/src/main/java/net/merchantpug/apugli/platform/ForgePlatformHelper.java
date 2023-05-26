@@ -12,7 +12,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.merchantpug.apugli.ApugliForgeEventHandler;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
