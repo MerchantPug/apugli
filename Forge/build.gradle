@@ -201,9 +201,6 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     java_versions.split(", ").each {
         mainFile.addJavaVersion(it)
     }
-    cf_forge_required_deps.split(", ").each {
-        mainFile.addRequirement(it)
-    }
     cf_forge_optional_deps.split(", ").each {
         mainFile.addOptional(it)
     }
