@@ -41,7 +41,7 @@ public class PreventBreedingPower extends Power {
     public static class Factory extends SimplePowerFactory<PreventBreedingPower> {
 
         public Factory() {
-            super("prevent_breeding_power",
+            super("prevent_breeding",
                     new SerializableData()
                             .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
                             .add("bientity_action", Services.ACTION.biEntityDataType(), null)
