@@ -17,6 +17,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'apugli'
+rootProject.name = 'Apugli'
 // TODO: Re-enable Forge at a later date
 include("Common", "Fabric"/*, "Forge"*/)
