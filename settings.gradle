@@ -17,5 +17,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'apugli'
+rootProject.name = 'Apugli'
 include("Common", "Fabric", "Forge")
