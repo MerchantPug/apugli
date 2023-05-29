@@ -23,6 +23,7 @@ public class ApugliEntityConditions {
         register("particle_in_radius", new ParticleInRadiusCondition());
         register("player_model_type", new PlayerModelTypeCondition());
         register("raycast", new RaycastCondition());
+        register("status_effect_tag", new StatusEffectTagCondition());
         register("structure", new StructureCondition());
         register("trident_enchantment", new TridentEnchantmentCondition());
         register("velocity", new VelocityCondition());

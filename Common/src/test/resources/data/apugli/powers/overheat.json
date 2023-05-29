@@ -1,0 +1,153 @@
+{
+  "type": "apoli:active_self",
+  "entity_action": {
+    "type": "apugli:rocket_jump_raycast",
+    "power": 1.0,
+    "action_on_hit": {
+      "type": "apoli:and",
+      "actions": [
+        {
+          "type": "apoli:damage",
+          "source": {
+            "name": "overheat",
+            "bypasses_armor": "true",
+            "fire": "true",
+            "unblockable": "true"
+          },
+          "amount": 2
+        },
+        {
+          "type": "apoli:if_else",
+          "if_action": {
+            "type": "apugli:clamped_add_velocity",
+            "z": -1.6,
+            "space": "LOCAL",
+            "client": false,
+            "horizontal_modifier": {
+              "operation": "multiply_total",
+              "value": 0.2
+            },
+            "horizontal_clamp_modifier": {
+              "operation": "multiply_total",
+              "value": 0.8
+            },
+            "vertical_clamp_modifier": {
+              "operation": "multiply_total",
+              "value": 0.8
+            }
+          },
+          "condition": {
+            "type": "apugli:status_effect_tag",
+            "tag": "apugli:charged_effects"
+          },
+          "else_action": {
+            "type": "apugli:clamped_add_velocity",
+            "z": -0.8,
+            "space": "LOCAL",
+            "client": false,
+            "horizontal_modifier": {
+              "operation": "multiply_total",
+              "value": 0.2
+            },
+            "horizontal_clamp_modifier": {
+              "operation": "multiply_total",
+              "value": 0.8
+            },
+            "vertical_clamp_modifier": {
+              "operation": "multiply_total",
+              "value": 0.8
+            }
+          }
+        },
+        {
+          "type": "apoli:set_fall_distance",
+          "fall_distance": 0.0
+        }
+      ]
+    },
+    "damage_modifier": {
+      "operation": "multiply_total",
+      "value": -0.5
+    },
+    "knockback_modifier": {
+      "operation": "multiply_total",
+      "value": -0.25
+    },
+    "volume_modifier": {
+      "operation": "multiply_total",
+      "value": -0.85
+    },
+    "pitch_modifier": {
+      "operation": "multiply_total",
+      "value": 0.4
+    },
+    "use_charged": true,
+    "charged_condition": {
+      "type": "apugli:status_effect_tag",
+      "tag": "apugli:charged_effects"
+    },
+    "charged_modifier": {
+      "operation": "addition",
+      "value": 0.5
+    },
+    "targetable_bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:and",
+        "conditions": [
+          {
+            "type": "apoli:living"
+          },
+          {
+            "type": "apoli:in_tag",
+            "tag": "toomanyorigins:ignore_rocket_jump",
+            "inverted": true
+          }
+        ]
+      }
+    },
+    "explosion_damage_bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:and",
+        "conditions": [
+          {
+            "type": "apoli:living"
+          },
+          {
+            "type": "apoli:in_tag",
+            "tag": "toomanyorigins:ignore_rocket_jump_damage",
+            "inverted": true
+          }
+        ]
+      }
+    }
+  },
+  "cooldown": 5,
+  "hud_render": {
+    "should_render": false
+  },
+  "key": {
+    "key": "key.saveToolbarActivator",
+    "continuous": false
+  },
+  "condition": {
+    "type": "apugli:raycast",
+    "bientity_condition": {
+      "type": "apoli:target_condition",
+      "condition": {
+        "type": "apoli:and",
+        "conditions": [
+          {
+            "type": "apoli:living"
+          },
+          {
+            "type": "apoli:in_tag",
+            "tag": "toomanyorigins:ignore_rocket_jump",
+            "inverted": true
+          }
+        ]
+      }
+    }
+  }
+}

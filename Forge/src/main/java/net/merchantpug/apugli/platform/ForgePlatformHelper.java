@@ -95,8 +95,8 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player) {
-        ApugliPacketHandler.sendS2CTrackingAndSelf(packet, player);
+    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
+        ApugliPacketHandler.sendS2CTrackingAndSelf(packet, entity);
     }
 
     @Override

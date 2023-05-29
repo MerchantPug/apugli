@@ -44,7 +44,12 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkBiEntity(SerializableData.Instance data, String fieldName, Entity actor, Entity target) {
         return !data.isPresent(fieldName) || ((Predicate<Tuple<Entity, Entity>>)data.get(fieldName)).test(new Tuple<>(actor, target));
     }
-    
+
+    @Override
+    public <C> boolean checkBiEntity(C condition, Entity actor, Entity target) {
+        return condition != null && ((Predicate<Tuple<Entity, Entity>>)condition).test(new Tuple<>(actor, target));
+    }
+
     @Override
     @Nullable
     public Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName) {
@@ -67,13 +72,17 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkBiome(SerializableData.Instance data, String fieldName, Holder<Biome> biome) {
         return !data.isPresent(fieldName) || ((Predicate<Holder<Biome>>)data.get(fieldName)).test(biome);
     }
-    
+
     @Override
     @Nullable
     public Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
 
+    @Override
+    public <C> boolean checkBiome(C condition, Holder<Biome> biome) {
+        return condition != null && ((Predicate<Holder<Biome>>)condition).test(biome);
+    }
 
     @Override
     public SerializableDataType<?> blockDataType() {
@@ -90,7 +99,12 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos) {
         return !data.isPresent(fieldName) || ((Predicate<BlockInWorld>)data.get(fieldName)).test(new BlockInWorld(level, pos, true));
     }
-    
+
+    @Override
+    public <C> boolean checkBlock(C condition, Level level, BlockPos pos) {
+        return condition != null && ((Predicate<BlockInWorld>)condition).test(new BlockInWorld(level, pos, true));
+    }
+
     @Override
     @Nullable
     public Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName) {
@@ -113,7 +127,12 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkDamage(SerializableData.Instance data, String fieldName, DamageSource source, float amount) {
         return !data.isPresent(fieldName) || ((Predicate<Tuple<DamageSource, Float>>)data.get(fieldName)).test(new Tuple<>(source, amount));
     }
-    
+
+    @Override
+    public <C> boolean checkDamage(C condition, DamageSource source, float amount) {
+        return condition != null && ((Predicate<Tuple<DamageSource, Float>>)condition).test(new Tuple<>(source, amount));
+    }
+
     @Override
     @Nullable
     public Predicate<Tuple<DamageSource, Float>> damagePredicate(SerializableData.Instance data, String fieldName) {
@@ -136,8 +155,12 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkEntity(SerializableData.Instance data, String fieldName, Entity entity) {
         return !data.isPresent(fieldName) || ((Predicate<Entity>)data.get(fieldName)).test(entity);
     }
-    
-    
+
+    @Override
+    public <C> boolean checkEntity(C condition, Entity entity) {
+        return condition != null && ((Predicate<Entity>)condition).test(entity);
+    }
+
     @Override
     @Nullable
     public Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName) {
@@ -160,7 +183,12 @@ public class FabricConditionHelper implements IConditionHelper {
     public boolean checkFluid(SerializableData.Instance data, String fieldName, FluidState fluidState) {
         return !data.isPresent(fieldName) || ((Predicate<FluidState>)data.get(fieldName)).test(fluidState);
     }
-    
+
+    @Override
+    public <C> boolean checkFluid(C condition, FluidState fluidState) {
+        return condition != null && ((Predicate<FluidState>)condition).test(fluidState);
+    }
+
     @Override
     @Nullable
     public Predicate<FluidState> fluidPredicate(SerializableData.Instance data, String fieldName) {
@@ -182,6 +210,11 @@ public class FabricConditionHelper implements IConditionHelper {
     @Override
     public boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack) {
         return !data.isPresent(fieldName) || ((Predicate<ItemStack>)data.get(fieldName)).test(stack);
+    }
+
+    @Override
+    public <C> boolean checkItem(C condition, Level level, ItemStack stack) {
+        return condition != null && ((Predicate<ItemStack>)condition).test(stack);
     }
 
     @Override

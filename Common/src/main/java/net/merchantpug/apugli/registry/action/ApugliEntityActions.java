@@ -8,10 +8,12 @@ import net.minecraft.world.entity.Entity;
 public class ApugliEntityActions {
     
     public static void registerAll() {
+        register("clamped_add_velocity", new ClampedAddVelocityAction());
         register("explode", new ExplodeAction());
         register("fire_projectile", new FireProjectileAction());
         register("raycast", new RaycastAction());
         register("resource_transfer", new ResourceTransferAction());
+        register("rocket_jump_raycast", new RocketJumpRaycastAction());
         register("set_no_gravity", new SetNoGravityAction());
         register("spawn_item", new SpawnItemAction());
         register("spawn_particles", new SpawnParticlesAction());

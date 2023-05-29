@@ -3,7 +3,7 @@ package net.merchantpug.apugli.power;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.util.modifier.Modifier;
+import io.github.apace100.apoli.util.modifier.*;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.power.factory.RocketJumpPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -51,6 +51,21 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
     @Override
     public List<?> damageModifiers(RocketJumpPower.Instance power, Entity entity) {
         return power.getDamageModifiers();
+    }
+
+    @Override
+    public List<?> knockbackModifiers() {
+        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, -0.25));
+    }
+
+    @Override
+    public List<?> volumeModifiers() {
+        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, -0.75));
+    }
+
+    @Override
+    public List<?> pitchModifiers() {
+        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, 0.4));
     }
 
     @Override

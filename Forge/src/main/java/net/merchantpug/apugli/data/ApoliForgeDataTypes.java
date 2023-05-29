@@ -1,9 +1,14 @@
 package net.merchantpug.apugli.data;
 
+import com.mojang.serialization.Codec;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.calio.api.network.UnitListCodec;
 import net.minecraft.core.Holder;
+import org.apache.commons.lang3.Validate;
+
+import java.util.List;
 
 public class ApoliForgeDataTypes {
 
@@ -25,6 +30,15 @@ public class ApoliForgeDataTypes {
     public static final SerializableDataType<ConfiguredModifier<?>> MODIFIER = new SerializableDataType<>(ApoliForgeDataTypes.castClass(ConfiguredModifier.class), ConfiguredModifier.CODEC);
 
     public static final SerializableDataType<IActivePower.Key> KEY = new SerializableDataType<>(IActivePower.Key.class, IActivePower.Key.CODEC);
+
+    private static <T> SerializableDataType<List<T>> list(Codec<T> codec) {
+        return new SerializableDataType<>(castClass(List.class), listOf(codec));
+    }
+
+    private static <T> Codec<List<T>> listOf(Codec<T> codec) {
+        Validate.notNull(codec, "Codec cannot be null");
+        return new UnitListCodec<>(codec);
+    }
 
     @SuppressWarnings("unchecked")
     private static <T> Class<T> castClass(Class<?> aClass) {

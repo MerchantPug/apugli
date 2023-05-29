@@ -1,19 +1,22 @@
 package net.merchantpug.apugli.access;
 
-import net.minecraft.util.Tuple;
-import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 public interface ExplosionAccess {
-    void setRocketJump(boolean value);
-    boolean isRocketJump();
-
     void setExplosionDamageModifiers(List<?> value);
     List<?> getExplosionDamageModifiers();
 
-    void setBiEntityPredicate(@Nullable Predicate<Tuple<Entity, Entity>> value);
-    Predicate<Tuple<Entity, Entity>> getBiEntityPredicate();
+    void setExplosionKnockbackModifiers(List<?> value);
+    List<?> getExplosionKnockbackModifiers();
+
+    <M> void setBiEntityPredicate(@Nullable M value);
+    @Nullable Object getBiEntityPredicate();
+
+    void setExplosionVolumeModifiers(List<?> value);
+    List<?> getExplosionVolumeModifiers();
+
+    void setExplosionPitchModifiers(List<?> value);
+    List<?> getExplosionPitchModifiers();
 }

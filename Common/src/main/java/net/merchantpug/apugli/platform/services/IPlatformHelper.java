@@ -83,7 +83,7 @@ public interface IPlatformHelper {
 
     void sendS2C(ApugliPacketS2C packet, ServerPlayer player);
 
-    void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player);
+    void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity);
 
     void sendC2S(ApugliPacketC2S packet);
 
