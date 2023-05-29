@@ -21,9 +21,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
@@ -145,10 +147,11 @@ public class ApugliForgeEventHandler {
         float amount = event.getAmount();
 
         float extraEnchantmentDamage = calculateEnchantmentDamage(target, source, amount);
+        float finalAmount = amount + extraEnchantmentDamage;
 
-        event.setAmount(extraEnchantmentDamage);
+        event.setAmount(finalAmount);
 
-        if (extraEnchantmentDamage != amount || extraEnchantmentDamage == 0.0F) {
+        if (finalAmount != amount && finalAmount == 0.0F) {
             event.setCanceled(true);
         }
 
@@ -161,9 +164,17 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onLivingAttack(LivingAttackEvent event) {
+        float amount = event.getAmount();
         float extraEnchantmentDamage = calculateEnchantmentDamage(event.getEntity(), event.getSource(), event.getAmount());
+        float finalAmount = amount + extraEnchantmentDamage;
+        if (extraEnchantmentDamage > 0.0F && event.getSource().getEntity() instanceof Player attacker) {
+            float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), event.getEntity().getMobType());
+            if (enchantmentDamageBonus <= 0.0F && !event.getEntity().level.isClientSide) {
+                attacker.magicCrit(event.getEntity());
+            }
+        }
 
-        if (extraEnchantmentDamage != event.getAmount() || extraEnchantmentDamage == 0.0F) {
+        if (finalAmount != event.getAmount() && finalAmount == 0.0F) {
             event.setCanceled(true);
         }
     }
@@ -172,20 +183,19 @@ public class ApugliForgeEventHandler {
         float additionalValue = 0.0F;
 
         if (source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, powerHolder);
+            additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, powerHolder);
         }
 
-        if (source.getEntity() instanceof LivingEntity) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().applyModifiers(powerHolder, source, amount);
+        if (source.getEntity() instanceof LivingEntity attacker) {
+            additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().applyModifiers(powerHolder, source, attacker, amount);
         }
 
-        return amount + additionalValue;
+        return additionalValue;
     }
 
     @SubscribeEvent
     public static void onLivingKilled(LivingDeathEvent event) {
         IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
-
             DamageSource source = event.getSource();
             Entity attacker = source.getEntity();
             LivingEntity target = event.getEntity();

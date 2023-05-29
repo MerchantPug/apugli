@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
+import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
@@ -15,11 +16,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +45,8 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow @Nullable public abstract LivingEntity getKillCredit();
 
     @Shadow public abstract boolean isDeadOrDying();
+
+    @Shadow public abstract MobType getMobType();
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -99,15 +101,22 @@ public abstract class LivingEntityMixin extends Entity {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
-        if (source.getEntity() != null && source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
+        if (source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
+            additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 
-        if (source.getEntity() != null && source.getEntity() instanceof LivingEntity) {
-            additionalValue = ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().applyModifiers(thisAsLiving, source, amount);
+        if (source.getEntity() instanceof LivingEntity attacker) {
+            additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_TAKEN.get().applyModifiers(thisAsLiving, source, attacker, amount);
         }
 
         apugli$hasModifiedDamage = originalValue + additionalValue != originalValue;
+
+        if (additionalValue > 0.0F && source.getEntity() instanceof Player attacker) {
+            float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), this.getMobType());
+            if (enchantmentDamageBonus <= 0.0F && !this.level.isClientSide) {
+                attacker.magicCrit(this);
+            }
+        }
 
         return originalValue + additionalValue;
     }

@@ -1,0 +1,9 @@
+{
+  "type": "apugli:modify_enchantment_damage_dealt",
+  "enchantment": "minecraft:smite",
+  "base_value": 2.5,
+  "modifier": {
+    "operation": "multiply_base",
+    "value": 2
+  }
+}
