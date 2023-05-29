@@ -29,12 +29,13 @@ public interface ModifyEnchantmentDamagePowerFactory<P> extends ValueModifyingPo
 
     default float applyModifiers(LivingEntity powerHolder, DamageSource source, float originalAmount, LivingEntity attacker, LivingEntity target) {
         float additionalValue = 0.0F;
-        List<P> damageDealtPowers = Services.POWER.getPowers(powerHolder, this).stream().filter(p -> doesApply(p, source, originalAmount, attacker, target)).toList();
+        List<P> modifyingPowers = Services.POWER.getPowers(powerHolder, this).stream().filter(p -> doesApply(p, source, originalAmount, attacker, target)).toList();
 
-        for (P power : damageDealtPowers) {
+        for (P power : modifyingPowers) {
             SerializableData.Instance data = getDataFromPower(power);
+            if (EnchantmentHelper.getItemEnchantmentLevel(data.get("enchantment"), attacker.getItemBySlot(EquipmentSlot.MAINHAND)) == 0) continue;
             additionalValue += data.getFloat("base_value");
-            for (int i = 0; i < EnchantmentHelper.getItemEnchantmentLevel(data.get("enchantment"), ((LivingEntity) source.getEntity()).getItemBySlot(EquipmentSlot.MAINHAND)); ++i) {
+            for (int i = 0; i < Math.max(0, EnchantmentHelper.getItemEnchantmentLevel(data.get("enchantment"), attacker.getItemBySlot(EquipmentSlot.MAINHAND)) - 1); ++i) {
                 additionalValue = (float) Services.PLATFORM.applyModifiers(powerHolder, this, additionalValue);
                 Services.ACTION.executeBiEntity(data, "bientity_action", attacker, target);
             }

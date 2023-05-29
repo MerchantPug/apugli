@@ -5,8 +5,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 public interface ModifyEnchantmentDamageTakenPowerFactory<P> extends ModifyEnchantmentDamagePowerFactory<P> {
 
-    default float applyModifiers(LivingEntity entity, DamageSource source, float originalAmount) {
-        return this.applyModifiers(entity, source, originalAmount, entity.getLastHurtByMob(), entity);
+    default float applyModifiers(LivingEntity entity, DamageSource source, LivingEntity attacker, float originalAmount) {
+        return this.applyModifiers(entity, source, originalAmount, attacker, entity);
     }
 
 }
