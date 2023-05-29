@@ -17,17 +17,17 @@ public class RaycastAction implements IActionFactory<Entity> {
     @Override
     public SerializableData getSerializableData() {
         return new SerializableData()
-            .add("distance", SerializableDataTypes.DOUBLE, null)
-            .add("pierce", SerializableDataTypes.BOOLEAN, false)
-            .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
-            .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
-            .add("block_action", Services.ACTION.blockDataType(), null)
-            .add("block_condition", Services.CONDITION.blockDataType(), null)
-            .add("bientity_action", Services.ACTION.biEntityDataType(), null)
-            .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
-            .add("target_action", Services.ACTION.entityDataType(), null)
-            .add("target_condition", Services.CONDITION.entityDataType(), null)
-            .add("self_action", Services.ACTION.entityDataType(), null);
+                .add("distance", SerializableDataTypes.DOUBLE, null)
+                .add("pierce", SerializableDataTypes.BOOLEAN, false)
+                .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
+                .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
+                .add("block_action", Services.ACTION.blockDataType(), null)
+                .add("block_condition", Services.CONDITION.blockDataType(), null)
+                .add("bientity_action", Services.ACTION.biEntityDataType(), null)
+                .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                .add("target_action", Services.ACTION.entityDataType(), null)
+                .add("target_condition", Services.CONDITION.entityDataType(), null)
+                .add("self_action", Services.ACTION.entityDataType(), null);
     }
     
     @Override
@@ -91,7 +91,6 @@ public class RaycastAction implements IActionFactory<Entity> {
     protected void onHitEntity(SerializableData.Instance data, Entity actor, EntityHitResult result, boolean calledThroughPierce) {
         boolean hasTargetAction = data.isPresent("target_action");
         boolean hasBiEntityAction = data.isPresent("bientity_action");
-        if(!hasTargetAction && !hasBiEntityAction) return;
         if(Services.CONDITION.checkEntity(data, "target_condition", actor)) return;
         Entity target = result.getEntity();
         if(!Services.CONDITION.checkBiEntity(data, "bientity_condition", actor, target)) return;
@@ -101,8 +100,9 @@ public class RaycastAction implements IActionFactory<Entity> {
         if(hasBiEntityAction) {
             Services.ACTION.executeBiEntity(data, "bientity_action", actor, target);
         }
+
         if(calledThroughPierce) return;
         executeSelfAction(data, actor);
     }
-    
+
 }

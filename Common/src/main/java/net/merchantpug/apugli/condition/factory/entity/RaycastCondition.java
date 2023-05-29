@@ -18,7 +18,7 @@ public class RaycastCondition implements IConditionFactory<Entity> {
             .add("distance", SerializableDataTypes.DOUBLE, null)
             .add("block_condition", Services.CONDITION.blockDataType(), null)
             .add("target_condition", Services.CONDITION.entityDataType(), null)
-            .add("bientity_condition", Services.CONDITION.entityDataType(), null);
+            .add("bientity_condition", Services.CONDITION.biEntityDataType(), null);
     }
     
     @Override

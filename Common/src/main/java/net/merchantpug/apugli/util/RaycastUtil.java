@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.util;
 
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -23,8 +24,12 @@ public class RaycastUtil {
         ClipContext context = new ClipContext(rayStart, rayEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, actor);
         return actor.level.clip(context);
     }
-    
+
     public static EntityHitResult raycastEntity(BlockHitResult blockHitResult, Entity actor, double dis) {
+        return raycastEntity(blockHitResult, actor, dis, null);
+    }
+
+    public static EntityHitResult raycastEntity(BlockHitResult blockHitResult, Entity actor, double dis, Predicate<Tuple<Entity, Entity>> predicate) {
         Vec3 rayStart = actor.getEyePosition(0);
         Vec3 rayDir = actor.getViewVector(0).scale(dis);
         Vec3 rayEnd = rayStart.add(rayDir);
@@ -34,7 +39,7 @@ public class RaycastUtil {
             : dis * dis;
         double disSqr = Math.min(blockHitDisSqr, dis * dis);
         return ProjectileUtil.getEntityHitResult(actor, rayStart, rayEnd, entityBox,
-            traceEntity -> !traceEntity.isSpectator() && traceEntity.isPickable(), disSqr);
+            traceEntity -> !traceEntity.isSpectator() && traceEntity.isPickable() && (predicate == null || predicate.test(new Tuple<>(actor, traceEntity))), disSqr);
     }
     
     public static List<EntityHitResult> raycastEntities(Entity actor, Predicate<Entity> predicate, double dis) {

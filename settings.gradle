@@ -17,5 +17,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'Apugli'
+rootProject.name = 'apugli'
+// Swap the comment state of these two lines if you would like to detach/attach the Forge module.
+// include("Common", "Fabric")
 include("Common", "Fabric", "Forge")

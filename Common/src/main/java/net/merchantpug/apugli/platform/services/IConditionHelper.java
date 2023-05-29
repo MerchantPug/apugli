@@ -24,6 +24,8 @@ public interface IConditionHelper {
     void registerBiEntity(String name, IConditionFactory<Tuple<Entity, Entity>> condition);
     
     boolean checkBiEntity(SerializableData.Instance data, String fieldName, Entity actor, Entity target);
+
+    <C> boolean checkBiEntity(C condition, Entity actor, Entity target);
     
     @Nullable
     Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName);
@@ -38,12 +40,16 @@ public interface IConditionHelper {
     @Nullable
     Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName);
 
+    <C> boolean checkBiome(C condition, Holder<Biome> biome);
+
 
     SerializableDataType<?> blockDataType();
     
     void registerBlock(String name, IConditionFactory<BlockInWorld> condition);
     
     boolean checkBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos);
+
+    <C> boolean checkBlock(C condition, Level level, BlockPos pos);
     
     @Nullable
     Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName);
@@ -54,6 +60,8 @@ public interface IConditionHelper {
     void registerDamage(String name, IConditionFactory<Tuple<DamageSource, Float>> condition);
     
     boolean checkDamage(SerializableData.Instance data, String fieldName, DamageSource source, float amount);
+
+    <C> boolean checkDamage(C condition, DamageSource source, float amount);
     
     @Nullable
     Predicate<Tuple<DamageSource, Float>> damagePredicate(SerializableData.Instance data, String fieldName);
@@ -64,6 +72,8 @@ public interface IConditionHelper {
     void registerEntity(String name, IConditionFactory<Entity> condition);
     
     boolean checkEntity(SerializableData.Instance data, String fieldName, Entity entity);
+
+    <C> boolean checkEntity(C condition, Entity entity);
     
     @Nullable
     Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName);
@@ -74,6 +84,8 @@ public interface IConditionHelper {
     void registerFluid(String name, IConditionFactory<FluidState> condition);
     
     boolean checkFluid(SerializableData.Instance data, String fieldName, FluidState fluidState);
+
+    <C> boolean checkFluid(C condition, FluidState fluidState);
     
     @Nullable
     Predicate<FluidState> fluidPredicate(SerializableData.Instance data, String fieldName);
@@ -84,6 +96,8 @@ public interface IConditionHelper {
     void registerItem(String name, IConditionFactory<ItemStack> condition);
 
     boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack);
+
+    <C> boolean checkItem(C condition, Level level, ItemStack stack);
 
     @Nullable
     Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName);

@@ -42,6 +42,11 @@ public class ForgeConditionHelper implements IConditionHelper {
     }
 
     @Override
+    public <C> boolean checkBiEntity(C condition, Entity actor, Entity target) {
+        return condition != null && ((ConfiguredBiEntityCondition<?, ?>)condition).check(actor, target);
+    }
+
+    @Override
     @Nullable
     public Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
@@ -75,6 +80,11 @@ public class ForgeConditionHelper implements IConditionHelper {
         return biome -> ((ConfiguredBiomeCondition<?, ?>)data.get(fieldName)).check(biome);
     }
 
+    @Override
+    public <C> boolean checkBiome(C condition, Holder<Biome> biome) {
+        return condition != null && ((ConfiguredBiomeCondition<?, ?>)condition).check(biome);
+    }
+
 
     @Override
     public SerializableDataType<?> blockDataType() {
@@ -90,7 +100,12 @@ public class ForgeConditionHelper implements IConditionHelper {
     public boolean checkBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos) {
         return !data.isPresent(fieldName) || ((ConfiguredBlockCondition<?, ?>)data.get(fieldName)).check(level, pos, () -> level.getBlockState(pos));
     }
-    
+
+    @Override
+    public <C> boolean checkBlock(C condition, Level level, BlockPos pos) {
+        return condition != null && ((ConfiguredBlockCondition<?, ?>)condition).check(level, pos, () -> level.getBlockState(pos));
+    }
+
     @Override
     @Nullable
     public Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName) {
@@ -115,7 +130,12 @@ public class ForgeConditionHelper implements IConditionHelper {
     public boolean checkDamage(SerializableData.Instance data, String fieldName, DamageSource source, float amount) {
         return !data.isPresent(fieldName) || ((ConfiguredDamageCondition<?, ?>)data.get(fieldName)).check(source, amount);
     }
-    
+
+    @Override
+    public <C> boolean checkDamage(C condition, DamageSource source, float amount) {
+        return condition != null && ((ConfiguredDamageCondition<?, ?>)condition).check(source, amount);
+    }
+
     @Override
     @Nullable
     public Predicate<Tuple<DamageSource, Float>> damagePredicate(SerializableData.Instance data, String fieldName) {
@@ -140,7 +160,12 @@ public class ForgeConditionHelper implements IConditionHelper {
     public boolean checkEntity(SerializableData.Instance data, String fieldName, Entity entity) {
         return !data.isPresent(fieldName) || ((ConfiguredEntityCondition<?, ?>)data.get(fieldName)).check(entity);
     }
-    
+
+    @Override
+    public <C> boolean checkEntity(C condition, Entity entity) {
+        return condition != null && ((ConfiguredEntityCondition<?, ?>)condition).check(entity);
+    }
+
     @Override
     @Nullable
     public Predicate<Entity> entityPredicate(SerializableData.Instance data, String fieldName) {
@@ -165,7 +190,12 @@ public class ForgeConditionHelper implements IConditionHelper {
     public boolean checkFluid(SerializableData.Instance data, String fieldName, FluidState fluidState) {
         return !data.isPresent(fieldName) || ((ConfiguredFluidCondition<?, ?>)data.get(fieldName)).check(fluidState);
     }
-    
+
+    @Override
+    public <C> boolean checkFluid(C condition, FluidState fluidState) {
+        return false;
+    }
+
     @Override
     @Nullable
     public Predicate<FluidState> fluidPredicate(SerializableData.Instance data, String fieldName) {
@@ -190,7 +220,12 @@ public class ForgeConditionHelper implements IConditionHelper {
     public boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack) {
         return !data.isPresent(fieldName) || ((ConfiguredItemCondition<?, ?>)data.get(fieldName)).check(level, stack);
     }
-    
+
+    @Override
+    public <C> boolean checkItem(C condition, Level level, ItemStack stack) {
+        return condition != null && ((ConfiguredItemCondition<?, ?>)condition).check(level, stack);
+    }
+
     @Override
     public @Nullable Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {

@@ -9,12 +9,11 @@ import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.networking.s2c.SendParticlesPacket;
-import net.merchantpug.apugli.networking.s2c.SyncRocketJumpExplosionPacket;
+import net.merchantpug.apugli.networking.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -38,7 +37,7 @@ public class ApugliPacketHandler {
         int i = 0;
         INSTANCE.registerMessage(i++, UpdateKeysPressedPacket.class, UpdateKeysPressedPacket::encode, UpdateKeysPressedPacket::decode, createC2SHandler(UpdateKeysPressedPacket::handle));
         INSTANCE.registerMessage(i++, SendParticlesPacket.class, SendParticlesPacket::encode, SendParticlesPacket::decode, ApugliPacketHandler.createS2CHandler(SendParticlesPacket::handle));
-        INSTANCE.registerMessage(i++, SyncRocketJumpExplosionPacket.class, SyncRocketJumpExplosionPacket::encode, SyncRocketJumpExplosionPacket::decode, ApugliPacketHandler.createS2CHandler(SyncRocketJumpExplosionPacket::handle));
+        INSTANCE.registerMessage(i++, SyncExplosionPacket.class, SyncExplosionPacket::encode, SyncExplosionPacket::decode, ApugliPacketHandler.createS2CHandler(SyncExplosionPacket::handle));
         INSTANCE.registerMessage(i++, UpdateUrlTexturesPacket.class, UpdateUrlTexturesPacket::encode, UpdateUrlTexturesPacket::decode, ApugliPacketHandler.createS2CHandler(UpdateUrlTexturesPacket::handle));
         INSTANCE.registerMessage(i++, SyncHitsOnTargetCapabilityPacket.class, SyncHitsOnTargetCapabilityPacket::encode, SyncHitsOnTargetCapabilityPacket::decode, ApugliPacketHandler.createS2CHandler(SyncHitsOnTargetCapabilityPacket::handle));
         INSTANCE.registerMessage(i++, SyncHitsOnTargetLessenedPacket.class, SyncHitsOnTargetLessenedPacket::encode, SyncHitsOnTargetLessenedPacket::decode, ApugliPacketHandler.createS2CHandler(SyncHitsOnTargetLessenedPacket::handle));
@@ -61,8 +60,12 @@ public class ApugliPacketHandler {
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
-    public static void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player) {
-        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
+    public static void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
+        if (entity instanceof ServerPlayer player) {
+            ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
+            return;
+        }
+        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
     }
 
     private static <MSG extends ApugliPacketS2C> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createS2CHandler(Consumer<MSG> handler) {

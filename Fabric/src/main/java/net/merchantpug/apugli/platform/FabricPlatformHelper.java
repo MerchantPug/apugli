@@ -92,10 +92,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player) {
-        for (ServerPlayer otherPlayer : PlayerLookup.tracking(player))
+    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
+        for (ServerPlayer otherPlayer : PlayerLookup.tracking(entity))
             ApugliPackets.sendS2C(packet, otherPlayer);
-        ApugliPackets.sendS2C(packet, player);
+        if (entity instanceof ServerPlayer player)
+            ApugliPackets.sendS2C(packet, player);
     }
 
     @Override
