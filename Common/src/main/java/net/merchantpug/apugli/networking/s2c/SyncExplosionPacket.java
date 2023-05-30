@@ -8,9 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -110,9 +108,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
             Level level = Minecraft.getInstance().level;
             Entity entity = level.getEntity(userId);
             Explosion explosion = new Explosion(level, entity,
-                    entity instanceof LivingEntity living ?
-                    DamageSource.explosion(living) :
-                    DamageSource.explosion((LivingEntity) null), createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
+                    null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
             ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers());
             ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(knockbackModifiers());
             ((ExplosionAccess) explosion).setExplosionVolumeModifiers(volumeModifiers());

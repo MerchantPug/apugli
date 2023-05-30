@@ -1,15 +1,17 @@
 package net.merchantpug.apugli.power.factory;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.damage.JumpExplosionPlayerDamageSource;
 import net.merchantpug.apugli.networking.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.ApugliTags;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -25,7 +27,8 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
     static SerializableData getSerializableData() {
         return ActiveCooldownPowerFactory.getSerializableData()
                 .add("distance", SerializableDataTypes.DOUBLE, Double.NaN)
-                .add("source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                .add("damage_type", SerializableDataTypes.DAMAGE_TYPE, null)
+                .add("source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null)
                 .add("amount", SerializableDataTypes.FLOAT, 0.0F)
                 .add("velocity", SerializableDataTypes.DOUBLE, 1.0D)
                 .addFunctionedDefault("horizontal_velocity", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity"))
@@ -79,9 +82,9 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
 
             if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
-            boolean isCharged = living.getActiveEffects().stream().anyMatch(effect -> Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).isPresent() &&
-                        Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).isPresent() &&
-                        Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS));
+            boolean isCharged = living.getActiveEffects().stream().anyMatch(effect -> BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).isPresent() &&
+                    BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).isPresent() &&
+                    BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS));
 
 
             if (entityHitResultType == HitResult.Type.ENTITY) {
@@ -99,12 +102,15 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         double horizontalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), data.getDouble("horizontal_velocity")) : data.getDouble("horizontal_velocity");
         double verticalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), data.getDouble("vertical_velocity")) : data.getDouble("vertical_velocity");
         float e = isCharged && useCharged ? 2.0F : 1.5F;
-        if(data.isPresent("source") && data.getFloat("amount") != 0.0F) entity.hurt(data.get("source"), data.getFloat("amount"));
+        if((data.isPresent("damage_type") || data.isPresent("source")) && data.getFloat("amount") != 0.0F) {
+            DamageSource source = MiscUtil.createDamageSource(entity.damageSources(), data.get("source"), data.get("damage_type"));
+            entity.hurt(source, data.getFloat("amount"));
+        }
         float f = Mth.sin(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
         float g = Mth.sin(entity.getXRot() * 0.017453292F);
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.level, entity, new JumpExplosionPlayerDamageSource(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.NONE);
+        Explosion explosion = new Explosion(entity.level, entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(damageModifiers(power, entity));
         ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(knockbackModifiers());
         ((ExplosionAccess)explosion).setExplosionVolumeModifiers(volumeModifiers());
@@ -146,7 +152,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
                 false,
                 false,
                 radius,
-                Explosion.BlockInteraction.NONE);
+                Explosion.BlockInteraction.KEEP);
         if (entity instanceof ServerPlayer serverPlayer)
             Services.PLATFORM.sendS2CTrackingAndSelf(packet, serverPlayer);
     }

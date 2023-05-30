@@ -21,4 +21,5 @@
 - Fixed `apugli:raycast` entity condition using an entity condition for the `bientity_condition` field.
 - Fixed `apugli:charged_effects` mob effect tag not being present.
 - Fixed `apugli:modify_enchantment_damage_dealt` always being set to the `apugli:modify_enchantment_damage_taken` value. #33
+- Fixed a crash involving `apugli:rocket_jump` if the `damage_type` and `source` fields are both null.
 - Fixed a crash involving `apugli:modify_enchantment_damage_taken`. #34
