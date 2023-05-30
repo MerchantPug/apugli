@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RocketJumpRaycastAction implements IActionFactory<Entity> {
+public class ExplosionRaycastAction implements IActionFactory<Entity> {
     
     @Override
     public SerializableData getSerializableData() {
@@ -64,6 +64,7 @@ public class RocketJumpRaycastAction implements IActionFactory<Entity> {
     
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
+        if (entity.level.isClientSide) return;
         //Block Hit
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
@@ -125,7 +126,6 @@ public class RocketJumpRaycastAction implements IActionFactory<Entity> {
     }
 
     protected void summonExplosion(SerializableData.Instance data, Entity entity, HitResult result) {
-        if (entity.level.isClientSide) return;
         float power = data.getFloat("power");
         if (data.getBoolean("use_charged")) {
             power = applyChargedModifiers(data, entity, power);
@@ -177,12 +177,12 @@ public class RocketJumpRaycastAction implements IActionFactory<Entity> {
                             DamageSource.explosion(living) :
                             DamageSource.explosion((LivingEntity) null), null,
                     result.getLocation().x(), result.getLocation().y(), result.getLocation().z(), power, createFire, destructionType);
-            explosion.explode();
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
             ((ExplosionAccess)explosion).setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
             ((ExplosionAccess)explosion).setExplosionPitchModifiers(getModifiers(data, "pitch_modifier", "pitch_modifiers"));
             ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("explosion_damage_bientity_condition"));
+            explosion.explode();
             explosion.finalizeExplosion(false);
 
             Services.PLATFORM.sendS2CTrackingAndSelf(new SyncExplosionPacket<>(

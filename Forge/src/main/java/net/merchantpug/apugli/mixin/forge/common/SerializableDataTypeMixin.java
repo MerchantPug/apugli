@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.mixin.forge.common;
 
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.github.apace100.calio.data.SerializableDataType;
@@ -16,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+// TODO: Remove this class once https://github.com/EdwinMindcraft/origins-architectury/issues/335 has been closed.
 @Mixin(SerializableDataType.class)
 public abstract class SerializableDataTypeMixin<T> {
 

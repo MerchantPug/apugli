@@ -44,7 +44,12 @@ public class ForgeActionHelper implements IActionHelper {
     public void executeBiEntity(SerializableData.Instance data, String fieldName, Entity actor, Entity target) {
         if(data.isPresent(fieldName)) ((ConfiguredBiEntityAction<?, ?>)data.get(fieldName)).execute(actor, target);
     }
-    
+
+    @Override
+    public <A> void executeBiEntity(A action, Entity actor, Entity target) {
+        if (action != null) ((ConfiguredBiEntityAction<?, ?>)action).execute(actor, target);
+    }
+
     @Override
     @Nullable
     public Consumer<Tuple<Entity, Entity>> biEntityConsumer(SerializableData.Instance data, String fieldName) {
@@ -70,7 +75,12 @@ public class ForgeActionHelper implements IActionHelper {
     public void executeBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos, Direction direction) {
         if(data.isPresent(fieldName)) ((ConfiguredBlockAction<?, ?>)data.get(fieldName)).execute(level, pos, direction);
     }
-    
+
+    @Override
+    public <A> void executeBlock(A action, Level level, BlockPos pos, Direction direction) {
+        if (action != null) ((ConfiguredBlockAction<?, ?>)action).execute(level, pos, direction);
+    }
+
     @Override
     public Consumer<Triple<Level, BlockPos, Direction>> blockConsumer(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
@@ -95,7 +105,12 @@ public class ForgeActionHelper implements IActionHelper {
     public void executeEntity(SerializableData.Instance data, String fieldName, Entity entity) {
         if(data.isPresent(fieldName)) ((ConfiguredEntityAction<?, ?>)data.get(fieldName)).execute(entity);
     }
-    
+
+    @Override
+    public <A> void executeEntity(A action, Entity entity) {
+        if (action != null) ((ConfiguredEntityAction<?, ?>)action).execute(entity);
+    }
+
     @Override
     public Consumer<Entity> entityConsumer(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
@@ -120,7 +135,12 @@ public class ForgeActionHelper implements IActionHelper {
     public void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable) {
         if(data.isPresent(fieldName)) ((ConfiguredItemAction<?, ?>)data.get(fieldName)).execute(level, mutable);
     }
-    
+
+    @Override
+    public <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable) {
+        if (action != null) ((ConfiguredItemAction<?, ?>)action).execute(level, mutable);
+    }
+
     @Override
     public Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {

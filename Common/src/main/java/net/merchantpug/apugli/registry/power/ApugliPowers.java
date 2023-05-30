@@ -23,6 +23,7 @@ public class ApugliPowers {
     public static final Supplier<ActionWhenTameHitPowerFactory> ACTION_WHEN_TAME_HIT = register("action_when_tame_hit", ActionWhenTameHitPowerFactory.class);
     public static final Supplier<AllowAnvilEnchantPower.Factory> ALLOW_ANVIL_ENCHANT = register(new AllowAnvilEnchantPower.Factory());
     public static final Supplier<BunnyHopPowerFactory> BUNNY_HOP = register("bunny_hop", BunnyHopPowerFactory.class);
+    public static final Supplier<ClientActionOverTime.Factory> CLIENT_ACTION_OVER_TIME = register(new ClientActionOverTime.Factory());
     public static final Supplier<CustomDeathSoundPower.Factory> CUSTOM_DEATH_SOUND = register(new CustomDeathSoundPower.Factory());
     public static final Supplier<CustomFootstepPower.Factory> CUSTOM_FOOTSTEP = register(new CustomFootstepPower.Factory());
     public static final Supplier<CustomHurtSoundPower.Factory> CUSTOM_HURT_SOUND = register(new CustomHurtSoundPower.Factory());

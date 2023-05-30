@@ -1,0 +1,32 @@
+{
+  "type": "apoli:multiple",
+  "key_press": {
+    "type": "apugli:client_action_over_time",
+    "entity_action": {
+      "type": "apugli:packet",
+      "side": "SERVER",
+      "action": {
+        "type": "apoli:exhaust",
+        "amount": 16.0
+      }
+    },
+    "interval": 4,
+    "condition": {
+      "type": "apugli:particle_in_radius",
+      "particles": [
+        "large_smoke",
+        "campfire_cosy_smoke",
+        "campfire_signal_smoke"
+      ],
+      "radius": 5.0
+    }
+  },
+  "modders_hate_her": {
+    "type": "apugli:force_particle_render",
+    "particles": [
+      "minecraft:large_smoke",
+      "minecraft:campfire_cosy_smoke",
+      "minecraft:campfire_signal_smoke"
+    ]
+  }
+}

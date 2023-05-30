@@ -47,7 +47,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkBiEntity(C condition, Entity actor, Entity target) {
-        return condition != null && ((Predicate<Tuple<Entity, Entity>>)condition).test(new Tuple<>(actor, target));
+        return condition == null || ((Predicate<Tuple<Entity, Entity>>)condition).test(new Tuple<>(actor, target));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkBiome(C condition, Holder<Biome> biome) {
-        return condition != null && ((Predicate<Holder<Biome>>)condition).test(biome);
+        return condition == null || ((Predicate<Holder<Biome>>)condition).test(biome);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkBlock(C condition, Level level, BlockPos pos) {
-        return condition != null && ((Predicate<BlockInWorld>)condition).test(new BlockInWorld(level, pos, true));
+        return condition == null || ((Predicate<BlockInWorld>)condition).test(new BlockInWorld(level, pos, true));
     }
 
     @Override
@@ -130,7 +130,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkDamage(C condition, DamageSource source, float amount) {
-        return condition != null && ((Predicate<Tuple<DamageSource, Float>>)condition).test(new Tuple<>(source, amount));
+        return condition == null || ((Predicate<Tuple<DamageSource, Float>>)condition).test(new Tuple<>(source, amount));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkEntity(C condition, Entity entity) {
-        return condition != null && ((Predicate<Entity>)condition).test(entity);
+        return condition == null || ((Predicate<Entity>)condition).test(entity);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkFluid(C condition, FluidState fluidState) {
-        return condition != null && ((Predicate<FluidState>)condition).test(fluidState);
+        return condition == null || ((Predicate<FluidState>)condition).test(fluidState);
     }
 
     @Override
@@ -214,7 +214,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkItem(C condition, Level level, ItemStack stack) {
-        return condition != null && ((Predicate<ItemStack>)condition).test(stack);
+        return condition == null || ((Predicate<ItemStack>)condition).test(stack);
     }
 
     @Override

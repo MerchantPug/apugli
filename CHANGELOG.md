@@ -1,9 +1,13 @@
 **Power Types**
+- Added new `apugli:client_action_over_time` power type.
 - `apugli:modify_enchantment_damage_dealt`/`apugli:modify_enchantment_damage_taken` now creates enchantment crit particles if the damage is caused by a player and the particles wouldn't normally be present.
 
+**Meta Action Types**
+- Added new `apugli:packet` entity and bi-entity action types.
+
 **Entity Action Types**
-- Added new `apugli:rocket_jump_raycast` entity action.
-- Added new `apugli:clamped_add_velocity` entity action.
+- Added new `apugli:explosion_raycast` entity action.
+- Added new `apugli:add_velocity` entity action.
 - Added `damage_modifier` and `damage_modifiers` field to `apugli:explode`.
 - Added `knockback_modifier` and `knockback_modifiers` field to `apugli:explode`.
 - Added `volume_modifier` and `volume_modifiers` field to `apugli:explode`.

@@ -24,6 +24,8 @@ public class Apugli {
             SEMVER[i] = Integer.parseInt(splitVersion[i]);
         }
 
+        Apugli.LOG.info("Apugli " + Apugli.VERSION + " has initialized. Powering up your powered up game.");
+
         ApugliBiEntityActions.registerAll();
         ApugliBlockActions.registerAll();
         ApugliEntityActions.registerAll();
@@ -36,10 +38,6 @@ public class Apugli {
         ApugliItemConditions.registerAll();
 
         ApugliPowers.registerAll();
-    }
-
-    public static void logInitMessage() {
-        Apugli.LOG.info("Apugli " + Apugli.VERSION + " has initialized. Powering up your powered up game.");
     }
 
     public static ResourceLocation asResource(String name) {
