@@ -2,7 +2,7 @@
   "type": "apoli:active_self",
   "entity_action": {
     "type": "apugli:explosion_raycast",
-    "power": 1.0,
+    "power": 1.5,
     "action_on_hit": {
       "type": "apoli:and",
       "actions": [
