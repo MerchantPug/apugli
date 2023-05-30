@@ -22,7 +22,6 @@ public class ApugliForge {
             version = version.split("-")[0];
         }
         Apugli.VERSION = version;
-        Apugli.logInitMessage();
 
         Apugli.init();
 

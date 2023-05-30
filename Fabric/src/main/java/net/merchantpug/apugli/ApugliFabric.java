@@ -25,7 +25,6 @@ public class ApugliFabric implements ModInitializer {
             }
             Apugli.VERSION = version;
         });
-        Apugli.logInitMessage();
 
         Apugli.init();
         ApugliPackets.registerC2S();

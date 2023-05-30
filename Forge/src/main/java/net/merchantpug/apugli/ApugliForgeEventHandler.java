@@ -116,6 +116,9 @@ public class ApugliForgeEventHandler {
             event.getEntity().fallDistance = 0.0F;
         }
 
+        if (event.getEntity().level.isClientSide)
+            Services.POWER.getPowers(event.getEntity(), ApugliPowers.CLIENT_ACTION_OVER_TIME.get()).forEach(ClientActionOverTime::clientTick);
+
         if (!event.getEntity().level.isClientSide)
             ApugliPowers.BUNNY_HOP.get().onTravel(event.getEntity(), new Vec3(event.getEntity().xxa, event.getEntity().yya, event.getEntity().zza));
     }

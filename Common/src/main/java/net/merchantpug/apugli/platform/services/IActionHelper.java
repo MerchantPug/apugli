@@ -22,6 +22,8 @@ public interface IActionHelper {
     void registerBiEntity(String name, IActionFactory<Tuple<Entity, Entity>> action);
     
     void executeBiEntity(SerializableData.Instance data, String fieldName, Entity actor, Entity target);
+
+    <A> void executeBiEntity(A action, Entity actor, Entity target);
     
     @Nullable
     Consumer<Tuple<Entity, Entity>> biEntityConsumer(SerializableData.Instance data, String fieldName);
@@ -32,6 +34,8 @@ public interface IActionHelper {
     void registerBlock(String name, IActionFactory<Triple<Level, BlockPos, Direction>> action);
     
     void executeBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos, Direction direction);
+
+    <A> void executeBlock(A action, Level level, BlockPos pos, Direction direction);
     
     Consumer<Triple<Level, BlockPos, Direction>> blockConsumer(SerializableData.Instance data, String fieldName);
     
@@ -41,7 +45,9 @@ public interface IActionHelper {
     void registerEntity(String name, IActionFactory<Entity> action);
     
     void executeEntity(SerializableData.Instance data, String fieldName, Entity entity);
-    
+
+    <A> void executeEntity(A action, Entity entity);
+
     Consumer<Entity> entityConsumer(SerializableData.Instance data, String fieldName);
     
     
@@ -50,6 +56,8 @@ public interface IActionHelper {
     void registerItem(String name, IActionFactory<Tuple<Level, Mutable<ItemStack>>> action);
     
     void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable);
+
+    <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable);
     
     Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName);
     

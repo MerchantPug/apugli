@@ -35,6 +35,8 @@ import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.merchantpug.apugli.Apugli;;
 import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
+import net.merchantpug.apugli.networking.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.networking.s2c.*;
 import net.merchantpug.apugli.util.ApugliConfig;
@@ -63,6 +65,8 @@ public class ApugliPackets {
             ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncExplosionPacket.ID, createS2CHandler(SyncExplosionPacket::decode, SyncExplosionPacket::handle));
             ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
+            ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket::handle));
+            ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket::handle));
         });
     }
 
@@ -94,6 +98,8 @@ public class ApugliPackets {
         ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
         ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
         ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
+        ServerPlayNetworking.registerGlobalReceiver(ExecuteEntityActionServerPacket.ID, createC2SHandler(ExecuteEntityActionServerPacket::decode, ExecuteEntityActionServerPacket::handle));
+        ServerPlayNetworking.registerGlobalReceiver(ExecuteBiEntityActionServerPacket.ID, createC2SHandler(ExecuteBiEntityActionServerPacket::decode, ExecuteBiEntityActionServerPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

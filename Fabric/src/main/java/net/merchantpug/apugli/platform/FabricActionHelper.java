@@ -43,7 +43,12 @@ public class FabricActionHelper implements IActionHelper {
     public void executeBiEntity(SerializableData.Instance data, String fieldName, Entity actor, Entity target) {
         if(data.isPresent(fieldName)) ((Consumer<Tuple<Entity, Entity>>)data.get(fieldName)).accept(new Tuple<>(actor, target));
     }
-    
+
+    @Override
+    public <A> void executeBiEntity(A action, Entity actor, Entity target) {
+        if (action != null) ((Consumer<Tuple<Entity, Entity>>)action).accept(new Tuple<>(actor, target));
+    }
+
     @Override
     @Nullable
     public Consumer<Tuple<Entity, Entity>> biEntityConsumer(SerializableData.Instance data, String fieldName) {
@@ -65,8 +70,13 @@ public class FabricActionHelper implements IActionHelper {
     public void executeBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos, Direction direction) {
         if(data.isPresent(fieldName)) ((Consumer<Triple<Level, BlockPos, Direction>>)data.get(fieldName)).accept(Triple.of(level, pos, direction));
     }
-    
-    
+
+    @Override
+    public <A> void executeBlock(A action, Level level, BlockPos pos, Direction direction) {
+        if (action != null) ((Consumer<Triple<Level, BlockPos, Direction>>)action).accept(Triple.of(level, pos, direction));
+    }
+
+
     @Override
     public Consumer<Triple<Level, BlockPos, Direction>> blockConsumer(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
@@ -87,8 +97,13 @@ public class FabricActionHelper implements IActionHelper {
     public void executeEntity(SerializableData.Instance data, String fieldName, Entity entity) {
         if(data.isPresent(fieldName)) ((Consumer<Entity>)data.get(fieldName)).accept(entity);
     }
-    
-    
+
+    @Override
+    public <A> void executeEntity(A action, Entity entity) {
+        if (action != null) ((Consumer<Entity>)action).accept(entity);
+    }
+
+
     @Override
     public Consumer<Entity> entityConsumer(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
@@ -112,7 +127,12 @@ public class FabricActionHelper implements IActionHelper {
     public void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable) {
         if(data.isPresent(fieldName)) ((Consumer<Tuple<Level, ItemStack>>)data.get(fieldName)).accept(new Tuple<>(level, mutable.getValue()));
     }
-    
+
+    @Override
+    public <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable) {
+        if (action != null) ((Consumer<Tuple<Level, ItemStack>>)action).accept(new Tuple<>(level, mutable.getValue()));
+    }
+
     @Override
     public Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName) {
         return (data.isPresent(fieldName)) ? (levelAndStack) -> ((Consumer<Tuple<Level, ItemStack>>)data.get(fieldName)).accept(new Tuple<>(levelAndStack.getA(), levelAndStack.getB().getValue())) : null;

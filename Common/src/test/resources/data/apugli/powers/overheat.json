@@ -1,7 +1,7 @@
 {
   "type": "apoli:active_self",
   "entity_action": {
-    "type": "apugli:rocket_jump_raycast",
+    "type": "apugli:explosion_raycast",
     "power": 1.0,
     "action_on_hit": {
       "type": "apoli:and",
@@ -19,44 +19,68 @@
         {
           "type": "apoli:if_else",
           "if_action": {
-            "type": "apugli:clamped_add_velocity",
-            "z": -1.6,
+            "type": "apugli:add_velocity",
+            "z": -1.5,
             "space": "LOCAL",
             "client": false,
             "horizontal_modifier": {
               "operation": "multiply_total",
               "value": 0.2
             },
-            "horizontal_clamp_modifier": {
-              "operation": "multiply_total",
-              "value": 0.8
-            },
-            "vertical_clamp_modifier": {
-              "operation": "multiply_total",
-              "value": 0.8
-            }
+            "horizontal_post_modifiers": [
+              {
+                "operation": "min_total",
+                "value": -3.3
+              },
+              {
+                "operation": "max_total",
+                "value": 3.3
+              }
+            ],
+            "vertical_post_modifiers": [
+              {
+                "operation": "min_total",
+                "value": -2.6
+              },
+              {
+                "operation": "max_total",
+                "value": 2.6
+              }
+            ]
           },
           "condition": {
             "type": "apugli:status_effect_tag",
             "tag": "apugli:charged_effects"
           },
           "else_action": {
-            "type": "apugli:clamped_add_velocity",
-            "z": -0.8,
+            "type": "apugli:add_velocity",
+            "z": -1.0,
             "space": "LOCAL",
             "client": false,
             "horizontal_modifier": {
               "operation": "multiply_total",
               "value": 0.2
             },
-            "horizontal_clamp_modifier": {
-              "operation": "multiply_total",
-              "value": 0.8
-            },
-            "vertical_clamp_modifier": {
-              "operation": "multiply_total",
-              "value": 0.8
-            }
+            "horizontal_post_modifiers": [
+              {
+                "operation": "min_total",
+                "value": -2.2
+              },
+              {
+                "operation": "max_total",
+                "value": 2.2
+              }
+            ],
+            "vertical_post_modifiers": [
+              {
+                "operation": "min_total",
+                "value": -1.8
+              },
+              {
+                "operation": "max_total",
+                "value": 1.8
+              }
+            ]
           }
         },
         {

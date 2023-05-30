@@ -21,6 +21,7 @@
   ],
   "client": [
     "client.BipedEntityRendererMixin",
+    "client.ClientLevelMixin",
     "client.EntityRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
