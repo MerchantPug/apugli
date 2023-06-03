@@ -43,15 +43,13 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
         ) {
             level.setBlock(pos, state.setValue(LIT, true), 2);
             int burnTime = data.getInt("burn_time");
-            if(furnace.getCookingProgress() < burnTime) {
+            if(furnace.getLitTime() < burnTime) {
                 furnace.setLitTime(burnTime);
-                furnace.setCookingProgress(burnTime);
             }
         //Campfire
         } else if(
             data.getBoolean("light_campfire") &&
-            state.getBlock() instanceof CampfireBlock &&
-            state.getValue(LIT)
+            state.getBlock() instanceof CampfireBlock
         ) {
             level.setBlock(block.getMiddle(), state.setValue(LIT, true), 2);
         //Brewing Stand
