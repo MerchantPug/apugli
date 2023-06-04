@@ -17,7 +17,7 @@ loom {
     mixin.defaultRefmapName = "apugli.refmap.json"
 
     mods {
-        register("apugli") {
+        register(mod_id) {
             sourceSet(project(":Common").sourceSets.main)
             sourceSet(project(":Common").sourceSets.test)
             sourceSet(sourceSets.main)
