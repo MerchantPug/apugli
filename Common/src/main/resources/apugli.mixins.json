@@ -12,6 +12,7 @@
     "common.EntityMixin",
     "common.ExplosionMixin",
     "common.ItemStackMixin",
+    "common.LevelMixin",
     "common.LivingEntityMixin",
     "common.PlayerEntityMixin",
     "common.PlayerInventoryMixin",

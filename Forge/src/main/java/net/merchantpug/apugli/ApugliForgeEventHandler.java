@@ -8,6 +8,7 @@ import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
+import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -38,6 +40,7 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,6 +59,16 @@ public class ApugliForgeEventHandler {
             event.addCapability(KeyPressCapability.ID, new KeyPressCapability(player));
         if (event.getObject() instanceof LivingEntity living)
             event.addCapability(HitsOnTargetCapability.ID, new HitsOnTargetCapability(living));
+    }
+
+    @SubscribeEvent
+    public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        CachedBlockInRadiusCondition.clearCache();
+    }
+
+    @SubscribeEvent
+    public static void onChunkUnloaded(ChunkEvent.Unload event) {
+        CachedBlockInRadiusCondition.markChunkDirty(event.getLevel(), event.getChunk());
     }
 
     @SubscribeEvent
