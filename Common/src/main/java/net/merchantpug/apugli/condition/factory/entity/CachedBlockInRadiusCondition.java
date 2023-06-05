@@ -56,7 +56,7 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
         return comparison.compare(count, compareTo);
     }
 
-    public static void markChunkDirty(ChunkAccess chunk) {
+    public static void invalidateChunk(ChunkAccess chunk) {
         for (BlockPos pos : CACHED_BLOCK_POS_VALUES.keySet()) {
             for (int x = chunk.getPos().getMinBlockX(); x < chunk.getPos().getMaxBlockX(); ++x) {
                 for (int y = chunk.getMinBuildHeight(); y < chunk.getMinBuildHeight(); ++y) {

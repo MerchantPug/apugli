@@ -4,10 +4,12 @@ import io.github.apace100.apoli.power.Active;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
+import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.mixin.fabric.client.accessor.ApoliClientAccessor;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
@@ -34,6 +36,12 @@ public class ApugliClientFabric implements ClientModInitializer {
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
 
 		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> TextureUtilClient.clear());
+
+		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
+			CachedBlockInRadiusCondition.clearCache();
+		});
+
+		ClientChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> CachedBlockInRadiusCondition.invalidateChunk(chunk));
 	}
 
 	public static void handleActiveKeys() {
