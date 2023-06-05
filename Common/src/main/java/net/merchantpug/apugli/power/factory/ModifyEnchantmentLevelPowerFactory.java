@@ -4,7 +4,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -72,18 +72,19 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
         for (P power : powers) {
             Enchantment enchantment = getDataFromPower(power).get("enchantment");
-            ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
+            ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
+            if (!doesApply(power, enchantment, entity.getLevel(), self)) continue;
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if(idx.isPresent()) {
                 CompoundTag existingEnchant = newEnchants.getCompound(idx.get());
                 int lvl = existingEnchant.getInt("lvl");
-                int newLvl = (int) Services.PLATFORM.applyModifiers(living, this, lvl, p -> doesApply(p, enchantment, entity.getLevel(), self));
+                int newLvl = (int) Services.PLATFORM.applyModifiers(living, this.getModifiers(power, living), lvl);
                 existingEnchant.putInt("lvl", newLvl);
                 newEnchants.set(idx.get(), existingEnchant);
             } else {
                 CompoundTag newEnchant = new CompoundTag();
                 newEnchant.putString("id", id.toString());
-                newEnchant.putInt("lvl", (int) Services.PLATFORM.applyModifiers(living, this, 0, p -> doesApply(p, enchantment, entity.getLevel(), self)));
+                newEnchant.putInt("lvl", (int) Services.PLATFORM.applyModifiers(living, this.getModifiers(power, living), 0));
                 newEnchants.add(newEnchant);
             }
         }
@@ -118,20 +119,11 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         return i;
     }
 
-    default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
-            ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
-            return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags));
-        }
-        return EnchantmentHelper.getEnchantments(self);
-    }
-
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
-            ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
+            ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
             ListTag newEnchants = itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags);
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if(idx.isPresent()) {
