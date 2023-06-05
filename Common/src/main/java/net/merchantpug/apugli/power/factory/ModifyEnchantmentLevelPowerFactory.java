@@ -105,6 +105,15 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         return originalTag;
     }
 
+    default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
+        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
+            ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+            return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags));
+        }
+        return EnchantmentHelper.getEnchantments(self);
+    }
+
     default int getEnchantmentLevel(Enchantment enchantment, LivingEntity living) {
         Iterable<ItemStack> iterable = enchantment.getSlotItems(living).values();
         int i = 0;
