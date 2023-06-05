@@ -51,8 +51,7 @@
         {
           "type": "apoli:block_in_radius",
           "block_condition": {
-            "type": "apugli:air",
-            "inverted": true
+            "type": "apoli:attachable"
           },
           "radius": 8
         }
