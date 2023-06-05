@@ -1,0 +1,11 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "decrease_action": {
+    "type": "apoli:equipped_item_action",
+    "equipment_slot": "mainhand",
+    "action": {
+      "type": "apoli:damage",
+      "amount": 1
+    }
+  }
+}

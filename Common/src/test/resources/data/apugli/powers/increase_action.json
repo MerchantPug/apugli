@@ -1,0 +1,7 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "increase_action": {
+    "type": "apoli:execute_command",
+    "command": "say gex"
+  }
+}
