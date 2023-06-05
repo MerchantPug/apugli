@@ -4,8 +4,12 @@ import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.networking.ApugliPackets;
 import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
@@ -34,9 +38,12 @@ public class ApugliFabric implements ModInitializer {
             TextureUtil.handleUrlTexture(powerId, texturePower);
         });
 
-        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
-            ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
-        });
+        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player));
+
+        ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> CachedBlockInRadiusCondition.clearCache());
+
+        ClientChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
+        ServerChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
 
         NamespaceAlias.addAlias("ope", Apugli.ID);
 
