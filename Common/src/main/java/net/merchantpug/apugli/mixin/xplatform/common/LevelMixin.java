@@ -15,7 +15,7 @@ public class LevelMixin {
     @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z", at = @At(value = "RETURN"))
     private void markConditionDirty(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
-            CachedBlockInRadiusCondition.markDirty(pos);
+            CachedBlockInRadiusCondition.invalidate(pos);
         }
     }
 

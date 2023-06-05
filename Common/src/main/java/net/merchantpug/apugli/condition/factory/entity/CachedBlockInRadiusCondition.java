@@ -9,19 +9,15 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
 
-    private static final Map<SerializableData.Instance, ConcurrentHashMap<BlockPos, Boolean>> CACHED_BLOCK_POS_VALUES = new HashMap<>();
-    private static final Set<BlockPos> DIRTY = new HashSet<>();
+    private static final Map<BlockPos, ConcurrentHashMap<SerializableData.Instance, Boolean>> CACHED_BLOCK_POS_VALUES = new HashMap<>();
 
     @Override
     public SerializableData getSerializableData() {
@@ -35,7 +31,6 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        CACHED_BLOCK_POS_VALUES.computeIfAbsent(data, d -> new ConcurrentHashMap<>());
         Comparison comparison = data.get("comparison");
         int compareTo = data.getInt("compare_to");
 
@@ -49,44 +44,38 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
 
         Collection<BlockPos> posCollection = Shape.getPositions(entity.blockPosition(), data.get("shape"), data.getInt("radius"));
 
-        for (BlockPos pos : CACHED_BLOCK_POS_VALUES.get(data).keySet()) {
-            if (DIRTY.contains(pos)) {
-                CACHED_BLOCK_POS_VALUES.get(data).remove(pos);
-                DIRTY.remove(pos);
-            }
-        }
-
         for(BlockPos pos : posCollection) {
             if (count == stopAt) break;
-            boolean containsPos = CACHED_BLOCK_POS_VALUES.get(data).containsKey(pos);
-            boolean blockCheck = containsPos ? CACHED_BLOCK_POS_VALUES.get(data).get(pos) : Services.CONDITION.checkBlock(data, "block_condition", entity.level, pos);
+            ConcurrentHashMap<SerializableData.Instance, Boolean> map = CACHED_BLOCK_POS_VALUES.computeIfAbsent(pos, p -> new ConcurrentHashMap<>());
+            boolean blockCheck = map.computeIfAbsent(data, d ->  Services.CONDITION.checkBlock(data, "block_condition", entity.level, pos));
             if (blockCheck) {
                 count++;
-            }
-            if (!containsPos || CACHED_BLOCK_POS_VALUES.get(data).get(pos) != blockCheck) {
-                CACHED_BLOCK_POS_VALUES.get(data).put(pos, blockCheck);
             }
         }
 
         return comparison.compare(count, compareTo);
     }
 
-    public static void markChunkDirty(LevelAccessor level, ChunkAccess chunk) {
-        for (Map.Entry<SerializableData.Instance, ConcurrentHashMap<BlockPos, Boolean>> entry : CACHED_BLOCK_POS_VALUES.entrySet()) {
-            for (BlockPos pos : entry.getValue().keySet()) {
-                if (level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false) == chunk) {
-                    DIRTY.add(pos);
+    public static void markChunkDirty(ChunkAccess chunk) {
+        for (BlockPos pos : CACHED_BLOCK_POS_VALUES.keySet()) {
+            for (int x = chunk.getPos().getMinBlockX(); x < chunk.getPos().getMaxBlockX(); ++x) {
+                for (int y = chunk.getMinBuildHeight(); y < chunk.getMinBuildHeight(); ++y) {
+                    for (int z = chunk.getPos().getMinBlockZ(); x < chunk.getPos().getMaxBlockZ(); ++z) {
+                        BlockPos comparisonPos = new BlockPos(x, y, z);
+                        if (Objects.equals(pos, comparisonPos)) {
+                            invalidate(pos);
+                        }
+                    }
                 }
             }
         }
     }
 
-    public static void markDirty(BlockPos pos) {
-        DIRTY.add(pos);
+    public static void invalidate(BlockPos pos) {
+        CACHED_BLOCK_POS_VALUES.remove(pos);
     }
 
     public static void clearCache() {
         CACHED_BLOCK_POS_VALUES.clear();
-        DIRTY.clear();
     }
 }
