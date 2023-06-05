@@ -57,15 +57,12 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
     }
 
     public static void invalidateChunk(ChunkAccess chunk) {
-        for (BlockPos pos : CACHED_BLOCK_POS_VALUES.keySet()) {
-            for (int x = chunk.getPos().getMinBlockX(); x < chunk.getPos().getMaxBlockX(); ++x) {
-                for (int y = chunk.getMinBuildHeight(); y < chunk.getMinBuildHeight(); ++y) {
-                    for (int z = chunk.getPos().getMinBlockZ(); x < chunk.getPos().getMaxBlockZ(); ++z) {
-                        BlockPos comparisonPos = new BlockPos(x, y, z);
-                        if (Objects.equals(pos, comparisonPos)) {
-                            invalidate(pos);
-                        }
-                    }
+        for (int x = chunk.getPos().getMinBlockX(); x < chunk.getPos().getMaxBlockX(); ++x) {
+            for (int z = chunk.getPos().getMinBlockZ(); z < chunk.getPos().getMaxBlockZ(); ++z) {
+                int finalX = x;
+                int finalZ = z;
+                for (BlockPos pos : CACHED_BLOCK_POS_VALUES.keySet().stream().filter(pos -> pos.getX() == finalX && pos.getZ() == finalZ).toList()) {
+                    invalidate(pos);
                 }
             }
         }
