@@ -162,7 +162,7 @@ publishing {
     }
 }
 
-tasks.register('publishCurseForge', TaskPublishCurseForge) {
+tasks.register('curseforge', TaskPublishCurseForge) {
     disableVersionDetection()
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 

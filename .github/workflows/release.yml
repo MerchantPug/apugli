@@ -30,4 +30,4 @@ jobs:
       - name: Clean caches
         run: ./gradlew clean --stacktrace
       - name: Upload releases
-        run: ./gradlew build github publishCurseForge modrinth publish --stacktrace
+        run: ./gradlew build github curseforge modrinth publish --stacktrace
