@@ -9,9 +9,11 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,7 +74,7 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
     public static void markChunkDirty(LevelAccessor level, ChunkAccess chunk) {
         for (Map.Entry<SerializableData.Instance, ConcurrentHashMap<BlockPos, Boolean>> entry : CACHED_BLOCK_POS_VALUES.entrySet()) {
             for (BlockPos pos : entry.getValue().keySet()) {
-                if (level.getChunk(pos) == chunk) {
+                if (level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false) == chunk) {
                     DIRTY.add(pos);
                 }
             }
