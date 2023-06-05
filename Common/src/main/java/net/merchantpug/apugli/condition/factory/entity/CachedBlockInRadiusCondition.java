@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
 
-    private static final Map<BlockPos, ConcurrentHashMap<SerializableData.Instance, Boolean>> CACHED_BLOCK_POS_VALUES = new HashMap<>();
+    private static final ConcurrentHashMap<BlockPos, ConcurrentHashMap<SerializableData.Instance, Boolean>> CACHED_BLOCK_POS_VALUES = new ConcurrentHashMap<>();
 
     @Override
     public SerializableData getSerializableData() {
