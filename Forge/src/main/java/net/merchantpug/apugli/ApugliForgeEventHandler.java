@@ -68,7 +68,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onChunkUnloaded(ChunkEvent.Unload event) {
-        CachedBlockInRadiusCondition.markChunkDirty(event.getLevel(), event.getChunk());
+        CachedBlockInRadiusCondition.invalidateChunk(event.getChunk());
     }
 
     @SubscribeEvent

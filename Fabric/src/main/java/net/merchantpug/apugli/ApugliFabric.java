@@ -44,13 +44,7 @@ public class ApugliFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             CachedBlockInRadiusCondition.clearCache();
         });
-
-        ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
-            CachedBlockInRadiusCondition.clearCache();
-        });
-
-        ClientChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
-        ServerChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
+        ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> CachedBlockInRadiusCondition.invalidateChunk(chunk));
 
         NamespaceAlias.addAlias("ope", Apugli.ID);
 
