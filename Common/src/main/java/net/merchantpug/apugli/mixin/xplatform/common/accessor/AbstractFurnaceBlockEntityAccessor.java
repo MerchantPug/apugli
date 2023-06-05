@@ -13,4 +13,7 @@ public interface AbstractFurnaceBlockEntityAccessor {
     @Accessor
     void setLitTime(int value);
 
+    @Accessor
+    void setLitDuration(int value);
+
 }

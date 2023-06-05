@@ -37,7 +37,7 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
         BlockPos pos = block.getMiddle();
         BlockState state = level.getBlockState(pos);
         //Furnace-like
-        if(
+        if (
             data.isPresent("burn_time") &&
             level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntityAccessor furnace
         ) {
@@ -45,15 +45,16 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
             int burnTime = data.getInt("burn_time");
             if(furnace.getLitTime() < burnTime) {
                 furnace.setLitTime(burnTime);
+                furnace.setLitDuration(burnTime);
             }
         //Campfire
-        } else if(
+        } else if (
             data.getBoolean("light_campfire") &&
             state.getBlock() instanceof CampfireBlock
         ) {
             level.setBlock(block.getMiddle(), state.setValue(LIT, true), 2);
         //Brewing Stand
-        } else if(
+        } else if (
             data.isPresent("brew_time") &&
             level.getBlockEntity(pos) instanceof BrewingStandBlockEntityAccessor brewingStand
         ) {
@@ -62,13 +63,13 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
             }
         } else return;
         //Play Sound
-        if(data.isPresent("sound")) {
+        if (data.isPresent("sound")) {
             level.playSound(null, pos, data.get("sound"), SoundSource.BLOCKS, 0.5F, (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2F + 1.0F);
         }
         //Particles
         if(data.isPresent("particle") && level instanceof ServerLevel serverLevel) {
             int count = data.getInt("particle_count");
-            if(count > 0) {
+            if (count > 0) {
                 RandomSource random = level.random;
                 serverLevel.sendParticles(data.get("particle"), pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, count, random.nextDouble() * 0.2 - 0.1, 0.1, random.nextDouble() * 0.2 - 0.1, 0.05);
             }

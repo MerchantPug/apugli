@@ -17,6 +17,7 @@ import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.TextureUtil;
 
 public class ApugliFabric implements ModInitializer {
+
     @Override
     public void onInitialize() {
         FabricLoader.getInstance().getModContainer(Apugli.ID).ifPresent(modContainer -> {
@@ -40,7 +41,13 @@ public class ApugliFabric implements ModInitializer {
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player));
 
-        ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> CachedBlockInRadiusCondition.clearCache());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            CachedBlockInRadiusCondition.clearCache();
+        });
+
+        ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
+            CachedBlockInRadiusCondition.clearCache();
+        });
 
         ClientChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
         ServerChunkEvents.CHUNK_UNLOAD.register(CachedBlockInRadiusCondition::markChunkDirty);
