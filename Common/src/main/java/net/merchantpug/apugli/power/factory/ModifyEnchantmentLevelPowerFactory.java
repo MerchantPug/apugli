@@ -73,17 +73,18 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         for (P power : powers) {
             Enchantment enchantment = getDataFromPower(power).get("enchantment");
             ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
+            if (!doesApply(power, enchantment, entity.getLevel(), self)) continue;
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if(idx.isPresent()) {
                 CompoundTag existingEnchant = newEnchants.getCompound(idx.get());
                 int lvl = existingEnchant.getInt("lvl");
-                int newLvl = (int) Services.PLATFORM.applyModifiers(living, this, lvl, p -> doesApply(p, enchantment, entity.getLevel(), self));
+                int newLvl = (int) Services.PLATFORM.applyModifiers(living, this.getModifiers(power, living), lvl);
                 existingEnchant.putInt("lvl", newLvl);
                 newEnchants.set(idx.get(), existingEnchant);
             } else {
                 CompoundTag newEnchant = new CompoundTag();
                 newEnchant.putString("id", id.toString());
-                newEnchant.putInt("lvl", (int) Services.PLATFORM.applyModifiers(living, this, 0, p -> doesApply(p, enchantment, entity.getLevel(), self)));
+                newEnchant.putInt("lvl", (int) Services.PLATFORM.applyModifiers(living, this.getModifiers(power, living), 0));
                 newEnchants.add(newEnchant);
             }
         }
