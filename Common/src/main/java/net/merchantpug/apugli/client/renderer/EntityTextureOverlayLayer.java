@@ -66,6 +66,7 @@ public class EntityTextureOverlayLayer<T extends LivingEntity, M extends EntityM
                 if (this.getParentModel() instanceof PlayerModel<?> originalModel) {
                     PlayerModel<T> extraModel = (PlayerModel<T>) entityModel;
                     ((PlayerModel<T>) originalModel).copyPropertiesTo(extraModel);
+                    extraModel.jacket.copyFrom(originalModel.jacket);
                     extraModel.leftSleeve.copyFrom(originalModel.leftSleeve);
                     extraModel.rightSleeve.copyFrom(originalModel.rightSleeve);
                     extraModel.leftPants.copyFrom(originalModel.leftPants);
