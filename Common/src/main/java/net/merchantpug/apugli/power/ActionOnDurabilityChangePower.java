@@ -98,19 +98,20 @@ public class ActionOnDurabilityChangePower extends Power {
         equipmentSlot.ifPresent(slot1 -> operatedStacks.add(Either.left(slot1)));
         playerInventoryIndex.ifPresent(index -> operatedStacks.add(Either.right(index)));
 
-        Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
-
         if(entityAction != null) {
             entityAction.accept(entity);
         }
-        if(itemAction != null) {
-            itemAction.accept(new Tuple<>(entity.level, mutable));
-        }
 
-        if (equipmentSlot.isPresent()) {
-            entity.setItemSlot(equipmentSlot.get(), mutable.getValue());
-        } else if (entity instanceof Player player) {
-            player.getInventory().items.set(playerInventoryIndex.get(), mutable.getValue());
+        if(itemAction != null) {
+            Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
+
+            itemAction.accept(new Tuple<>(entity.level, mutable));
+
+            if (equipmentSlot.isPresent()) {
+                entity.setItemSlot(equipmentSlot.get(), mutable.getValue());
+            } else if (entity instanceof Player player) {
+                player.getInventory().items.set(playerInventoryIndex.get(), mutable.getValue());
+            }
         }
     }
 

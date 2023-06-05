@@ -60,15 +60,15 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "setDamageValue", at = @At(value = "TAIL"))
-    private void executeDurabilityChangeActions(int addition, CallbackInfo ci) {
+    private void executeDurabilityChangeActions(int newDamage, CallbackInfo ci) {
         if (!(apugli$getEntity() instanceof LivingEntity living)) return;
-        int newDamage = apugli$previousDamage + addition;
+        int addedDamage = newDamage - apugli$previousDamage;
         Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(power -> {
             if (newDamage >= this.getMaxDamage()) {
                 power.executeBreakAction((ItemStack)(Object)this);
-            } if (newDamage > 0) {
+            } else if (addedDamage > 0) {
                 power.executeDecreaseAction((ItemStack)(Object)this);
-            } else if (newDamage < 0) {
+            } else if (addedDamage < 0) {
                 power.executeIncreaseAction((ItemStack)(Object)this);
             }
         });
