@@ -190,7 +190,7 @@ tasks.register('curseforge', TaskPublishCurseForge) {
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = mr_project_id
-    versionNumber = "${version}-fabric"
+    versionNumber = "${version}"
     versionType = "release"
     versionName = "Fabric/Quilt v${rootProject.version}+${minecraft_version}"
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
