@@ -43,7 +43,7 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
         }
 
         for (BlockPos pos : CHECKED_BLOCK_POS_CACHE.keySet()) {
-            if (ENTITIES.get(data).keySet().stream().allMatch(e -> e.distanceToSqr(pos.getCenter()) >= invalidationDistance)) {
+            if (ENTITIES.get(data).keySet().stream().allMatch(e -> pos.distToCenterSqr(e.getPosition(1.0F)) >= invalidationDistance)) {
                 invalidate(pos, data);
             }
         }
