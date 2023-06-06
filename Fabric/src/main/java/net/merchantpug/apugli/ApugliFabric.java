@@ -41,11 +41,6 @@ public class ApugliFabric implements ModInitializer {
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player));
 
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            CachedBlockInRadiusCondition.clearCache();
-        });
-        ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> CachedBlockInRadiusCondition.invalidateChunk(chunk));
-
         NamespaceAlias.addAlias("ope", Apugli.ID);
 
         MidnightConfig.init(Apugli.ID, ApugliConfig.class);

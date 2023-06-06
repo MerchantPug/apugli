@@ -62,16 +62,6 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
-        CachedBlockInRadiusCondition.clearCache();
-    }
-
-    @SubscribeEvent
-    public static void onChunkUnloaded(ChunkEvent.Unload event) {
-        CachedBlockInRadiusCondition.invalidateChunk(event.getChunk());
-    }
-
-    @SubscribeEvent
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem().copy();
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;

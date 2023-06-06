@@ -35,13 +35,10 @@ public class ApugliClientFabric implements ClientModInitializer {
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
 
-		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> TextureUtilClient.clear());
-
 		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
+			TextureUtilClient.clear();
 			CachedBlockInRadiusCondition.clearCache();
 		});
-
-		ClientChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> CachedBlockInRadiusCondition.invalidateChunk(chunk));
 	}
 
 	public static void handleActiveKeys() {

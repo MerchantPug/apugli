@@ -22,7 +22,6 @@ import java.util.OptionalInt;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @AutoService(IPowerHelper.class)
 public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
-    
     @Override
     public PowerFactory<?> unwrapSimpleFactory(PowerFactory<?> factory) {
         return factory;
