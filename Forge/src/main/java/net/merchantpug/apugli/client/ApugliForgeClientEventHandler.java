@@ -5,6 +5,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.HumanoidMobRendererAccess;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.renderer.*;
+import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.mixin.forge.client.accessor.EntityRenderersEventAddLayersAccessor;
 import net.merchantpug.apugli.mixin.forge.client.accessor.PlayerModelAccessor;
 import net.merchantpug.apugli.mixin.forge.common.accessor.ApoliClientEventHandlerAccessor;
