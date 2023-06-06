@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.action.factory.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Space;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.util.RaycastUtil;
@@ -18,6 +20,8 @@ public class RaycastAction implements IActionFactory<Entity> {
     public SerializableData getSerializableData() {
         return new SerializableData()
                 .add("distance", SerializableDataTypes.DOUBLE, null)
+                .add("direction", SerializableDataTypes.VECTOR, null)
+                .add("space", ApoliDataTypes.SPACE, Space.WORLD)
                 .add("pierce", SerializableDataTypes.BOOLEAN, false)
                 .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
                 .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
@@ -36,20 +40,20 @@ public class RaycastAction implements IActionFactory<Entity> {
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
             Services.PLATFORM.getReachDistance(entity);
-        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance);
+        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance, data.get("direction"), data.get("space"));
         HitResult.Type blockHitResultType = blockHitResult.getType();
         //Entity Hit
         double entityDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
             Services.PLATFORM.getAttackRange(entity);
-        EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance);
+        EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance, data.get("direction"), data.get("space"), null);
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
         double squaredParticleDistance = entityHitResult != null && !data.getBoolean("pierce") ? entityHitResult.getLocation().distanceToSqr(entity.getEyePosition()) : entityDistance * entityDistance;
         createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
         //Execute Actions
         if(data.getBoolean("pierce")) {
-            List<EntityHitResult> list = RaycastUtil.raycastEntities(entity, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isPickable(), entityDistance);
+            List<EntityHitResult> list = RaycastUtil.raycastEntities(entity, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isPickable(), entityDistance, data.get("direction"), data.get("space"));
             handlePierce(data, entity, list);
             return;
         }
