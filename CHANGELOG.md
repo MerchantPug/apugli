@@ -1,2 +1,2 @@
-**Bugfixes**
-- Fixed clientsided lag spikes with `apugli:cached_block_in_radius`.
+**Optimisations**
+- Rewrote `apugli:cached_block_in_radius` from the ground up for optimisation reasons.

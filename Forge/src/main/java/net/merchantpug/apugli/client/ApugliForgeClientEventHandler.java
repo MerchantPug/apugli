@@ -96,6 +96,7 @@ public class ApugliForgeClientEventHandler {
 
         @SubscribeEvent
         public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+            CachedBlockInRadiusCondition.clearCache();
             if (event.getConnection() == null) return;
             TextureUtilClient.clear();
         }
