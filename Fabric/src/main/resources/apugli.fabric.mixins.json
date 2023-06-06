@@ -4,7 +4,6 @@
   "package": "net.merchantpug.apugli.mixin.fabric",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.ActiveKeyMixin",
     "common.BoneMealItemMixin",
     "common.EnchantmentConditionMixin",
     "common.EnchantmentHelperMixin",
