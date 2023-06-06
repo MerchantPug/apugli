@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.action.factory.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -37,6 +39,8 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                 .add("distance", SerializableDataTypes.DOUBLE, null)
                 .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
                 .add("spacing", SerializableDataTypes.DOUBLE, 0.5)
+                .add("direction", SerializableDataTypes.VECTOR, null)
+                .add("space", ApoliDataTypes.SPACE, Space.WORLD)
                 .add("block_action", Services.ACTION.blockDataType(), null)
                 .add("bientity_action", Services.ACTION.biEntityDataType(), null)
                 .add("action_on_hit", Services.ACTION.entityDataType(), null)
@@ -69,13 +73,13 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
             Services.PLATFORM.getReachDistance(entity);
-        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance);
+        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance, data.get("direction"), data.get("space"));
         HitResult.Type blockHitResultType = blockHitResult.getType();
         //Entity Hit
         double entityDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
             Services.PLATFORM.getAttackRange(entity);
-        EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance, Services.CONDITION.biEntityPredicate(data, "targetable_bientity_condition"));
+        EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance, data.get("direction"), data.get("space"), Services.CONDITION.biEntityPredicate(data, "targetable_bientity_condition"));
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : HitResult.Type.MISS;
 
         double squaredParticleDistance = entityHitResultType != HitResult.Type.MISS ? entityHitResult.getLocation().distanceToSqr(entity.getEyePosition()) : blockDistance * blockDistance;

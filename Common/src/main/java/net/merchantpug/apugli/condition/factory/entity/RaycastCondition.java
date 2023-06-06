@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.condition.factory.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Space;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.util.RaycastUtil;
@@ -15,10 +17,12 @@ public class RaycastCondition implements IConditionFactory<Entity> {
     @Override
     public SerializableData getSerializableData() {
         return new SerializableData()
-            .add("distance", SerializableDataTypes.DOUBLE, null)
-            .add("block_condition", Services.CONDITION.blockDataType(), null)
-            .add("target_condition", Services.CONDITION.entityDataType(), null)
-            .add("bientity_condition", Services.CONDITION.biEntityDataType(), null);
+                .add("distance", SerializableDataTypes.DOUBLE, null)
+                .add("direction", SerializableDataTypes.VECTOR, null)
+                .add("space", ApoliDataTypes.SPACE, Space.WORLD)
+                .add("block_condition", Services.CONDITION.blockDataType(), null)
+                .add("target_condition", Services.CONDITION.entityDataType(), null)
+                .add("bientity_condition", Services.CONDITION.biEntityDataType(), null);
     }
     
     @Override
@@ -27,7 +31,7 @@ public class RaycastCondition implements IConditionFactory<Entity> {
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
             Services.PLATFORM.getReachDistance(entity);
-        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance);
+        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(entity, blockDistance, data.get("direction"), data.get("space"));
         HitResult.Type blockHitResultType = blockHitResult.getType();
         //Entity Hit
         double entityDistance = data.isPresent("distance") ?
