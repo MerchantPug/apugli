@@ -2,9 +2,8 @@ package net.merchantpug.apugli.component;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.networking.ApugliPackets;
-import net.merchantpug.apugli.networking.s2c.SyncHitsOnTargetLessenedPacket;
+import net.merchantpug.apugli.network.ApugliPackets;
+import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

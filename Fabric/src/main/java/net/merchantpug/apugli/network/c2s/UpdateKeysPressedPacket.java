@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.networking.c2s;
+package net.merchantpug.apugli.network.c2s;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
@@ -6,15 +6,14 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
-import net.merchantpug.apugli.networking.ApugliPackets;
-import net.merchantpug.apugli.networking.s2c.SyncKeysLessenedPacket;
+import net.merchantpug.apugli.network.ApugliPackets;
+import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

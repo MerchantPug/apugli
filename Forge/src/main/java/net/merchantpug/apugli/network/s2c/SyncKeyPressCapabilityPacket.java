@@ -1,10 +1,8 @@
 package net.merchantpug.apugli.network.s2c;
 
-import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
-import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

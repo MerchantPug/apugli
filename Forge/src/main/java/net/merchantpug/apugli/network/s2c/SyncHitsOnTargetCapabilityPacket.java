@@ -3,7 +3,6 @@ package net.merchantpug.apugli.network.s2c;
 
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
-import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -12,9 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public record SyncHitsOnTargetCapabilityPacket(int entityId,
                                                Map<Integer, Tuple<Integer, Integer>> hits) implements ApugliPacketS2C {

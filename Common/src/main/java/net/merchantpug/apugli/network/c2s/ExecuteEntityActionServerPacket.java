@@ -1,16 +1,12 @@
 
-package net.merchantpug.apugli.networking.c2s;
+package net.merchantpug.apugli.network.c2s;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 
 public record ExecuteEntityActionServerPacket<A>(A entityAction) implements ApugliPacketC2S {
     public static final ResourceLocation ID = Apugli.asResource("execute_entity_action_serverside");

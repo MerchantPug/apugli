@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package net.merchantpug.apugli.networking;
+package net.merchantpug.apugli.network;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -34,11 +34,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.merchantpug.apugli.Apugli;;
 import net.merchantpug.apugli.client.ApugliClientFabric;
-import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
-import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
-import net.merchantpug.apugli.networking.c2s.ExecuteEntityActionServerPacket;
-import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
-import net.merchantpug.apugli.networking.s2c.*;
+import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
+import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
+import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.network.s2c.*;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;

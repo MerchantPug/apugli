@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import io.github.apace100.apoli.power.Power;
 import net.merchantpug.apugli.Apugli;
