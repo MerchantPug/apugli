@@ -106,20 +106,24 @@ public record SyncExplosionPacket<BI, B>(int userId,
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Level level = Minecraft.getInstance().level;
-            Entity entity = level.getEntity(userId);
-            Explosion explosion = new Explosion(level, entity,
-                    entity instanceof LivingEntity living ?
-                    DamageSource.explosion(living) :
-                    DamageSource.explosion((LivingEntity) null), createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
-            ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers());
-            ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(knockbackModifiers());
-            ((ExplosionAccess) explosion).setExplosionVolumeModifiers(volumeModifiers());
-            ((ExplosionAccess) explosion).setExplosionPitchModifiers(pitchModifiers());
-            ((ExplosionAccess) explosion).setBiEntityPredicate(biEntityConditions());
-            explosion.explode();
-            explosion.finalizeExplosion(true);
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                Level level = Minecraft.getInstance().level;
+                Entity entity = level.getEntity(userId);
+                Explosion explosion = new Explosion(level, entity,
+                        entity instanceof LivingEntity living ?
+                                DamageSource.explosion(living) :
+                                DamageSource.explosion((LivingEntity) null), createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
+                ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers());
+                ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(knockbackModifiers());
+                ((ExplosionAccess) explosion).setExplosionVolumeModifiers(volumeModifiers());
+                ((ExplosionAccess) explosion).setExplosionPitchModifiers(pitchModifiers());
+                ((ExplosionAccess) explosion).setBiEntityPredicate(biEntityConditions());
+                explosion.explode();
+                explosion.finalizeExplosion(true);
+            }
         });
     }
 

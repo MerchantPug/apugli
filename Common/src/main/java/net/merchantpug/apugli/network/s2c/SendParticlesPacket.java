@@ -79,36 +79,38 @@ public record SendParticlesPacket(ParticleOptions effect,
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            ClientLevel world = Minecraft.getInstance().level;
-            if (world == null) {
-                Apugli.LOG.info("Could not find world to send particles to.");
-                return;
-            }
-            if (count == 0) {
-                try {
-                    double d = velocity.isPresent() ? velocity.get().x : speed * offsetX;
-                    double e = velocity.isPresent() ? velocity.get().y : speed * offsetY;
-                    double f = velocity.isPresent() ? velocity.get().z : speed * offsetZ;
-                    world.addParticle(effect, force, x, y, z, d, e, f);
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientLevel world = Minecraft.getInstance().level;
+                if (world == null) {
+                    Apugli.LOG.info("Could not find world to send particles to.");
+                    return;
                 }
-                catch (Throwable throwable) {
-                    Apugli.LOG.warn("Could not spawn particle effect {}", effect);
-                }
-            } else {
-                for (int i = 0; i < count; ++i) {
-                    double g = world.random.nextGaussian() * offsetX;
-                    double h = world.random.nextGaussian() * offsetY;
-                    double j = world.random.nextGaussian() * offsetZ;
-                    double k = velocity.map(v -> v.x).orElseGet(() -> world.random.nextGaussian() * speed);
-                    double l = velocity.map(v -> v.y).orElseGet(() -> world.random.nextGaussian() * speed);
-                    double m = velocity.map(v -> v.z).orElseGet(() -> world.random.nextGaussian() * speed);
+                if (count == 0) {
                     try {
-                        world.addParticle(effect, force, x + g, y + h, z + j, k, l, m);
-                    }
-                    catch (Throwable throwable2) {
+                        double d = velocity.isPresent() ? velocity.get().x : speed * offsetX;
+                        double e = velocity.isPresent() ? velocity.get().y : speed * offsetY;
+                        double f = velocity.isPresent() ? velocity.get().z : speed * offsetZ;
+                        world.addParticle(effect, force, x, y, z, d, e, f);
+                    } catch (Throwable throwable) {
                         Apugli.LOG.warn("Could not spawn particle effect {}", effect);
-                        return;
+                    }
+                } else {
+                    for (int i = 0; i < count; ++i) {
+                        double g = world.random.nextGaussian() * offsetX;
+                        double h = world.random.nextGaussian() * offsetY;
+                        double j = world.random.nextGaussian() * offsetZ;
+                        double k = velocity.map(v -> v.x).orElseGet(() -> world.random.nextGaussian() * speed);
+                        double l = velocity.map(v -> v.y).orElseGet(() -> world.random.nextGaussian() * speed);
+                        double m = velocity.map(v -> v.z).orElseGet(() -> world.random.nextGaussian() * speed);
+                        try {
+                            world.addParticle(effect, force, x + g, y + h, z + j, k, l, m);
+                        } catch (Throwable throwable2) {
+                            Apugli.LOG.warn("Could not spawn particle effect {}", effect);
+                            return;
+                        }
                     }
                 }
             }
