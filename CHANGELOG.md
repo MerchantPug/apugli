@@ -1,1 +1,2 @@
-- [FABRIC] Fixed a serverside crash due to referencing clientsided classes in a common environment.
+- Fixed server startup crashes on both platforms.
+- Added an Alternate Licenses file, this includes Botania's license.

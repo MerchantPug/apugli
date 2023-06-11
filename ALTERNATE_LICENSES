@@ -1,4 +1,7 @@
-Apugli uses parts of the Botania codebase for networking related code, the main change is the Forge PacketHandler class itself.
+Apugli's packet related code is loosely based on the Botania codebase's networking code.
+There are a few changes from Botania's networking code.
+- Handlers are done through unique interfaces that extend the Packet interface as opposed to a static method.
+- Some methods and parameters have been renamed.
 
 Botania was created by Vazkii.
 

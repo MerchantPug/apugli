@@ -10,6 +10,9 @@ subprojects {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${mod_name}" }
         }
+        from(rootProject.file("ALTERNATE_LICENSES")) {
+            rename { "${it}_${mod_name}" }
+        }
         manifest {
             attributes([
                 'Specification-Title'     : mod_name,
