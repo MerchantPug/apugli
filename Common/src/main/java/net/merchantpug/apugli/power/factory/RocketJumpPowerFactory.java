@@ -5,7 +5,7 @@ import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.networking.s2c.SyncExplosionPacket;
+import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.core.registries.BuiltInRegistries;
