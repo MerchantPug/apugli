@@ -18,6 +18,7 @@ public class BunnyHopPower extends AbstractResourcePower implements BunnyHopPowe
             FabricResourceConfiguration::new,
             FabricResourceConfiguration::data
         ).codec());
+        this.ticking();
     }
 
     @Override
@@ -26,7 +27,7 @@ public class BunnyHopPower extends AbstractResourcePower implements BunnyHopPowe
         if (framesOnGround > 4) {
             ApugliPowers.BUNNY_HOP.get().reset(configuration, living);
         }
-        if (living.isOnGround() || living.isInWater() || living.isInLava() || living.isPassenger() || living.isFallFlying()) {
+        if (!canGainResource(living)) {
             if (framesOnGround <= 4) {
                 framesOnGround += 1;
             }

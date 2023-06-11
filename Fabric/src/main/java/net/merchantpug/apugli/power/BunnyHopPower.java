@@ -27,6 +27,7 @@ public class BunnyHopPower extends AbstractResourcePower<BunnyHopPower.Instance>
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
+            this.setTicking();
         }
 
         @Override
@@ -35,7 +36,7 @@ public class BunnyHopPower extends AbstractResourcePower<BunnyHopPower.Instance>
             if (framesOnGround > 4) {
                 ApugliPowers.BUNNY_HOP.get().reset(this, entity);
             }
-            if (entity.isOnGround() || entity.isInWater() || entity.isInLava() || entity.isPassenger() || entity.isFallFlying()) {
+            if (!ApugliPowers.BUNNY_HOP.get().canGainResource(entity)) {
                 if (framesOnGround <= 4) {
                     framesOnGround += 1;
                 }
