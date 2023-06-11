@@ -5,21 +5,20 @@ import io.github.apace100.apoli.power.Active;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public record SyncKeysLessenedPacket(int entityId,
                                      Set<Active.Key> keysToCheck,
                                      Set<Active.Key> addedKeys,
-                                     Set<Active.Key> removedKeys) implements ApugliPacketS2C {
+                                     Set<Active.Key> removedKeys) implements ApugliPacket {
     public static final ResourceLocation ID = Apugli.asResource("sync_keys_lessened");
 
     @Override
@@ -71,27 +70,28 @@ public record SyncKeysLessenedPacket(int entityId,
         return ID;
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            if (!(entity instanceof Player player)) {
-                Apugli.LOG.warn("Could not find player entity to sync keys with.");
-                return;
-            }
-            KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
+    public static class Handler {
+        public static void handle(SyncKeysLessenedPacket packet) {
+            Minecraft.getInstance().execute(() -> {
+                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId);
+                if (!(entity instanceof Player player)) {
+                    Apugli.LOG.warn("Could not find player entity to sync keys with.");
+                    return;
+                }
+                KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
 
-            for (Active.Key key : keysToCheck) {
-                component.addKeyToCheck(key);
-            }
+                for (Active.Key key : packet.keysToCheck) {
+                    component.addKeyToCheck(key);
+                }
 
-            for (Active.Key key : addedKeys) {
-                component.addKey(key);
-            }
+                for (Active.Key key : packet.addedKeys) {
+                    component.addKey(key);
+                }
 
-            for (Active.Key key : removedKeys) {
-                component.removeKey(key);
-            }
-        });
+                for (Active.Key key : packet.removedKeys) {
+                    component.removeKey(key);
+                }
+            });
+        }
     }
 }
