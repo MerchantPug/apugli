@@ -31,14 +31,18 @@ public record ExecuteEntityActionClientPacket<A>(int entityId, A entityAction) i
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            ClientLevel level = Minecraft.getInstance().level;
-            Entity entity = level.getEntity(entityId);
-            if (entity == null) {
-                Apugli.LOG.warn("Could not find entity for clientsided entity action.");
-                return;
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientLevel level = Minecraft.getInstance().level;
+                Entity entity = level.getEntity(entityId);
+                if (entity == null) {
+                    Apugli.LOG.warn("Could not find entity for clientsided entity action.");
+                    return;
+                }
+                Services.ACTION.executeEntity(entityAction, entity);
             }
-            Services.ACTION.executeEntity(entityAction, entity);
         });
     }
 }

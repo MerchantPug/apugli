@@ -106,26 +106,30 @@ public record SyncKeysLessenedPacket(int entityId,
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            if (!(entity instanceof Player player)) {
-                Apugli.LOG.warn("Could not find player entity to sync keys with.");
-                return;
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+                if (!(entity instanceof Player player)) {
+                    Apugli.LOG.warn("Could not find player entity to sync keys with.");
+                    return;
+                }
+                player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
+
+                    for (IActivePower.Key key : keysToCheck) {
+                        capability.addKeyToCheck(key);
+                    }
+
+                    for (IActivePower.Key key : addedKeys) {
+                        capability.addKey(key);
+                    }
+
+                    for (IActivePower.Key key : removedKeys) {
+                        capability.removeKey(key);
+                    }
+                });
             }
-            player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
-
-                for (IActivePower.Key key : keysToCheck) {
-                    capability.addKeyToCheck(key);
-                }
-
-                for (IActivePower.Key key : addedKeys) {
-                    capability.addKey(key);
-                }
-
-                for (IActivePower.Key key : removedKeys) {
-                    capability.removeKey(key);
-                }
-            });
         });
     }
 }

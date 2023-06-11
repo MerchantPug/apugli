@@ -33,18 +33,22 @@ public record ExecuteBiEntityActionClientPacket<A>(int actorId, int targetId, A 
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            ClientLevel level = Minecraft.getInstance().level;
-            Entity actor = level.getEntity(actorId);
-            Entity target = level.getEntity(targetId);
-            if (actor == null) {
-                Apugli.LOG.warn("Could not find actor entity for clientsided bi-entity action.");
-                return;
-            } else if (target == null) {
-                Apugli.LOG.warn("Could not find target entity for clientsided bi-entity action.");
-                return;
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientLevel level = Minecraft.getInstance().level;
+                Entity actor = level.getEntity(actorId);
+                Entity target = level.getEntity(targetId);
+                if (actor == null) {
+                    Apugli.LOG.warn("Could not find actor entity for clientsided bi-entity action.");
+                    return;
+                } else if (target == null) {
+                    Apugli.LOG.warn("Could not find target entity for clientsided bi-entity action.");
+                    return;
+                }
+                Services.ACTION.executeBiEntity(entityAction, actor, target);
             }
-            Services.ACTION.executeBiEntity(entityAction, actor, target);
         });
     }
 }

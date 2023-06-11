@@ -51,18 +51,22 @@ public record SyncHitsOnTargetCapabilityPacket(int entityId,
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                Entity entity = Minecraft.getInstance().level.getEntity(entityId);
 
-            if (!(entity instanceof LivingEntity)) {
-                Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
-                return;
+                if (!(entity instanceof LivingEntity)) {
+                    Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
+                    return;
+                }
+
+                entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
+                    capability.getHits().clear();
+                    hits.forEach((id, value) -> capability.setHits(id, value.getA(), value.getB()));
+                });
             }
-
-            entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
-                capability.getHits().clear();
-                hits.forEach((id, value) -> capability.setHits(id, value.getA(), value.getB()));
-            });
         });
     }
 }

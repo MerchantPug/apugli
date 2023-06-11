@@ -68,33 +68,37 @@ public record SyncHitsOnTargetLessenedPacket(int entityId,
 
     @Override
     public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+        // The lambda implementation of this Runnable breaks Forge servers.
+        Minecraft.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                Entity entity = Minecraft.getInstance().level.getEntity(entityId);
 
-            if (!(entity instanceof LivingEntity)) {
-                Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
-                return;
-            }
+                if (!(entity instanceof LivingEntity)) {
+                    Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
+                    return;
+                }
 
-            entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
-                Map<Integer, Tuple<Integer, Integer>> updateMap = new HashMap<>();
-                Set<Integer> removalMap = new HashSet<>();
-                for (Map.Entry<Integer, Tuple<Integer, Integer>> entry : hits.entrySet()) {
-                    if (!previousHits.containsKey(entry.getKey())) {
-                        updateMap.put(entry.getKey(), entry.getValue());
-                    } else {
-                        Tuple<Integer, Integer> currentPair = entry.getValue();
-                        Tuple<Integer, Integer> previousPair = previousHits.get(entry.getKey());
-                        if ((!currentPair.getA().equals(previousPair.getA()) || !currentPair.getB().equals(currentPair.getB()))) {
+                entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
+                    Map<Integer, Tuple<Integer, Integer>> updateMap = new HashMap<>();
+                    Set<Integer> removalMap = new HashSet<>();
+                    for (Map.Entry<Integer, Tuple<Integer, Integer>> entry : hits.entrySet()) {
+                        if (!previousHits.containsKey(entry.getKey())) {
                             updateMap.put(entry.getKey(), entry.getValue());
+                        } else {
+                            Tuple<Integer, Integer> currentPair = entry.getValue();
+                            Tuple<Integer, Integer> previousPair = previousHits.get(entry.getKey());
+                            if ((!currentPair.getA().equals(previousPair.getA()) || !currentPair.getB().equals(currentPair.getB()))) {
+                                updateMap.put(entry.getKey(), entry.getValue());
+                            }
                         }
                     }
-                }
-                previousHits.keySet().stream().filter(key -> !hits.containsKey(key)).forEach(removalMap::add);
+                    previousHits.keySet().stream().filter(key -> !hits.containsKey(key)).forEach(removalMap::add);
 
-                updateMap.forEach((entityId, value) -> capability.setHits(entityId, value.getA(), value.getB()));
-                removalMap.forEach(capability::removeHits);
-            });
+                    updateMap.forEach((entityId, value) -> capability.setHits(entityId, value.getA(), value.getB()));
+                    removalMap.forEach(capability::removeHits);
+                });
+            }
         });
     }
 }
