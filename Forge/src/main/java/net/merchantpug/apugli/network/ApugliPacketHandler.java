@@ -6,10 +6,9 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
-import net.merchantpug.apugli.networking.ApugliPacket;
-import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
-import net.merchantpug.apugli.networking.c2s.ExecuteEntityActionServerPacket;
-import net.merchantpug.apugli.networking.s2c.*;
+import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
+import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
+import net.merchantpug.apugli.network.s2c.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ApugliPacketHandler {
-    private static final String PROTOCOL_VERISON = "1";
+    private static final String PROTOCOL_VERISON = "0";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
             Apugli.asResource("main"),
             () -> PROTOCOL_VERISON,
@@ -102,7 +101,7 @@ public class ApugliPacketHandler {
         ApugliPacketHandler.INSTANCE.sendToServer(packet);
     }
 
-    private static <MSG extends ApugliPacket> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createC2SHandler(TriConsumer<MSG, MinecraftServer, ServerPlayer> handler) {
+    private static <MSG> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createC2SHandler(TriConsumer<MSG, MinecraftServer, ServerPlayer> handler) {
         return (msg, ctx) -> {
             handler.accept(msg, ctx.get().getSender().getServer(), ctx.get().getSender());
             ctx.get().setPacketHandled(true);
@@ -121,9 +120,9 @@ public class ApugliPacketHandler {
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
     }
 
-    private static <MSG extends ApugliPacket> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createS2CHandler(Consumer<MSG> handler) {
+    private static <MSG> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createS2CHandler(Consumer<MSG> consumer) {
         return (msg, ctx) -> {
-            handler.accept(msg);
+            consumer.accept(msg);
             ctx.get().setPacketHandled(true);
         };
     }

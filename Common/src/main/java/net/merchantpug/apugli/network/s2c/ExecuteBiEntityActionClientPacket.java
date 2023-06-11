@@ -1,9 +1,8 @@
 
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.networking.ApugliPacket;
-import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;

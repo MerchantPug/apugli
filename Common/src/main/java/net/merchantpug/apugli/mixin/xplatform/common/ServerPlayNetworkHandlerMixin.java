@@ -1,17 +1,14 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.merchantpug.apugli.networking.s2c.UpdateUrlTexturesPacket;
+import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.power.HoverPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.network.protocol.game.ServerboundResourcePackPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

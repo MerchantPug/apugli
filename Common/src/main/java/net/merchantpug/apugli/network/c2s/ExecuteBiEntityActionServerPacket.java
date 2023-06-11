@@ -1,8 +1,8 @@
 
-package net.merchantpug.apugli.networking.c2s;
+package net.merchantpug.apugli.network.c2s;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

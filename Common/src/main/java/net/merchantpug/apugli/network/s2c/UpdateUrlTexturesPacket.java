@@ -1,8 +1,8 @@
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import io.github.apace100.apoli.power.Power;
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.client.util.TextureUtilClient;

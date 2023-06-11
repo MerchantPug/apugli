@@ -1,4 +1,4 @@
-Apugli uses parts of the Botania codebase for networking related code.
+Apugli uses parts of the Botania codebase for networking related code, the main change is the Forge PacketHandler class itself.
 
 Botania was created by Vazkii.
 

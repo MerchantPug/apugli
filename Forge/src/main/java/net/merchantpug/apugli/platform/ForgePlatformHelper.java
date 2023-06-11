@@ -18,7 +18,7 @@ import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
 import net.merchantpug.apugli.util.ActiveKeyUtil;

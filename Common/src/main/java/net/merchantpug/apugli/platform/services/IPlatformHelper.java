@@ -4,7 +4,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.ValueModifyingPowerFactory;
 import net.minecraft.server.level.ServerPlayer;

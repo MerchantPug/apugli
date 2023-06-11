@@ -5,7 +5,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;

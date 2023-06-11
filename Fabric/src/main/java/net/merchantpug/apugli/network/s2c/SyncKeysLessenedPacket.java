@@ -1,11 +1,11 @@
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

@@ -2,7 +2,7 @@ package net.merchantpug.apugli.action.factory.entity;
 
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
-import net.merchantpug.apugli.networking.s2c.SyncExplosionPacket;
+import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;

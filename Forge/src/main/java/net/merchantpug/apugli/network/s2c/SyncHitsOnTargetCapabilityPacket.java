@@ -3,7 +3,7 @@ package net.merchantpug.apugli.network.s2c;
 
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
-import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.network.ApugliPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
