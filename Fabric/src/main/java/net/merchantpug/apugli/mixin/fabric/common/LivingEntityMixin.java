@@ -154,7 +154,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3 movementInput, CallbackInfo ci) {
-        if (this.isDeadOrDying()) return;
+        if (this.isDeadOrDying() || this.level.isClientSide) return;
         ApugliPowers.BUNNY_HOP.get().onTravel((LivingEntity)(Object)this, movementInput);
     }
 

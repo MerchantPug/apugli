@@ -1,2 +1,2 @@
-- Fixed server startup crashes on both platforms.
-- Added an Alternate Licenses file, this includes Botania's license.
+- Fixed crash involving `apugli:bunny_hop` power type casting a double to a float.
+- Fixed `apugli:bunny_hop` not ticking properly.

@@ -1,0 +1,12 @@
+{
+  "type": "apugli:bunny_hop",
+  "min": 0,
+  "max": 60,
+  "hud_render": {
+    "should_render": true,
+    "sprite_location": "apugli:tmo_resource_bar.png",
+    "bar_index": 7
+  },
+  "increase_per_tick": 0.00025,
+  "tick_rate": 10
+}

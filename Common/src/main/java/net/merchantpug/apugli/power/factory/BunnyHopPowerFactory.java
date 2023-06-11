@@ -12,7 +12,7 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
     
     static SerializableData getSerializableData() {
         return ResourcePowerFactory.getSerializableData()
-            .add("increase_per_tick", SerializableDataTypes.DOUBLE, 0.000375)
+            .add("increase_per_tick", SerializableDataTypes.FLOAT, 0.000375F)
             .add("tick_rate", SerializableDataTypes.INT, 10);
     }
     
@@ -24,6 +24,7 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
     }
     
     default void onTravel(LivingEntity entity, Vec3 movementInput) {
+        if (!canGainResource(entity)) return;
         Services.POWER.getPowers(entity, this).forEach(power -> {
             SerializableData.Instance data = getDataFromPower(power);
             int tickRate = Math.max(1, data.getInt("tick_rate"));
@@ -33,8 +34,12 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
                     sync(entity, power);
                 }
             }
-            entity.moveRelative((float) data.getDouble("increase_per_tick") * getValue(power, entity), movementInput);
+            entity.moveRelative(data.getFloat("increase_per_tick") * getValue(power, entity), movementInput);
         });
+    }
+
+    default boolean canGainResource(LivingEntity entity) {
+        return !(entity.isOnGround() || entity.isInWater() || entity.isInLava() || entity.isPassenger() || entity.isFallFlying());
     }
 
 }
