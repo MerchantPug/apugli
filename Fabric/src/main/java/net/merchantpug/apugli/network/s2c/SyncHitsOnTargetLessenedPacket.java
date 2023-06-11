@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.component.ApugliEntityComponents;

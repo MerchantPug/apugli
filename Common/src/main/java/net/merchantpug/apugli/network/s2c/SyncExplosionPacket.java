@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.networking.s2c;
+package net.merchantpug.apugli.network.s2c;
 
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;

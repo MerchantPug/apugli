@@ -1,5 +1,5 @@
 
-package net.merchantpug.apugli.networking.c2s;
+package net.merchantpug.apugli.network.c2s;
 
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.platform.Services;
