@@ -27,7 +27,7 @@ package net.merchantpug.apugli.action.factory.entity;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.action.factory.IActionFactory;
-import net.merchantpug.apugli.network.s2c.SendParticlesPacket;
+import net.merchantpug.apugli.networking.s2c.SendParticlesPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;

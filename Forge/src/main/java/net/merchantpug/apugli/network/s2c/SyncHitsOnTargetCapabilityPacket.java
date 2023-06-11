@@ -3,7 +3,7 @@ package net.merchantpug.apugli.network.s2c;
 
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
-import net.merchantpug.apugli.network.ApugliPacket;
+import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -12,10 +12,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public record SyncHitsOnTargetCapabilityPacket(int entityId,
-                                               Map<Integer, Tuple<Integer, Integer>> hits) implements ApugliPacket {
+                                               Map<Integer, Tuple<Integer, Integer>> hits) implements ApugliPacketS2C {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
@@ -50,21 +52,20 @@ public record SyncHitsOnTargetCapabilityPacket(int entityId,
         throw new RuntimeException("ApugliPacket#getFabricId is not meant to be used in Forge specific packets.");
     }
 
-    public static class Handler {
-        public static void handle(SyncHitsOnTargetCapabilityPacket packet) {
-            Minecraft.getInstance().execute(() -> {
-                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId);
+    @Override
+    public void handle() {
+        Minecraft.getInstance().execute(() -> {
+            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
 
-                if (!(entity instanceof LivingEntity)) {
-                    Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
-                    return;
-                }
+            if (!(entity instanceof LivingEntity)) {
+                Apugli.LOG.warn("Could not find living entity to sync hits on target with.");
+                return;
+            }
 
-                entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
-                    capability.getHits().clear();
-                    packet.hits.forEach((id, value) -> capability.setHits(id, value.getA(), value.getB()));
-                });
+            entity.getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(capability -> {
+                capability.getHits().clear();
+                hits.forEach((id, value) -> capability.setHits(id, value.getA(), value.getB()));
             });
-        }
+        });
     }
 }

@@ -1,11 +1,12 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
+import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
-import net.merchantpug.apugli.network.ApugliPackets;
-import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
+import net.merchantpug.apugli.networking.ApugliPackets;
+import net.merchantpug.apugli.networking.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;

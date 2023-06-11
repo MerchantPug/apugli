@@ -3,7 +3,7 @@ package net.merchantpug.apugli.network.s2c;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
-import net.merchantpug.apugli.network.ApugliPacket;
+import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -18,7 +18,7 @@ import java.util.Set;
 public record SyncKeysLessenedPacket(int entityId,
                                      Set<IActivePower.Key> keysToCheck,
                                      Set<IActivePower.Key> addedKeys,
-                                     Set<IActivePower.Key> removedKeys) implements ApugliPacket {
+                                     Set<IActivePower.Key> removedKeys) implements ApugliPacketS2C {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
@@ -105,29 +105,28 @@ public record SyncKeysLessenedPacket(int entityId,
         throw new RuntimeException("ApugliPacket#getFabricId is not meant to be used in Forge specific packets.");
     }
 
-    public static class Handler {
-        public static void handle(SyncKeysLessenedPacket packet) {
-            Minecraft.getInstance().execute(() -> {
-                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId);
-                if (!(entity instanceof Player player)) {
-                    Apugli.LOG.warn("Could not find player entity to sync keys with.");
-                    return;
+    @Override
+    public void handle() {
+        Minecraft.getInstance().execute(() -> {
+            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+            if (!(entity instanceof Player player)) {
+                Apugli.LOG.warn("Could not find player entity to sync keys with.");
+                return;
+            }
+            player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
+
+                for (IActivePower.Key key : keysToCheck) {
+                    capability.addKeyToCheck(key);
                 }
-                player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
 
-                    for (IActivePower.Key key : packet.keysToCheck) {
-                        capability.addKeyToCheck(key);
-                    }
+                for (IActivePower.Key key : addedKeys) {
+                    capability.addKey(key);
+                }
 
-                    for (IActivePower.Key key : packet.addedKeys) {
-                        capability.addKey(key);
-                    }
-
-                    for (IActivePower.Key key : packet.removedKeys) {
-                        capability.removeKey(key);
-                    }
-                });
+                for (IActivePower.Key key : removedKeys) {
+                    capability.removeKey(key);
+                }
             });
-        }
+        });
     }
 }

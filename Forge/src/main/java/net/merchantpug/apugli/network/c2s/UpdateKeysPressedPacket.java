@@ -5,7 +5,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
-import net.merchantpug.apugli.network.ApugliPacket;
+import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record UpdateKeysPressedPacket(Set<IActivePower.Key> addedKeys,
-                                      Set<IActivePower.Key> removedKeys) implements ApugliPacket {
+                                      Set<IActivePower.Key> removedKeys) implements ApugliPacketC2S {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
@@ -79,22 +79,21 @@ public record UpdateKeysPressedPacket(Set<IActivePower.Key> addedKeys,
         throw new RuntimeException("ApugliPacket#getFabricId is not meant to be used in Forge specific packets.");
     }
 
-    public static class Handler {
-        public static void handle(UpdateKeysPressedPacket packet, MinecraftServer server, ServerPlayer player) {
-            server.execute(() -> {
-                player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
-                    packet.addedKeys.forEach(capability::addKey);
-                    packet.removedKeys.forEach(capability::removeKey);
+    @Override
+    public void handle(MinecraftServer server, ServerPlayer player) {
+        server.execute(() -> {
+            player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
+                addedKeys.forEach(capability::addKey);
+                removedKeys.forEach(capability::removeKey);
 
-                    Set<IActivePower.Key> keysToCheck = capability.getKeysToCheck().stream().filter(key -> !capability.getPreviousKeysToCheck().add(key)).collect(Collectors.toSet());
-                    capability.setPreviousKeysToCheck();
-                    Set<IActivePower.Key> keysToAdd = capability.getCurrentlyUsedKeys().stream().filter(key -> !capability.getPreviouslyUsedKeys().contains(key)).collect(Collectors.toSet());
-                    Set<IActivePower.Key> keysToRemove = capability.getPreviouslyUsedKeys().stream().filter(key -> !capability.getCurrentlyUsedKeys().contains(key)).collect(Collectors.toSet());
-                    capability.setPreviouslyUsedKeys();
+                Set<IActivePower.Key> keysToCheck = capability.getKeysToCheck().stream().filter(key -> !capability.getPreviousKeysToCheck().add(key)).collect(Collectors.toSet());
+                capability.setPreviousKeysToCheck();
+                Set<IActivePower.Key> keysToAdd = capability.getCurrentlyUsedKeys().stream().filter(key -> !capability.getPreviouslyUsedKeys().contains(key)).collect(Collectors.toSet());
+                Set<IActivePower.Key> keysToRemove = capability.getPreviouslyUsedKeys().stream().filter(key -> !capability.getCurrentlyUsedKeys().contains(key)).collect(Collectors.toSet());
+                capability.setPreviouslyUsedKeys();
 
-                    ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove));
-                });
+                ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove));
             });
-        }
+        });
     }
 }

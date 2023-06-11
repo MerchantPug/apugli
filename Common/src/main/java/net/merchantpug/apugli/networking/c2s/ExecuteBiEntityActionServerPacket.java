@@ -1,8 +1,7 @@
 
-package net.merchantpug.apugli.network.c2s;
+package net.merchantpug.apugli.networking.c2s;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.network.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
-public record ExecuteBiEntityActionServerPacket<A>(int otherEntityId, boolean isOtherEntityTarget, A biEntityAction) implements ApugliPacket {
+public record ExecuteBiEntityActionServerPacket<A>(int otherEntityId, boolean isOtherEntityTarget, A biEntityAction) implements ApugliPacketC2S {
     public static final ResourceLocation ID = Apugli.asResource("execute_bientity_action_serverside");
 
     @Override
@@ -32,17 +31,16 @@ public record ExecuteBiEntityActionServerPacket<A>(int otherEntityId, boolean is
         return ID;
     }
 
-    public static class Handler {
-        public static void handle(ExecuteBiEntityActionServerPacket<?> packet, MinecraftServer server, ServerPlayer player) {
-            server.execute(() -> {
-                Entity otherEntity = player.getLevel().getEntity(packet.otherEntityId);
+    @Override
+    public void handle(MinecraftServer server, ServerPlayer player) {
+        server.execute(() -> {
+            Entity otherEntity = player.getLevel().getEntity(otherEntityId);
 
-                Entity actor = packet.isOtherEntityTarget ? player : otherEntity;
-                Entity target = packet.isOtherEntityTarget ? otherEntity : player;
+            Entity actor = isOtherEntityTarget ? player : otherEntity;
+            Entity target = isOtherEntityTarget ? otherEntity : player;
 
-                Services.ACTION.executeBiEntity(packet.biEntityAction, actor, target);
-            });
-        }
+            Services.ACTION.executeBiEntity(biEntityAction, actor, target);
+        });
     }
 
 }

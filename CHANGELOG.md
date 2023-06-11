@@ -1,2 +1,1 @@
-- Fixed a serverside crash due to referencing clientsided classes in a common environment.
-- Rewrite packet code and include Botania license.
+- [FABRIC] Fixed a serverside crash due to referencing clientsided classes in a common environment.

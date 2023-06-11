@@ -18,7 +18,8 @@ import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
-import net.merchantpug.apugli.network.ApugliPacket;
+import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
 import net.merchantpug.apugli.util.ActiveKeyUtil;
@@ -89,17 +90,17 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public void sendS2C(ApugliPacket packet, ServerPlayer player) {
+    public void sendS2C(ApugliPacketS2C packet, ServerPlayer player) {
         ApugliPacketHandler.sendS2C(packet, player);
     }
 
     @Override
-    public void sendS2CTrackingAndSelf(ApugliPacket packet, Entity entity) {
+    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
         ApugliPacketHandler.sendS2CTrackingAndSelf(packet, entity);
     }
 
     @Override
-    public void sendC2S(ApugliPacket packet) {
+    public void sendC2S(ApugliPacketC2S packet) {
         ApugliPacketHandler.sendC2S(packet);
     }
 

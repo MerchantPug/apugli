@@ -7,6 +7,7 @@ import io.github.apace100.apoli.power.ModelColorPower;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.Modifier;
+import io.github.apace100.apoli.util.modifier.ModifierOperation;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
@@ -15,9 +16,10 @@ import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
-import net.merchantpug.apugli.network.ApugliPacket;
-import net.merchantpug.apugli.network.ApugliPackets;
-import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
+import net.merchantpug.apugli.networking.ApugliPackets;
+import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.networking.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import com.google.auto.service.AutoService;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
@@ -85,12 +87,12 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public void sendS2C(ApugliPacket packet, ServerPlayer player) {
+    public void sendS2C(ApugliPacketS2C packet, ServerPlayer player) {
         ApugliPackets.sendS2C(packet, player);
     }
 
     @Override
-    public void sendS2CTrackingAndSelf(ApugliPacket packet, Entity entity) {
+    public void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
         for (ServerPlayer otherPlayer : PlayerLookup.tracking(entity))
             ApugliPackets.sendS2C(packet, otherPlayer);
         if (entity instanceof ServerPlayer player)
@@ -98,7 +100,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public void sendC2S(ApugliPacket packet) {
+    public void sendC2S(ApugliPacketC2S packet) {
         ApugliPackets.sendC2S(packet);
     }
 

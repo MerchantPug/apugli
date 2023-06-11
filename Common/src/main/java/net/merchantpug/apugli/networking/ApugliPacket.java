@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.network;
+package net.merchantpug.apugli.networking;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
