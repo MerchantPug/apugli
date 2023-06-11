@@ -34,7 +34,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.merchantpug.apugli.Apugli;;
 import net.merchantpug.apugli.client.ApugliClientFabric;
-import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.networking.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.networking.c2s.UpdateKeysPressedPacket;
@@ -60,27 +59,27 @@ public class ApugliPackets {
     public static void registerS2C() {
         ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshake);
         ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> {
-            ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
-            ClientPlayNetworking.registerReceiver(SyncHitsOnTargetLessenedPacket.ID, createS2CHandler(SyncHitsOnTargetLessenedPacket::decode, SyncHitsOnTargetLessenedPacket::handle));
-            ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
-            ClientPlayNetworking.registerReceiver(SyncExplosionPacket.ID, createS2CHandler(SyncExplosionPacket::decode, SyncExplosionPacket::handle));
-            ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
-            ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket::handle));
-            ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket::handle));
+            ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(SyncHitsOnTargetLessenedPacket.ID, createS2CHandler(SyncHitsOnTargetLessenedPacket::decode, SyncHitsOnTargetLessenedPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(SyncExplosionPacket.ID, createS2CHandler(SyncExplosionPacket::decode, SyncExplosionPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket.Handler::handle));
+            ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket.Handler::handle));
         });
     }
 
-    public static void sendS2C(ApugliPacketS2C packet, ServerPlayer player) {
+    public static void sendS2C(ApugliPacket packet, ServerPlayer player) {
         ServerPlayNetworking.send(player, packet.getFabricId(), packet.toBuf());
     }
 
-    public static void sendS2CTrackingAndSelf(ApugliPacketS2C packet, ServerPlayer player) {
+    public static void sendS2CTrackingAndSelf(ApugliPacket packet, ServerPlayer player) {
         for (ServerPlayer otherPlayer : PlayerLookup.tracking(player))
             ApugliPackets.sendS2C(packet, otherPlayer);
         ApugliPackets.sendS2C(packet, player);
     }
 
-    private static <T extends ApugliPacketS2C> ClientPlayNetworking.PlayChannelHandler createS2CHandler(Function<FriendlyByteBuf, T> decode, Consumer<T> handler) {
+    private static <T extends ApugliPacket> ClientPlayNetworking.PlayChannelHandler createS2CHandler(Function<FriendlyByteBuf, T> decode, Consumer<T> handler) {
         return (client, _handler, buf, responseSender) -> handler.accept(decode.apply(buf));
     }
 
@@ -97,12 +96,12 @@ public class ApugliPackets {
     public static void registerC2S() {
         ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
         ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
-        ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
-        ServerPlayNetworking.registerGlobalReceiver(ExecuteEntityActionServerPacket.ID, createC2SHandler(ExecuteEntityActionServerPacket::decode, ExecuteEntityActionServerPacket::handle));
-        ServerPlayNetworking.registerGlobalReceiver(ExecuteBiEntityActionServerPacket.ID, createC2SHandler(ExecuteBiEntityActionServerPacket::decode, ExecuteBiEntityActionServerPacket::handle));
+        ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket.Handler::handle));
+        ServerPlayNetworking.registerGlobalReceiver(ExecuteEntityActionServerPacket.ID, createC2SHandler(ExecuteEntityActionServerPacket::decode, ExecuteEntityActionServerPacket.Handler::handle));
+        ServerPlayNetworking.registerGlobalReceiver(ExecuteBiEntityActionServerPacket.ID, createC2SHandler(ExecuteBiEntityActionServerPacket::decode, ExecuteBiEntityActionServerPacket.Handler::handle));
     }
 
-    public static void sendC2S(ApugliPacketC2S packet) {
+    public static void sendC2S(ApugliPacket packet) {
         ClientPlayNetworking.send(packet.getFabricId(), packet.toBuf());
     }
 
@@ -111,7 +110,7 @@ public class ApugliPackets {
         packetSender.sendPacket(ApugliPackets.HANDSHAKE, PacketByteBufs.empty());
     }
 
-    private static <T extends ApugliPacketC2S> ServerPlayNetworking.PlayChannelHandler createC2SHandler(Function<FriendlyByteBuf, T> decode, TriConsumer<T, MinecraftServer, ServerPlayer> handler) {
+    private static <T extends ApugliPacket> ServerPlayNetworking.PlayChannelHandler createC2SHandler(Function<FriendlyByteBuf, T> decode, TriConsumer<T, MinecraftServer, ServerPlayer> handler) {
         return (server, player, _handler, buf, sender) -> handler.accept(decode.apply(buf), server, player);
     }
 

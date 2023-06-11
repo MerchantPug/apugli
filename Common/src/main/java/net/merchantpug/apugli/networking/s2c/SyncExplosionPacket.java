@@ -3,6 +3,7 @@ package net.merchantpug.apugli.networking.s2c;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ExplosionAccess;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
                                          boolean indestructible,
                                          boolean causesFire,
                                          float power,
-                                         Explosion.BlockInteraction interaction) implements ApugliPacketS2C {
+                                         Explosion.BlockInteraction interaction) implements ApugliPacket {
     public static final ResourceLocation ID = Apugli.asResource("sync_explosion");
 
     @Override
@@ -81,7 +82,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
         boolean hasBiEntityCondition = buf.readBoolean();
         BI biEntityCondition = null;
         if (hasBiEntityCondition) {
-             biEntityCondition = (BI) Services.CONDITION.biEntityDataType().receive(buf);
+            biEntityCondition = (BI) Services.CONDITION.biEntityDataType().receive(buf);
         }
         boolean hasCalculator = buf.readBoolean();
 
@@ -104,36 +105,36 @@ public record SyncExplosionPacket<BI, B>(int userId,
         return ID;
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Level level = Minecraft.getInstance().level;
-            Entity entity = level.getEntity(userId);
-            Explosion explosion = new Explosion(level, entity,
-                    entity instanceof LivingEntity living ?
-                    DamageSource.explosion(living) :
-                    DamageSource.explosion((LivingEntity) null), createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
-            ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers());
-            ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(knockbackModifiers());
-            ((ExplosionAccess) explosion).setExplosionVolumeModifiers(volumeModifiers());
-            ((ExplosionAccess) explosion).setExplosionPitchModifiers(pitchModifiers());
-            ((ExplosionAccess) explosion).setBiEntityPredicate(biEntityConditions());
-            explosion.explode();
-            explosion.finalizeExplosion(true);
-        });
-    }
+    public static class Handler {
+        public static void handle(SyncExplosionPacket<?, ?> packet) {
+            Minecraft.getInstance().execute(() -> {
+                Level level = Minecraft.getInstance().level;
+                Entity entity = level.getEntity(packet.userId);
+                Explosion explosion = new Explosion(level, entity,
+                        entity instanceof LivingEntity living ?
+                                DamageSource.explosion(living) :
+                                DamageSource.explosion((LivingEntity) null), createBlockConditionedExplosionDamageCalculator(packet.blockConditions(), level, packet.indestructible), packet.x, packet.y, packet.z, packet.power, packet.causesFire, packet.interaction);
+                ((ExplosionAccess) explosion).setExplosionDamageModifiers(packet.damageModifiers());
+                ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(packet.knockbackModifiers());
+                ((ExplosionAccess) explosion).setExplosionVolumeModifiers(packet.volumeModifiers());
+                ((ExplosionAccess) explosion).setExplosionPitchModifiers(packet.pitchModifiers());
+                ((ExplosionAccess) explosion).setBiEntityPredicate(packet.biEntityConditions());
+                explosion.explode();
+                explosion.finalizeExplosion(true);
+            });
+        }
 
-    private <C> ExplosionDamageCalculator createBlockConditionedExplosionDamageCalculator(C blockCondition, Level levelIn, boolean indestructible) {
-        return new ExplosionDamageCalculator() {
-            @Override
-            public Optional<Float> getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState blockState, FluidState fluidState) {
-                Optional<Float> def = super.getBlockExplosionResistance(explosion, level, pos, blockState, fluidState);
-                Optional<Float> ovr = Services.CONDITION.checkBlock(blockCondition, levelIn, pos) == indestructible
-                        ? Optional.of(Blocks.WATER.getExplosionResistance())
-                        : Optional.empty();
-                return ovr.isPresent() ? def.isPresent() ? def.get() > ovr.get() ? def : ovr : ovr : def;
-            }
-        };
+        private static <C> ExplosionDamageCalculator createBlockConditionedExplosionDamageCalculator(C blockCondition, Level levelIn, boolean indestructible) {
+            return new ExplosionDamageCalculator() {
+                @Override
+                public Optional<Float> getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState blockState, FluidState fluidState) {
+                    Optional<Float> def = super.getBlockExplosionResistance(explosion, level, pos, blockState, fluidState);
+                    Optional<Float> ovr = Services.CONDITION.checkBlock(blockCondition, levelIn, pos) == indestructible
+                            ? Optional.of(Blocks.WATER.getExplosionResistance())
+                            : Optional.empty();
+                    return ovr.isPresent() ? def.isPresent() ? def.get() > ovr.get() ? def : ovr : ovr : def;
+                }
+            };
+        }
     }
-
 }

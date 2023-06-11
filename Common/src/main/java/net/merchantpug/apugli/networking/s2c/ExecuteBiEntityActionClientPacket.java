@@ -2,14 +2,16 @@
 package net.merchantpug.apugli.networking.s2c;
 
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.networking.ApugliPacket;
+import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
-public record ExecuteBiEntityActionClientPacket<A>(int actorId, int targetId, A entityAction) implements ApugliPacketS2C {
+public record ExecuteBiEntityActionClientPacket<A>(int actorId, int targetId, A entityAction) implements ApugliPacket {
     public static final ResourceLocation ID = Apugli.asResource("execute_bientity_action_clientside");
 
     @Override
@@ -31,20 +33,21 @@ public record ExecuteBiEntityActionClientPacket<A>(int actorId, int targetId, A 
         return ID;
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            ClientLevel level = Minecraft.getInstance().level;
-            Entity actor = level.getEntity(actorId);
-            Entity target = level.getEntity(targetId);
-            if (actor == null) {
-                Apugli.LOG.warn("Could not find actor entity for clientsided bi-entity action.");
-                return;
-            } else if (target == null) {
-                Apugli.LOG.warn("Could not find target entity for clientsided bi-entity action.");
-                return;
-            }
-            Services.ACTION.executeBiEntity(entityAction, actor, target);
-        });
+    public static class Handler {
+        public static void handle(ExecuteBiEntityActionClientPacket<?> packet) {
+            Minecraft.getInstance().execute(() -> {
+                Level level = Minecraft.getInstance().level;
+                Entity actor = level.getEntity(packet.actorId);
+                Entity target = level.getEntity(packet.targetId);
+                if (actor == null) {
+                    Apugli.LOG.warn("Could not find actor entity for clientsided bi-entity action.");
+                    return;
+                } else if (target == null) {
+                    Apugli.LOG.warn("Could not find target entity for clientsided bi-entity action.");
+                    return;
+                }
+                Services.ACTION.executeBiEntity(packet.entityAction, actor, target);
+            });
+        }
     }
 }

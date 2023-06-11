@@ -1,10 +1,9 @@
 package net.merchantpug.apugli.network.s2c;
 
-import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.capability.KeyPressCapability;
-import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 public record SyncKeyPressCapabilityPacket(int entityId,
                                            Set<IActivePower.Key> keysToCheck,
-                                           Set<IActivePower.Key> currentlyUsedKeys) implements ApugliPacketS2C {
+                                           Set<IActivePower.Key> currentlyUsedKeys) implements ApugliPacket {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
@@ -82,24 +81,25 @@ public record SyncKeyPressCapabilityPacket(int entityId,
         throw new RuntimeException("ApugliPacket#getFabricId is not meant to be used in Forge specific packets.");
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            if (!(entity instanceof Player player)) {
-                Apugli.LOG.warn("Could not find player entity to sync keys with.");
-                return;
-            }
-            player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
-
-                for (IActivePower.Key key : keysToCheck) {
-                    capability.addKeyToCheck(key);
+    public static class Handler {
+        public static void handle(SyncKeyPressCapabilityPacket packet) {
+            Minecraft.getInstance().execute(() -> {
+                Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId);
+                if (!(entity instanceof Player player)) {
+                    Apugli.LOG.warn("Could not find player entity to sync keys with.");
+                    return;
                 }
+                player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
 
-                for (IActivePower.Key key : currentlyUsedKeys) {
-                    capability.addKey(key);
-                }
+                    for (IActivePower.Key key : packet.keysToCheck) {
+                        capability.addKeyToCheck(key);
+                    }
+
+                    for (IActivePower.Key key : packet.currentlyUsedKeys) {
+                        capability.addKey(key);
+                    }
+                });
             });
-        });
+        }
     }
 }

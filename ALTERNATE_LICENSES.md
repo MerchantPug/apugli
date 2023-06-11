@@ -1,0 +1,20 @@
+Apugli uses parts of the Botania codebase for networking related code.
+
+Botania was created by Vazkii.
+
+- External Clause
+  Certain parts of the codebase are indicated to be licensed under alternative licenses. You
+  must obey those licenses.
+- Attribution Clause
+  You must give appropriate credit to Vazkii as the creator of Botania or the parts of it
+  you're using. If you do any alterations the fact that you do so should also be
+  indicated. A link back is optional but it would be cool if you would do so.
+- Copyleft Clause
+  Your project must be open source (have its source visible and allow for redistribution
+  and modification) and include a clause similar to this one in its license.
+- API Clause
+  Any of the other clauses under this section do not apply to any Botania API
+  code (the subdirectory src/main/java/vazkii/botania/api). However, if Botania API code
+  is used, it must be included verbatim as it was obtained.
+
+https://botaniamod.net/license.html

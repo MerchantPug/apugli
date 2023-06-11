@@ -2,6 +2,7 @@ package net.merchantpug.apugli.networking.s2c;
 
 import io.github.apace100.apoli.power.Power;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
@@ -12,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.HashSet;
 import java.util.Set;
 
-public record UpdateUrlTexturesPacket(Set<ResourceLocation> powerTypes) implements ApugliPacketS2C {
+public record UpdateUrlTexturesPacket(Set<ResourceLocation> powerTypes) implements ApugliPacket {
     public static final ResourceLocation ID = Apugli.asResource("update_url_textures");
 
     @Override
@@ -37,21 +38,23 @@ public record UpdateUrlTexturesPacket(Set<ResourceLocation> powerTypes) implemen
         return ID;
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            powerTypes.forEach(identifier -> {
-                Power power = Services.POWER.createPowerFromId(identifier);
-                if (!(power instanceof TextureOrUrlPower texturePower)) {
-                    Apugli.LOG.warn("Tried updating texture from non TexturePower power.");
-                    return;
-                }
+    public static class Handler {
+        public static void handle(UpdateUrlTexturesPacket packet) {
+            Minecraft.getInstance().execute(() -> {
+                packet.powerTypes.forEach(identifier -> {
+                    Power power = Services.POWER.createPowerFromId(identifier);
+                    if (!(power instanceof TextureOrUrlPower texturePower)) {
+                        Apugli.LOG.warn("Tried updating texture from non TexturePower power.");
+                        return;
+                    }
 
-                if (texturePower.getTextureLocation() != null && TextureUtilClient.doesTextureExist(texturePower.getTextureLocation())) return;
+                    if (texturePower.getTextureLocation() != null && TextureUtilClient.doesTextureExist(texturePower.getTextureLocation()))
+                        return;
 
-                TextureUtilClient.registerPowerTexture(identifier, texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl(), false);
+                    TextureUtilClient.registerPowerTexture(identifier, texturePower.getUrlTextureIdentifier(), texturePower.getTextureUrl(), false);
+                });
+                TextureUtilClient.update();
             });
-            TextureUtilClient.update();
-        });
+        }
     }
 }

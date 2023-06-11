@@ -4,8 +4,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
-import net.merchantpug.apugli.networking.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.ValueModifyingPowerFactory;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,11 +80,11 @@ public interface IPlatformHelper {
         return applyModifiers(entity, power, value, null);
     }
 
-    void sendS2C(ApugliPacketS2C packet, ServerPlayer player);
+    void sendS2C(ApugliPacket packet, ServerPlayer player);
 
-    void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity);
+    void sendS2CTrackingAndSelf(ApugliPacket packet, Entity entity);
 
-    void sendC2S(ApugliPacketC2S packet);
+    void sendC2S(ApugliPacket packet);
 
     float[] getColorPowerRgba(LivingEntity entity);
 

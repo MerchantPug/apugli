@@ -1,1 +1,1 @@
-- [FABRIC] Fixed a serverside crash due to referencing clientsided classes in a common environment.
+- Fixed a serverside crash due to referencing clientsided classes in a common environment.

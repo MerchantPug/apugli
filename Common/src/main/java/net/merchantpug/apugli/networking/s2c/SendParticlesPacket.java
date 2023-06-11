@@ -2,11 +2,12 @@ package net.merchantpug.apugli.networking.s2c;
 
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ public record SendParticlesPacket(ParticleOptions effect,
                                   float offsetZ,
                                   float speed,
                                   Optional<Vec3> velocity,
-                                  int count) implements ApugliPacketS2C {
+                                  int count) implements ApugliPacket {
     public static final ResourceLocation ID = Apugli.asResource("send_particles");
 
     @Override
@@ -77,41 +78,40 @@ public record SendParticlesPacket(ParticleOptions effect,
         return ID;
     }
 
-    @Override
-    public void handle() {
-        Minecraft.getInstance().execute(() -> {
-            ClientLevel world = Minecraft.getInstance().level;
-            if (world == null) {
-                Apugli.LOG.info("Could not find world to send particles to.");
-                return;
-            }
-            if (count == 0) {
-                try {
-                    double d = velocity.isPresent() ? velocity.get().x : speed * offsetX;
-                    double e = velocity.isPresent() ? velocity.get().y : speed * offsetY;
-                    double f = velocity.isPresent() ? velocity.get().z : speed * offsetZ;
-                    world.addParticle(effect, force, x, y, z, d, e, f);
+    public static class Handler {
+        public static void handle(SendParticlesPacket packet) {
+            Minecraft.getInstance().execute(() -> {
+                Level world = Minecraft.getInstance().level;
+                if (world == null) {
+                    Apugli.LOG.info("Could not find world to send particles to.");
+                    return;
                 }
-                catch (Throwable throwable) {
-                    Apugli.LOG.warn("Could not spawn particle effect {}", effect);
-                }
-            } else {
-                for (int i = 0; i < count; ++i) {
-                    double g = world.random.nextGaussian() * offsetX;
-                    double h = world.random.nextGaussian() * offsetY;
-                    double j = world.random.nextGaussian() * offsetZ;
-                    double k = velocity.map(v -> v.x).orElseGet(() -> world.random.nextGaussian() * speed);
-                    double l = velocity.map(v -> v.y).orElseGet(() -> world.random.nextGaussian() * speed);
-                    double m = velocity.map(v -> v.z).orElseGet(() -> world.random.nextGaussian() * speed);
+                if (packet.count == 0) {
                     try {
-                        world.addParticle(effect, force, x + g, y + h, z + j, k, l, m);
+                        double d = packet.velocity.isPresent() ? packet.velocity.get().x : packet.speed * packet.offsetX;
+                        double e = packet.velocity.isPresent() ? packet.velocity.get().y : packet.speed * packet.offsetY;
+                        double f = packet.velocity.isPresent() ? packet.velocity.get().z : packet.speed * packet.offsetZ;
+                        world.addParticle(packet.effect, packet.force, packet.x, packet.y, packet.z, d, e, f);
+                    } catch (Throwable throwable) {
+                        Apugli.LOG.warn("Could not spawn particle effect {}", packet.effect);
                     }
-                    catch (Throwable throwable2) {
-                        Apugli.LOG.warn("Could not spawn particle effect {}", effect);
-                        return;
+                } else {
+                    for (int i = 0; i < packet.count; ++i) {
+                        double g = world.random.nextGaussian() * packet.offsetX;
+                        double h = world.random.nextGaussian() * packet.offsetY;
+                        double j = world.random.nextGaussian() * packet.offsetZ;
+                        double k = packet.velocity.map(v -> v.x).orElseGet(() -> world.random.nextGaussian() * packet.speed);
+                        double l = packet.velocity.map(v -> v.y).orElseGet(() -> world.random.nextGaussian() * packet.speed);
+                        double m = packet.velocity.map(v -> v.z).orElseGet(() -> world.random.nextGaussian() * packet.speed);
+                        try {
+                            world.addParticle(packet.effect, packet.force, packet.x + g, packet.y + h, packet.z + j, k, l, m);
+                        } catch (Throwable throwable2) {
+                            Apugli.LOG.warn("Could not spawn particle effect {}", packet.effect);
+                            return;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 }

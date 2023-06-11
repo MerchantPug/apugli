@@ -6,13 +6,14 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
-import net.merchantpug.apugli.networking.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.networking.ApugliPacket;
 import net.merchantpug.apugli.networking.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.networking.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.networking.s2c.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -34,36 +35,85 @@ public class ApugliPacketHandler {
 
     public static void register() {
         int i = 0;
-        INSTANCE.registerMessage(i++, UpdateKeysPressedPacket.class, UpdateKeysPressedPacket::encode, UpdateKeysPressedPacket::decode, createC2SHandler(UpdateKeysPressedPacket::handle));
-        INSTANCE.registerMessage(i++, SendParticlesPacket.class, SendParticlesPacket::encode, SendParticlesPacket::decode, ApugliPacketHandler.createS2CHandler(SendParticlesPacket::handle));
-        INSTANCE.registerMessage(i++, SyncExplosionPacket.class, SyncExplosionPacket::encode, SyncExplosionPacket::decode, ApugliPacketHandler.createS2CHandler(SyncExplosionPacket::handle));
-        INSTANCE.registerMessage(i++, UpdateUrlTexturesPacket.class, UpdateUrlTexturesPacket::encode, UpdateUrlTexturesPacket::decode, ApugliPacketHandler.createS2CHandler(UpdateUrlTexturesPacket::handle));
-        INSTANCE.registerMessage(i++, SyncHitsOnTargetCapabilityPacket.class, SyncHitsOnTargetCapabilityPacket::encode, SyncHitsOnTargetCapabilityPacket::decode, ApugliPacketHandler.createS2CHandler(SyncHitsOnTargetCapabilityPacket::handle));
-        INSTANCE.registerMessage(i++, SyncHitsOnTargetLessenedPacket.class, SyncHitsOnTargetLessenedPacket::encode, SyncHitsOnTargetLessenedPacket::decode, ApugliPacketHandler.createS2CHandler(SyncHitsOnTargetLessenedPacket::handle));
-        INSTANCE.registerMessage(i++, SyncKeyPressCapabilityPacket.class, SyncKeyPressCapabilityPacket::encode, SyncKeyPressCapabilityPacket::decode, ApugliPacketHandler.createS2CHandler(SyncKeyPressCapabilityPacket::handle));
-        INSTANCE.registerMessage(i++, SyncKeysLessenedPacket.class, SyncKeysLessenedPacket::encode, SyncKeysLessenedPacket::decode, ApugliPacketHandler.createS2CHandler(SyncKeysLessenedPacket::handle));
-        INSTANCE.registerMessage(i++, ExecuteEntityActionClientPacket.class, ExecuteEntityActionClientPacket::encode, ExecuteEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteEntityActionClientPacket::handle));
-        INSTANCE.registerMessage(i++, ExecuteEntityActionServerPacket.class, ExecuteEntityActionServerPacket::encode, ExecuteEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteEntityActionServerPacket::handle));
-        INSTANCE.registerMessage(i++, ExecuteBiEntityActionClientPacket.class, ExecuteBiEntityActionClientPacket::encode, ExecuteBiEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteBiEntityActionClientPacket::handle));
-        INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
+        INSTANCE.messageBuilder(UpdateKeysPressedPacket.class, i++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(UpdateKeysPressedPacket::encode)
+                .decoder(UpdateKeysPressedPacket::decode)
+                .consumerNetworkThread(createC2SHandler(UpdateKeysPressedPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(ExecuteEntityActionServerPacket.class, i++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ExecuteEntityActionServerPacket::encode)
+                .decoder(ExecuteEntityActionServerPacket::decode)
+                .consumerNetworkThread(createC2SHandler(ExecuteEntityActionServerPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(ExecuteBiEntityActionServerPacket.class, i++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ExecuteBiEntityActionServerPacket::encode)
+                .decoder(ExecuteBiEntityActionServerPacket::decode)
+                .consumerNetworkThread(createC2SHandler(ExecuteBiEntityActionServerPacket.Handler::handle))
+                .add();
+
+        INSTANCE.messageBuilder(SendParticlesPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SendParticlesPacket::encode)
+                .decoder(SendParticlesPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SendParticlesPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(SyncExplosionPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SyncExplosionPacket::encode)
+                .decoder(SyncExplosionPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SyncExplosionPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(UpdateUrlTexturesPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(UpdateUrlTexturesPacket::encode)
+                .decoder(UpdateUrlTexturesPacket::decode)
+                .consumerNetworkThread(createS2CHandler(UpdateUrlTexturesPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(SyncHitsOnTargetCapabilityPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SyncHitsOnTargetCapabilityPacket::encode)
+                .decoder(SyncHitsOnTargetCapabilityPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SyncHitsOnTargetCapabilityPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(SyncHitsOnTargetLessenedPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SyncHitsOnTargetLessenedPacket::encode)
+                .decoder(SyncHitsOnTargetLessenedPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SyncHitsOnTargetLessenedPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(SyncKeyPressCapabilityPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SyncKeyPressCapabilityPacket::encode)
+                .decoder(SyncKeyPressCapabilityPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SyncKeyPressCapabilityPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(SyncKeysLessenedPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(SyncKeysLessenedPacket::encode)
+                .decoder(SyncKeysLessenedPacket::decode)
+                .consumerNetworkThread(createS2CHandler(SyncKeysLessenedPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(ExecuteEntityActionClientPacket.class, i++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ExecuteEntityActionClientPacket::encode)
+                .decoder(ExecuteEntityActionClientPacket::decode)
+                .consumerNetworkThread(createS2CHandler(ExecuteEntityActionClientPacket.Handler::handle))
+                .add();
+        INSTANCE.messageBuilder(ExecuteBiEntityActionClientPacket.class, i++, NetworkDirection.LOGIN_TO_CLIENT)
+                .encoder(ExecuteBiEntityActionClientPacket::encode)
+                .decoder(ExecuteBiEntityActionClientPacket::decode)
+                .consumerNetworkThread(createS2CHandler(ExecuteBiEntityActionClientPacket.Handler::handle))
+                .add();
     }
 
-    public static void sendC2S(ApugliPacketC2S packet) {
+    public static void sendC2S(ApugliPacket packet) {
         ApugliPacketHandler.INSTANCE.sendToServer(packet);
     }
 
-    private static <MSG extends ApugliPacketC2S> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createC2SHandler(TriConsumer<MSG, MinecraftServer, ServerPlayer> handler) {
+    private static <MSG extends ApugliPacket> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createC2SHandler(TriConsumer<MSG, MinecraftServer, ServerPlayer> handler) {
         return (msg, ctx) -> {
             handler.accept(msg, ctx.get().getSender().getServer(), ctx.get().getSender());
             ctx.get().setPacketHandled(true);
         };
     }
 
-    public static void sendS2C(ApugliPacketS2C packet, ServerPlayer player) {
+    public static void sendS2C(ApugliPacket packet, ServerPlayer player) {
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
-    public static void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity) {
+    public static void sendS2CTrackingAndSelf(ApugliPacket packet, Entity entity) {
         if (entity instanceof ServerPlayer player) {
             ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
             return;
@@ -71,7 +121,7 @@ public class ApugliPacketHandler {
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
     }
 
-    private static <MSG extends ApugliPacketS2C> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createS2CHandler(Consumer<MSG> handler) {
+    private static <MSG extends ApugliPacket> BiConsumer<MSG, Supplier<NetworkEvent.Context>> createS2CHandler(Consumer<MSG> handler) {
         return (msg, ctx) -> {
             handler.accept(msg);
             ctx.get().setPacketHandled(true);
