@@ -1,0 +1,23 @@
+{
+  "type": "apugli:action_on_target_hurt",
+  "bientity_action": {
+    "type": "apoli:actor_action",
+    "action": {
+      "type": "apoli:execute_command",
+      "command": "say Target lol"
+    }
+  },
+  "damage_condition": {
+    "type": "apoli:or",
+    "conditions": [
+      {
+        "type": "apoli:name",
+        "name": "wither"
+      },
+      {
+        "type": "apoli:name",
+        "name": "wither.player"
+      }
+    ]
+  }
+}

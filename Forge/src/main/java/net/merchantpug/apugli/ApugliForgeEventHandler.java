@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -158,9 +159,23 @@ public class ApugliForgeEventHandler {
         }
 
         if (!event.isCanceled()) {
-            if (source.getEntity() instanceof LivingEntity living)
+            if (source.getEntity() instanceof LivingEntity living) {
                 Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_HARM.get()).forEach(p -> ApugliPowers.ACTION_ON_HARM.get().execute(p, living, source, amount, target));
+            }
             Services.POWER.getPowers(target, ApugliPowers.ACTION_WHEN_HARMED.get()).forEach(p -> ApugliPowers.ACTION_WHEN_HARMED.get().execute(p, target, source, amount));
+
+            if (target.getLastHurtByMob() != null) {
+                ApugliPowers.ACTION_ON_ATTACKER_HURT.get().execute(target, source, amount);
+                ApugliPowers.ACTION_ON_TARGET_HURT.get().execute(target, source, amount);
+            }
+
+            if (target instanceof TamableAnimal tamable) {
+                ApugliPowers.ACTION_WHEN_TAME_HIT.get().execute(tamable, source, amount);
+            }
+
+            if (source.getEntity() instanceof TamableAnimal tamable) {
+                ApugliPowers.ACTION_ON_TAME_HIT.get().execute(tamable, source, amount, target);
+            }
         }
     }
 
