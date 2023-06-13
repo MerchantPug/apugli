@@ -1,2 +1,5 @@
-- Fixed crash involving `apugli:bunny_hop` power type casting a double to a float.
-- Fixed `apugli:bunny_hop` not ticking properly.
+### Power Types
+- Added new `apugli:action_on_attacker_hurt` and `apugli:action_on_target_hurt` power types.
+
+### Bugfixes
+- [FORGE] Fixed `apugli:action_on_tame_hit` and `apugli:action_when_tame_hit` not being fired.

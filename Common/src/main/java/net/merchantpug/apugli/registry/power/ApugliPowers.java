@@ -9,7 +9,8 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("rawtypes")
 public class ApugliPowers {
-    
+
+    public static final Supplier<ActionOnAttackerHurtPowerFactory> ACTION_ON_ATTACKER_HURT = register("action_on_attacker_hurt", ActionOnAttackerHurtPowerFactory.class);
     public static final Supplier<ActionOnBlockPlacedPower.Factory> ACTION_ON_BLOCK_PLACED = register(new ActionOnBlockPlacedPower.Factory());
     public static final Supplier<ActionOnBonemealPower.Factory> ACTION_ON_BONEMEAL = register(new ActionOnBonemealPower.Factory());
     public static final Supplier<ActionOnDurabilityChangePower.Factory> ACTION_ON_DURABILITY_CHANGE = register(new ActionOnDurabilityChangePower.Factory());
@@ -18,6 +19,7 @@ public class ApugliPowers {
     public static final Supplier<ActionOnHarmPowerFactory> ACTION_ON_HARM = register("action_on_harm", ActionOnHarmPowerFactory.class);
     public static final Supplier<ActionOnTameHitPowerFactory> ACTION_ON_TAME_HIT = register("action_on_tame_hit", ActionOnTameHitPowerFactory.class);
     public static final Supplier<ActionOnTargetDeathPowerFactory> ACTION_ON_TARGET_DEATH = register("action_on_target_death", ActionOnTargetDeathPowerFactory.class);
+    public static final Supplier<ActionOnTargetHurtPowerFactory> ACTION_ON_TARGET_HURT = register("action_on_target_hurt", ActionOnTargetHurtPowerFactory.class);
     public static final Supplier<ActionWhenProjectileHitPowerFactory> ACTION_WHEN_PROJECTILE_HIT = register("action_when_projectile_hit", ActionWhenProjectileHitPowerFactory.class);
     public static final Supplier<ActionWhenHarmedPowerFactory> ACTION_WHEN_HARMED = register("action_when_harmed", ActionWhenHarmedPowerFactory.class);
     public static final Supplier<ActionWhenTameHitPowerFactory> ACTION_WHEN_TAME_HIT = register("action_when_tame_hit", ActionWhenTameHitPowerFactory.class);
