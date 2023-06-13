@@ -52,9 +52,16 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "hurt", at = @At("RETURN"))
     private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValue() || source.getEntity() == null) return;
+        if (!cir.getReturnValue()) return;
 
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
+
+        if (thisAsLiving.getLastHurtByMob() != null) {
+            ApugliPowers.ACTION_ON_ATTACKER_HURT.get().execute(thisAsLiving, source, amount);
+            ApugliPowers.ACTION_ON_TARGET_HURT.get().execute(thisAsLiving, source, amount);
+        }
+
+        if (source.getEntity() == null) return;
 
         if (thisAsLiving instanceof TamableAnimal tamable) {
             ApugliPowers.ACTION_WHEN_TAME_HIT.get().execute(tamable, source, amount);
