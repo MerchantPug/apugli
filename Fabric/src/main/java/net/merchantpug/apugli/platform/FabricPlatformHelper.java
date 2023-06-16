@@ -4,10 +4,9 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ModelColorPower;
+import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
-import io.github.apace100.apoli.util.modifier.Modifier;
-import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -28,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -71,18 +71,8 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public SerializableDataType<Modifier> getModifierDataType() {
-        return Modifier.DATA_TYPE;
-    }
-
-    @Override
-    public SerializableDataType<List<Modifier>> getModifiersDataType() {
-        return Modifier.LIST_TYPE;
-    }
-
-    @Override
-    public double applyModifiers(Entity entity, List<?> modifiers, double value) {
-        return ModifierUtil.applyModifiers(entity, (List<Modifier>)modifiers, value);
+    public double applyModifiers(List<?> modifiers, double value) {
+        return AttributeUtil.applyModifiers((List<AttributeModifier>)modifiers, value);
     }
 
     @Override

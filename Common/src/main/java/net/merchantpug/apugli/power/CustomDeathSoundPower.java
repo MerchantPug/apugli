@@ -4,9 +4,10 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.Random;
 
 public class CustomDeathSoundPower extends CustomSoundPower {
     
@@ -16,7 +17,7 @@ public class CustomDeathSoundPower extends CustomSoundPower {
     
     @Override
     protected void playSound(Entity entity, SoundEvent soundEvent, float volume, float pitch) {
-        RandomSource random = entity instanceof LivingEntity living
+        Random random = entity instanceof LivingEntity living
             ? living.getRandom()
             : entity.level.random;
         entity.level.playSound(null,

@@ -20,15 +20,30 @@ plugins {
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 archivesBaseName = "${mod_name}"
 version = "${rootProject.version}+${minecraft_version}-forge"
 
-jarJar.enable()
+configurations {
+    library
+    shade
+    implementation.extendsFrom(shade)
+}
+
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
+}
 
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
+
+    maven {
+        url "https://cursemaven.com"
+    }
 
     maven {
         name = "JitPack"
@@ -104,20 +119,18 @@ dependencies {
     implementation project(path: ':Common')
     //Forge
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //Apoli
-    implementation fg.deobf("com.github.MerchantPug.origins-forge:calio-forge:${origins_forge_version}")
-    implementation fg.deobf("com.github.MerchantPug.origins-forge:apoli-forge:${origins_forge_version}")
+    //Apoli (Origins, just don't use any Origins classes and we're good)
+    implementation fg.deobf("curse.maven:origins-forge-474438:${origins_forge_fileid}")
     //Caelus
-    implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}")
+    implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:1.18.1-${caelus_version}")
     // AdditionalEntityAttributes
-    implementation(fg.deobf("com.github.EdwinMindcraft.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
+    implementation(fg.deobf("com.github.MerchantPug.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
         exclude group: 'net.minecraftforge'
     })
     //MixinExtras
-    implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
-    implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
-        jarJar.ranged(it, "[${mixin_extras_version},)")
-    }
+    shade fg.deobf("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    library fg.deobf("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
     //Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     //Service
@@ -151,12 +164,16 @@ processTestResources {
     }
 }
 
-tasks.jarJar.configure {
-    archiveClassifier = ""
+shadowJar {
+    configurations = [project.configurations.shade]
+    classifier ''
+    relocate 'com.llamalad7', 'net.merchantpug.shadowed.llamalad7'
+
+    finalizedBy 'reobfShadowJar'
 }
 
 reobf {
-    jarJar {}
+    shadowJar {}
 }
 
 jar.finalizedBy('reobfJar')

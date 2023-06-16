@@ -50,20 +50,20 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                 .add("indestructible", Services.CONDITION.blockDataType(), null)
                 .add("destructible", Services.CONDITION.blockDataType(), null)
                 .add("create_fire", SerializableDataTypes.BOOLEAN, false)
-                .add("damage_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("damage_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("knockback_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("knockback_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("volume_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("volume_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("pitch_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("pitch_modifiers", Services.PLATFORM.getModifiersDataType(), null)
+                .add("damage_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("damage_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("knockback_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("knockback_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("volume_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("volume_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("pitch_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("pitch_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
                 .add("targetable_bientity_condition", Services.CONDITION.biEntityDataType(), null)
                 .add("explosion_damage_bientity_condition", Services.CONDITION.biEntityDataType(), null)
                 .add("use_charged", SerializableDataTypes.BOOLEAN, false)
                 .add("charged_condition", Services.CONDITION.entityDataType(), null)
-                .add("charged_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("charged_modifiers", Services.PLATFORM.getModifiersDataType(), null);
+                .add("charged_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("charged_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null);
     }
     
     @Override
@@ -124,7 +124,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
     protected float applyChargedModifiers(SerializableData.Instance data, Entity entity, float power) {
         List<?> chargedModifiers = getModifiers(data, "charged_modifier", "charged_modifiers");
         if (!chargedModifiers.isEmpty() && Services.CONDITION.checkEntity(data, "charged_condition", entity)) {
-            return (float) Services.PLATFORM.applyModifiers(entity, chargedModifiers, data.getFloat("power"));
+            return (float) Services.PLATFORM.applyModifiers(chargedModifiers, data.getFloat("power"));
         }
         return power;
     }

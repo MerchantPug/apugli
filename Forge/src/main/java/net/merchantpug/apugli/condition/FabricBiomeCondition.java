@@ -10,15 +10,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.BiPredicate;
 
 @ParametersAreNonnullByDefault
-public class FabricBiomeCondition extends BiomeCondition<FabricConditionConfiguration<Holder<Biome>>> {
+public class FabricBiomeCondition extends BiomeCondition<FabricConditionConfiguration<Biome>> {
     
-    public FabricBiomeCondition(SerializableData data, BiPredicate<SerializableData.Instance, Holder<Biome>> condition) {
+    public FabricBiomeCondition(SerializableData data, BiPredicate<SerializableData.Instance, Biome> condition) {
         super(FabricConditionConfiguration.codec(data, condition));
     }
     
     @Override
-    protected boolean check(FabricConditionConfiguration<Holder<Biome>> config, Holder<Biome> biome) {
-        return config.condition().test(biome);
+    protected boolean check(FabricConditionConfiguration<Biome> config, Holder<Biome> biome) {
+        return config.condition().test(biome.value());
     }
     
 }

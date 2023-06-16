@@ -63,14 +63,14 @@ public class FabricConditionHelper implements IConditionHelper {
     }
     
     @Override
-    public void registerBiome(String name, IConditionFactory<Holder<Biome>> condition) {
+    public void registerBiome(String name, IConditionFactory<Biome> condition) {
         ResourceLocation id = Apugli.asResource(name);
         Registry.register(ApoliRegistries.BIOME_CONDITION, id, new ConditionFactory<>(id, condition.getSerializableData(), condition::check));
     }
     
     @Override
-    public boolean checkBiome(SerializableData.Instance data, String fieldName, Holder<Biome> biome) {
-        return !data.isPresent(fieldName) || ((Predicate<Holder<Biome>>)data.get(fieldName)).test(biome);
+    public boolean checkBiome(SerializableData.Instance data, String fieldName, Biome biome) {
+        return !data.isPresent(fieldName) || ((Predicate<Biome>)data.get(fieldName)).test(biome);
     }
 
     @Override

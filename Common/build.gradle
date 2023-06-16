@@ -73,9 +73,9 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
     }
     //Apoli
-    modCompileOnly "com.github.eggohito:apoli:${apoli_version}"
+    modCompileOnly "com.github.apace100:apoli:${apoli_version}"
     //MixinExtras
-    annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
+    implementation(annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"))
     //Mixin
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'

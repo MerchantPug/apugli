@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[40,)"
 license="MIT"
 issueTrackerURL="https://github.com/MerchantPug/apugli/issues"
 
@@ -16,20 +16,20 @@ description="Pug's extension to A Power Library."
 [[dependencies.apugli]]
     modId="forge"
     mandatory=true
-    versionRange="[43.2,)"
+    versionRange="[40.1,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.apugli]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.19.3)"
+    versionRange="[1.18.2,1.19)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.apugli]]
     modId="apoli"
     mandatory=true
-    versionRange="[1.19.2-2.6.1.0,)"
+    versionRange="[1.18.2-2.3.3.6,)"
     ordering="AFTER"
     side="BOTH"

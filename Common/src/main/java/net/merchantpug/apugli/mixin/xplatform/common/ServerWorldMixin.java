@@ -29,8 +29,8 @@ import java.util.function.Supplier;
 public abstract class ServerWorldMixin extends Level {
     @Unique private boolean apugli$isLightningSkeletonHorse;
 
-    protected ServerWorldMixin(WritableLevelData properties, ResourceKey<Level> registryRef, Holder<DimensionType> dimension, Supplier<ProfilerFiller> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
-        super(properties, registryRef, dimension, profiler, isClient, debugWorld, seed, maxChainedNeighborUpdates);
+    protected ServerWorldMixin(WritableLevelData properties, ResourceKey<Level> registryRef, Holder<DimensionType> dimension, Supplier<ProfilerFiller> profiler, boolean isClient, boolean debugWorld, long seed) {
+        super(properties, registryRef, dimension, profiler, isClient, debugWorld, seed);
     }
 
     @Inject(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;create(Lnet/minecraft/world/level/Level;)Lnet/minecraft/world/entity/Entity;", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)

@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RenderNameTagEvent;
+import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -86,7 +86,7 @@ public class ApugliForgeClientEventHandler {
         }
 
         @SubscribeEvent
-        public static void preventNameTagRender(RenderNameTagEvent event) {
+        public static void preventNameTagRender(RenderNameplateEvent event) {
             if (!(event.getEntity() instanceof Player otherPlayer)) return;
 
             Player localPlayer = Minecraft.getInstance().player;
@@ -96,7 +96,7 @@ public class ApugliForgeClientEventHandler {
         }
 
         @SubscribeEvent
-        public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        public static void onLoggingOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             CachedBlockInRadiusCondition.clearCache();
             if (event.getConnection() == null) return;
             TextureUtilClient.clear();
@@ -109,7 +109,6 @@ public class ApugliForgeClientEventHandler {
 
         @SubscribeEvent
         public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
-            ItemInHandRenderer itemInHandRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
             ((EntityRenderersEventAddLayersAccessor)event).getRenderers().forEach((entityType, entityRenderer) -> {
                 if (!(entityRenderer instanceof LivingEntityRenderer<?, ?> livingEntityRenderer)) return;
                 livingEntityRenderer.addLayer(new EntityTextureOverlayLayer(livingEntityRenderer, false, event.getEntityModels()));
@@ -117,7 +116,7 @@ public class ApugliForgeClientEventHandler {
                 livingEntityRenderer.addLayer(new EnergySwirlLayer(livingEntityRenderer));
 
                 if (livingEntityRenderer.getModel() instanceof ArmedModel) {
-                    livingEntityRenderer.addLayer(new PowerItemInHandLayer(livingEntityRenderer, itemInHandRenderer));
+                    livingEntityRenderer.addLayer(new PowerItemInHandLayer(livingEntityRenderer));
                 }
 
                 if (livingEntityRenderer.getModel() instanceof HumanoidModel<?> humanoidModel) {
@@ -125,9 +124,9 @@ public class ApugliForgeClientEventHandler {
                 }
 
                 if (entityRenderer instanceof HumanoidMobRenderer<?, ?> humanoidMobRenderer) {
-                    humanoidMobRenderer.addLayer(new PowerCustomHeadLayer(humanoidMobRenderer, event.getEntityModels(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().x(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().y(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().z(), itemInHandRenderer));
+                    humanoidMobRenderer.addLayer(new PowerCustomHeadLayer(humanoidMobRenderer, event.getEntityModels(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().x(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().y(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().z()));
                 } else if (livingEntityRenderer.getModel() instanceof HeadedModel) {
-                    livingEntityRenderer.addLayer(new PowerCustomHeadLayer(livingEntityRenderer, event.getEntityModels(), itemInHandRenderer));
+                    livingEntityRenderer.addLayer(new PowerCustomHeadLayer(livingEntityRenderer, event.getEntityModels()));
                 }
             });
 
@@ -135,8 +134,8 @@ public class ApugliForgeClientEventHandler {
                 PlayerRenderer playerRenderer = event.getSkin(s);
                 playerRenderer.addLayer(new EnergySwirlLayer<>(playerRenderer));
                 playerRenderer.addLayer(new EntityTextureOverlayLayer<>(playerRenderer, ((PlayerModelAccessor)playerRenderer.getModel()).isSlim(), event.getEntityModels()));
-                playerRenderer.addLayer(new PowerItemInHandLayer<>(playerRenderer, itemInHandRenderer));
-                playerRenderer.addLayer(new PowerCustomHeadLayer<>(playerRenderer, event.getEntityModels(), itemInHandRenderer));
+                playerRenderer.addLayer(new PowerItemInHandLayer<>(playerRenderer));
+                playerRenderer.addLayer(new PowerCustomHeadLayer<>(playerRenderer, event.getEntityModels()));
                 playerRenderer.addLayer(new PowerHumanoidArmorLayer<>(playerRenderer, playerRenderer.getModel(), playerRenderer.getModel()));
             });
         }

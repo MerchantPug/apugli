@@ -31,10 +31,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             this.addLayer(new EnergySwirlLayer<>((RenderLayerParent<T, M>)this));
             this.addLayer(new EntityTextureOverlayLayer<>((RenderLayerParent<T, M>)this, false, ctx.getModelSet()));
             if (this instanceof ArmedModel && !((LivingEntityRenderer<T, M>)(Object)this instanceof HumanoidMobRenderer<?, ?>)) {
-                this.addLayer(new PowerItemInHandLayer((RenderLayerParent<T, M>)this, ctx.getItemInHandRenderer()));
+                this.addLayer(new PowerItemInHandLayer((RenderLayerParent<T, M>)this));
             }
             if (this instanceof HeadedModel && !((LivingEntityRenderer<T, M>)(Object)this instanceof HumanoidMobRenderer<?, ?>)) {
-                this.addLayer(new PowerCustomHeadLayer((RenderLayerParent<T, M>)this, ctx.getModelSet(), ctx.getItemInHandRenderer()));
+                this.addLayer(new PowerCustomHeadLayer((RenderLayerParent<T, M>)this, ctx.getModelSet()));
             }
         }
     }

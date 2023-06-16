@@ -3,12 +3,12 @@ package net.merchantpug.apugli.power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.ValueModifyingPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.power.factory.ValueModifyingPowerFactory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -21,7 +21,7 @@ public abstract class AbstractValueModifyingPower<P extends AbstractValueModifyi
     }
 
     @Override
-    public List<Modifier> getModifiers(Instance power, Entity entity) {
+    public List<AttributeModifier> getModifiers(Instance power, Entity entity) {
         return power.getModifiers();
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractValueModifyingPower<P extends AbstractValueModifyi
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity);
             data.ifPresent("modifier", this::addModifier);
-            data.<List<Modifier>>ifPresent("modifiers", mods -> mods.forEach(this::addModifier));
+            data.<List<AttributeModifier>>ifPresent("modifiers", mods -> mods.forEach(this::addModifier));
             this.data = data;
         }
     }

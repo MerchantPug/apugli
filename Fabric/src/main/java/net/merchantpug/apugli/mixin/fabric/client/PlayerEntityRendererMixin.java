@@ -23,8 +23,8 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         // This is separated from LivingEntityRendererMixin as it breaks certain mods if it's part of that.
         this.addLayer(new EnergySwirlLayer<>(this));
         this.addLayer(new EntityTextureOverlayLayer<>(this, slim, ctx.getModelSet()));
-        this.addLayer(new PowerItemInHandLayer<>(this, ctx.getItemInHandRenderer()));
-        this.addLayer(new PowerCustomHeadLayer<>(this, ctx.getModelSet(), ctx.getItemInHandRenderer()));
+        this.addLayer(new PowerItemInHandLayer<>(this));
+        this.addLayer(new PowerCustomHeadLayer<>(this, ctx.getModelSet()));
         this.addLayer(new PowerHumanoidArmorLayer<>(this, this.getModel(), this.getModel()));
     }
 

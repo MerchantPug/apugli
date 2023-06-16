@@ -44,6 +44,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -137,10 +138,10 @@ public class ApugliPackets {
                             clientVersionString.append(".");
                         }
                     }
-                    handler.disconnect(Component.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
+                    handler.disconnect(new TranslatableComponent("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
                 }
             } else {
-                handler.disconnect(Component.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
+                handler.disconnect(new TranslatableComponent("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
             }
         }
     }

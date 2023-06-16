@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -27,10 +28,10 @@ public record SyncExplosionPacket<BI, B>(int userId,
                                          double x,
                                          double y,
                                          double z,
-                                         List<?> damageModifiers,
-                                         List<?> knockbackModifiers,
-                                         List<?> volumeModifiers,
-                                         List<?> pitchModifiers,
+                                         List<AttributeModifier> damageModifiers,
+                                         List<AttributeModifier> knockbackModifiers,
+                                         List<AttributeModifier> volumeModifiers,
+                                         List<AttributeModifier> pitchModifiers,
                                          @Nullable BI biEntityConditions,
                                          boolean hasCalculator,
                                          @Nullable B blockConditions,
@@ -46,10 +47,10 @@ public record SyncExplosionPacket<BI, B>(int userId,
         buf.writeDouble(x());
         buf.writeDouble(y());
         buf.writeDouble(z());
-        Services.PLATFORM.getModifiersDataType().send(buf, damageModifiers());
-        Services.PLATFORM.getModifiersDataType().send(buf, knockbackModifiers());
-        Services.PLATFORM.getModifiersDataType().send(buf, volumeModifiers());
-        Services.PLATFORM.getModifiersDataType().send(buf, pitchModifiers());
+        SerializableDataTypes.ATTRIBUTE_MODIFIERS.send(buf, damageModifiers());
+        SerializableDataTypes.ATTRIBUTE_MODIFIERS.send(buf, knockbackModifiers());
+        SerializableDataTypes.ATTRIBUTE_MODIFIERS.send(buf, volumeModifiers());
+        SerializableDataTypes.ATTRIBUTE_MODIFIERS.send(buf, pitchModifiers());
 
         buf.writeBoolean(biEntityConditions() != null);
         if (biEntityConditions() != null) {
@@ -74,10 +75,10 @@ public record SyncExplosionPacket<BI, B>(int userId,
         double x = buf.readDouble();
         double y = buf.readDouble();
         double z = buf.readDouble();
-        List<?> damageModifiers = Services.PLATFORM.getModifiersDataType().receive(buf);
-        List<?> knockbackModifiers = Services.PLATFORM.getModifiersDataType().receive(buf);
-        List<?> volumeModifiers = Services.PLATFORM.getModifiersDataType().receive(buf);
-        List<?> pitchModifiers = Services.PLATFORM.getModifiersDataType().receive(buf);
+        List<AttributeModifier> damageModifiers = SerializableDataTypes.ATTRIBUTE_MODIFIERS.receive(buf);
+        List<AttributeModifier> knockbackModifiers = SerializableDataTypes.ATTRIBUTE_MODIFIERS.receive(buf);
+        List<AttributeModifier> volumeModifiers = SerializableDataTypes.ATTRIBUTE_MODIFIERS.receive(buf);
+        List<AttributeModifier> pitchModifiers = SerializableDataTypes.ATTRIBUTE_MODIFIERS.receive(buf);
         boolean hasBiEntityCondition = buf.readBoolean();
         BI biEntityCondition = null;
         if (hasBiEntityCondition) {

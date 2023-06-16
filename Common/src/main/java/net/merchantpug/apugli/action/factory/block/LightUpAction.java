@@ -9,12 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.Triple;
+
+import java.util.Random;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
@@ -70,7 +70,7 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
         if(data.isPresent("particle") && level instanceof ServerLevel serverLevel) {
             int count = data.getInt("particle_count");
             if (count > 0) {
-                RandomSource random = level.random;
+                Random random = level.random;
                 serverLevel.sendParticles(data.get("particle"), pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, count, random.nextDouble() * 0.2 - 0.1, 0.1, random.nextDouble() * 0.2 - 0.1, 0.05);
             }
         }

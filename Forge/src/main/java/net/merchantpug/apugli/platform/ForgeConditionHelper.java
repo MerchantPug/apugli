@@ -11,6 +11,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +29,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     
     @Override
     public SerializableDataType<?> biEntityDataType() {
-        return ApoliForgeDataTypes.BIENTITY_CONDITION;
+        return ApoliForgeDataTypes.BIENTITY_CONDITION.get();
     }
     
     @Override
@@ -58,17 +59,17 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> biomeDataType() {
-        return ApoliForgeDataTypes.BIOME_CONDITION;
+        return ApoliForgeDataTypes.BIOME_CONDITION.get();
     }
     
     @Override
-    public void registerBiome(String name, IConditionFactory<Holder<Biome>> condition) {
+    public void registerBiome(String name, IConditionFactory<Biome> condition) {
         ApugliRegisters.BIOME_CONDITIONS.register(name, () -> new FabricBiomeCondition(condition.getSerializableData(), condition::check));
     }
     
     @Override
-    public boolean checkBiome(SerializableData.Instance data, String fieldName, Holder<Biome> biome) {
-        return !data.isPresent(fieldName) || ((ConfiguredBiomeCondition<?, ?>)data.get(fieldName)).check(biome);
+    public boolean checkBiome(SerializableData.Instance data, String fieldName, Biome biome) {
+        return !data.isPresent(fieldName) || ((ConfiguredBiomeCondition<?, ?>)data.get(fieldName)).check(BuiltinRegistries.BIOME.createIntrusiveHolder(biome));
     }
     
     @Override
@@ -88,7 +89,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> blockDataType() {
-        return ApoliForgeDataTypes.BLOCK_CONDITION;
+        return ApoliForgeDataTypes.BLOCK_CONDITION.get();
     }
     
     @Override
@@ -118,7 +119,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> damageDataType() {
-        return ApoliForgeDataTypes.DAMAGE_CONDITION;
+        return ApoliForgeDataTypes.DAMAGE_CONDITION.get();
     }
     
     @Override
@@ -148,7 +149,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> entityDataType() {
-        return ApoliForgeDataTypes.ENTITY_CONDITION;
+        return ApoliForgeDataTypes.ENTITY_CONDITION.get();
     }
     
     @Override
@@ -178,7 +179,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> fluidDataType() {
-        return ApoliForgeDataTypes.FLUID_CONDITION;
+        return ApoliForgeDataTypes.FLUID_CONDITION.get();
     }
     
     @Override
@@ -208,7 +209,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public SerializableDataType<?> itemDataType() {
-        return ApoliForgeDataTypes.ITEM_CONDITION;
+        return ApoliForgeDataTypes.ITEM_CONDITION.get();
     }
     
     @Override

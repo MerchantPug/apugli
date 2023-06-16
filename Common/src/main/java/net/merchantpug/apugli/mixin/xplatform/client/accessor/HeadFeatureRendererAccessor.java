@@ -25,7 +25,4 @@ public interface HeadFeatureRendererAccessor {
     @Accessor
     float getScaleZ();
 
-    @Accessor
-    ItemInHandRenderer getItemInHandRenderer();
-
 }

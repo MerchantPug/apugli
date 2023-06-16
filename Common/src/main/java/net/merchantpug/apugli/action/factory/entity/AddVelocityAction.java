@@ -22,14 +22,14 @@ public class AddVelocityAction implements IActionFactory<Entity> {
                 .add("x", SerializableDataTypes.FLOAT, 0.0F)
                 .add("y", SerializableDataTypes.FLOAT, 0.0F)
                 .add("z", SerializableDataTypes.FLOAT, 0.0F)
-                .add("horizontal_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("horizontal_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("vertical_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("vertical_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("horizontal_post_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("horizontal_post_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("vertical_post_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("vertical_post_modifiers", Services.PLATFORM.getModifiersDataType(), null)
+                .add("horizontal_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("horizontal_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("vertical_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("vertical_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("horizontal_post_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("horizontal_post_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("vertical_post_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("vertical_post_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
                 .add("space", ApoliDataTypes.SPACE, Space.WORLD)
                 .add("client", SerializableDataTypes.BOOLEAN, true)
                 .add("server", SerializableDataTypes.BOOLEAN, true)
@@ -48,24 +48,24 @@ public class AddVelocityAction implements IActionFactory<Entity> {
                 data.getFloat("y"),
                 data.get("z"));
         space.toGlobal(vec, entity);
-        vec.set(applyModifiers(data, entity, vec.x(), "horizontal_modifier"),
-                applyModifiers(data, entity, vec.y(), "vertical_modifier"),
-                applyModifiers(data, entity, vec.z(), "horizontal_modifier"));
+        vec.set(applyModifiers(data, vec.x(), "horizontal_modifier"),
+                applyModifiers(data, vec.y(), "vertical_modifier"),
+                applyModifiers(data, vec.z(), "horizontal_modifier"));
         if (!data.getBoolean("set")) {
             vec.add((float) entity.getDeltaMovement().x(), (float) entity.getDeltaMovement().y(), (float) entity.getDeltaMovement().z());
         }
         entity.setDeltaMovement(
-                applyModifiers(data, entity, vec.x(), "horizontal_post_modifier"),
-                applyModifiers(data, entity, vec.y(), "vertical_post_modifier"),
-                applyModifiers(data, entity, vec.z(), "horizontal_post_modifier"));
+                applyModifiers(data, vec.x(), "horizontal_post_modifier"),
+                applyModifiers(data, vec.y(), "vertical_post_modifier"),
+                applyModifiers(data, vec.z(), "horizontal_post_modifier"));
         entity.hurtMarked = true;
     }
 
-    private float applyModifiers(SerializableData.Instance data, Entity entity, float original, String modifierKey) {
+    private float applyModifiers(SerializableData.Instance data, float original, String modifierKey) {
         if (!data.isPresent(modifierKey) && !data.isPresent(modifierKey + "s")) {
             return original;
         }
-        return ((float) Services.PLATFORM.applyModifiers(entity, getModifiers(data, modifierKey), original));
+        return ((float) Services.PLATFORM.applyModifiers(getModifiers(data, modifierKey), original));
     }
 
     private <M> List<M> getModifiers(SerializableData.Instance data, String modifierKey) {

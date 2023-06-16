@@ -6,10 +6,8 @@
   "mixins": [
     "common.ActiveKeyMixin",
     "common.BoneMealItemMixin",
-    "common.EnchantmentHelperMixin",
     "common.EntityConditionsMixin",
     "common.HungerManagerMixin",
-    "common.ItemActionsMixin",
     "common.ItemConditionsMixin",
     "common.ItemPredicateMixin",
     "common.ItemStackMixin",

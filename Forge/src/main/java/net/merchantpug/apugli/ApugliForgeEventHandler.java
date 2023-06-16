@@ -64,21 +64,21 @@ public class ApugliForgeEventHandler {
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack)).findFirst();
         if (power.isPresent()) {
-            EdibleItemPower.executeEntityActions(event.getEntity(), stack);
-            ItemStack newStack = event.getEntity().eat(event.getEntity().getLevel(), stack);
+            EdibleItemPower.executeEntityActions((LivingEntity) event.getEntity(), stack);
+            ItemStack newStack = event.getEntityLiving().eat(event.getEntity().getLevel(), stack);
             if (event.getEntity() instanceof Player player && !player.getAbilities().instabuild) {
                 if (power.get().getReturnStack() != null) {
                     ItemStack returnStack = power.get().getReturnStack().copy();
                     if (newStack.isEmpty()) {
-                        event.setResultStack(EdibleItemPower.executeItemActions(event.getEntity(), returnStack, stack));
+                        event.setResultStack(EdibleItemPower.executeItemActions((LivingEntity) event.getEntity(), returnStack, stack));
                     } else {
-                        ItemStack stack2 = EdibleItemPower.executeItemActions(event.getEntity(), returnStack, stack);
+                        ItemStack stack2 = EdibleItemPower.executeItemActions(event.getEntityLiving(), returnStack, stack);
                         if (!player.addItem(stack2)) {
                             player.drop(stack2, false);
                         }
                     }
                 } else {
-                    event.setResultStack(EdibleItemPower.executeItemActions(event.getEntity(), newStack, stack));
+                    event.setResultStack(EdibleItemPower.executeItemActions(event.getEntityLiving(), newStack, stack));
                 }
             }
         }
@@ -89,45 +89,45 @@ public class ApugliForgeEventHandler {
      */
     @SubscribeEvent
     public static void onBonemeal(BonemealEvent event) {
-        if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.ACTION_ON_BONEMEAL.get()) && event.getBlock().getBlock() instanceof BonemealableBlock bonemeal
-                && bonemeal.isValidBonemealTarget(event.getLevel(), event.getPos(), event.getBlock(), event.getLevel().isClientSide) && event.getLevel() instanceof ServerLevel
-                && bonemeal.isBonemealSuccess(event.getLevel(), event.getLevel().random, event.getPos(), event.getBlock())) {
-            Services.POWER.getPowers(event.getEntity(), ApugliPowers.ACTION_ON_BONEMEAL.get())
+        if (Services.POWER.hasPower(event.getEntityLiving(), ApugliPowers.ACTION_ON_BONEMEAL.get()) && event.getBlock().getBlock() instanceof BonemealableBlock bonemeal
+                && bonemeal.isValidBonemealTarget(event.getWorld(), event.getPos(), event.getBlock(), event.getWorld().isClientSide) && event.getWorld() instanceof ServerLevel
+                && bonemeal.isBonemealSuccess(event.getWorld(), event.getWorld().random, event.getPos(), event.getBlock())) {
+            Services.POWER.getPowers(event.getEntityLiving(), ApugliPowers.ACTION_ON_BONEMEAL.get())
                     .stream()
-                    .filter(p -> p.doesApply(new BlockInWorld(event.getLevel(), event.getPos(), true)))
-                    .forEach(p -> p.executeActions(event.getLevel(), event.getPos(), Direction.UP));
+                    .filter(p -> p.doesApply(new BlockInWorld(event.getWorld(), event.getPos(), true)))
+                    .forEach(p -> p.executeActions(event.getWorld(), event.getPos(), Direction.UP));
         }
     }
 
     @SubscribeEvent
     public static void modifyAerialBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (!Services.POWER.hasPower(event.getEntity(), ApugliPowers.AERIAL_AFFINITY.get()) || event.getEntity().isOnGround()) return;
+        if (!Services.POWER.hasPower((LivingEntity) event.getEntity(), ApugliPowers.AERIAL_AFFINITY.get()) || event.getEntity().isOnGround()) return;
         event.setNewSpeed(event.getOriginalSpeed() * 5.0F);
     }
 
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+    public static void onLivingTick(LivingEvent.LivingUpdateEvent event) {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
-        if (event.getEntity().isDeadOrDying()) return;
+        if (!event.getEntity().isAlive()) return;
 
-        if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
+        if (Services.POWER.hasPower(event.getEntityLiving(), ApugliPowers.HOVER.get())) {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(1.0, 0.0, 1.0));
             event.getEntity().fallDistance = 0.0F;
         }
 
         if (event.getEntity().level.isClientSide)
-            Services.POWER.getPowers(event.getEntity(), ApugliPowers.CLIENT_ACTION_OVER_TIME.get()).forEach(ClientActionOverTime::clientTick);
+            Services.POWER.getPowers(event.getEntityLiving(), ApugliPowers.CLIENT_ACTION_OVER_TIME.get()).forEach(ClientActionOverTime::clientTick);
 
         if (!event.getEntity().level.isClientSide)
-            ApugliPowers.BUNNY_HOP.get().onTravel(event.getEntity(), new Vec3(event.getEntity().xxa, event.getEntity().yya, event.getEntity().zza));
+            ApugliPowers.BUNNY_HOP.get().onTravel(event.getEntityLiving(), new Vec3(event.getEntityLiving().xxa, event.getEntityLiving().yya, event.getEntityLiving().zza));
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    public static void onMobTargetChange(LivingChangeTargetEvent event) {
+    public static void onMobTargetChange(LivingSetAttackTargetEvent event) {
         if(event.getEntity().level.isClientSide()) return;
 
-        List<MobsIgnorePower> powers = Services.POWER.getPowers(event.getOriginalTarget(), ApugliPowers.MOBS_IGNORE.get());
+        List<MobsIgnorePower> powers = Services.POWER.getPowers(event.getTarget(), ApugliPowers.MOBS_IGNORE.get());
         if (powers.stream().anyMatch(power -> power.shouldIgnore(event.getEntity())))
             event.setCanceled(true);
     }
@@ -145,7 +145,7 @@ public class ApugliForgeEventHandler {
     // Lowest so it can execute after any damage modifications.
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onLivingHurt(LivingHurtEvent event) {
-        LivingEntity target = event.getEntity();
+        LivingEntity target = event.getEntityLiving();
         DamageSource source = event.getSource();
         float amount = event.getAmount();
 
@@ -182,10 +182,10 @@ public class ApugliForgeEventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onLivingAttack(LivingAttackEvent event) {
         float amount = event.getAmount();
-        float extraEnchantmentDamage = calculateEnchantmentDamage(event.getEntity(), event.getSource(), event.getAmount());
+        float extraEnchantmentDamage = calculateEnchantmentDamage(event.getEntityLiving(), event.getSource(), event.getAmount());
         float finalAmount = amount + extraEnchantmentDamage;
         if (extraEnchantmentDamage > 0.0F && event.getSource().getEntity() instanceof Player attacker) {
-            float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), event.getEntity().getMobType());
+            float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), event.getEntityLiving().getMobType());
             if (enchantmentDamageBonus <= 0.0F && !event.getEntity().level.isClientSide) {
                 attacker.magicCrit(event.getEntity());
             }
@@ -212,11 +212,11 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onLivingKilled(LivingDeathEvent event) {
-        IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
+        IPowerDataCache.get(event.getEntityLiving()).map(IPowerDataCache::getDamage).ifPresent(x -> {
             DamageSource source = event.getSource();
             Entity attacker = source.getEntity();
-            LivingEntity target = event.getEntity();
-            LivingEntity kilLCredit = event.getEntity().getKillCredit();
+            LivingEntity target = event.getEntityLiving();
+            LivingEntity kilLCredit = event.getEntityLiving().getKillCredit();
 
             if (attacker == null || attacker != kilLCredit) {
                 ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(kilLCredit, target, event.getSource(), x, true);
@@ -236,13 +236,13 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onMobInteract(PlayerInteractEvent.EntityInteractSpecific event) {
-        List<PreventBreedingPower> preventBreedingPowerList = Services.POWER.getPowers(event.getEntity(), ApugliPowers.PREVENT_BREEDING.get()).stream().filter(power -> power.doesApply(event.getTarget())).collect(Collectors.toList());
+        List<PreventBreedingPower> preventBreedingPowerList = Services.POWER.getPowers(event.getEntityLiving(), ApugliPowers.PREVENT_BREEDING.get()).stream().filter(power -> power.doesApply(event.getTarget())).collect(Collectors.toList());
         if(!preventBreedingPowerList.isEmpty() && event.getTarget() instanceof Animal animal && animal.isFood(event.getItemStack())) {
             int i = animal.getAge();
             if(i == 0 && animal.canFallInLove()) {
                 if(preventBreedingPowerList.stream().anyMatch(PreventBreedingPower::hasAction)) {
                     preventBreedingPowerList.forEach(power -> power.executeAction(event.getTarget()));
-                    animal.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getEntity(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
+                    animal.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getEntityLiving(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
                     event.setResult(Event.Result.ALLOW);
                     event.setCanceled(true);
                 } else {

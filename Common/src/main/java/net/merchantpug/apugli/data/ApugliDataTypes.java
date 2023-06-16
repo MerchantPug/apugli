@@ -10,7 +10,7 @@ import net.merchantpug.apugli.util.SoundEventWeight;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +20,9 @@ public class ApugliDataTypes {
     public static final SerializableDataType<PlayerModelType> PLAYER_MODEL_TYPE =
             SerializableDataType.enumValue(PlayerModelType.class);
 
-    public static final SerializableDataType<TagKey<Structure>> STRUCTURE_TAG = SerializableDataType.tag(Registry.STRUCTURE_REGISTRY);
+    public static final SerializableDataType<TagKey<ConfiguredStructureFeature<?, ?>>> STRUCTURE_TAG = SerializableDataType.tag(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY);
 
-    public static final SerializableDataType<ResourceKey<Structure>> STRUCTURE = SerializableDataType.registryKey(Registry.STRUCTURE_REGISTRY);
+    public static final SerializableDataType<ResourceKey<ConfiguredStructureFeature<?, ?>>> STRUCTURE = SerializableDataType.registryKey(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY);
 
     public static final SerializableDataType<SoundEventPitchVolume> SOUND_EVENT_PITCH_VOLUME =
             SerializableDataType.compound(SoundEventPitchVolume.class, new SerializableData()

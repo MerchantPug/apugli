@@ -2,8 +2,6 @@ package net.merchantpug.apugli.platform;
 
 import com.google.common.collect.ImmutableList;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -20,7 +18,6 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -32,7 +29,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPowerHelper.class)
-public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, ?>>> {
+public class ForgePowerHelper implements IPowerHelper<ConfiguredPower<?, ?>> {
     
     @Override
     public io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?> unwrapSimpleFactory(PowerFactory<?> factory) {
@@ -74,7 +71,7 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped())).orElseGet(ImmutableList::of)
                 .stream()
-                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .map(power -> ((FabricPowerFactoryAccessor<P>)power.getFactory()).invokeGetPower(power, entity))
                 .collect(Collectors.toList());
     }
 
@@ -82,20 +79,20 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped(), includeInactive)).orElseGet(ImmutableList::of)
                 .stream()
-                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .map(power -> ((FabricPowerFactoryAccessor<P>)power.getFactory()).invokeGetPower(power, entity))
                 .collect(Collectors.toList());
     }
 
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>) factory)).orElseGet(ImmutableList::of)
-                .stream().map(holder -> (P)holder.get()).collect(Collectors.toList());
+                .stream().map(power -> (P)power).collect(Collectors.toList());
     }
 
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?>) factory, includeInactive)).orElseGet(ImmutableList::of)
-                .stream().map(holder -> (P)holder.get()).collect(Collectors.toList());
+                .stream().map(power -> (P)power).collect(Collectors.toList());
     }
     
     @Override
@@ -109,8 +106,8 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
     
     @Override
-    public SerializableDataType<Holder<ConfiguredPower<?, ?>>> getPowerTypeDataType() {
-        return ApoliForgeDataTypes.POWER_TYPE;
+    public SerializableDataType<ConfiguredPower<?, ?>> getPowerTypeDataType() {
+        return ApoliForgeDataTypes.POWER_TYPE.get();
     }
 
     @Override
@@ -124,38 +121,25 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
-    public OptionalInt getResource(LivingEntity entity, Holder<ConfiguredPower<?,?>> holder) {
-        var powerId = holder.unwrapKey();
-        if(holder.isBound()) {
-            ConfiguredPower<?, ?> power = holder.get();
-            if(IPowerContainer.get(entity).resolve().flatMap(container -> {
-                if(container == null) return Optional.empty();
-                return powerId.map(container::hasPower);
-            }).orElse(false)) {
-                return power.getValue(entity);
-            }
+    public OptionalInt getResource(LivingEntity entity, ConfiguredPower<?,?> power) {
+        if(IPowerContainer.get(entity).resolve().map(container -> container.hasPower(power.getRegistryName())).orElse(false)) {
+            return power.getValue(entity);
         }
-        Apugli.LOG.warn("Failed to get resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
+        Apugli.LOG.warn("Failed to get resource for power [{}], because it doesn't hold any resource!", power.getRegistryName());
         return OptionalInt.empty();
     }
     
     @Override
-    public OptionalInt setResource(LivingEntity entity, Holder<ConfiguredPower<?,?>> holder, int value) {
-        var powerId = holder.unwrapKey();
-        if(holder.isBound()) {
-            ConfiguredPower<?, ?> power = holder.get();
-            if(IPowerContainer.get(entity).resolve().flatMap(container -> {
-                if(container == null) return Optional.empty();
-                return powerId.map(container::hasPower);
-            }).orElse(false)) {
-                OptionalInt result = power.assign(entity, value);
-                if(result.isPresent()) {
-                    ApoliAPI.synchronizePowerContainer(entity);
-                    return result;
-                }
+    public OptionalInt setResource(LivingEntity entity, ConfiguredPower<?,?> power, int value) {
+        var powerId = power.getRegistryName();
+        if (IPowerContainer.get(entity).resolve().map(container -> container.hasPower(powerId)).orElse(false)) {
+            OptionalInt result = power.assign(entity, value);
+            if (result.isPresent()) {
+                ApoliAPI.synchronizePowerContainer(entity);
+                return result;
             }
         }
-        Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
+        Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId);
         return OptionalInt.empty();
     }
     

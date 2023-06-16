@@ -3,12 +3,12 @@ package net.merchantpug.apugli.power;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.util.modifier.*;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.power.factory.RocketJumpPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,33 +39,18 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
     }
 
     @Override
-    public List<?> chargedModifiers(RocketJumpPower.Instance power, Entity entity) {
+    public List<AttributeModifier> chargedModifiers(RocketJumpPower.Instance power, Entity entity) {
         return power.getChargedModifiers();
     }
 
     @Override
-    public List<?> waterModifiers(RocketJumpPower.Instance power, Entity entity) {
+    public List<AttributeModifier> waterModifiers(RocketJumpPower.Instance power, Entity entity) {
         return power.getWaterModifiers();
     }
 
     @Override
-    public List<?> damageModifiers(RocketJumpPower.Instance power, Entity entity) {
+    public List<AttributeModifier> damageModifiers(RocketJumpPower.Instance power, Entity entity) {
         return power.getDamageModifiers();
-    }
-
-    @Override
-    public List<?> knockbackModifiers() {
-        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, -0.25));
-    }
-
-    @Override
-    public List<?> volumeModifiers() {
-        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, -0.75));
-    }
-
-    @Override
-    public List<?> pitchModifiers() {
-        return List.of(ModifierUtil.createSimpleModifier(ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE, 0.4));
     }
 
     @Override
@@ -74,18 +59,18 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
     }
 
     public static class Instance extends AbstractActiveCooldownPower.Instance {
-        private final List<Modifier> chargedModifiers = new LinkedList<>();
-        private final List<Modifier> waterModifiers = new LinkedList<>();
-        private final List<Modifier> damageModifiers = new LinkedList<>();
+        private final List<AttributeModifier> chargedModifiers = new LinkedList<>();
+        private final List<AttributeModifier> waterModifiers = new LinkedList<>();
+        private final List<AttributeModifier> damageModifiers = new LinkedList<>();
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
             data.ifPresent("charged_modifier", this::addChargedJumpModifier);
-            data.<List<Modifier>>ifPresent("charged_modifiers", modifiers -> modifiers.forEach(this::addChargedJumpModifier));
+            data.<List<AttributeModifier>>ifPresent("charged_modifiers", modifiers -> modifiers.forEach(this::addChargedJumpModifier));
             data.ifPresent("water_modifier", this::addWaterJumpModifier);
-            data.<List<Modifier>>ifPresent("water_modifiers", modifiers -> modifiers.forEach(this::addWaterJumpModifier));
+            data.<List<AttributeModifier>>ifPresent("water_modifiers", modifiers -> modifiers.forEach(this::addWaterJumpModifier));
             data.ifPresent("damage_modifier", this::addDamageModifier);
-            data.<List<Modifier>>ifPresent("damage_modifiers", modifiers -> modifiers.forEach(this::addDamageModifier));
+            data.<List<AttributeModifier>>ifPresent("damage_modifiers", modifiers -> modifiers.forEach(this::addDamageModifier));
         }
 
         @Override
@@ -95,27 +80,27 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
             }
         }
 
-        public void addChargedJumpModifier(Modifier modifier) {
+        public void addChargedJumpModifier(AttributeModifier modifier) {
             this.chargedModifiers.add(modifier);
         }
 
-        public List<Modifier> getChargedModifiers() {
+        public List<AttributeModifier> getChargedModifiers() {
             return chargedModifiers;
         }
 
-        public void addWaterJumpModifier(Modifier modifier) {
+        public void addWaterJumpModifier(AttributeModifier modifier) {
             this.waterModifiers.add(modifier);
         }
 
-        public List<Modifier> getWaterModifiers() {
+        public List<AttributeModifier> getWaterModifiers() {
             return waterModifiers;
         }
 
-        public void addDamageModifier(Modifier modifier) {
+        public void addDamageModifier(AttributeModifier modifier) {
             this.damageModifiers.add(modifier);
         }
 
-        public List<Modifier> getDamageModifiers() {
+        public List<AttributeModifier> getDamageModifiers() {
             return damageModifiers;
         }
 

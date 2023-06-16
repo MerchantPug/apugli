@@ -18,8 +18,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class PowerItemInHandLayer<T extends LivingEntity, M extends EntityModel<T> & ArmedModel> extends ItemInHandLayer<T, M> {
 
-    public PowerItemInHandLayer(RenderLayerParent<T, M> parent, ItemInHandRenderer renderer) {
-        super(parent, renderer);
+    public PowerItemInHandLayer(RenderLayerParent<T, M> parent) {
+        super(parent);
     }
 
     @Override

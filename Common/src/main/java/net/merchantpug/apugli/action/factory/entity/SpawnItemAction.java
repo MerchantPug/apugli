@@ -7,7 +7,6 @@ import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -17,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class SpawnItemAction implements IActionFactory<Entity> {
@@ -46,7 +46,7 @@ public class SpawnItemAction implements IActionFactory<Entity> {
         Level level = entity.level;
         Supplier<Vec3> nextVelocity;
         if(throwRandomly) {
-            RandomSource random = entity instanceof LivingEntity living ? living.getRandom() : level.random;
+            Random random = entity instanceof LivingEntity living ? living.getRandom() : level.random;
             nextVelocity = () -> {
                 float hVelocity = random.nextFloat() * 0.5F;
                 float hRot = random.nextFloat() * 6.2831855F;

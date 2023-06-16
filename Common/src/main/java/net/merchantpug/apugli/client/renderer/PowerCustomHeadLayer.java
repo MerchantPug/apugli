@@ -7,6 +7,7 @@ import net.merchantpug.apugli.mixin.xplatform.client.accessor.HeadFeatureRendere
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.SkullModelBase;
@@ -35,21 +36,20 @@ import java.util.List;
 
 public class PowerCustomHeadLayer<T extends LivingEntity, M extends EntityModel<T> & HeadedModel> extends CustomHeadLayer<T, M> {
 
-    public PowerCustomHeadLayer(RenderLayerParent<T, M> parent, EntityModelSet set, ItemInHandRenderer renderer) {
-        super(parent, set, renderer);
+    public PowerCustomHeadLayer(RenderLayerParent<T, M> parent, EntityModelSet set) {
+        super(parent, set);
     }
 
-    public PowerCustomHeadLayer(RenderLayerParent<T, M> renderLayerParent, EntityModelSet entityModelSet, float scaleX, float scaleY, float scaleZ, ItemInHandRenderer itemInHandRenderer) {
-        super(renderLayerParent, entityModelSet, scaleX, scaleY, scaleZ, itemInHandRenderer);
+    public PowerCustomHeadLayer(RenderLayerParent<T, M> renderLayerParent, EntityModelSet entityModelSet, float scaleX, float scaleY, float scaleZ) {
+        super(renderLayerParent, entityModelSet, scaleX, scaleY, scaleZ);
     }
 
     public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         List<ModifyEquippedItemRenderPower> powers = Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
         powers.forEach(power -> {
-            if(power.getSlot() == EquipmentSlot.HEAD) renderIndividualStackOnHead(matrices, vertexConsumers, light, entity, limbAngle, power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleX(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleY(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleZ(), power.getStack(), ((HeadFeatureRendererAccessor)this).getItemInHandRenderer());
+            if(power.getSlot() == EquipmentSlot.HEAD) renderIndividualStackOnHead(matrices, vertexConsumers, light, entity, limbAngle, power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleX(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleY(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleZ(), power.getStack(), Minecraft.getInstance().getItemInHandRenderer());
         });
     }
-
 
     private void renderIndividualStackOnHead(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float scaleX, float scaleY, float scaleZ, ItemStack stack, ItemInHandRenderer heldItemRenderer) {
         if(!stack.isEmpty()) {

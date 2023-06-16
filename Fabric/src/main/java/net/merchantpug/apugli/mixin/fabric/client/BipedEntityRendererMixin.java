@@ -21,7 +21,7 @@ public abstract class BipedEntityRendererMixin<T extends Mob, M extends Humanoid
 
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererProvider$Context;Lnet/minecraft/client/model/HumanoidModel;FFFF)V", at = @At("RETURN"))
     public void addLayers(EntityRendererProvider.Context ctx, HumanoidModel humanoidModel, float f, float g, float h, float i, CallbackInfo ci) {
-        this.addLayer(new PowerCustomHeadLayer<>(this, ctx.getModelSet(), g, h, i, ctx.getItemInHandRenderer()));
+        this.addLayer(new PowerCustomHeadLayer<>(this, ctx.getModelSet(), g, h, i));
         this.addLayer(new PowerHumanoidArmorLayer<>(this, this.getModel(), this.getModel()));
     }
 

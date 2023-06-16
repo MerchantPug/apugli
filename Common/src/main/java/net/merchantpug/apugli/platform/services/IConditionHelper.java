@@ -33,9 +33,9 @@ public interface IConditionHelper {
 
     SerializableDataType<?> biomeDataType();
     
-    void registerBiome(String name, IConditionFactory<Holder<Biome>> condition);
+    void registerBiome(String name, IConditionFactory<Biome> condition);
     
-    boolean checkBiome(SerializableData.Instance data, String fieldName, Holder<Biome> biome);
+    boolean checkBiome(SerializableData.Instance data, String fieldName, Biome biome);
     
     @Nullable
     Predicate<Holder<Biome>> biomePredicate(SerializableData.Instance data, String fieldName);

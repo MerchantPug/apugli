@@ -14,8 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
@@ -34,10 +34,10 @@ public class StructureCondition implements IConditionFactory<Entity> {
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
         if(!(entity.level instanceof ServerLevel level)) return false;
-        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
-        HolderSet<Structure> holders = null;
-        ResourceKey<Structure> structure = data.get("structure");
-        TagKey<Structure> tag = data.get("tag");
+        Registry<ConfiguredStructureFeature<?, ?>> registry = level.registryAccess().registryOrThrow(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY);
+        HolderSet<ConfiguredStructureFeature<?, ?>> holders = null;
+        ResourceKey<ConfiguredStructureFeature<?, ?>> structure = data.get("structure");
+        TagKey<ConfiguredStructureFeature<?, ?>> tag = data.get("tag");
         if(structure != null) {
             var entry = registry.getHolder(structure);
             if(entry.isPresent()) {
@@ -50,10 +50,10 @@ public class StructureCondition implements IConditionFactory<Entity> {
             }
         }
         if(holders == null) return false;
-        Pair<BlockPos, Holder<Structure>> result = level.getChunkSource().getGenerator().findNearestMapStructure(level, holders, entity.blockPosition(), 10, false);
+        Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> result = level.getChunkSource().getGenerator().findNearestMapFeature(level, holders, entity.blockPosition(), 10, false);
         if(result != null) {
             ChunkPos structureChunkPos = new ChunkPos(result.getFirst().getX() >> 4, result.getFirst().getZ() >> 4);
-            StructureStart structureStart = level.structureManager().getStartForStructure(
+            StructureStart structureStart = level.structureFeatureManager().getStartForFeature(
                 SectionPos.of(structureChunkPos, 0),
                 result.getSecond().value(),
                 level.getChunk(result.getFirst())

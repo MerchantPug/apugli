@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
@@ -32,27 +33,33 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
                 .addFunctionedDefault("vertical_velocity", SerializableDataTypes.DOUBLE, data -> data.getDouble("velocity"))
                 .add("velocity_clamp_multiplier", SerializableDataTypes.DOUBLE, 1.8D)
                 .add("use_charged", SerializableDataTypes.BOOLEAN, false)
-                .add("charged_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("charged_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("water_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("water_modifiers", Services.PLATFORM.getModifiersDataType(), null)
-                .add("damage_modifier", Services.PLATFORM.getModifierDataType(), null)
-                .add("damage_modifiers", Services.PLATFORM.getModifiersDataType(), null)
+                .add("charged_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("charged_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("water_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("water_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
+                .add("damage_modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
+                .add("damage_modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null)
                 .add("targetable_bientity_condition", Services.CONDITION.biEntityDataType(), null)
                 .add("damage_bientity_condition", Services.CONDITION.biEntityDataType(), null);
     }
 
-    List<?> chargedModifiers(P power, Entity entity);
+    List<AttributeModifier> chargedModifiers(P power, Entity entity);
 
-    List<?> waterModifiers(P power, Entity entity);
+    List<AttributeModifier> waterModifiers(P power, Entity entity);
 
-    List<?> damageModifiers(P power, Entity entity);
+    List<AttributeModifier> damageModifiers(P power, Entity entity);
 
-    List<?> knockbackModifiers();
+    default List<AttributeModifier> knockbackModifiers() {
+        return List.of(new AttributeModifier("Rocket jump explosion knockback decrease", -0.25, AttributeModifier.Operation.MULTIPLY_TOTAL));
+    }
 
-    List<?> volumeModifiers();
+    default List<AttributeModifier> volumeModifiers() {
+        return List.of(new AttributeModifier("Rocket jump explosion volume decrease", -0.75, AttributeModifier.Operation.MULTIPLY_TOTAL));
+    }
 
-    List<?> pitchModifiers();
+    default List<AttributeModifier> pitchModifiers() {
+        return List.of(new AttributeModifier("Rocket jump explosion pitch increase", 0.4, AttributeModifier.Operation.MULTIPLY_TOTAL));
+    }
 
     default void executeJump(P power, Entity entity) {
         if (entity instanceof LivingEntity living && !entity.level.isClientSide()) {
@@ -96,8 +103,8 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
 
     default void handleRocketJump(P power, SerializableData.Instance data, LivingEntity entity, HitResult hitResult, boolean isCharged) {
         boolean useCharged = data.getBoolean("use_charged");
-        double horizontalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), data.getDouble("horizontal_velocity")) : data.getDouble("horizontal_velocity");
-        double verticalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), data.getDouble("vertical_velocity")) : data.getDouble("vertical_velocity");
+        double horizontalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(chargedModifiers(power, entity), data.getDouble("horizontal_velocity")) : data.getDouble("horizontal_velocity");
+        double verticalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(chargedModifiers(power, entity), data.getDouble("vertical_velocity")) : data.getDouble("vertical_velocity");
         float e = isCharged && useCharged ? 2.0F : 1.5F;
         if(data.isPresent("source") && data.getFloat("amount") != 0.0F) entity.hurt(data.get("source"), data.getFloat("amount"));
         float f = Mth.sin(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
@@ -116,14 +123,14 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         sendExplosionToClient(power, data, entity, hitResult, e);
 
         if(entity.isInWater()) {
-            horizontalVelocity = !waterModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, waterModifiers(power, entity), horizontalVelocity) : horizontalVelocity;
-            verticalVelocity = !waterModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, waterModifiers(power, entity), verticalVelocity) : verticalVelocity;
+            horizontalVelocity = !waterModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(waterModifiers(power, entity), horizontalVelocity) : horizontalVelocity;
+            verticalVelocity = !waterModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(waterModifiers(power, entity), verticalVelocity) : verticalVelocity;
         }
 
         double velocityClampMultiplier = data.getDouble("velocity_clamp_multiplier");
         Vec3 vec = entity.getDeltaMovement().add(f * horizontalVelocity, g * verticalVelocity, h * horizontalVelocity);
-        double horizontalClamp = isCharged ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), horizontalVelocity * velocityClampMultiplier) : horizontalVelocity * velocityClampMultiplier;
-        double verticalClamp = isCharged ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), verticalVelocity * velocityClampMultiplier) : verticalVelocity * velocityClampMultiplier;
+        double horizontalClamp = isCharged ? Services.PLATFORM.applyModifiers(chargedModifiers(power, entity), horizontalVelocity * velocityClampMultiplier) : horizontalVelocity * velocityClampMultiplier;
+        double verticalClamp = isCharged ? Services.PLATFORM.applyModifiers(chargedModifiers(power, entity), verticalVelocity * velocityClampMultiplier) : verticalVelocity * velocityClampMultiplier;
         entity.setDeltaMovement(Mth.clamp(vec.x, -horizontalClamp, horizontalClamp), Mth.clamp(vec.y, -verticalClamp, verticalClamp), Mth.clamp(vec.z, -horizontalClamp, horizontalClamp));
         entity.hurtMarked = true;
         entity.fallDistance = 0;

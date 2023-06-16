@@ -58,23 +58,11 @@ public interface IPlatformHelper {
 
     <K> SerializableDataType<K> getKeyDataType();
 
-    /**
-     * Get the supported modifier type by platform due to the fact that new Modifier is different on Forge's end.
-     * @return SerializableDataType of Modifier(on Fabric) or AttributeModifier(on Forge).
-     */
-    <M> SerializableDataType<M> getModifierDataType();
-
-    /**
-     * Get the supported modifier type by platform due to the fact that the new Modifier class is different on Forge's end.
-     * @return SerializableDataType of List of Modifier(on Fabric) or ConfiguredModifier(on Forge).
-     */
-    <M> SerializableDataType<List<M>> getModifiersDataType();
-
-    double applyModifiers(Entity entity, List<?> modifiers, double value);
+    double applyModifiers(List<?> modifiers, double value);
 
     default <P> double applyModifiers(LivingEntity entity, ValueModifyingPowerFactory<P> power, double value, Predicate<P> predicate) {
         List<?> modifierList = Services.POWER.getPowers(entity, power).stream().filter(p -> predicate == null || predicate.test(p)).map(p -> power.getModifiers(p, entity)).flatMap(List::stream).toList();;
-        return applyModifiers(entity, modifierList, value);
+        return applyModifiers(modifierList, value);
     }
 
     default <P> double applyModifiers(LivingEntity entity, ValueModifyingPowerFactory<P> power, double value) {

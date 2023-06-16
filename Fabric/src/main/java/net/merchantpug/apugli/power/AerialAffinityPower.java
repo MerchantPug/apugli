@@ -3,11 +3,10 @@ package net.merchantpug.apugli.power;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.ModifyBreakSpeedPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.util.modifier.Modifier;
-import io.github.apace100.apoli.util.modifier.ModifierOperation;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.power.factory.AerialAffinityPowerFactory;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 @Deprecated
 @AutoService(AerialAffinityPowerFactory.class)
@@ -17,14 +16,8 @@ public class AerialAffinityPower extends PowerFactory<ModifyBreakSpeedPower> imp
         super(Apugli.asResource("aerial_affinity"), AerialAffinityPowerFactory.getSerializableData(),
             data -> (type, entity) -> {
                 ModifyBreakSpeedPower power = new ModifyBreakSpeedPower(type, entity, blockInWorld -> true);
-
-                SerializableData.Instance modifierData = ModifierOperation.DATA.new Instance();
-                modifierData.set("value", 4.0);
-                modifierData.set("resource", null);
-                modifierData.set("modifier", null);
-                power.addModifier(new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData));
+                power.addModifier(new AttributeModifier("Aerial affinity break speed increase", 4.0, AttributeModifier.Operation.MULTIPLY_BASE));
                 power.addCondition(e -> !e.isOnGround());
-
                 return power;
             });
         allowCondition();

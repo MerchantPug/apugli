@@ -1,13 +1,12 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
-import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
@@ -25,13 +24,13 @@ import com.google.auto.service.AutoService;
 import net.merchantpug.apugli.util.ActiveKeyUtil;
 import net.merchantpug.apugli.util.HudRenderUtil;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.extensions.IForgePlayer;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
@@ -59,34 +58,25 @@ public class ForgePlatformHelper implements IPlatformHelper {
     
     @Override
     public double getReachDistance(Entity entity) {
-        return entity instanceof IForgePlayer player ? player.getReachDistance() : 4.5;
+        return entity instanceof Player player ? player.getAttributeValue(ForgeMod.REACH_DISTANCE.get()) : 4.5;
     }
     
     @Override
     public double getAttackRange(Entity entity) {
-        return entity instanceof IForgePlayer player ? player.getAttackRange() : 3;
+        if (entity instanceof Player player && player.getAbilities().instabuild) {
+            return 6;
+        }
+        return 3;
     }
 
     @Override
     public SerializableDataType<IActivePower.Key> getKeyDataType() {
-        return ApoliForgeDataTypes.KEY;
+        return ApoliForgeDataTypes.KEY.get();
     }
 
     @Override
-    public SerializableDataType<ConfiguredModifier<?>> getModifierDataType() {
-        return ApoliForgeDataTypes.MODIFIER;
-    }
-
-    @Override
-    public SerializableDataType<List<ConfiguredModifier<?>>> getModifiersDataType() {
-        return SerializableDataType.list(ApoliForgeDataTypes.MODIFIER);
-    }
-
-    @Override
-    public double applyModifiers(Entity entity, List<?> modifiers, double value) {
-        if (modifiers.stream().anyMatch(o -> o instanceof ConfiguredModifier<?>))
-            return ModifierUtil.applyModifiers(entity, (List<ConfiguredModifier<?>>) modifiers, value);
-        return value;
+    public double applyModifiers(List<?> modifiers, double value) {
+        return AttributeUtil.applyModifiers((List<AttributeModifier>)modifiers, value);
     }
 
     @Override
@@ -106,12 +96,12 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public float[] getColorPowerRgba(LivingEntity entity) {
-        List<Holder<ConfiguredPower<ColorConfiguration, ModelColorPower>>> modelColorPowers = IPowerContainer.getPowers(entity, ApoliPowers.MODEL_COLOR.get());
+        List<ConfiguredPower<ColorConfiguration, ModelColorPower>> modelColorPowers = IPowerContainer.getPowers(entity, ApoliPowers.MODEL_COLOR.get());
         if (modelColorPowers.size() > 0) {
-            float red = modelColorPowers.stream().map(holder -> holder.get().getConfiguration().red()).reduce((a, b) -> a * b).get();
-            float green = modelColorPowers.stream().map(holder -> holder.get().getConfiguration().green()).reduce((a, b) -> a * b).get();
-            float blue = modelColorPowers.stream().map(holder -> holder.get().getConfiguration().blue()).reduce((a, c) -> a * c).get();
-            float alpha = modelColorPowers.stream().map(holder -> holder.get().getConfiguration().alpha()).min(Float::compare).get();
+            float red = modelColorPowers.stream().map(power -> power.getConfiguration().red()).reduce((a, b) -> a * b).get();
+            float green = modelColorPowers.stream().map(power -> power.getConfiguration().green()).reduce((a, b) -> a * b).get();
+            float blue = modelColorPowers.stream().map(power -> power.getConfiguration().blue()).reduce((a, c) -> a * c).get();
+            float alpha = modelColorPowers.stream().map(power -> power.getConfiguration().alpha()).min(Float::compare).get();
             return new float[] { red, green, blue, alpha };
         }
         return new float[] { 1.0F, 1.0F, 1.0F, 1.0F };
