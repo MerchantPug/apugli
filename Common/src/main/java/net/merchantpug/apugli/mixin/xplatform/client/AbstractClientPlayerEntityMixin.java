@@ -6,12 +6,9 @@ import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.PlayerModelTypePower;
 import net.merchantpug.apugli.power.SetTexturePower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.ProfilePublicKey;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,8 +19,8 @@ import java.util.List;
 @Mixin(AbstractClientPlayer.class)
 public abstract class AbstractClientPlayerEntityMixin extends Player {
 
-    public AbstractClientPlayerEntityMixin(Level world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable ProfilePublicKey publicKey) {
-        super(world, pos, yaw, gameProfile, publicKey);
+    public AbstractClientPlayerEntityMixin(ClientLevel clientLevel, GameProfile gameProfile) {
+        super(clientLevel, clientLevel.getSharedSpawnPos(), clientLevel.getSharedSpawnAngle(), gameProfile);
     }
 
     @Inject(method = "getModelName", at = @At("HEAD"), cancellable = true)

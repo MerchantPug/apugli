@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.action.factory.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
@@ -11,6 +12,7 @@ import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -38,7 +40,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
     public SerializableData getSerializableData() {
         return new SerializableData()
                 .add("power", SerializableDataTypes.FLOAT)
-                .add("destruction_type", SerializableDataType.enumValue(Explosion.BlockInteraction.class), Explosion.BlockInteraction.BREAK)
+                .add("destruction_type", ApoliDataTypes.BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE, Explosion.BlockInteraction.DESTROY)
                 .add("damage_self", SerializableDataTypes.BOOLEAN, true)
                 .add("indestructible", Services.CONDITION.blockDataType(), null)
                 .add("destructible", Services.CONDITION.blockDataType(), null)
@@ -79,9 +81,9 @@ public class ExplodeAction implements IActionFactory<Entity> {
             chargedModifiers.addAll(data.get("charged_modifiers"));
         }
         if(chargedModifiers.isEmpty()) return power;
-        if(((LivingEntity)entity).getActiveEffects().stream().anyMatch(statusEffectInstance -> Registry.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).isPresent() &&
-                Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).get()).isPresent() &&
-                Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS))) {
+        if(((LivingEntity)entity).getActiveEffects().stream().anyMatch(statusEffectInstance -> BuiltInRegistries.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).isPresent() &&
+                BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).get()).isPresent() &&
+                BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(statusEffectInstance.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS))) {
             return (float) Services.PLATFORM.applyModifiers(living, chargedModifiers, data.getFloat("power"));
         }
         return power;
@@ -104,9 +106,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
         }
         if(calculator != null) {
             Explosion explosion = new Explosion(entity.level, damageSelf ? null : entity,
-                    entity instanceof LivingEntity living ?
-                            DamageSource.explosion(living) :
-                            DamageSource.explosion((LivingEntity) null),
+                    null,
                     calculator, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
@@ -134,9 +134,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
                     ), entity);
         } else {
             Explosion explosion = new Explosion(entity.level, entity,
-                    entity instanceof LivingEntity living ?
-                            DamageSource.explosion(living) :
-                            DamageSource.explosion((LivingEntity) null),
+                    null,
                     null, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));

@@ -15,7 +15,7 @@ public class EntityConditionsMixin {
     /**
      This is a @Redirect as I cannot call the original EnchantmentHelper method within this condition, otherwise it will recurse with {@link net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory}.
      */
-    @Redirect(method = "lambda$register$50", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getItemEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/item/ItemStack;)I"))
+    @Redirect(method = "lambda$register$49", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getItemEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/item/ItemStack;)I"))
     private static int useModifiedEnchantmentLevelSum(Enchantment enchantment, ItemStack stack) {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getItemEnchantmentLevel(enchantment, stack);
     }
@@ -23,7 +23,7 @@ public class EntityConditionsMixin {
     /**
     This is a @Redirect as I cannot call the original EnchantmentHelper method within this condition, otherwise it will recurse with {@link net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory}.
      */
-    @Redirect(method = "lambda$register$50", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/entity/LivingEntity;)I"))
+    @Redirect(method = "lambda$register$49", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/entity/LivingEntity;)I"))
     private static int useModifiedEnchantmentLevelTotal(Enchantment enchantment, LivingEntity entity) {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantmentLevel(enchantment, entity);
     }

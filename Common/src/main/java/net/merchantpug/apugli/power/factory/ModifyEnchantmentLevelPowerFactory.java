@@ -4,7 +4,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -72,7 +72,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
         for (P power : powers) {
             Enchantment enchantment = getDataFromPower(power).get("enchantment");
-            ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
+            ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
             if (!doesApply(power, enchantment, entity.getLevel(), self)) continue;
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if(idx.isPresent()) {
@@ -123,7 +123,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
-            ResourceLocation id = Registry.ENCHANTMENT.getKey(enchantment);
+            ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
             ListTag newEnchants = itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags);
             Optional<Integer> idx = findEnchantIndex(id, newEnchants);
             if(idx.isPresent()) {

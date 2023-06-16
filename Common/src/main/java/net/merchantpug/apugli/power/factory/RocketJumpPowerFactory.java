@@ -7,7 +7,7 @@ import net.merchantpug.apugli.damage.JumpExplosionPlayerDamageSource;
 import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.ApugliTags;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -79,9 +79,9 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
 
             if (blockHitResultType == HitResult.Type.MISS && entityHitResultType == HitResult.Type.MISS) return;
 
-            boolean isCharged = living.getActiveEffects().stream().anyMatch(effect -> Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).isPresent() &&
-                        Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).isPresent() &&
-                        Registry.MOB_EFFECT.getHolder(Registry.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS));
+            boolean isCharged = living.getActiveEffects().stream().anyMatch(effect -> BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).isPresent() &&
+                    BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).isPresent() &&
+                    BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getResourceKey(effect.getEffect()).get()).get().is(ApugliTags.CHARGED_EFFECTS));
 
 
             if (entityHitResultType == HitResult.Type.ENTITY) {
@@ -104,7 +104,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         float g = Mth.sin(entity.getXRot() * 0.017453292F);
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.level, entity, new JumpExplosionPlayerDamageSource(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.NONE);
+        Explosion explosion = new Explosion(entity.level, entity, new JumpExplosionPlayerDamageSource(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(damageModifiers(power, entity));
         ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(knockbackModifiers());
         ((ExplosionAccess)explosion).setExplosionVolumeModifiers(volumeModifiers());
@@ -146,7 +146,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
                 false,
                 false,
                 radius,
-                Explosion.BlockInteraction.NONE);
+                Explosion.BlockInteraction.KEEP);
         if (entity instanceof ServerPlayer serverPlayer)
             Services.PLATFORM.sendS2CTrackingAndSelf(packet, serverPlayer);
     }

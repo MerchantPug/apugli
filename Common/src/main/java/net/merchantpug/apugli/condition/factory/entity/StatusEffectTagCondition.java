@@ -4,7 +4,8 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -16,7 +17,7 @@ public class StatusEffectTagCondition implements IConditionFactory<Entity> {
     @Override
     public SerializableData getSerializableData() {
         return new SerializableData()
-                .add("tag", SerializableDataType.tag(Registry.MOB_EFFECT_REGISTRY))
+                .add("tag", SerializableDataType.tag(Registries.MOB_EFFECT))
                 .add("min_amplifier", SerializableDataTypes.INT, 0)
                 .add("max_amplifier", SerializableDataTypes.INT, Integer.MAX_VALUE)
                 .add("min_duration", SerializableDataTypes.INT, 0)
@@ -27,7 +28,7 @@ public class StatusEffectTagCondition implements IConditionFactory<Entity> {
     public boolean check(SerializableData.Instance data, Entity entity) {
         TagKey<MobEffect> tag = data.get("tag");
         if(entity instanceof LivingEntity living) {
-            return Registry.MOB_EFFECT.getTag(tag).stream().anyMatch(holders -> holders.stream().anyMatch(holder -> {
+            return BuiltInRegistries.MOB_EFFECT.getTag(tag).stream().anyMatch(holders -> holders.stream().anyMatch(holder -> {
                 if (holder.isBound() && living.hasEffect(holder.value())) {
                     MobEffectInstance instance = living.getEffect(holder.value());
                     return instance.getDuration() <= data.getInt("max_duration") && instance.getDuration() >= data.getInt("min_duration")

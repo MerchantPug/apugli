@@ -21,7 +21,7 @@ public class ZombifyVillagerAction implements IActionFactory<Entity> {
         if(zombieVillagerEntity != null) {
             zombieVillagerEntity.finalizeSpawn((ServerLevelAccessor) zombieVillagerEntity.level, zombieVillagerEntity.level.getCurrentDifficultyAt(zombieVillagerEntity.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-            zombieVillagerEntity.setGossips(villagerEntity.getGossips().store(NbtOps.INSTANCE).getValue());
+            zombieVillagerEntity.setGossips(villagerEntity.getGossips().store(NbtOps.INSTANCE));
             zombieVillagerEntity.setTradeOffers(villagerEntity.getOffers().createTag());
             zombieVillagerEntity.setVillagerXp(villagerEntity.getVillagerXp());
         }

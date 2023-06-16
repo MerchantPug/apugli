@@ -9,6 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -34,7 +35,7 @@ public class StructureCondition implements IConditionFactory<Entity> {
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
         if(!(entity.level instanceof ServerLevel level)) return false;
-        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
+        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
         HolderSet<Structure> holders = null;
         ResourceKey<Structure> structure = data.get("structure");
         TagKey<Structure> tag = data.get("tag");

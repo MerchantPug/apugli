@@ -1,2 +1,1 @@
-### Bugfixes
-- Fixed `action_on_attacker_hurt` having the wrong bi-entity condition/action order.
+- Ported 2.4.1+1.19.2 to 1.19.3.

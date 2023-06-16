@@ -1,15 +1,14 @@
 package net.merchantpug.apugli.action.factory.entity;
 
-import com.mojang.math.Vector3f;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;

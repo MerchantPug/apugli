@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.action.factory.entity;
 
 import net.merchantpug.apugli.action.factory.IActionFactory;
-import com.mojang.math.Vector3f;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
@@ -14,6 +13,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +54,8 @@ public class SpawnItemAction implements IActionFactory<Entity> {
             };
         } else {
             Vector3f vector = data.isPresent("velocity") && !throwRandomly
-                ? new Vector3f((Vec3) data.get("velocity"))
-                : Vector3f.ZERO;
+                ? ((Vec3)data.get("velocity")).toVector3f()
+                : new Vector3f();
             if(!throwRandomly) ((Space)data.get("space")).toGlobal(vector, entity);
             Vec3 velocity = new Vec3(vector);
             nextVelocity = () -> velocity;

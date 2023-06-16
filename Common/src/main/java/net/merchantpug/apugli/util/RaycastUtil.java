@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.util;
 
-import com.mojang.math.Vector3f;
 import io.github.apace100.apoli.util.Space;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -11,6 +10,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class RaycastUtil {
         if (direction == null) {
             rayDir = actor.getViewVector(0).scale(dis);
         } else {
-            Vector3f vector3f = new Vector3f(direction.normalize());
+            Vector3f vector3f = direction.normalize().toVector3f();
             space.toGlobal(vector3f, actor);
             rayDir = new Vec3(vector3f.x(), vector3f.y(), vector3f.z()).scale(dis);
         }
@@ -48,7 +48,7 @@ public class RaycastUtil {
         if (direction == null) {
             rayDir = actor.getViewVector(0).scale(dis);
         } else {
-            Vector3f vector3f = new Vector3f(direction.normalize());
+            Vector3f vector3f = direction.normalize().toVector3f();
             space.toGlobal(vector3f, actor);
             rayDir = new Vec3(vector3f.x(), vector3f.y(), vector3f.z()).scale(dis);
         }
@@ -68,7 +68,7 @@ public class RaycastUtil {
         if (direction == null) {
             rayDir = actor.getViewVector(0).scale(dis);
         } else {
-            Vector3f vector3f = new Vector3f(direction.normalize());
+            Vector3f vector3f = direction.normalize().toVector3f();
             space.toGlobal(vector3f, actor);
             rayDir = new Vec3(vector3f.x(), vector3f.y(), vector3f.z()).scale(dis);
         }

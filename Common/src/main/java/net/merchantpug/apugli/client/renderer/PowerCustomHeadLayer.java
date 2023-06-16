@@ -2,7 +2,7 @@ package net.merchantpug.apugli.client.renderer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.merchantpug.apugli.mixin.xplatform.client.accessor.HeadFeatureRendererAccessor;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ModifyEquippedItemRenderPower;
@@ -80,7 +80,7 @@ public class PowerCustomHeadLayer<T extends LivingEntity, M extends EntityModel<
                 SkullBlockRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
             } else if(!(item instanceof ArmorItem) || ((ArmorItem) item).getSlot() != EquipmentSlot.HEAD) {
                 matrixStack.translate(0.0D, -0.25D, 0.0D);
-                matrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 matrixStack.scale(0.625F, -0.625F, -0.625F);
                 if(bl) {
                     matrixStack.translate(0.0D, 0.1875D, 0.0D);
