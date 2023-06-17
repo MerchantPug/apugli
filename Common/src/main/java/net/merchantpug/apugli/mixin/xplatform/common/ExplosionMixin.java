@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +82,7 @@ public abstract class ExplosionMixin {
     private Entity apugli$affectedEntity;
 
     @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List list, Vec3 vec3, int v, Entity entity) {
+    private void collectAffectedEntity(CallbackInfo ci, Set set, int q, float k, int l, int r, int s, int t, int u, int v, List list, Vec3 vec3, int w, Entity entity) {
         this.apugli$affectedEntity = entity;
     }
 
@@ -92,7 +91,7 @@ public abstract class ExplosionMixin {
         return original || this.getDirectSourceEntity() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getDirectSourceEntity(), this.apugli$affectedEntity);
     }
 
-    public void apugli$setExplosionDamageModifiers(List<Modifier> value) {
+    public void apugli$setExplosionDamageModifiers(List<?> value) {
         this.apugli$explosionDamageModifiers = value;
     }
 
@@ -100,7 +99,7 @@ public abstract class ExplosionMixin {
         return this.apugli$explosionDamageModifiers;
     }
 
-    public void apugli$setExplosionKnockbackModifiers(List<Modifier> value) {
+    public void apugli$setExplosionKnockbackModifiers(List<?> value) {
         this.apugli$explosionKnockbackModifiers = value;
     }
 
