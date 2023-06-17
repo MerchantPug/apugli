@@ -28,12 +28,12 @@ public abstract class ExplosionMixin {
     @Unique private List<?> apugli$explosionPitchModifiers;
     @Unique private Object apugli$rocketJumpBiEntityCondition;
 
-    @Shadow public abstract @Nullable LivingEntity getSourceMob();
+    @Shadow public abstract @Nullable Entity getDirectSourceEntity();
 
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float changeDamage(float amount) {
         if (this.apugli$explosionDamageModifiers != null) {
-            return amount = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionDamageModifiers, amount);
+            return amount = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionDamageModifiers, amount);
         }
         return amount;
     }
@@ -41,7 +41,7 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 0)
     private double modifyOtherEntitiesKnockbackX(double x) {
         if (this.apugli$explosionKnockbackModifiers != null) {
-            return x = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionKnockbackModifiers, x);
+            return x = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionKnockbackModifiers, x);
         }
         return x;
     }
@@ -49,7 +49,7 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 1)
     private double modifyOtherEntitiesKnockbackY(double y) {
         if (this.apugli$explosionKnockbackModifiers != null) {
-            return y = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionKnockbackModifiers, y);
+            return y = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionKnockbackModifiers, y);
         }
         return y;
     }
@@ -58,7 +58,7 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 2)
     private double modifyOtherEntitiesKnockbackZ(double z) {
         if (this.apugli$explosionKnockbackModifiers != null) {
-            return z = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionKnockbackModifiers, z);
+            return z = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionKnockbackModifiers, z);
         }
         return z;
     }
@@ -66,7 +66,7 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 5)
     private float reduceVolumeOfRocketJump(float volume) {
         if (this.apugli$explosionVolumeModifiers != null) {
-            return volume = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionVolumeModifiers, volume);
+            return volume = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionVolumeModifiers, volume);
         }
         return volume;
     }
@@ -74,7 +74,7 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 6)
     private float increasePitchOfRocketJump(float pitch) {
         if (this.apugli$explosionPitchModifiers != null) {
-            return pitch = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionPitchModifiers, pitch);
+            return pitch = (float) Services.PLATFORM.applyModifiers(this.getDirectSourceEntity(), apugli$explosionPitchModifiers, pitch);
         }
         return pitch;
     }
@@ -83,13 +83,13 @@ public abstract class ExplosionMixin {
     private Entity apugli$affectedEntity;
 
     @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2, Entity entity) {
+    private void collectAffectedEntity(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List list, Vec3 vec3, int v, Entity entity) {
         this.apugli$affectedEntity = entity;
     }
 
     @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
     private boolean cancelDamagedEntity(boolean original) {
-        return original || this.getSourceMob() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getSourceMob(), this.apugli$affectedEntity);
+        return original || this.getDirectSourceEntity() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getDirectSourceEntity(), this.apugli$affectedEntity);
     }
 
     public void apugli$setExplosionDamageModifiers(List<Modifier> value) {
