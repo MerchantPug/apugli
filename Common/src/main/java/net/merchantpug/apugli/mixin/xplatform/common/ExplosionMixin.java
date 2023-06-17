@@ -83,7 +83,7 @@ public abstract class ExplosionMixin {
     private Entity apugli$affectedEntity;
 
     @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, int k, float q, int l, int r, int s, int t, int u, int v, List list, Vec3 vec3, int w, Entity entity) {
+    private void collectAffectedEntity(CallbackInfo ci, Set set, float q, int k, int l, int r, int s, int t, int u, List list, Vec3 vec3, int v, Entity entity) {
         this.apugli$affectedEntity = entity;
     }
 
