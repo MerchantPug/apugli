@@ -102,7 +102,7 @@ dependencies {
     modImplementation "com.github.apace100:apoli:${apoli_version}"
     //REA
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    //MidNightLib
+    //MidnightLib
     modImplementation "maven.modrinth:midnightlib:${midnightlib_version}"
     include "maven.modrinth:midnightlib:${midnightlib_version}"
     //MixinExtras
