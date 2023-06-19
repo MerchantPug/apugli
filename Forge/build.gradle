@@ -123,13 +123,9 @@ dependencies {
     implementation fg.deobf("curse.maven:origins-forge-474438:${origins_forge_fileid}")
     //Caelus
     implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:1.18.1-${caelus_version}")
-    // AdditionalEntityAttributes
-    implementation(fg.deobf("com.github.MerchantPug.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
-        exclude group: 'net.minecraftforge'
-    })
     //MixinExtras
-    shade fg.deobf("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
-    library fg.deobf("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    shade "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
+    library "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
     annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
     //Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -167,7 +163,7 @@ processTestResources {
 shadowJar {
     configurations = [project.configurations.shade]
     classifier ''
-    relocate 'com.llamalad7', 'net.merchantpug.shadowed.llamalad7'
+    relocate 'com.llamalad7', 'net.merchantpug.apugli.shadowed.com.llamalad7'
 
     finalizedBy 'reobfShadowJar'
 }
