@@ -1,2 +1,2 @@
-- Backported 2.4.1+1.19.2 to 1.18.2.
-  - This version will not be maintained, please consider this the last version for 1.18.2 unless a critical bug pops up.
+# This release is identical to the previous on Fabric.
+- [FORGE] Updated Mixin Extras shadow relocation package name.
