@@ -1,1 +1,3 @@
-- Fixed Mixin Extras not being initialized.
+- Now uses Jar in Jar instead of shadow on Forge.
+- Now requires 40.2.3 or higher on Forge due to the above.
+- Re-update Mixin Extras to 0.2.0-beta.8

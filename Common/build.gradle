@@ -75,7 +75,7 @@ dependencies {
     //Apoli
     modCompileOnly "com.github.apace100:apoli:${apoli_version}"
     //MixinExtras
-    implementation(annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"))
+    annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     //Mixin
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'

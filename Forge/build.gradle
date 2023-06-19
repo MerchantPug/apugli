@@ -13,30 +13,19 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'net.minecraftforge.gradle' version '5.+'
+    id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 archivesBaseName = "${mod_name}"
 version = "${rootProject.version}+${minecraft_version}-forge"
 
-configurations {
-    library
-    shade
-    implementation.extendsFrom(shade)
-}
-
-minecraft.runs.all {
-    lazyToken('minecraft_classpath') {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
-}
+jarJar.enable()
 
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
@@ -122,18 +111,19 @@ dependencies {
     //Apoli (Origins, just don't use any Origins classes and we're good)
     implementation fg.deobf("curse.maven:origins-forge-474438:${origins_forge_fileid}")
     //Caelus
-    implementation fg.deobf("top.theillusivec4.caelus:caelus-forge:1.18.1-${caelus_version}")
+    implementation(fg.deobf("top.theillusivec4.caelus:caelus-forge:1.18.1-${caelus_version}"))
     //MixinExtras
-    shade "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    library "com.github.LlamaLad7:MixinExtras:${mixin_extras_version}"
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
-    //Mixin
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
+    implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
+        jarJar.ranged(it, "[${mixin_extras_version},)")
+    }
     //Service
     compileOnly group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
     annotationProcessor group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
     //Relying on the Common Project for sure
     implementation project(":Common")
+    //Mixin
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 tasks.withType(JavaCompile) {
@@ -160,16 +150,12 @@ processTestResources {
     }
 }
 
-shadowJar {
-    configurations = [project.configurations.shade]
-    classifier ''
-    relocate 'com.llamalad7', 'net.merchantpug.apugli.shadowed.com.llamalad7'
-
-    finalizedBy 'reobfShadowJar'
+tasks.jarJar.configure {
+    archiveClassifier = ""
 }
 
 reobf {
-    shadowJar {}
+    jarJar {}
 }
 
 jar.finalizedBy('reobfJar')

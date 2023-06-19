@@ -16,7 +16,7 @@ description="Pug's extension to A Power Library."
 [[dependencies.apugli]]
     modId="forge"
     mandatory=true
-    versionRange="[40.1,)"
+    versionRange="[40.2.3,)"
     ordering="NONE"
     side="BOTH"
 
