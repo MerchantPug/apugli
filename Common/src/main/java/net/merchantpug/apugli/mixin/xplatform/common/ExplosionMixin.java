@@ -4,7 +4,6 @@ import net.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
