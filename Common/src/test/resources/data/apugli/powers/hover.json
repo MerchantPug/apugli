@@ -2,19 +2,20 @@
   "type": "apoli:multiple",
   "hover": {
     "type": "apugli:hover",
+    "step_assist": 0.6,
     "condition": {
       "type": "apoli:and",
       "conditions": [
         {
           "type": "apoli:resource",
-          "resource": "*:*_active_resource",
+          "resource": "apugli:hover_active_resource",
           "comparison": ">",
           "compare_to": 0
         },
         {
           "type": "apugli:velocity",
           "y": 0.0,
-          "comparison": ">="
+          "comparison": "<="
         },
         {
           "type": "apugli:key_pressed",
@@ -51,7 +52,7 @@
         },
         {
           "type": "apoli:power_active",
-          "power": "*:*_toggle_resource"
+          "power": "apugli:hover_toggle_resource"
         }
       ]
     }
@@ -63,12 +64,12 @@
       "actions": [
         {
           "type": "apoli:change_resource",
-          "resource": "*:*_active_resource",
+          "resource": "apugli:hover_active_resource",
           "change": -1
         },
         {
           "type": "apoli:change_resource",
-          "resource": "*:*_recharge_condition_resource",
+          "resource": "apugli:hover_recharge_condition_resource",
           "change": 0,
           "operation": "SET"
         }
@@ -77,14 +78,14 @@
     "interval": 1,
     "condition": {
       "type": "apoli:power_active",
-      "power": "*:*_hover"
+      "power": "apugli:hover_hover"
     }
   },
   "recharge": {
     "type": "apoli:action_over_time",
     "entity_action": {
       "type": "apoli:change_resource",
-      "resource": "*:*_active_resource",
+      "resource": "apugli:hover_active_resource",
       "change": 2
     },
     "interval": 1,
@@ -93,12 +94,12 @@
       "conditions": [
         {
           "type": "apoli:power_active",
-          "power": "*:*_hover",
+          "power": "apugli:hover_hover",
           "inverted": true
         },
         {
           "type": "apoli:resource",
-          "resource": "*:*_recharge_condition_resource",
+          "resource": "apugli:hover_recharge_condition_resource",
           "comparison": "==",
           "compare_to": 10
         }
@@ -109,7 +110,7 @@
     "type": "apoli:action_over_time",
     "entity_action": {
       "type": "apoli:change_resource",
-      "resource": "*:*_recharge_condition_resource",
+      "resource": "apugli:hover_recharge_condition_resource",
       "change": 1
     },
     "interval": 1,
@@ -129,7 +130,7 @@
         },
         {
           "type": "apoli:power_active",
-          "power": "*:*_hover",
+          "power": "apugli:hover_hover",
           "inverted": true
         }
       ]
@@ -149,21 +150,16 @@
         "conditions": [
           {
             "type": "apoli:power_active",
-            "power": "*:*_toggle_resource"
+            "power": "apugli:hover_toggle_resource"
           },
           {
             "type": "apoli:resource",
-            "resource": "*:*_active_resource",
-            "comparison": "==",
-            "compare_to": 60,
-            "inverted": true
+            "resource": "apugli:hover_active_resource",
+            "comparison": "<",
+            "compare_to": 60
           }
         ]
       }
-    },
-    "condition": {
-      "type": "apoli:power_active",
-      "power": "*:*_toggle_resource"
     }
   },
   "inactive_resource": {
@@ -176,14 +172,9 @@
       "bar_index": 9,
       "condition": {
         "type": "apoli:power_active",
-        "power": "*:*_toggle_resource",
+        "power": "apugli:hover_toggle_resource",
         "inverted": true
       }
-    },
-    "condition": {
-      "type": "apoli:power_active",
-      "power": "*:*_toggle_resource",
-      "inverted": true
     }
   },
   "recharge_condition_resource": {
@@ -198,8 +189,9 @@
     "type": "apoli:action_over_time",
     "entity_action": {
       "type": "apugli:resource_transfer",
-      "resource": "*:*_inactive_resource",
-      "provider": "*:*_active_resource"
+      "resource": "apugli:hover_inactive_resource",
+      "provider": "apugli:hover_active_resource",
+      "operation": "SET"
     },
     "interval": 1,
     "condition": {
@@ -207,62 +199,16 @@
       "conditions": [
         {
           "type": "apugli:compare_resource",
-          "resource": "*:*_inactive",
-          "compare_to": "*:*_inactive_resource",
-          "comparison": "==",
-          "inverted": true
+          "resource": "apugli:hover_active_resource",
+          "compare_to": "apugli:hover_inactive_resource",
+          "comparison": "!="
         },
         {
           "type": "apoli:power_active",
-          "power": "*:*_toggle_resource",
+          "power": "apugli:hover_toggle_resource",
           "inverted": true
         }
       ]
-    }
-  },
-  "toggle": {
-    "type": "apoli:active_self",
-    "entity_action": {
-      "type": "apoli:if_else",
-      "condition": {
-        "type": "apoli:power_active",
-        "power": "*:hover_toggle_resource"
-      },
-      "if_action": {
-        "type": "apoli:and",
-        "actions": [
-          {
-            "type": "apoli:toggle",
-            "power": "*:hover_toggle_resource"
-          },
-          {
-            "type": "apugli:resource_transfer",
-            "resource": "*:hover_inactive_resource",
-            "provider": "*:hover_active_resource"
-          }
-        ]
-      },
-      "else_action": {
-        "type": "apoli:and",
-        "actions": [
-          {
-            "type": "apoli:toggle",
-            "power": "*:hover_toggle_resource"
-          },
-          {
-            "type": "apugli:resource_transfer",
-            "resource": "*:hover_active_resource",
-            "provider": "*:hover_inactive_resource"
-          }
-        ]
-      }
-    },
-    "cooldown": 1,
-    "hud_render": {
-      "should_render": false
-    },
-    "key": {
-      "key": "lol"
     }
   },
   "toggle_resource": {
@@ -270,6 +216,20 @@
     "active_by_default": true,
     "key": {
       "key": "null"
+    }
+  },
+  "toggle": {
+    "type": "apoli:active_self",
+    "entity_action": {
+      "type": "apoli:toggle",
+      "power": "*:hover_toggle_resource"
+    },
+    "cooldown": 1,
+    "hud_render": {
+      "should_render": false
+    },
+    "key": {
+      "key": "key.apoli.primary_active"
     }
   }
 }

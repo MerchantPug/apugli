@@ -18,6 +18,7 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPowerHelper.class)
-public class ForgePowerHelper implements IPowerHelper<ConfiguredPower<?, ?>> {
+public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, ?>>> {
     
     @Override
     public io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<?> unwrapSimpleFactory(PowerFactory<?> factory) {
@@ -106,7 +107,7 @@ public class ForgePowerHelper implements IPowerHelper<ConfiguredPower<?, ?>> {
     }
     
     @Override
-    public SerializableDataType<ConfiguredPower<?, ?>> getPowerTypeDataType() {
+    public SerializableDataType<Holder<ConfiguredPower<?, ?>>> getPowerTypeDataType() {
         return ApoliForgeDataTypes.POWER_TYPE.get();
     }
 
@@ -121,25 +122,32 @@ public class ForgePowerHelper implements IPowerHelper<ConfiguredPower<?, ?>> {
     }
 
     @Override
-    public OptionalInt getResource(LivingEntity entity, ConfiguredPower<?,?> power) {
-        if(IPowerContainer.get(entity).resolve().map(container -> container.hasPower(power.getRegistryName())).orElse(false)) {
-            return power.getValue(entity);
-        }
-        Apugli.LOG.warn("Failed to get resource for power [{}], because it doesn't hold any resource!", power.getRegistryName());
-        return OptionalInt.empty();
-    }
-    
-    @Override
-    public OptionalInt setResource(LivingEntity entity, ConfiguredPower<?,?> power, int value) {
-        var powerId = power.getRegistryName();
-        if (IPowerContainer.get(entity).resolve().map(container -> container.hasPower(powerId)).orElse(false)) {
-            OptionalInt result = power.assign(entity, value);
-            if (result.isPresent()) {
-                ApoliAPI.synchronizePowerContainer(entity);
-                return result;
+    public OptionalInt getResource(LivingEntity entity, Holder<ConfiguredPower<?,?>> holder) {
+        var powerId = holder.unwrapKey();
+        if(holder.isBound()) {
+            ConfiguredPower<?, ?> power = holder.value();
+            if(IPowerContainer.get(entity).resolve().map(container -> holder.isBound() && container.getPowers().contains(holder.value())).orElse(false)) {
+                return power.getValue(entity);
             }
         }
-        Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId);
+        Apugli.LOG.warn("Failed to get resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
+        return OptionalInt.empty();
+    }
+
+    @Override
+    public OptionalInt setResource(LivingEntity entity, Holder<ConfiguredPower<?,?>> holder, int value) {
+        var powerId = holder.unwrapKey();
+        if(holder.isBound()) {
+            ConfiguredPower<?, ?> power = holder.value();
+            if(IPowerContainer.get(entity).resolve().map(container -> holder.isBound() && container.getPowers().contains(holder.value())).orElse(false)) {
+                OptionalInt result = power.assign(entity, value);
+                if(result.isPresent()) {
+                    ApoliAPI.synchronizePowerContainer(entity);
+                    return result;
+                }
+            }
+        }
+        Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
         return OptionalInt.empty();
     }
     
