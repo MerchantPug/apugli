@@ -1,2 +1,1 @@
-- Ported 2.4.1+1.19.2 to 1.19.3.
-  - Please read the changes from 2.0.0 to 2.4.1 if you're curious on what's changed.
+- [FABRIC] Fixed a crash involving projectiles hitting blocks.
