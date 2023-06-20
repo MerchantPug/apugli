@@ -1,1 +1,1 @@
-- [FABRIC] Fixed a crash involving projectiles hitting blocks.
+- [FORGE] Fixed the power type identifier data type
