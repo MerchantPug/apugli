@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.apace100.apoli.util.modifier.Modifier;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
