@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.xplatform.common;
 
 import net.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.apace100.apoli.util.modifier.Modifier;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -92,7 +91,7 @@ public abstract class ExplosionMixin {
         return original || this.getSourceMob() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getSourceMob(), this.apugli$affectedEntity);
     }
 
-    public void apugli$setExplosionDamageModifiers(List<Modifier> value) {
+    public void apugli$setExplosionDamageModifiers(List<?> value) {
         this.apugli$explosionDamageModifiers = value;
     }
 
@@ -100,7 +99,7 @@ public abstract class ExplosionMixin {
         return this.apugli$explosionDamageModifiers;
     }
 
-    public void apugli$setExplosionKnockbackModifiers(List<Modifier> value) {
+    public void apugli$setExplosionKnockbackModifiers(List<?> value) {
         this.apugli$explosionKnockbackModifiers = value;
     }
 
