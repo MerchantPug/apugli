@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
 import net.merchantpug.apugli.power.SetTexturePower;
@@ -132,7 +133,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         }
 
         RenderType renderLayer;
-        if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
+        if (TextureUtilClient.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
             renderLayer = alpha == 1.0 ? RenderType.entityCutoutNoCull(power.getUrlTextureIdentifier()) : RenderType.entityTranslucent(power.getUrlTextureIdentifier());
 
             arm.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.NO_OVERLAY, red, green, blue, alpha);

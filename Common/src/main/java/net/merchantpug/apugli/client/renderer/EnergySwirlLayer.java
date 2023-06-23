@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.client.renderer;
 
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EnergySwirlPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -36,7 +37,7 @@ public class EnergySwirlLayer<T extends LivingEntity, M extends EntityModel<T>> 
         float f = (float)entity.tickCount + tickDelta;
 
         VertexConsumer vertexConsumer = null;
-        if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
+        if (TextureUtilClient.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
             vertexConsumer = vertexConsumers.getBuffer(RenderType.energySwirl(power.getUrlTextureIdentifier(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
         } else if (power.getTextureLocation() != null) {
             vertexConsumer = vertexConsumers.getBuffer(RenderType.energySwirl(power.getTextureLocation(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
