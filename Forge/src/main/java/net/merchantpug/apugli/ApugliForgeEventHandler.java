@@ -269,13 +269,13 @@ public class ApugliForgeEventHandler {
 
     private static void handleUrlPower(ResourceLocation id, ConfiguredPower<?, ?> power) {
         if (!(power.getFactory() instanceof FabricPowerFactory<?>) || !(((FabricPowerFactoryAccessor)power.getFactory()).invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower) || texturePower.getTextureUrl() == null) return;
-        TextureUtil.handleUrlTexture(id, texturePower);
+        TextureUtil.cachePower(id, texturePower);
     }
 
     @SubscribeEvent
-    public static void postPowerReload(OnDatapackSyncEvent event) {
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
         if (event.getPlayer() == null) return;
-        ApugliPacketHandler.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), event.getPlayer());
+        ApugliPacketHandler.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), event.getPlayer());
     }
 
 }
