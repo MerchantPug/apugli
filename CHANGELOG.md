@@ -1,1 +1,2 @@
-- [FORGE] Fixed the power type identifier data type
+### Bugfixes
+- Fixed crashes involving the `action_on_target_death` power type.
