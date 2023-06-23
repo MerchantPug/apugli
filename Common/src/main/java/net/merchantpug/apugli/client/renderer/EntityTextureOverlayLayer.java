@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.client.renderer;
 
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.TextureUtil;
@@ -40,7 +41,7 @@ public class EntityTextureOverlayLayer<T extends LivingEntity, M extends EntityM
             if (power.getTextureLocation() == null && power.getTextureUrl() == null) return;
 
             RenderType renderLayer = null;
-            if (TextureUtil.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
+            if (TextureUtilClient.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
                 renderLayer = Minecraft.getInstance().shouldEntityAppearGlowing(entity) && entity.isInvisible() ? RenderType.outline(power.getUrlTextureIdentifier()) : RenderType.entityTranslucent(power.getUrlTextureIdentifier());
             } else if (power.getTextureLocation() != null) {
                 renderLayer = Minecraft.getInstance().shouldEntityAppearGlowing(entity) && entity.isInvisible() ? RenderType.outline(power.getTextureLocation()) : RenderType.entityTranslucent(power.getTextureLocation());
