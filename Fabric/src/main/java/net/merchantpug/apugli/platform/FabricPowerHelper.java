@@ -39,11 +39,6 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
-    public Power createPowerFromId(ResourceLocation key) {
-        return PowerTypeRegistry.get(key).create(null);
-    }
-
-    @Override
     public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
         return (P) powerType.get(entity);
     }

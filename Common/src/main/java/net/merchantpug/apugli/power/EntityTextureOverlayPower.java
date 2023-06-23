@@ -3,6 +3,7 @@ package net.merchantpug.apugli.power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +45,7 @@ public class EntityTextureOverlayPower extends TextureOrUrlPower {
     }
 
     public boolean shouldRenderOriginalModelClient() {
-        return renderOriginalModel || !TextureUtil.getPowerIdToUrl().containsKey(this.getType().getIdentifier()) && textureLocation == null;
+        return renderOriginalModel || !TextureUtilClient.getPowerIdToUrl().containsKey(this.getType().getIdentifier()) && textureLocation == null;
     }
 
     public static class Factory extends SimplePowerFactory<EntityTextureOverlayPower> {

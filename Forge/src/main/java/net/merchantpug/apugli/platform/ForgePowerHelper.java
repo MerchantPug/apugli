@@ -51,16 +51,6 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
-    public Power createPowerFromId(ResourceLocation key) {
-        Optional<ConfiguredPower<?, ?>> power = ApoliAPI.getPowers().getOptional(key);
-        if (power.isPresent() && power.get().getFactory() instanceof FabricPowerFactory<?> factory) {
-            return ((FabricPowerFactoryAccessor)factory).invokeGetPower(power.get(), null);
-        }
-        Apugli.LOG.error("Tried getting Fabric Power class from non Fabric Power.");
-        return null;
-    }
-
-    @Override
     public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
         return (P) powerType.getConfiguredPower();
     }

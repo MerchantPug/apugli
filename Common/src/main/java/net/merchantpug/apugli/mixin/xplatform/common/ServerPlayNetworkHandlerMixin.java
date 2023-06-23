@@ -30,6 +30,6 @@ public class ServerPlayNetworkHandlerMixin {
     @Inject(method = "handleResourcePackResponse", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;getAction()Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket$Action;"))
     private void sendUrlTexturesToPlayerAfterResourceLoad(ServerboundResourcePackPacket packet, CallbackInfo ci) {
         if (packet.getAction() == ServerboundResourcePackPacket.Action.DECLINED && this.server.isResourcePackRequired()) return;
-        Services.PLATFORM.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getTexturePowers()), player);
+        Services.PLATFORM.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), player);
     }
 }
