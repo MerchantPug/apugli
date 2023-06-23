@@ -218,12 +218,12 @@ public class ApugliForgeEventHandler {
             LivingEntity target = event.getEntity();
             LivingEntity kilLCredit = event.getEntity().getKillCredit();
 
-            if (attacker == null || attacker != kilLCredit) {
+            if (kilLCredit != null && (attacker == null || attacker != kilLCredit)) {
                 ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(kilLCredit, target, event.getSource(), x, true);
                 return;
             }
 
-            LivingEntity living = (LivingEntity) attacker;
+            if (!(attacker instanceof LivingEntity living)) return;
             ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(living, target, source, x, false);
         });
     }

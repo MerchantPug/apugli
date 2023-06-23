@@ -89,7 +89,7 @@ public abstract class LivingEntityMixin extends Entity {
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
         if (this.level.isClientSide) return;
 
-        if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit())) {
+        if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit()) && this.getKillCredit() != null) {
             ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(this.getKillCredit(), (LivingEntity) (Object) this, source, apugli$damageAmountOnDeath, true);
             return;
         }
