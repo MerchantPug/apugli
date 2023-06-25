@@ -22,11 +22,11 @@
   "client": [
     "client.BipedEntityRendererMixin",
     "client.ClientLevelMixin",
+    "client.ElytraFeatureRendererMixin",
     "client.EntityRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
-    "client.accessor.ApoliClientAccessor",
-    "common.ElytraFeatureRendererMixin"
+    "client.accessor.ApoliClientAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
