@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.fabric.common;
+package net.merchantpug.apugli.mixin.fabric.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.vertex.PoseStack;
