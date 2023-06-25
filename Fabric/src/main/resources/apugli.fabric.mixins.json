@@ -23,6 +23,7 @@
   "client": [
     "client.BipedEntityRendererMixin",
     "client.ClientLevelMixin",
+    "client.ElytraFeatureRendererMixin",
     "client.EntityRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
