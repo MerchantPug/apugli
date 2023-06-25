@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.ActiveKeyMixin",
+    "common.AnimalEntityMixin",
     "common.BoneMealItemMixin",
     "common.EnchantmentHelperMixin",
     "common.EntityConditionsMixin",
