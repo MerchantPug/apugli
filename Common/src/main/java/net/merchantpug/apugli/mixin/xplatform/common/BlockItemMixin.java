@@ -32,7 +32,7 @@ public class BlockItemMixin extends Item {
         super(settings);
     }
 
-    @Inject(method = "canPlace", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "placeBlock", at = @At("HEAD"), cancellable = true)
     private void onPlaced(BlockPlaceContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
         Player player = context.getPlayer();
         ItemStack heldItem = context.getItemInHand();
