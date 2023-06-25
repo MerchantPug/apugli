@@ -24,7 +24,8 @@
     "client.EntityRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
-    "client.accessor.ApoliClientAccessor"
+    "client.accessor.ApoliClientAccessor",
+    "common.ElytraFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
