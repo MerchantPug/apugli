@@ -2,6 +2,7 @@ package net.merchantpug.apugli;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
+import io.github.apace100.apoli.integration.PrePowerReloadCallback;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
@@ -36,9 +37,10 @@ public class ApugliFabric implements ModInitializer {
         Apugli.init();
         ApugliPackets.registerC2S();
 
+        PrePowerReloadCallback.EVENT.register(() -> TextureUtil.getCache().clear());
+
         PostPowerLoadCallback.EVENT.register((powerId, factoryId, isSubPower, json, powerType) -> {
             if (!(powerType.create(null) instanceof TextureOrUrlPower texturePower) || texturePower.getTextureUrl() == null) return;
-            TextureUtil.getCache().clear();
             TextureUtil.cachePower(powerId, texturePower);
         });
 
