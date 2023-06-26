@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.platform;
 
+import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
@@ -34,6 +35,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,6 +167,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public HudRender getDefaultHudRender() {
         return HudRender.DONT_RENDER;
+    }
+
+    @Override
+    public Entity getItemStackLinkedEntity(ItemStack stack) {
+        return ((EntityLinkedItemStack)(Object)stack).getEntity();
     }
 
 }

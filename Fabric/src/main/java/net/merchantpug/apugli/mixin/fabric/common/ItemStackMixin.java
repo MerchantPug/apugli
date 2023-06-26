@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.BucketItemAccessor;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.ItemAccessor;
 import net.merchantpug.apugli.platform.Services;
@@ -37,7 +36,7 @@ public abstract class ItemStackMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
-        Optional<EdibleItemPower> power = PowerHolderComponent.getPowers(((ItemStackAccess)(Object)stack).getEntity(), EdibleItemPower.class).stream().filter(p -> p.doesApply(world, stack)).findFirst();
+        Optional<EdibleItemPower> power = PowerHolderComponent.getPowers(Services.PLATFORM.getItemStackLinkedEntity(stack), EdibleItemPower.class).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
             ItemStack itemStack = user.getItemInHand(hand);
             if (user.canEat(power.get().getFoodComponent().canAlwaysEat())) {
@@ -57,7 +56,7 @@ public abstract class ItemStackMixin {
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
     private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack stack = (ItemStack)(Object)this;
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        if (!(Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(user, stack);

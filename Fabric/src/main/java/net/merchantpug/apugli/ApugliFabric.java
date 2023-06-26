@@ -2,9 +2,7 @@ package net.merchantpug.apugli;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
-import io.github.apace100.apoli.integration.PrePowerLoadCallback;
 import io.github.apace100.apoli.integration.PrePowerReloadCallback;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -14,11 +12,6 @@ import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.TextureUtil;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Tuple;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ApugliFabric implements ModInitializer {
 

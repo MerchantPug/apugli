@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
@@ -136,7 +135,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (((ItemStackAccess) (Object) stack).getEntity() instanceof LivingEntity living) {
+        if (Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
                 world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);

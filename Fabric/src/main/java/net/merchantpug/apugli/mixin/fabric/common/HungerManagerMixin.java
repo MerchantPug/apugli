@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -23,7 +22,7 @@ public abstract class HungerManagerMixin {
 
     @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     private void eat(Item item, ItemStack stack, CallbackInfo ci) {
-        if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living) {
+        if (Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
             power.ifPresent(p -> {
                 this.eat(p.getFoodComponent().getNutrition(), p.getFoodComponent().getSaturationModifier());

@@ -2,7 +2,6 @@ package net.merchantpug.apugli.power.factory;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -62,7 +61,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag generateEnchantments(ListTag enchants, ItemStack self) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
 
         if(!(entity instanceof LivingEntity living)) return enchants;
 
@@ -93,7 +92,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(entity.getStringUUID())) {
             ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             if (shouldReapplyEnchantments(living, self)) {
@@ -106,7 +105,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags));
@@ -129,7 +128,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
-        Entity entity = ((ItemStackAccess) (Object) self).getEntity();
+        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);

@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.fabric.common;
 
 import io.github.apace100.apoli.power.factory.condition.ItemConditions;
 import io.github.apace100.calio.data.SerializableData;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +16,7 @@ public class ItemConditionsMixin {
 
     @Inject(method = "lambda$register$10", at = @At("HEAD"), cancellable = true)
     private static void isPowerFoodMeat(SerializableData.Instance data, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.EDIBLE_ITEM.get()) &&
+        if (Services.PLATFORM.getItemStackLinkedEntity(stack)instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.EDIBLE_ITEM.get()) &&
             Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(power -> power.doesApply(living.level(), stack) && power.getFoodComponent().isMeat()))
             cir.setReturnValue(true);
     }
