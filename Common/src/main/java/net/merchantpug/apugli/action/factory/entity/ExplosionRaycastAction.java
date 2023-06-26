@@ -68,7 +68,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
     
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
-        if (entity.level.isClientSide) return;
+        if (entity.level().isClientSide) return;
         //Block Hit
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
@@ -93,17 +93,17 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
     }
     
     protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
-        if(!data.isPresent("particle") || entity.level.isClientSide()) return;
+        if(!data.isPresent("particle") || entity.level().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
         
         for(double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
         }
     }
 
     protected void onHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
         if(!data.isPresent("block_action") && !data.isPresent("action_on_hit")) return;
-        Services.ACTION.executeBlock(data,"block_action", entity.level, result.getBlockPos(), result.getDirection());
+        Services.ACTION.executeBlock(data,"block_action", entity.level(), result.getBlockPos(), result.getDirection());
         summonExplosion(data, entity, result);
         executeSelfAction(data, entity);
     }
@@ -141,15 +141,15 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
         boolean indestructible = false;
         String blockConditionFieldKey = null;
         if (data.isPresent("destructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.level, false);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.level(), false);
             blockConditionFieldKey = "destructible";
         } else if (data.isPresent("indestructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.level, true);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.level(), true);
             indestructible = true;
             blockConditionFieldKey = "indestructible";
         }
         if(calculator != null) {
-            Explosion explosion = new Explosion(entity.level, damageSelf ? null : entity,
+            Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
                     null, calculator, result.getLocation().x(), result.getLocation().y(), result.getLocation().z(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
@@ -173,7 +173,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                     power,
                     data.get("destruction_type")), entity);
         } else {
-            Explosion explosion = new Explosion(entity.level, damageSelf ? null : entity,
+            Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
                     null, null,
                     result.getLocation().x(), result.getLocation().y(), result.getLocation().z(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));

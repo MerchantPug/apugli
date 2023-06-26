@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.fabric.common;
 
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.PreventBreedingPower;
-import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +13,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -34,8 +34,10 @@ public abstract class AnimalEntityMixin extends AgeableMob {
     @Shadow public abstract boolean canFallInLove();
 
     @Shadow private int inLove;
+
+    @Shadow public abstract @Nullable ServerPlayer getLoveCause();
+
     @Unique private Animal apugli$otherAnimalEntity;
-    @Unique private ServerPlayer apugli$serverPlayerEntity;
 
     protected AnimalEntityMixin(EntityType<? extends AgeableMob> entityType, Level world) {
         super(entityType, world);
@@ -58,20 +60,25 @@ public abstract class AnimalEntityMixin extends AgeableMob {
         }
     }
 
-    @Inject(method = "spawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;awardStat(Lnet/minecraft/resources/ResourceLocation;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void captureBreedLocals(ServerLevel world, Animal other, CallbackInfo ci, AgeableMob passiveEntity, ServerPlayer serverPlayerEntity) {
-        this.apugli$otherAnimalEntity = other;
-        this.apugli$serverPlayerEntity = serverPlayerEntity;
+    @Inject(method = "finalizeSpawnChildFromBreeding", at = @At(value = "HEAD"))
+    private void captureBreedLocals(ServerLevel serverLevel, Animal animal, AgeableMob ageableMob, CallbackInfo ci) {
+        this.apugli$otherAnimalEntity = animal;
     }
 
-    @ModifyArg(method = "spawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 0))
+    @ModifyArg(method = "finalizeSpawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 0))
     private int modifyThisAnimalBreed(int age) {
-        return (int)Services.PLATFORM.applyModifiers(apugli$serverPlayerEntity, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, apugli$serverPlayerEntity, this));
+        if (this.getLoveCause() != null) {
+            return (int)Services.PLATFORM.applyModifiers(this.getLoveCause(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, this.getLoveCause(), this));
+        }
+        return age;
     }
 
-    @ModifyArg(method = "spawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 1))
+    @ModifyArg(method = "finalizeSpawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 1))
     private int modifyOtherAnimalBreed(int age) {
-        return (int)Services.PLATFORM.applyModifiers(apugli$serverPlayerEntity, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, apugli$serverPlayerEntity, apugli$otherAnimalEntity));
+        if (this.getLoveCause() != null) {
+            return (int) Services.PLATFORM.applyModifiers(this.getLoveCause(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, this.getLoveCause(), apugli$otherAnimalEntity));
+        }
+        return age;
     }
 
 }

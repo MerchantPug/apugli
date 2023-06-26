@@ -61,7 +61,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
     
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
-        if(entity.level.isClientSide) return;
+        if(entity.level().isClientSide) return;
         float power = data.getFloat("power");
         if(data.getBoolean("use_charged")) {
             power = applyChargedModifiers(data, entity, power);
@@ -96,15 +96,15 @@ public class ExplodeAction implements IActionFactory<Entity> {
         boolean indestructible = false;
         String blockConditionFieldKey = null;
         if (data.isPresent("destructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.level, false);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.level(), false);
             blockConditionFieldKey = "destructible";
         } else if (data.isPresent("indestructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.level, true);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.level(), true);
             indestructible = true;
             blockConditionFieldKey = "indestructible";
         }
         if(calculator != null) {
-            Explosion explosion = new Explosion(entity.level, damageSelf ? null : entity,
+            Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
                     null, calculator, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
@@ -131,7 +131,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
                     data.get("destruction_type")
                     ), entity);
         } else {
-            Explosion explosion = new Explosion(entity.level, entity,
+            Explosion explosion = new Explosion(entity.level(), entity,
                     null, null, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
@@ -185,7 +185,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
         if(!(entity instanceof LivingEntity)) return;
         Collection<MobEffectInstance> collection = ((LivingEntity)entity).getActiveEffects();
         if(!collection.isEmpty() && data.getBoolean("spawn_effect_cloud")) {
-            AreaEffectCloud areaEffectCloudEntity = new AreaEffectCloud(entity.level, entity.getX(), entity.getY(), entity.getZ());
+            AreaEffectCloud areaEffectCloudEntity = new AreaEffectCloud(entity.level(), entity.getX(), entity.getY(), entity.getZ());
             areaEffectCloudEntity.setRadius(2.5F);
             areaEffectCloudEntity.setRadiusOnUse(-0.5F);
             areaEffectCloudEntity.setWaitTime(10);
@@ -195,7 +195,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
             for(MobEffectInstance statusEffectInstance : collection) {
                 areaEffectCloudEntity.addEffect(new MobEffectInstance(statusEffectInstance));
             }
-            entity.level.addFreshEntity(areaEffectCloudEntity);
+            entity.level().addFreshEntity(areaEffectCloudEntity);
         }
     }
     

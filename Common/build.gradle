@@ -72,8 +72,7 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.19.3:${parchment_version}@zip")
     }
     //Apoli
-    // modCompileOnlyApi "com.github.apace100:apoli:${apoli_version}"
-    modCompileOnlyApi "com.github.MerchantPug:apoli:${apoli_version}"
+    modCompileOnly "com.github.apace100:apoli:${apoli_version}"
     //MixinExtras
     annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     //JSR305

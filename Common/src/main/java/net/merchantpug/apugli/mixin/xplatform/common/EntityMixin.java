@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -39,7 +40,7 @@ public abstract class EntityMixin implements EntityAccess {
 
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
-        if(!((Entity)(Object)this instanceof LivingEntity living) || state.getMaterial().isLiquid()) return;
+        if(!((Entity)(Object)this instanceof LivingEntity living)) return;
         List<CustomFootstepPower> powers = Services.POWER.getPowers(living, ApugliPowers.CUSTOM_FOOTSTEP.get());
         if(powers.isEmpty()) return;
         if(powers.stream().anyMatch(CustomFootstepPower::isMuted)) ci.cancel();

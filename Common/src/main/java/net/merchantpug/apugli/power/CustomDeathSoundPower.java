@@ -18,8 +18,8 @@ public class CustomDeathSoundPower extends CustomSoundPower {
     protected void playSound(Entity entity, SoundEvent soundEvent, float volume, float pitch) {
         RandomSource random = entity instanceof LivingEntity living
             ? living.getRandom()
-            : entity.level.random;
-        entity.level.playSound(null,
+            : entity.level().random;
+        entity.level().playSound(null,
             entity.getX(), entity.getY(), entity.getZ(),
             soundEvent, entity.getSoundSource(),
             volume, (random.nextFloat() - random.nextFloat()) * 0.2F + pitch

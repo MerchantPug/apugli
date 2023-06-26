@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 
 import java.util.List;
 
@@ -28,27 +29,33 @@ public class PowerHumanoidArmorLayer<T extends LivingEntity, M extends HumanoidM
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
         modifyEquippedItemRenderPowers.forEach(power -> {
             if(power.getSlot().getType() == EquipmentSlot.Type.ARMOR) {
-                renderArmor(power.getStack(), matrices, vertexConsumers, power.getSlot(), light, ((ArmorFeatureRendererAccessor)this).invokeGetArmorModel(power.getSlot()));
+                renderArmor(entity, power.getStack(), matrices, vertexConsumers, power.getSlot(), light, ((ArmorFeatureRendererAccessor)this).invokeGetArmorModel(power.getSlot()));
             }
         });
     }
 
-    public void renderArmor(ItemStack stack, PoseStack matrices, MultiBufferSource vertexConsumers, EquipmentSlot armorSlot, int light, HumanoidModel model) {
+    public void renderArmor(T entity, ItemStack stack, PoseStack matrices, MultiBufferSource vertexConsumers, EquipmentSlot armorSlot, int light, HumanoidModel model) {
         if(stack.getItem() instanceof ArmorItem armorItem) {
             if(armorItem.getEquipmentSlot() == armorSlot) {
                 this.getParentModel().copyPropertiesTo(model);
                 ((ArmorFeatureRendererAccessor)this).invokeSetVisible(model, armorSlot);
                 boolean bl = armorSlot == EquipmentSlot.LEGS;
-                boolean bl2 = stack.hasFoil();
                 if(armorItem instanceof DyeableArmorItem) {
                     int i = ((DyeableArmorItem) armorItem).getColor(stack);
                     float f = (float) (i >> 16 & 255) / 255.0F;
                     float g = (float) (i >> 8 & 255) / 255.0F;
                     float h = (float) (i & 255) / 255.0F;
-                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, f, g, h, null);
-                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
+                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, f, g, h, null);
+                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
                 } else {
-                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
+                    ((ArmorFeatureRendererAccessor)this).invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, null);
+                }
+
+                ArmorTrim.getTrim(entity.level().registryAccess(), stack).ifPresent((armorTrim) -> {
+                    ((ArmorFeatureRendererAccessor)(this)).invokeRenderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, model, bl);
+                });
+                if (stack.hasFoil()) {
+                    ((ArmorFeatureRendererAccessor)(this)).invokeRenderGlint(matrices, vertexConsumers, light, model);
                 }
             }
         }

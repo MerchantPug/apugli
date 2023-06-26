@@ -69,12 +69,12 @@ public class EdibleItemPower extends Power {
     }
 
     public static void executeEntityActions(LivingEntity entity, ItemStack stack) {
-        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, stack) && p.entityActionWhenEaten != null).forEach(p -> p.entityActionWhenEaten.accept(entity));
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level(), stack) && p.entityActionWhenEaten != null).forEach(p -> p.entityActionWhenEaten.accept(entity));
     }
 
     public static ItemStack executeItemActions(LivingEntity entity, ItemStack stack, ItemStack originalStack) {
         Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
-        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, originalStack) && p.itemActionWhenEaten != null).forEach(p -> p.itemActionWhenEaten.accept(new Tuple<>(entity.level, mutable)));
+        Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level(), originalStack) && p.itemActionWhenEaten != null).forEach(p -> p.itemActionWhenEaten.accept(new Tuple<>(entity.level(), mutable)));
         return mutable.getValue();
     }
 

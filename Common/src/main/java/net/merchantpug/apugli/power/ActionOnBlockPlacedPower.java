@@ -32,7 +32,7 @@ public class ActionOnBlockPlacedPower extends Power {
     
     public void executeAction(@Nullable BlockPos pos) {
         if(pos == null || blockAction == null) return;
-        blockAction.accept(Triple.of(entity.level, pos, Direction.UP));
+        blockAction.accept(Triple.of(entity.level(), pos, Direction.UP));
     }
     
     public static class Factory extends SimplePowerFactory<ActionOnBlockPlacedPower> {

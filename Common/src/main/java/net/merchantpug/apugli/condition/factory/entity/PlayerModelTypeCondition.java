@@ -16,7 +16,7 @@ public class PlayerModelTypeCondition implements IConditionFactory<Entity> {
     
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        if(!entity.level.isClientSide() || !(entity instanceof AbstractClientPlayer)) return false;
+        if(!entity.level().isClientSide() || !(entity instanceof AbstractClientPlayer)) return false;
         return ((AbstractClientPlayer) entity).getModelName().equals(data.get("model_type").toString());
     }
 

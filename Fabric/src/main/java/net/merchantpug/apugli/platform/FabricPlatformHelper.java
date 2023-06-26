@@ -132,7 +132,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
         if (!component.getKeysToCheck().contains(key)) {
             component.addKeyToCheck(key);
             component.changePreviousKeysToCheckToCurrent();
-        } else if (player.level.isClientSide && player instanceof LocalPlayer) {
+        } else if (player.level().isClientSide && player instanceof LocalPlayer) {
             ApugliClientFabric.handleActiveKeys();
         }
     }

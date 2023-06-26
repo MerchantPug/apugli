@@ -67,7 +67,7 @@ public class ActionOnDurabilityChangePower extends Power {
     }
 
     public boolean doesApply(ItemStack stack) {
-        return (slot == null || ItemStack.matches(entity.getItemBySlot(slot), stack)) && (this.itemCondition == null || this.itemCondition.test(new Tuple<>(entity.level, stack)));
+        return (slot == null || ItemStack.matches(entity.getItemBySlot(slot), stack)) && (this.itemCondition == null || this.itemCondition.test(new Tuple<>(entity.level(), stack)));
     }
 
     private void executeAction(ItemStack stack,
@@ -105,7 +105,7 @@ public class ActionOnDurabilityChangePower extends Power {
         if(itemAction != null) {
             Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
 
-            itemAction.accept(new Tuple<>(entity.level, mutable));
+            itemAction.accept(new Tuple<>(entity.level(), mutable));
 
             if (equipmentSlot.isPresent()) {
                 entity.setItemSlot(equipmentSlot.get(), mutable.getValue());

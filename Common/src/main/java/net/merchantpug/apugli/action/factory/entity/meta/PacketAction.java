@@ -21,9 +21,9 @@ public class PacketAction implements IActionFactory<Entity> {
 
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
-        if (entity.level.isClientSide && entity instanceof LocalPlayer && data.get("side") == Side.SERVER) {
+        if (entity.level().isClientSide && entity instanceof LocalPlayer && data.get("side") == Side.SERVER) {
             Services.PLATFORM.sendC2S(new ExecuteEntityActionServerPacket<>(data.get("action")));
-        } else if (!entity.level.isClientSide && data.get("side") == Side.CLIENT) {
+        } else if (!entity.level().isClientSide && data.get("side") == Side.CLIENT) {
             Services.PLATFORM.sendS2CTrackingAndSelf(new ExecuteEntityActionClientPacket<>(entity.getId(), data.get("action")), entity);
         }
     }

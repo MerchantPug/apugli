@@ -58,7 +58,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
     List<?> pitchModifiers();
 
     default void executeJump(P power, Entity entity) {
-        if (entity instanceof LivingEntity living && !entity.level.isClientSide()) {
+        if (entity instanceof LivingEntity living && !entity.level().isClientSide()) {
             SerializableData.Instance data = getDataFromPower(power);
             double distance = !Double.isNaN(data.getDouble("distance")) ? data.getDouble("distance") : Services.PLATFORM.getReachDistance(entity);
             Vec3 eyePosition = entity.getEyePosition(0);
@@ -66,7 +66,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
             Vec3 traceEnd = eyePosition.add(lookVector);
 
             ClipContext context = new ClipContext(eyePosition, traceEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity);
-            BlockHitResult blockHitResult = entity.level.clip(context);
+            BlockHitResult blockHitResult = entity.level().clip(context);
 
             double entityDistance = !Double.isNaN(data.getDouble("distance")) ? data.getDouble("distance") : Services.PLATFORM.getAttackRange(entity);
             Vec3 entityLookVector = entity.getViewVector(0).scale(entityDistance);
@@ -110,7 +110,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         float g = Mth.sin(entity.getXRot() * 0.017453292F);
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.level, entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
+        Explosion explosion = new Explosion(entity.level(), entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(damageModifiers(power, entity));
         ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(knockbackModifiers());
         ((ExplosionAccess)explosion).setExplosionVolumeModifiers(volumeModifiers());

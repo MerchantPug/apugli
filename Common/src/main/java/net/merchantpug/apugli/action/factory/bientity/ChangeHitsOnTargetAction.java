@@ -21,7 +21,7 @@ public class ChangeHitsOnTargetAction implements IActionFactory<Tuple<Entity, En
 
     @Override
     public void execute(SerializableData.Instance data, Tuple<Entity, Entity> pair) {
-        if (!pair.getB().level.isClientSide || !(pair.getA() instanceof LivingEntity) || !(pair.getB() instanceof LivingEntity) || ((LivingEntity) pair.getB()).isDeadOrDying()) return;
+        if (!pair.getB().level().isClientSide || !(pair.getA() instanceof LivingEntity) || !(pair.getB() instanceof LivingEntity) || ((LivingEntity) pair.getB()).isDeadOrDying()) return;
         int change = data.getInt("change");
         int timerChange = data.getInt("timer_change");
 

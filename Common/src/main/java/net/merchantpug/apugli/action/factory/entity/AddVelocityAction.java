@@ -38,7 +38,7 @@ public class AddVelocityAction implements IActionFactory<Entity> {
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
         if (entity instanceof Player
-                && (entity.level.isClientSide ?
+                && (entity.level().isClientSide ?
                 !data.getBoolean("client") : !data.getBoolean("server")))
             return;
         Space space = data.get("space");

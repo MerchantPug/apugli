@@ -43,7 +43,7 @@ public class SpawnItemAction implements IActionFactory<Entity> {
         int pickupDelay = data.getInt("pick_up_delay");
         boolean retainOwnership = data.getBoolean("retain_ownership");
         boolean throwRandomly = data.getBoolean("throw_randomly");
-        Level level = entity.level;
+        Level level = entity.level();
         Supplier<Vec3> nextVelocity;
         if(throwRandomly) {
             RandomSource random = entity instanceof LivingEntity living ? living.getRandom() : level.random;
@@ -70,7 +70,7 @@ public class SpawnItemAction implements IActionFactory<Entity> {
     }
     
     private ItemEntity createItemEntity(Entity entity, ItemStack stack, int pickupDelay, boolean retainOwnership, Vec3 velocity) {
-        ItemEntity itemEntity = new ItemEntity(entity.level, entity.getX(), entity.getY(), entity.getZ(), stack);
+        ItemEntity itemEntity = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack);
         itemEntity.setPickUpDelay(pickupDelay);
         itemEntity.setThrower(entity.getUUID());
         if(retainOwnership) itemEntity.setThrower(entity.getUUID());

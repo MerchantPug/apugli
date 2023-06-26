@@ -57,7 +57,7 @@ public class ModifyBlockPlacedPower extends Power {
 
     public void generateSeed() {
         if(!(entity instanceof Player)) return;
-        if(!entity.level.isClientSide()) {
+        if(!entity.level().isClientSide()) {
             this.seed = (int)(Math.random() * Integer.MAX_VALUE);
             Services.POWER.syncPower(entity, this.getType());
         }
@@ -65,7 +65,7 @@ public class ModifyBlockPlacedPower extends Power {
 
     public void executeAction(Optional<BlockPos> placedBlockPos) {
         if(placedBlockPos.isEmpty() || blockAction == null) return;
-        blockAction.accept(Triple.of(entity.level, placedBlockPos.get(), Direction.UP));
+        blockAction.accept(Triple.of(entity.level(), placedBlockPos.get(), Direction.UP));
     }
 
     public void addBlockState(BlockState blockState) {

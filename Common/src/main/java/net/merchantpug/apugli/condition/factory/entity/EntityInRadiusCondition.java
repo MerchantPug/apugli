@@ -35,7 +35,7 @@ public class EntityInRadiusCondition implements IConditionFactory<Entity> {
             case LESS_THAN, GREATER_THAN_OR_EQUAL -> stopAt = compareTo;
         }
         int count = 0;
-        for(Entity target : entity.level.getEntities(entity, entity.getBoundingBox().inflate(data.getDouble("radius")))) {
+        for(Entity target : entity.level().getEntities(entity, entity.getBoundingBox().inflate(data.getDouble("radius")))) {
             if(target != null) {
                 if((entityCondition == null || entityCondition.test(target)) &&
                    (biEntityCondition == null || biEntityCondition.test(new Tuple<>(entity, target)))

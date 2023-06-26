@@ -90,7 +90,7 @@ public class RocketJumpPower extends AbstractActiveCooldownPower<RocketJumpPower
 
         @Override
         public void onUse() {
-            if (canUse() && !entity.level.isClientSide()) {
+            if (canUse() && !entity.level().isClientSide()) {
                 ApugliPowers.ROCKET_JUMP.get().executeJump(this, entity);
             }
         }

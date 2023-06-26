@@ -46,7 +46,7 @@ public class RaycastCondition implements IConditionFactory<Entity> {
     }
 
     protected boolean checkHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
-        return Services.CONDITION.checkBlock(data, "block_condition", entity.level, result.getBlockPos());
+        return Services.CONDITION.checkBlock(data, "block_condition", entity.level(), result.getBlockPos());
     }
 
     protected boolean checkHitEntity(SerializableData.Instance data, Entity entity, EntityHitResult result) {

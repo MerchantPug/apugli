@@ -33,7 +33,7 @@ public class ParticleInRadiusCondition implements IConditionFactory<Entity> {
     
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        if(!entity.level.isClientSide()) return false;
+        if(!entity.level().isClientSide()) return false;
         //Prepare for particle type check
         Predicate<ParticleOptions> particleFilter;
         List<ParticleOptions> particleOptions = new ArrayList<>();

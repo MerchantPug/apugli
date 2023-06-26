@@ -34,7 +34,7 @@ public record ExecuteBiEntityActionServerPacket<A>(int otherEntityId, boolean is
     @Override
     public void handle(MinecraftServer server, ServerPlayer player) {
         server.execute(() -> {
-            Entity otherEntity = player.getLevel().getEntity(otherEntityId);
+            Entity otherEntity = player.level().getEntity(otherEntityId);
 
             Entity actor = isOtherEntityTarget ? player : otherEntity;
             Entity target = isOtherEntityTarget ? otherEntity : player;

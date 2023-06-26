@@ -20,7 +20,7 @@ public class ZombifyVillagerAction implements IActionFactory<Entity> {
         if(!(entity instanceof Villager villagerEntity)) return;
         ZombieVillager zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
         if(zombieVillagerEntity != null) {
-            zombieVillagerEntity.finalizeSpawn((ServerLevelAccessor) zombieVillagerEntity.level, zombieVillagerEntity.level.getCurrentDifficultyAt(zombieVillagerEntity.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), null);
+            zombieVillagerEntity.finalizeSpawn((ServerLevelAccessor) zombieVillagerEntity.level(), zombieVillagerEntity.level().getCurrentDifficultyAt(zombieVillagerEntity.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
             zombieVillagerEntity.setGossips(villagerEntity.getGossips().store(NbtOps.INSTANCE));
             zombieVillagerEntity.setTradeOffers(villagerEntity.getOffers().createTag());
@@ -28,7 +28,7 @@ public class ZombifyVillagerAction implements IActionFactory<Entity> {
         }
         if(villagerEntity.getLastHurtByMob() != null) villagerEntity.hurt(entity.damageSources().mobAttack(villagerEntity.getLastHurtByMob()), Float.MAX_VALUE);
         else villagerEntity.hurt(entity.damageSources().source(DamageTypes.GENERIC), Float.MAX_VALUE);
-        entity.level.levelEvent(null, LevelEvent.SOUND_ZOMBIE_INFECTED, entity.blockPosition(), 0);
+        entity.level().levelEvent(null, LevelEvent.SOUND_ZOMBIE_INFECTED, entity.blockPosition(), 0);
     }
 
 }

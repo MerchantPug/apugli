@@ -87,7 +87,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/DamageSource;getEntity()Lnet/minecraft/world/entity/Entity;"))
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
-        if (this.level.isClientSide) return;
+        if (this.level().isClientSide) return;
 
         if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit()) && this.getKillCredit() != null) {
             ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(this.getKillCredit(), (LivingEntity) (Object) this, source, apugli$damageAmountOnDeath, true);
@@ -161,7 +161,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3 movementInput, CallbackInfo ci) {
-        if (this.isDeadOrDying() || this.level.isClientSide) return;
+        if (this.isDeadOrDying() || this.level().isClientSide) return;
         ApugliPowers.BUNNY_HOP.get().onTravel((LivingEntity)(Object)this, movementInput);
     }
 

@@ -6,8 +6,6 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-
 public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
     
     static SerializableData getSerializableData() {
@@ -28,7 +26,7 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
         Services.POWER.getPowers(entity, this).forEach(power -> {
             SerializableData.Instance data = getDataFromPower(power);
             int tickRate = Math.max(1, data.getInt("tick_rate"));
-            if(!entity.level.isClientSide && entity.tickCount % tickRate == 0) {
+            if(!entity.level().isClientSide && entity.tickCount % tickRate == 0) {
                 int value = getValue(power, entity);
                 if(increment(power, entity) != value) {
                     sync(entity, power);
@@ -39,7 +37,7 @@ public interface BunnyHopPowerFactory<P> extends ResourcePowerFactory<P> {
     }
 
     default boolean canGainResource(LivingEntity entity) {
-        return !(entity.isOnGround() || entity.isInWater() || entity.isInLava() || entity.isPassenger() || entity.isFallFlying());
+        return !(entity.onGround() || entity.isInWater() || entity.isInLava() || entity.isPassenger() || entity.isFallFlying());
     }
 
 }

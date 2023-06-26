@@ -23,7 +23,7 @@ public class AerialAffinityPower extends PowerFactory<ModifyBreakSpeedPower> imp
                 modifierData.set("resource", null);
                 modifierData.set("modifier", null);
                 power.addModifier(new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData));
-                power.addCondition(e -> !e.isOnGround());
+                power.addCondition(e -> !e.onGround());
 
                 return power;
             });

@@ -84,7 +84,7 @@ public abstract class ItemStackMixin {
     private void getUseAction(CallbackInfoReturnable<UseAnim> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack) && p.getUseAction() != null).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getUseAction() != null).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getUseAction().equals(UseAnim.DRINK) ? edibleItemPower.getUseAction() : UseAnim.EAT));
     }
 
@@ -92,7 +92,7 @@ public abstract class ItemStackMixin {
     private void getMaxUseTime(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack)).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getFoodComponent().isFastFood() ? 16 : 32));
     }
 
@@ -100,7 +100,7 @@ public abstract class ItemStackMixin {
     private void getDrinkSound(CallbackInfoReturnable<SoundEvent> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack) && p.getSound() != null).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
     }
 
@@ -108,7 +108,7 @@ public abstract class ItemStackMixin {
     private void getEatSound(CallbackInfoReturnable<SoundEvent> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack) && p.getSound() != null).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();
         power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
     }
 

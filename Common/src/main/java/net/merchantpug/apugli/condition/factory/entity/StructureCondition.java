@@ -34,7 +34,7 @@ public class StructureCondition implements IConditionFactory<Entity> {
     
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        if(!(entity.level instanceof ServerLevel level)) return false;
+        if(!(entity.level() instanceof ServerLevel level)) return false;
         Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
         HolderSet<Structure> holders = null;
         ResourceKey<Structure> structure = data.get("structure");

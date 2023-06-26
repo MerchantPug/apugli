@@ -35,7 +35,7 @@ public class RaycastUtil {
         }
         Vec3 rayEnd = rayStart.add(rayDir);
         ClipContext context = new ClipContext(rayStart, rayEnd, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, actor);
-        return actor.level.clip(context);
+        return actor.level().clip(context);
     }
 
     public static EntityHitResult raycastEntity(BlockHitResult blockHitResult, Entity actor, double dis) {
@@ -75,7 +75,7 @@ public class RaycastUtil {
         Vec3 rayEnd = rayStart.add(rayDir);
         AABB entityBox = actor.getBoundingBox().expandTowards(rayDir).inflate(1.0D);
         List<EntityHitResult> results = new ArrayList<>();
-        Level level = actor.level;
+        Level level = actor.level();
         for(Entity target : level.getEntities(actor, entityBox, predicate)) {
             AABB targetBB = target.getBoundingBox().inflate(target.getPickRadius());
             Optional<Vec3> intersection = targetBB.clip(rayStart, rayEnd);

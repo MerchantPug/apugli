@@ -15,7 +15,7 @@ public class CustomFootstepPower extends CustomSoundPower {
     
     @Override
     protected void playSound(Entity entity, SoundEvent soundEvent, float volume, float pitch) {
-        entity.level.playSound(null,
+        entity.level().playSound(null,
             entity.getX(), entity.getY(), entity.getZ(),
             soundEvent, entity.getSoundSource(),
             volume, pitch

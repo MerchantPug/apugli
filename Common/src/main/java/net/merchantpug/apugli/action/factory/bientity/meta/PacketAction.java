@@ -22,9 +22,9 @@ public class PacketAction implements IActionFactory<Tuple<Entity, Entity>> {
 
     @Override
     public void execute(SerializableData.Instance data, Tuple<Entity, Entity> pair) {
-        if (pair.getA().level.isClientSide && pair.getB().level.isClientSide && (pair.getA() instanceof LocalPlayer || pair.getB() instanceof LocalPlayer) && data.get("side") == Side.SERVER) {
+        if (pair.getA().level().isClientSide && pair.getB().level().isClientSide && (pair.getA() instanceof LocalPlayer || pair.getB() instanceof LocalPlayer) && data.get("side") == Side.SERVER) {
             Services.PLATFORM.sendC2S(new ExecuteBiEntityActionServerPacket<>(pair.getA() instanceof LocalPlayer ? pair.getB().getId() : pair.getA().getId(), !(pair.getB() instanceof LocalPlayer), data.get("action")));
-        } else if (!pair.getA().level.isClientSide && !pair.getB().level.isClientSide && data.get("side") == Side.CLIENT) {
+        } else if (!pair.getA().level().isClientSide && !pair.getB().level().isClientSide && data.get("side") == Side.CLIENT) {
             Services.PLATFORM.sendS2CTrackingAndSelf(new ExecuteBiEntityActionClientPacket<>(pair.getA().getId(), pair.getB().getId(), data.get("action")), pair.getA());
         }
     }

@@ -31,7 +31,7 @@ public class ActionOnEquipPower extends Power {
     }
 
     public void executeAction(EquipmentSlot slot, ItemStack stack) {
-        if(!armorConditions.containsKey(slot) || armorConditions.get(slot).test(new Tuple<>(entity.level, stack))) {
+        if(!armorConditions.containsKey(slot) || armorConditions.get(slot).test(new Tuple<>(entity.level(), stack))) {
             entityAction.accept(this.entity);
         }
     }

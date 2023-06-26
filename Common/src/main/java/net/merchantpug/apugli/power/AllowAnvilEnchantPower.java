@@ -40,7 +40,7 @@ public class AllowAnvilEnchantPower extends Power {
     
     public boolean doesApply(Enchantment enchantment, ItemStack stackA, ItemStack stackB) {
         if(!enchantments.contains(enchantment)) return false;
-        if(itemCondition != null && !itemCondition.test(new Tuple<>(entity.level, stackA))) return false;
+        if(itemCondition != null && !itemCondition.test(new Tuple<>(entity.level(), stackA))) return false;
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stackB);
         if(!map.containsKey(enchantment)) return false;
         return comparison.compare(map.get(enchantment), compareTo);

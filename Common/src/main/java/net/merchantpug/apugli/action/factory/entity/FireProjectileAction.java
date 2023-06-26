@@ -33,7 +33,7 @@ public class FireProjectileAction implements IActionFactory<Entity> {
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
         if(data.isPresent("sound")) {
-            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
         }
         EntityType<?> type = data.get("entity_type");
         float speed = data.getFloat("speed");
@@ -42,7 +42,7 @@ public class FireProjectileAction implements IActionFactory<Entity> {
         for(int i = 0; i < data.getInt("count"); ++i) {
             Entity result = createProjectile((LivingEntity) entity, type, speed, divergence, tag);
             if(result != null) {
-                entity.level.addFreshEntity(result);
+                entity.level().addFreshEntity(result);
                 Services.ACTION.executeBiEntity(data, "bientity_action", entity, result);
             }
         }
@@ -50,7 +50,7 @@ public class FireProjectileAction implements IActionFactory<Entity> {
     
     @Nullable
     protected Entity createProjectile(LivingEntity actor, EntityType<?> type, float speed, float divergence, @Nullable CompoundTag tag) {
-        Entity result = type.create(actor.level);
+        Entity result = type.create(actor.level());
         if(result == null) return null;
         Vec3 rotationVec = actor.getLookAngle();
         Vec3 spawnPos = actor.position().add(0.0D, actor.getEyeHeight(), 0.0D).add(rotationVec);
@@ -77,7 +77,7 @@ public class FireProjectileAction implements IActionFactory<Entity> {
                 .scale(speed);
             result.setDeltaMovement(divergenceVec);
             Vec3 entityVec = actor.getDeltaMovement();
-            if(actor.isOnGround()) entityVec = entityVec.multiply(1, 0, 1);
+            if(actor.onGround()) entityVec = entityVec.multiply(1, 0, 1);
             result.setDeltaMovement(result.getDeltaMovement().add(entityVec));
         }
 

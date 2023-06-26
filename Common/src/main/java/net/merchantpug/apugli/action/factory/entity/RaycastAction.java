@@ -67,11 +67,11 @@ public class RaycastAction implements IActionFactory<Entity> {
     }
     
     protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
-        if(!data.isPresent("particle") || entity.level.isClientSide()) return;
+        if(!data.isPresent("particle") || entity.level().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
         
         for(double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
         }
     }
     
@@ -87,8 +87,8 @@ public class RaycastAction implements IActionFactory<Entity> {
     }
 
     protected void onHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
-        if(!data.isPresent("block_action") && !Services.CONDITION.checkBlock(data, "block_condition", entity.level, result.getBlockPos())) return;
-        Services.ACTION.executeBlock(data,"block_action", entity.level, result.getBlockPos(), result.getDirection());
+        if(!data.isPresent("block_action") && !Services.CONDITION.checkBlock(data, "block_condition", entity.level(), result.getBlockPos())) return;
+        Services.ACTION.executeBlock(data,"block_action", entity.level(), result.getBlockPos(), result.getDirection());
         executeSelfAction(data, entity);
     }
     

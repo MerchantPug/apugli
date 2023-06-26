@@ -54,10 +54,10 @@ public class SpawnParticlesAction implements IActionFactory<Entity> {
 
     @Override
     public void execute(SerializableData.Instance data, Entity instance) {
-        if(instance.level.isClientSide) {
+        if(instance.level().isClientSide) {
             return;
         }
-        ServerLevel serverWorld = (ServerLevel) instance.level;
+        ServerLevel serverWorld = (ServerLevel) instance.level();
         int count = data.get("count");
         if(count <= 0)
             return;
@@ -77,7 +77,7 @@ public class SpawnParticlesAction implements IActionFactory<Entity> {
         for (int j = 0; j < world.players().size(); ++j) {
             ServerPlayer player = world.players().get(j);
 
-            if (player.getLevel() != world) return;
+            if (player.level() != world) return;
             BlockPos blockPos = player.getOnPos();
             if (blockPos.closerToCenterThan(new Vec3(x, y, z), force ? 512.0 : 32.0)) {
                 Services.PLATFORM.sendS2C(new SendParticlesPacket(effect, force, x, y, z, offsetX, offsetY, offsetZ, speed, velocity, count), player);

@@ -97,7 +97,7 @@ public abstract class LivingEntityMixin extends Entity {
             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).toList().size() == 0) {
                 doesApply = this.onSoulSpeedBlock();
             } else {
-                doesApply = Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).anyMatch(power -> Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level, this.getBlockPosBelowThatAffectsMyMovement()));
+                doesApply = Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).anyMatch(power -> Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level(), this.getBlockPosBelowThatAffectsMyMovement()));
             }
             cir.setReturnValue(this.tickCount % 5 == 0 && this.getDeltaMovement().x != 0.0D && this.getDeltaMovement().z != 0.0D && !this.isSpectator() && soulSpeedValue > 0 && doesApply);
         }
@@ -107,9 +107,9 @@ public abstract class LivingEntityMixin extends Entity {
     private void modifyIsOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
         if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).toList().size() > 0) {
-            if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().anyMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level, this.getBlockPosBelowThatAffectsMyMovement()))) {
+            if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().anyMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level(), this.getBlockPosBelowThatAffectsMyMovement()))) {
                 cir.setReturnValue(true);
-            } else if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().noneMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level, this.getBlockPosBelowThatAffectsMyMovement()))) {
+            } else if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().noneMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level(), this.getBlockPosBelowThatAffectsMyMovement()))) {
                 cir.setReturnValue(false);
             }
         }
@@ -117,8 +117,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyVariable(method = "tryAddSoulSpeed", at = @At("STORE"), ordinal = 0)
     private int replaceLevelOfSoulSpeed(int i) {
-        int baseValue = this.level.getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) ? i : 0;
-        if (!this.level.getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) || i < baseValue) {
+        int baseValue = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) ? i : 0;
+        if (!this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) || i < baseValue) {
             return i = (int) Services.PLATFORM.applyModifiers((LivingEntity)(Object)this, ApugliPowers.MODIFY_SOUL_SPEED.get(), baseValue);
         }
         return i;
@@ -129,7 +129,7 @@ public abstract class LivingEntityMixin extends Entity {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
         if (Services.POWER.hasPower(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get())) {
             int soulSpeedValue = (int) Services.PLATFORM.applyModifiers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get(), EnchantmentHelper.getEnchantmentLevel(Enchantments.SOUL_SPEED, thisAsLiving));
-            if (soulSpeedValue <= 0 || (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).toList().size() == 0 && !this.onSoulSpeedBlock()) || Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().anyMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level, this.getBlockPosBelowThatAffectsMyMovement()))) {
+            if (soulSpeedValue <= 0 || (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).toList().size() == 0 && !this.onSoulSpeedBlock()) || Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().anyMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level(), this.getBlockPosBelowThatAffectsMyMovement()))) {
                 cir.setReturnValue(super.getBlockSpeedFactor());
             } else {
                 cir.setReturnValue(1.0F);

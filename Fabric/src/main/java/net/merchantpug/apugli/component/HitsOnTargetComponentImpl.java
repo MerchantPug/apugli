@@ -83,7 +83,7 @@ public class HitsOnTargetComponentImpl implements HitsOnTargetComponent, AutoSyn
         Iterator<Map.Entry<Integer, Tuple<Integer, Integer>>> it = hits.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, Tuple<Integer, Integer>> entry = it.next();
-            Entity entity = provider.level.getEntity(entry.getKey());
+            Entity entity = provider.level().getEntity(entry.getKey());
             int hitAmount = entry.getValue().getA();
             int currentTime = entry.getValue().getB();
             if (entity == null || !entity.isAlive() || currentTime > ApugliConfig.resetTimerTicks) {

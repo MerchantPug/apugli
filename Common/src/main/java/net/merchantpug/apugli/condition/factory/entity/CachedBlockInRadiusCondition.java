@@ -59,7 +59,7 @@ public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
             }
         }
 
-        return getReturnValue(entity.level, entity.blockPosition(), data);
+        return getReturnValue(entity.level(), entity.blockPosition(), data);
     }
 
     public static void invalidate(BlockPos pos, SerializableData.Instance data) {
