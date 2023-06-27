@@ -3,7 +3,7 @@
   "enchantment": "minecraft:fire_aspect",
   "modifiers": [
     {
-      "operation": "add_base_early",
+      "operation": "addition",
       "value": 3
     }
   ],
