@@ -108,8 +108,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
         Entity entity = ((ItemStackAccess) (Object) self).getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
-            ConcurrentHashMap<ItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
-            return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self, ItemStack::getEnchantmentTags));
+            ConcurrentHashMap<ListTag, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+            return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(self.getEnchantmentTags(), tag -> tag));
         }
         return EnchantmentHelper.getEnchantments(self);
     }
