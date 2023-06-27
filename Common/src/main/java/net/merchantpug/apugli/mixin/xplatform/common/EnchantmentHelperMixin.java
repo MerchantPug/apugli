@@ -9,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -57,6 +56,21 @@ public abstract class EnchantmentHelperMixin {
     @ModifyVariable(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
     private static ListTag getEnchantmentsGetLevel(ListTag original) {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemEnchantmentLevelStack, original);
+    }
+
+    @Inject(method = "getEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/entity/LivingEntity;)I", at = @At("HEAD"), cancellable = true)
+    private static void getEnchantmentLevel(Enchantment enchantment, LivingEntity entity, CallbackInfoReturnable<Integer> cir) {
+        if (ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(entity.getStringUUID())) {
+            int i = 0;
+            for (ItemStack stack : entity.getAllSlots()) {
+                ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, stack.getEnchantmentTags());
+                int j = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getItemEnchantmentLevel(enchantment, stack);
+                if (j > i) {
+                    i = j;
+                }
+            }
+            cir.setReturnValue(i);
+        }
     }
 
 }
