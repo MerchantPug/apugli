@@ -8,13 +8,12 @@ import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<ModifyEnchantmentLevelPower.Instance> implements ModifyEnchantmentLevelPowerFactory<ModifyEnchantmentLevelPower.Instance> {
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
@@ -29,7 +28,7 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ItemStack, ListTag>> getEntityItemEnchants() {
+    public ConcurrentHashMap<String, ConcurrentHashMap<ListTag, ListTag>> getEntityItemEnchants() {
         return ENTITY_ITEM_ENCHANTS;
     }
 
