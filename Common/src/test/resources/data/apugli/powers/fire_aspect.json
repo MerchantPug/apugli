@@ -1,0 +1,17 @@
+{
+  "type": "apugli:modify_enchantment_level",
+  "enchantment": "minecraft:fire_aspect",
+  "modifiers": [
+    {
+      "operation": "add_base_early",
+      "value": 3
+    }
+  ],
+  "condition": {
+    "type": "apoli:enchantment",
+    "enchantment": "minecraft:protection",
+    "calculation": "max",
+    "comparison": "==",
+    "compare_to": 0
+  }
+}
