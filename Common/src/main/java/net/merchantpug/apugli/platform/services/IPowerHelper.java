@@ -7,7 +7,6 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -23,8 +22,6 @@ public interface IPowerHelper<T> {
     <F extends SpecialPowerFactory<?>> Supplier<F> registerFactory(String name, Class<F> factoryClass);
 
     <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType);
-
-    <P> ResourceLocation getIdFromPower(LivingEntity entity, P power);
 
     <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory);
 
