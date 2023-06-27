@@ -1,7 +1,5 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
-import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.util.TextureUtil;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
