@@ -20,7 +20,7 @@ public class ElytraFeatureRendererMixin<T extends LivingEntity, M extends Entity
     private void allowPowerRendering(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().anyMatch(power -> power.getStack().getItem() == Items.ELYTRA && power.getSlot() == EquipmentSlot.CHEST))
             cir.setReturnValue(true);
-        if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().anyMatch(power -> power.shouldOverride() && power.getSlot() == EquipmentSlot.CHEST))
+        if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().filter(power -> power.getSlot() == EquipmentSlot.CHEST).allMatch(power -> power.shouldOverride() && !power.getStack().is(Items.ELYTRA)))
             cir.setReturnValue(false);
     }
 
