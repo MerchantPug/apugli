@@ -19,7 +19,6 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -51,11 +50,6 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     @Override
     public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
         return (P) powerType.getConfiguredPower();
-    }
-
-    @Override
-    public <P> ResourceLocation getIdFromPower(LivingEntity entity, P power) {
-        return ((ConfiguredPower<?, ?>) power).getRegistryName();
     }
 
     @Override
@@ -140,5 +134,5 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
         Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
         return OptionalInt.empty();
     }
-    
+
 }
