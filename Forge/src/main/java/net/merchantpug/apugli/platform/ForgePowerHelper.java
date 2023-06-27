@@ -2,8 +2,6 @@ package net.merchantpug.apugli.platform;
 
 import com.google.common.collect.ImmutableList;
 import io.github.apace100.apoli.power.PowerType;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -21,7 +19,6 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -53,11 +50,6 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     @Override
     public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
         return (P) powerType.getConfiguredPower();
-    }
-
-    @Override
-    public <P> ResourceLocation getIdFromPower(LivingEntity entity, P power) {
-        return ((ConfiguredPower<?, ?>) power).getRegistryName();
     }
 
     @Override
@@ -148,5 +140,5 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
         Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
         return OptionalInt.empty();
     }
-    
+
 }

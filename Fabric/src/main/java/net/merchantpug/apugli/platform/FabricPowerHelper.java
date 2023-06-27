@@ -12,7 +12,6 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -41,11 +40,6 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public <P> P getPowerFromType(LivingEntity entity, PowerType<?> powerType) {
         return (P) powerType.get(entity);
-    }
-
-    @Override
-    public <P> ResourceLocation getIdFromPower(LivingEntity entity, P power) {
-        return ((Power)power).getType().getIdentifier();
     }
 
     @Override
