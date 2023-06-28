@@ -1,3 +1,2 @@
-### Bugfixes
-- Fixed `modify_enchantment_level` sometimes not applying when an ItemStack is empty. #39
-- Fixed elytra not rendering without power interference. #40
+### Miscellaneous
+- `edible_item` is now restricted to `eat` or `drink` values. It now defaults to `eat`.
