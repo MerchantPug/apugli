@@ -3,6 +3,7 @@ package net.merchantpug.apugli.power;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
 public class EdibleItemPower extends Power {
     private final Predicate<Tuple<Level, ItemStack>> predicate;
     private final FoodProperties foodComponent;
-    private final UseAnim useAction;
+    private final EatAnimation useAction;
     private final ItemStack returnStack;
     private final SoundEvent sound;
     private final Consumer<Entity> entityActionWhenEaten;
@@ -33,7 +34,7 @@ public class EdibleItemPower extends Power {
     public EdibleItemPower(PowerType<?> type, LivingEntity entity,
                            Predicate<Tuple<Level, ItemStack>> predicate,
                            FoodProperties foodComponent,
-                           UseAnim useAction,
+                           EatAnimation useAction,
                            ItemStack returnStack,
                            SoundEvent sound,
                            Consumer<Entity> entityActionWhenEaten,
@@ -56,7 +57,7 @@ public class EdibleItemPower extends Power {
         return foodComponent;
     }
 
-    public UseAnim getUseAction() {
+    public EatAnimation getUseAction() {
         return useAction;
     }
 
@@ -85,7 +86,7 @@ public class EdibleItemPower extends Power {
                     new SerializableData()
                             .add("item_condition", Services.CONDITION.itemDataType())
                             .add("food_component", SerializableDataTypes.FOOD_COMPONENT)
-                            .add("use_action", SerializableDataTypes.USE_ACTION, null)
+                            .add("use_action", SerializableDataType.enumValue(EatAnimation.class), EatAnimation.EAT)
                             .add("return_stack", SerializableDataTypes.ITEM_STACK, null)
                             .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                             .add("entity_action", Services.ACTION.entityDataType(), null)
@@ -107,4 +108,9 @@ public class EdibleItemPower extends Power {
         }
 
     }
+
+    public enum EatAnimation {
+        EAT, DRINK
+    }
+
 }
