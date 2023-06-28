@@ -28,7 +28,7 @@ public abstract class HeldItemRendererMixin {
 
     @Redirect(method = "renderHandsWithItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", ordinal = 0))
     private void renderModifiedItemFirstPersonMainhand(ItemInHandRenderer instance, AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, MultiBufferSource vertexConsumers, int light) {
-        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(player, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().filter(power -> power.getSlot() == EquipmentSlot.MAINHAND).collect(Collectors.toList());
+        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(player, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().filter(power -> power.getSlot() == EquipmentSlot.MAINHAND).toList();
         if(modifyEquippedItemRenderPowers.size() == 0) {
             this.renderArmWithItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
         } else {
@@ -48,7 +48,7 @@ public abstract class HeldItemRendererMixin {
 
     @Redirect(method = "renderHandsWithItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", ordinal = 1))
     private void renderModifiedItemFirstPersonOffhand(ItemInHandRenderer instance, AbstractClientPlayer player, float tickDelta, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equipProgress, PoseStack matrices, MultiBufferSource vertexConsumers, int light) {
-        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(player, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().filter(power -> power.getSlot() == EquipmentSlot.MAINHAND).collect(Collectors.toList());
+        List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(player, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().filter(power -> power.getSlot() == EquipmentSlot.OFFHAND).toList();
         if(modifyEquippedItemRenderPowers.size() == 0) {
             this.renderArmWithItem(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
         } else {

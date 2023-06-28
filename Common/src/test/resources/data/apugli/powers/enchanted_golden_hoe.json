@@ -1,0 +1,22 @@
+{
+  "type": "apugli:modify_equipped_item_render",
+  "slot": "mainhand",
+  "scale": 1.0,
+  "override": true,
+  "merge_with_held": false,
+  "condition": {
+    "type": "apoli:equipped_item",
+    "equipment_slot": "mainhand",
+    "item_condition": {
+      "type": "apoli:ingredient",
+      "ingredient": {
+        "item": "minecraft:golden_hoe"
+      }
+    }
+  },
+  "stack": {
+    "item": "minecraft:golden_hoe",
+    "tag": "{Enchantments: [{id: \"minecraft:loyalty\", lvl: 1}]}",
+    "amount": 1
+  }
+}
