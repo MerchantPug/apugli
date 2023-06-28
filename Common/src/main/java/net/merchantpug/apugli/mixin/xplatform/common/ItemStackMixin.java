@@ -56,8 +56,8 @@ public abstract class ItemStackMixin {
     private void getUseAction(CallbackInfoReturnable<UseAnim> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getUseAction() != null).findFirst();
-        power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getUseAction().equals(UseAnim.DRINK) ? edibleItemPower.getUseAction() : UseAnim.EAT));
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
+        power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getUseAction().equals(EdibleItemPower.EatAnimation.DRINK) ? UseAnim.DRINK : UseAnim.EAT));
     }
 
     @Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
