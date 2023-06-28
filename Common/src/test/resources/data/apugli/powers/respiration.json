@@ -1,0 +1,8 @@
+{
+  "type": "apugli:modify_enchantment_level",
+  "enchantment": "minecraft:respiration",
+  "modifier": {
+    "operation": "add_base_early",
+    "value": 3
+  }
+}
