@@ -7,6 +7,7 @@ import net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.ConcurrentHashMap;
 
