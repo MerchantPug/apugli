@@ -3,13 +3,13 @@ package net.merchantpug.apugli.power.factory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
-import net.merchantpug.apugli.damage.JumpExplosionPlayerDamageSource;
 import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -104,7 +104,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         float g = Mth.sin(entity.getXRot() * 0.017453292F);
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.level, entity, new JumpExplosionPlayerDamageSource(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.NONE);
+        Explosion explosion = new Explosion(entity.level, entity, DamageSource.explosion(entity), null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.NONE);
         ((ExplosionAccess)explosion).setExplosionDamageModifiers(damageModifiers(power, entity));
         ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(knockbackModifiers());
         ((ExplosionAccess)explosion).setExplosionVolumeModifiers(volumeModifiers());
