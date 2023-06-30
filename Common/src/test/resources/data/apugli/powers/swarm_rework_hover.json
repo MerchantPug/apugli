@@ -124,23 +124,5 @@
     "key": {
       "key": "key.apoli.primary_active"
     }
-  },
-  "badges": [
-    {
-      "type": "toomanyorigins:defined_keybind",
-      "sprite": "origins:textures/gui/badge/active.png",
-      "text": "origins.gui.badge.active",
-      "key": {
-        "key": "key.jump"
-      }
-    },
-    {
-      "type": "toomanyorigins:defined_keybind",
-      "sprite": "origins:textures/gui/badge/toggle.png",
-      "text": "origins.gui.badge.toggle",
-      "key": {
-        "key": "key.origins.primary.active"
-      }
-    }
-  ]
+  }
 }
