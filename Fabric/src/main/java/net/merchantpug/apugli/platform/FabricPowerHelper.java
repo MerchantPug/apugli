@@ -60,10 +60,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         List<P> list = new LinkedList<>();
         if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
             Class<P> cls = factory.getPowerClass();
-            List<? extends Power> powers = PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls);
-            for(Power power : powers) {
-                list.add((P)power);
-            }
+            return (List<P>) PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls);
         }
         return list;
     }

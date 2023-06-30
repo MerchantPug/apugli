@@ -37,6 +37,8 @@ public abstract class EntityMixin implements EntityAccess {
 
     @Shadow public abstract double getZ();
 
+    @Shadow protected boolean onGround;
+
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if(!((Entity)(Object)this instanceof LivingEntity living) || state.getMaterial().isLiquid()) return;

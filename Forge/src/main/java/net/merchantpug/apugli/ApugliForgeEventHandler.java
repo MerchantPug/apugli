@@ -60,6 +60,11 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
+    public static void onGroundJump(LivingEvent.LivingJumpEvent event) {
+        Services.POWER.getPowers(event.getEntity(), ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
+    }
+
+    @SubscribeEvent
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem().copy();
         if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;

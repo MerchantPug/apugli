@@ -18,6 +18,7 @@
   ],
   "client": [
     "client.ElytraFeatureRendererMixin",
+    "client.LocalPlayerMixin",
     "client.accessor.EntityRenderersEventAddLayersAccessor",
     "client.accessor.PlayerModelAccessor",
     "common.HumanoidMobRendererMixin"

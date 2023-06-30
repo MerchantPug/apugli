@@ -33,6 +33,7 @@
     "client.AbstractSoundInstanceMixin",
     "client.ArmorFeatureRendererMixin",
     "client.CapeFeatureRendererMixin",
+    "client.ClientPlayerEntityMixin",
     "client.GameRendererMixin",
     "client.HeadFeatureRendererMixin",
     "client.HeldItemFeatureRendererMixin",
@@ -47,6 +48,7 @@
     "client.WorldRendererMixin",
     "client.accessor.ArmorFeatureRendererAccessor",
     "client.accessor.FeatureRendererAccessor",
+    "client.accessor.GameRendererAccessor",
     "client.accessor.HeadFeatureRendererAccessor",
     "client.accessor.ParticleEngineAccessor",
     "client.accessor.TextureManagerAccessor"

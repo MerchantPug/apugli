@@ -16,6 +16,7 @@ public class ApugliEntityConditions {
         register("can_take_damage", new CanTakeDamageCondition());
         register("compare_resource", new CompareResourceCondition());
         register("entity_in_radius", new EntityInRadiusCondition());
+        register("grounded", new GroundedCondition());
         register("hostile", new HostileCondition());
         register("join_invulnerability_ticks", new JoinInvulnerabilityTicksCondition());
         register("key_pressed", new KeyPressedCondition());

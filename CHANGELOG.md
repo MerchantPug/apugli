@@ -1,6 +1,5 @@
-### Bugfixes
-- Fixed `modify_enchantment_level` not functioning properly. #42
-- Fixed `modify_equipped_item_render` mainhand items rendering in the offhand. #43
+### Power Types
+- Added `action_on_jump`, `modify_fov` and `sprinting` power types.
 
-### Miscellaneous
-- `edible_item` is now restricted to `eat` or `drink` values. It now defaults to `eat`.
+### Entity Conditions
+- Added `grounded` entity condition type.

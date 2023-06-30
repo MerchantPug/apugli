@@ -1,0 +1,9 @@
+{
+  "origin.hare.max_speed": {
+    "subtitle": "subtitles.origin.hare.max_speed",
+    "sounds": [
+      "apugli:origin/hare/dash1",
+      "apugli:origin/hare/dash2"
+    ]
+  }
+}

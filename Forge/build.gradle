@@ -145,10 +145,6 @@ processResources {
 processTestResources {
     outputs.upToDateWhen { false }
     from project(":Common").sourceSets.test.resources
-
-    filesMatching('META-INF/mods.toml') {
-        expand 'version': project.version
-    }
 }
 
 tasks.jarJar.configure {

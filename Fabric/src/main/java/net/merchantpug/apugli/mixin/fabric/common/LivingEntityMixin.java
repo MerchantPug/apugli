@@ -7,11 +7,13 @@ import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,12 +50,21 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract MobType getMobType();
 
-    @Shadow @Nullable public abstract LivingEntity getLastHurtMob();
-
-    @Shadow @Nullable public abstract LivingEntity getLastHurtByMob();
+    @Shadow public abstract void push(Entity pEntity);
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Inject(method = "jumpFromGround", at = @At("TAIL"))
+    private void handleGroundJump(CallbackInfo ci) {
+        Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
+    }
+
+    @Inject(method = "jumpInLiquid", at = @At("TAIL"))
+    private void handleLiquidJump(TagKey<Fluid> fluidTag, CallbackInfo ci) {
+        if (this.isUnderWater()) return;
+        Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))

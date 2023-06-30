@@ -2,6 +2,7 @@ package net.merchantpug.apugli.util;
 
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
@@ -11,6 +12,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,6 +20,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CoreUtil {
+
+    public static void handleFluidJumpActions(LivingEntity entity, FluidType fluidType) {
+        if (entity.isEyeInFluidType(fluidType)) return;
+        Services.POWER.getPowers(entity, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
+    }
 
     public static int getModifiedEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living) {
