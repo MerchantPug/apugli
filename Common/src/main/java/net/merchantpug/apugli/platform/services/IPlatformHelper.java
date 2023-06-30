@@ -74,7 +74,7 @@ public interface IPlatformHelper {
     double applyModifiers(Entity entity, List<?> modifiers, double value);
 
     default <P> double applyModifiers(LivingEntity entity, ValueModifyingPowerFactory<P> power, double value, Predicate<P> predicate) {
-        List<?> modifierList = Services.POWER.getPowers(entity, power).stream().filter(p -> predicate == null || predicate.test(p)).map(p -> power.getModifiers(p, entity)).flatMap(List::stream).toList();;
+        List<?> modifierList = Services.POWER.getPowers(entity, power).stream().filter(p -> predicate == null || predicate.test(p)).map(p -> power.getModifiers(p, entity)).flatMap(List::stream).toList();
         return applyModifiers(entity, modifierList, value);
     }
 

@@ -14,6 +14,8 @@ import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
+import net.merchantpug.apugli.util.FOVUtil;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.*;
@@ -21,13 +23,18 @@ import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderNameTagEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -77,6 +84,18 @@ public class ApugliForgeClientEventHandler {
                 }
                 lastKeyBindingStates = currentKeyBindingStates;
             });
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void updateFov(ViewportEvent.ComputeFov event) {
+            Camera activeRenderInfo = event.getCamera();
+            double partialTicks = event.getPartialTick();
+            boolean useFOVSetting = event.usedConfiguredFov();
+
+            if (useFOVSetting && activeRenderInfo.getEntity() instanceof LivingEntity living) {
+                double fov = FOVUtil.undoModifications(event.getFOV(), activeRenderInfo, partialTicks);
+                event.setFOV(ApugliPowers.MODIFY_FOV.get().getFov(fov, activeRenderInfo, living));
+            }
         }
 
         @SubscribeEvent

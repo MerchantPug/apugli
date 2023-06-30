@@ -22,14 +22,17 @@
   "client": [
     "client.BipedEntityRendererMixin",
     "client.ClientLevelMixin",
+    "client.ClientPlayerEntityMixin",
     "client.ElytraFeatureRendererMixin",
     "client.EntityRendererMixin",
+    "client.GameRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
     "client.accessor.ApoliClientAccessor"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 5
   },
   "refmap": "apugli.refmap.json"
 }

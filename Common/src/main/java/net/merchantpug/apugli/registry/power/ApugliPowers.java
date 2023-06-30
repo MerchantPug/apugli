@@ -15,6 +15,7 @@ public class ApugliPowers {
     public static final Supplier<ActionOnBonemealPower.Factory> ACTION_ON_BONEMEAL = register(new ActionOnBonemealPower.Factory());
     public static final Supplier<ActionOnDurabilityChangePower.Factory> ACTION_ON_DURABILITY_CHANGE = register(new ActionOnDurabilityChangePower.Factory());
     public static final Supplier<ActionOnEquipPower.Factory> ACTION_ON_EQUIP = register(new ActionOnEquipPower.Factory());
+    public static final Supplier<ActionOnJumpPower.Factory> ACTION_ON_JUMP = register(new ActionOnJumpPower.Factory());
     public static final Supplier<ActionOnProjectileHitPowerFactory> ACTION_ON_PROJECTILE_HIT = register("action_on_projectile_hit", ActionOnProjectileHitPowerFactory.class);
     public static final Supplier<ActionOnHarmPowerFactory> ACTION_ON_HARM = register("action_on_harm", ActionOnHarmPowerFactory.class);
     public static final Supplier<ActionOnTameHitPowerFactory> ACTION_ON_TAME_HIT = register("action_on_tame_hit", ActionOnTameHitPowerFactory.class);
@@ -43,14 +44,16 @@ public class ApugliPowers {
     public static final Supplier<ModifyEnchantmentDamageTakenPowerFactory> MODIFY_ENCHANTMENT_DAMAGE_TAKEN = register("modify_enchantment_damage_taken", ModifyEnchantmentDamageTakenPowerFactory.class);
     public static final Supplier<ModifyEnchantmentLevelPowerFactory> MODIFY_ENCHANTMENT_LEVEL = register("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.class);
     public static final Supplier<ModifyEquippedItemRenderPower.Factory> MODIFY_EQUIPPED_ITEM_RENDER = register(new ModifyEquippedItemRenderPower.Factory());
+    public static final Supplier<ModifyFovPowerFactory> MODIFY_FOV = register("modify_fov", ModifyFovPowerFactory.class);
     public static final Supplier<ModifySoulSpeedPowerFactory> MODIFY_SOUL_SPEED = register("modify_soul_speed", ModifySoulSpeedPowerFactory.class);
     public static final Supplier<PlayerModelTypePower.Factory> PLAYER_MODEL_TYPE = register(new PlayerModelTypePower.Factory());
     public static final Supplier<PreventBeeAngerPower.Factory> PREVENT_BEE_ANGER = register(new PreventBeeAngerPower.Factory());
     public static final Supplier<PreventBreedingPower.Factory> PREVENT_BREEDING = register(new PreventBreedingPower.Factory());
+    public static final Supplier<PreventLabelRenderPower.Factory> PREVENT_LABEL_RENDER = register(new PreventLabelRenderPower.Factory());
     public static final Supplier<PreventSoundPower.Factory> PREVENT_SOUND = register(new PreventSoundPower.Factory());
     public static final Supplier<ProjectileActionOverTimePower.Factory> PROJECTILE_ACTION_OVER_TIME = register(new ProjectileActionOverTimePower.Factory());
     public static final Supplier<RedirectLightningPower.Factory> REDIRECT_LIGHTNING = register(new RedirectLightningPower.Factory());
-    public static final Supplier<PreventLabelRenderPower.Factory> PREVENT_LABEL_RENDER = register(new PreventLabelRenderPower.Factory());
+    public static final Supplier<SprintingPower.Factory> SPRINTING = register(new SprintingPower.Factory());
 
     @Deprecated
     public static final Supplier<AerialAffinityPowerFactory> AERIAL_AFFINITY = register("aerial_affinity", AerialAffinityPowerFactory.class);
