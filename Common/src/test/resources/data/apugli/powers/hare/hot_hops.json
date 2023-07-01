@@ -26,7 +26,7 @@
   },
   "cooldown": {
     "type": "apoli:cooldown",
-    "cooldown": 30,
+    "cooldown": 10,
     "hud_render": {
       "should_render": false
     }
@@ -70,6 +70,7 @@
       "operation": "add_base_early",
       "value": 0.00125,
       "modifier": {
+        "name": "Bonus air speed from stored momentum",
         "operation": "multiply_total_multiplicative",
         "value": 0.0,
         "resource": "*:*_resource"
@@ -82,6 +83,7 @@
       "operation": "multiply_base_multiplicative",
       "value": 0.025,
       "modifier": {
+        "name": "Additional FOV from stored momentum",
         "operation": "multiply_total_multiplicative",
         "value": 0.0,
         "resource": "*:*_resource"
@@ -98,6 +100,7 @@
   "extra_max_fov": {
     "type": "apugli:modify_fov",
     "modifier": {
+      "name": "Additional FOV from maximum momentum",
       "operation": "multiply_total_multiplicative",
       "value": 0.035
     },
