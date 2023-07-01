@@ -1,0 +1,76 @@
+{
+  "type": "apoli:multiple",
+  "fastfall": {
+    "type": "apoli:modify_velocity",
+    "modifier": {
+      "name": "Bonus falling velocity whilst sneaking",
+      "value": 0.6,
+      "operation": "multiply_total_multiplicative"
+    },
+    "axes": [
+      "y"
+    ],
+    "condition": {
+      "type": "apoli:and",
+      "conditions": [
+        {
+          "type": "apoli:sneaking"
+        },
+        {
+          "type": "apugli:velocity",
+          "axes": [
+            "y"
+          ],
+          "compare_to": 0.0,
+          "comparison": "<="
+        },
+        {
+          "type": "apoli:fluid_height",
+          "fluid": "minecraft:water",
+          "comparison": ">",
+          "compare_to": "0",
+          "inverted": true
+        },
+        {
+          "type": "apoli:fluid_height",
+          "fluid": "minecraft:lava",
+          "comparison": ">",
+          "compare_to": "0",
+          "inverted": true
+        },
+        {
+          "type": "apoli:fall_flying",
+          "inverted": true
+        },
+        {
+          "type": "apoli:riding",
+          "inverted": true
+        }
+      ]
+    }
+  },
+  "fall_damage_reduction": {
+    "type": "apoli:modify_damage_taken",
+    "damage_condition": {
+      "type": "apoli:or",
+      "conditions": [
+        {
+          "type": "apoli:name",
+          "name": "fall"
+        },
+        {
+          "type": "apoli:name",
+          "name": "fall.player"
+        }
+      ]
+    },
+    "modifier": {
+      "name": "Immune to fall damage while sneaking",
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    },
+    "condition": {
+      "type": "apoli:sneaking"
+    }
+  }
+}
