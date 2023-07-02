@@ -54,6 +54,7 @@ public class ApugliPowers {
     public static final Supplier<ProjectileActionOverTimePower.Factory> PROJECTILE_ACTION_OVER_TIME = register(new ProjectileActionOverTimePower.Factory());
     public static final Supplier<RedirectLightningPower.Factory> REDIRECT_LIGHTNING = register(new RedirectLightningPower.Factory());
     public static final Supplier<SprintingPower.Factory> SPRINTING = register(new SprintingPower.Factory());
+    public static final Supplier<StepHeightPower.Factory> STEP_HEIGHT = register(new StepHeightPower.Factory());
 
     @Deprecated
     public static final Supplier<AerialAffinityPowerFactory> AERIAL_AFFINITY = register("aerial_affinity", AerialAffinityPowerFactory.class);
