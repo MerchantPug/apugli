@@ -21,11 +21,6 @@ import java.util.Optional;
 
 public class CoreUtil {
 
-    public static void handleFluidJumpActions(LivingEntity entity, FluidType fluidType) {
-        if (entity.isEyeInFluidType(fluidType)) return;
-        Services.POWER.getPowers(entity, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
-    }
-
     public static int getModifiedEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
         if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living) {
             return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), stack.getItem().getEnchantmentLevel(stack, enchantment), p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));

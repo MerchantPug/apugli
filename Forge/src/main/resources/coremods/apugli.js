@@ -9,28 +9,6 @@ var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode')
 
 function initializeCoreMod() {
     return {
-        'apugli_fluid_jump_action': {
-            'target': {
-                'type': 'METHOD',
-                'class': 'net.minecraftforge.common.extensions.IForgeLivingEntity',
-                'methodName': 'jumpInFluid',
-                'methodDesc': 'Lnet/minecraftforge/fluids/FluidType;'
-            },
-            'transformer': function(node) {
-                // CoreUtil.handleJumpActions(this.self());
-                var ls = new InsnList();
-                // this.self()
-                ls.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-                ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeLivingEntity", "self", "()Lnet/minecraft/world/entity/LivingEntity;", true));
-
-                // fluidType
-                ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
-
-                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "handleFluidJumpActions", "(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraftforge/fluids/FluidType;)V"))
-
-                node.instructions.insert(ls);
-            }
-        },
         'apugli_enchantment_level_modification': {
             'target': {
                 'type': 'METHOD',

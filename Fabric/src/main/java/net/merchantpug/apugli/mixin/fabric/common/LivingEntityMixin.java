@@ -60,12 +60,6 @@ public abstract class LivingEntityMixin extends Entity {
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
     }
 
-    @Inject(method = "jumpInLiquid", at = @At("TAIL"))
-    private void handleLiquidJump(TagKey<Fluid> fluidTag, CallbackInfo ci) {
-        if (this.isUnderWater()) return;
-        Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
-    }
-
     @Inject(method = "hurt", at = @At("RETURN"))
     private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) return;
