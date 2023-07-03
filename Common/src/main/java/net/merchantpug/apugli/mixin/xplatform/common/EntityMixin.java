@@ -70,19 +70,22 @@ public abstract class EntityMixin implements EntityAccess {
     @Inject(method = "collide", at = @At(value = "HEAD"), cancellable = true)
     private void handleHoverCorrection(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
         if ((Entity)(Object)this instanceof LivingEntity thisAsLiving) {
-            float lowerCorrectionRange = StepHeightPower.getLowerCorrectionRange(thisAsLiving)
-                    .orElse(HoverPower.getCorrectionRange(thisAsLiving).orElse(0.0F));
-            float upperCorrectionRange = StepHeightPower.getUpperCorrectionRange(thisAsLiving)
-                    .orElse(HoverPower.getCorrectionRange(thisAsLiving).orElse(0.0F));
+            double lowerCorrectionRange = StepHeightPower.getLowerCorrectionRange(thisAsLiving)
+                    .orElse(HoverPower.getCorrectionRange(thisAsLiving).orElse(0.0));
+            double upperCorrectionRange = StepHeightPower.getUpperCorrectionRange(thisAsLiving)
+                    .orElse(HoverPower.getCorrectionRange(thisAsLiving).orElse(0.0));
             if (lowerCorrectionRange > 0.0F || upperCorrectionRange > 0.0F) {
                 AABB box = this.getBoundingBox();
                 List<VoxelShape> collisionList = this.level.getEntityCollisions(thisAsLiving, box.expandTowards(movement));
                 Vec3 vec3d4 = movement.lengthSqr() == 0.0 ? movement : Entity.collideBoundingBox(thisAsLiving, movement, box, this.level, collisionList);
                 if ((movement.x != vec3d4.x || movement.z != vec3d4.z)) {
-                    if (lowerCorrectionRange > 0.0F) {
-                        Vec3 vec3d = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, lowerCorrectionRange, movement.z), box, this.level, collisionList);
-                        Vec3 vec3d2 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, lowerCorrectionRange, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
+                    boolean handledLowerRange = false;
+                    double correction = 0.0;
+                    while (correction <= lowerCorrectionRange) {
+                        Vec3 vec3d = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, correction, movement.z), box, this.level, collisionList);
+                        Vec3 vec3d2 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, correction, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
                         Vec3 vec3d3 = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, 0.0, movement.z), box, this.level, collisionList).add(vec3d2);
+
                         if (vec3d3.horizontalDistanceSqr() > vec3d.horizontalDistanceSqr()) {
                             vec3d = vec3d3;
                         }
@@ -90,29 +93,34 @@ public abstract class EntityMixin implements EntityAccess {
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
                             cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
                             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
-                                ((LivingEntityAccessor)thisAsLiving).setNoJumpDelay(0);
+                                ((LivingEntityAccessor) thisAsLiving).setNoJumpDelay(0);
                             }
-                            return;
+                            handledLowerRange = true;
+                            break;
                         }
+                        correction += 1.0;
                     }
 
-                    if (upperCorrectionRange > 0.0F) {
-                        Vec3 vec3d5 = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, -upperCorrectionRange, movement.z), box, this.level, collisionList);
-                        Vec3 vec3d6 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -upperCorrectionRange, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
-                        if (vec3d6.y < upperCorrectionRange) {
-                            Vec3 vec3d7 = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, 0.0, movement.z), box, this.level, collisionList).add(vec3d6);
+                    if (handledLowerRange) return;
 
-                            if (vec3d7.horizontalDistanceSqr() > vec3d5.horizontalDistanceSqr()) {
-                                vec3d5 = vec3d7;
-                            }
+                    correction = 0.0;
+                    while (correction <= upperCorrectionRange) {
+                        Vec3 vec3d = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, correction, movement.z), box, this.level, collisionList);
+                        Vec3 vec3d2 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, correction, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
+                        Vec3 vec3d3 = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, 0.0, movement.z), box, this.level, collisionList).add(vec3d2);
 
-                            if (vec3d5.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                                cir.setReturnValue(vec3d5.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d5.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d5), this.level, collisionList)));
-                                if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectUpperHeight() && power.shouldAllowJumpAfter())) {
-                                    ((LivingEntityAccessor)thisAsLiving).setNoJumpDelay(0);
-                                }
-                            }
+                        if (vec3d3.horizontalDistanceSqr() > vec3d.horizontalDistanceSqr()) {
+                            vec3d = vec3d3;
                         }
+
+                        if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
+                            if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
+                                ((LivingEntityAccessor) thisAsLiving).setNoJumpDelay(0);
+                            }
+                            break;
+                        }
+                        correction += 1.0;
                     }
                 }
             }

@@ -12,9 +12,9 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.Optional;
 
 public class HoverPower extends Power {
-    private final float correctionRange;
+    private final double correctionRange;
 
-    public HoverPower(PowerType<?> type, LivingEntity entity, float correctionRange) {
+    public HoverPower(PowerType<?> type, LivingEntity entity, double correctionRange) {
         super(type, entity);
         this.correctionRange = correctionRange;
     }
@@ -23,16 +23,16 @@ public class HoverPower extends Power {
         return correctionRange > 0.0F;
     }
 
-    public float getCorrectionRange() {
+    public double getCorrectionRange() {
         return correctionRange;
     }
 
-    public static Optional<Float> getCorrectionRange(LivingEntity entity) {
+    public static Optional<Double> getCorrectionRange(LivingEntity entity) {
         return Services.POWER.getPowers(entity, ApugliPowers.HOVER.get())
                 .stream()
                 .filter(HoverPower::canCorrectHeight)
                 .map(HoverPower::getCorrectionRange)
-                .max(Float::compare);
+                .max(Double::compare);
     }
 
     public static class Factory extends SimplePowerFactory<HoverPower> {
@@ -40,8 +40,8 @@ public class HoverPower extends Power {
         public Factory() {
             super("hover",
                     new SerializableData()
-                            .add("step_assist", SerializableDataTypes.FLOAT, 0.0F),
-                    data -> (type, entity) -> new HoverPower(type, entity, data.getFloat("step_assist")));
+                            .add("step_assist", SerializableDataTypes.DOUBLE, 0.0),
+                    data -> (type, entity) -> new HoverPower(type, entity, data.getDouble("step_assist")));
             allowCondition();
         }
 
