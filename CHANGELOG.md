@@ -1,5 +1,5 @@
 ### Power Types
-- Added `action_on_jump`, `modify_fov` `sprinting`, or `step_assist` power types.
+- Added `action_on_jump`, `modify_fov`, `prevent_movement_check`, `sprinting`, and `step_assist` power types.
 
 ### Entity Conditions
 - Added `grounded` entity condition type.
