@@ -12,11 +12,11 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.Optional;
 
 public class StepHeightPower extends Power {
-    private final float lowerCorrectionRange;
-    private final float upperCorrectionRange;
+    private final double lowerCorrectionRange;
+    private final double upperCorrectionRange;
     private final boolean allowJumpAfter;
 
-    public StepHeightPower(PowerType<?> powerType, LivingEntity entity, float lowerCorrectionRange, float upperCorrectionRange, boolean allowJumpAfter) {
+    public StepHeightPower(PowerType<?> powerType, LivingEntity entity, double lowerCorrectionRange, double upperCorrectionRange, boolean allowJumpAfter) {
         super(powerType, entity);
         this.lowerCorrectionRange = lowerCorrectionRange;
         this.upperCorrectionRange = upperCorrectionRange;
@@ -31,11 +31,11 @@ public class StepHeightPower extends Power {
         return this.upperCorrectionRange > 0.0;
     }
 
-    public float getLowerCorrectionRange() {
+    public double getLowerCorrectionRange() {
         return this.lowerCorrectionRange;
     }
 
-    public float getUpperCorrectionRange() {
+    public double getUpperCorrectionRange() {
         return this.upperCorrectionRange;
     }
 
@@ -43,20 +43,20 @@ public class StepHeightPower extends Power {
         return this.allowJumpAfter;
     }
 
-    public static Optional<Float> getLowerCorrectionRange(LivingEntity living) {
+    public static Optional<Double> getLowerCorrectionRange(LivingEntity living) {
         return Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
                 .stream()
                 .filter(StepHeightPower::canCorrectLowerHeight)
                 .map(StepHeightPower::getLowerCorrectionRange)
-                .max(Float::compare);
+                .max(Double::compare);
     }
 
-    public static Optional<Float> getUpperCorrectionRange(LivingEntity living) {
+    public static Optional<Double> getUpperCorrectionRange(LivingEntity living) {
         return Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
                 .stream()
                 .filter(StepHeightPower::canCorrectUpperHeight)
                 .map(StepHeightPower::getUpperCorrectionRange)
-                .max(Float::compare);
+                .max(Double::compare);
     }
 
     public static class Factory extends SimplePowerFactory<StepHeightPower> {
@@ -64,12 +64,12 @@ public class StepHeightPower extends Power {
         public Factory() {
             super("step_height",
                     new SerializableData()
-                            .add("lower_height", SerializableDataTypes.FLOAT, 0.0F)
-                            .add("upper_height", SerializableDataTypes.FLOAT, 0.0F)
+                            .add("lower_height", SerializableDataTypes.DOUBLE, 0.0)
+                            .add("upper_height", SerializableDataTypes.DOUBLE, 0.0)
                             .add("allow_jump_after", SerializableDataTypes.BOOLEAN, false),
                     data -> (type, entity) -> new StepHeightPower(type, entity,
-                            data.getFloat("lower_height"),
-                            data.getFloat("upper_height"),
+                            data.getDouble("lower_height"),
+                            data.getDouble("upper_height"),
                             data.getBoolean("allow_jump_after")));
             allowCondition();
         }

@@ -1,5 +1,5 @@
 {
   "type": "apugli:step_height",
-  "lower_height": 1.0,
+  "lower_height": 10.0,
   "allow_jump_after": true
 }
