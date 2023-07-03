@@ -50,6 +50,7 @@ public class ApugliPowers {
     public static final Supplier<PreventBeeAngerPower.Factory> PREVENT_BEE_ANGER = register(new PreventBeeAngerPower.Factory());
     public static final Supplier<PreventBreedingPower.Factory> PREVENT_BREEDING = register(new PreventBreedingPower.Factory());
     public static final Supplier<PreventLabelRenderPower.Factory> PREVENT_LABEL_RENDER = register(new PreventLabelRenderPower.Factory());
+    public static final Supplier<PreventMovementChecksPower.Factory> PREVENT_MOVEMENT_CHECKS = register(new PreventMovementChecksPower.Factory());
     public static final Supplier<PreventSoundPower.Factory> PREVENT_SOUND = register(new PreventSoundPower.Factory());
     public static final Supplier<ProjectileActionOverTimePower.Factory> PROJECTILE_ACTION_OVER_TIME = register(new ProjectileActionOverTimePower.Factory());
     public static final Supplier<RedirectLightningPower.Factory> REDIRECT_LIGHTNING = register(new RedirectLightningPower.Factory());
