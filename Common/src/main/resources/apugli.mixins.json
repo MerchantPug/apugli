@@ -24,6 +24,7 @@
     "common.accessor.AbstractFurnaceBlockEntityAccessor",
     "common.accessor.BrewingStandBlockEntityAccessor",
     "common.accessor.ItemAccessor",
+    "common.accessor.LivingEntityAccessor",
     "common.accessor.PlayerEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
     "common.accessor.TridentEntityAccessor"
