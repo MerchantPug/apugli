@@ -13,7 +13,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 public interface ModifyFovPowerFactory<P> extends ValueModifyingPowerFactory<P> {
 
-
     static SerializableData getSerializableData() {
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("change_divisor", SerializableDataTypes.FLOAT, 1.0F);
