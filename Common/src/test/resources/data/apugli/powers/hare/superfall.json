@@ -70,7 +70,8 @@
       "value": -1.0
     },
     "condition": {
-      "type": "apoli:sneaking"
+      "type": "apoli:power_active",
+      "power": "*:*_fastfall"
     }
   }
 }
