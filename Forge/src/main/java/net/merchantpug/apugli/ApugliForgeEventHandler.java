@@ -115,6 +115,12 @@ public class ApugliForgeEventHandler {
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
+        for (ItemStack stack : event.getEntity().getAllSlots()) {
+            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
+                ((ItemStackAccess)(Object)stack).setEntity(event.getEntity());
+            }
+        }
+
         if (event.getEntity().isDeadOrDying()) return;
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {

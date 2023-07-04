@@ -7,19 +7,15 @@ import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import net.minecraft.world.item.UseAnim;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -38,11 +34,6 @@ public abstract class ItemStackMixin {
     @Unique
     public Entity apugli$entity;
 
-    @Inject(method = "inventoryTick", at = @At("HEAD"))
-    private void cacheEntity(Level world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        if (this.apugli$getEntity() == null) this.apugli$setEntity(entity);
-    }
-
     @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
         if (this.apugli$getEntity() != null) {
@@ -53,10 +44,15 @@ public abstract class ItemStackMixin {
     @Unique
     private int apugli$previousDamage;
 
-    @Inject(method = "setDamageValue", at = @At(value = "HEAD"))
-    private void captureDamageValue(int damage, CallbackInfo ci) {
-        CompoundTag tag = this.getOrCreateTag();
-        apugli$previousDamage = tag.contains("Damage", Tag.TAG_INT) ? tag.getInt("Damage") : 0;
+    @ModifyVariable(method = "setDamageValue", at = @At(value = "HEAD"), argsOnly = true)
+    private int captureDamageValue(int newDamage) {
+        if (apugli$getEntity() instanceof LivingEntity living) {
+            CompoundTag tag = this.getOrCreateTag();
+            apugli$previousDamage = tag.contains("Damage", Tag.TAG_INT) ? tag.getInt("Damage") : 0;
+            int addedDurability = apugli$previousDamage - newDamage;
+            return apugli$previousDamage - (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_DURABILITY_CHANGE.get(), addedDurability, p -> ApugliPowers.MODIFY_DURABILITY_CHANGE.get().doesApply(p, living.level, (ItemStack)(Object)this, addedDurability));
+        }
+        return newDamage;
     }
 
     @Inject(method = "setDamageValue", at = @At(value = "TAIL"))
@@ -73,6 +69,8 @@ public abstract class ItemStackMixin {
             }
         });
     }
+
+
 
     public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
 

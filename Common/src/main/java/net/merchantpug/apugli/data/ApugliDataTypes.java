@@ -1,6 +1,10 @@
 package net.merchantpug.apugli.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Comparison;
+import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -13,7 +17,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApugliDataTypes {
     
@@ -120,5 +126,43 @@ public class ApugliDataTypes {
                 }
                 throw new JsonParseException("Expected either a string with a parameter-less sound event, or an object.");
             });
-    
+
+    public static <V> SerializableDataType<Map<Comparison, V>> comparisonMap(SerializableDataType<V> valueDataType) {
+        return map("comparison", ApoliDataTypes.COMPARISON, "compare_to", valueDataType);
+    }
+
+    public static <K, V> SerializableDataType<Map<K, V>> map(String keyFieldName, SerializableDataType<K> keyDataType, String valueFieldName, SerializableDataType<V> valueDataType) {
+        return new SerializableDataType<>(ClassUtil.castClass(Map.class), (buf, map) -> {
+            buf.writeInt(map.size());
+            map.forEach((k, v) -> {
+                keyDataType.send(buf, k);
+                valueDataType.send(buf, v);
+            });
+        }, buf -> {
+            Map<K, V> map = new HashMap<>();
+            int mapSize = buf.readInt();
+            for (int i = 0; i < mapSize; ++i) {
+                map.put(keyDataType.receive(buf), valueDataType.receive(buf));
+            }
+            return map;
+        }, json -> {
+            Map<K, V> map = new HashMap<>();
+            if (json.isJsonArray()) {
+                for (int i = 0; i < json.getAsJsonArray().size(); ++i) {
+                    JsonElement jsonElement = json.getAsJsonArray().get(i);
+                    if (jsonElement.isJsonObject()) {
+                        map.put(keyDataType.read(jsonElement.getAsJsonObject().get(keyFieldName)), valueDataType.read(jsonElement.getAsJsonObject().get(valueFieldName)));
+                    } else {
+                        throw new JsonParseException("Expected an object inside the map array at index: " + i);
+                    }
+                }
+                return map;
+            } else if (json.isJsonObject()) {
+                map.put(keyDataType.read(json.getAsJsonObject().get(keyFieldName)), valueDataType.read(json.getAsJsonObject().get(valueFieldName)));
+                return map;
+            }
+            throw new JsonParseException("Expected either an array or an object.");
+        });
+    }
+
 }
