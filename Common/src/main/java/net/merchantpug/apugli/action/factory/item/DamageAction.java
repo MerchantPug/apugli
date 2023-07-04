@@ -1,10 +1,9 @@
 package net.merchantpug.apugli.action.factory.item;
 
-import net.merchantpug.apugli.action.factory.IActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -48,10 +47,6 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
         int newDamage = stack.getDamageValue() + damage;
         if(newDamage >= stack.getMaxDamage()) {
             if(entity instanceof LivingEntity holder) {
-                Services.POWER.getPowers(holder, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get())
-                    .stream()
-                    .filter(p -> p.doesApply(stack))
-                    .forEach(p -> p.executeBreakAction(stack));
                 EquipmentSlot equipmentSlot = null;
                 for(EquipmentSlot slotValue : EquipmentSlot.values()) {
                     ItemStack slotStack = holder.getItemBySlot(slotValue);

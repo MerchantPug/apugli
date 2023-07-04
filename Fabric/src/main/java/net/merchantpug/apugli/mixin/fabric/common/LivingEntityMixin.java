@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
@@ -12,7 +13,6 @@ import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -21,7 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,6 +57,15 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "jumpFromGround", at = @At("TAIL"))
     private void handleGroundJump(CallbackInfo ci) {
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void setItemStackEntities(CallbackInfo ci) {
+        for (ItemStack stack : this.getAllSlots()) {
+            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
+                ((ItemStackAccess)(Object)stack).setEntity(this);
+            }
+        }
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))

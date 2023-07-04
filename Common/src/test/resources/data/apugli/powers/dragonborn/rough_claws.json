@@ -1,0 +1,9 @@
+{
+  "type": "apugli:modify_durability_change",
+  "modifier": {
+    "operation": "add_base_early",
+    "value": -1
+  },
+  "comparison": "<",
+  "compare_to": 0
+}

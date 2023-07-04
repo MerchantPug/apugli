@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.BucketItemAccessor;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.ItemAccessor;
 import net.merchantpug.apugli.platform.Services;
@@ -8,6 +9,7 @@ import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
@@ -20,18 +22,30 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin {
+public abstract class ItemStackMixin implements ItemStackAccess {
 
     @Shadow public abstract Item getItem();
 
     @Shadow public abstract ItemStack copy();
+
+    @Unique
+    public Entity apugli$entity;
+
+    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
+        if (this.getEntity() != null) {
+            ((ItemStackAccess) (Object) itemStack).setEntity(this.getEntity());
+        }
+    }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
@@ -50,8 +64,6 @@ public abstract class ItemStackMixin {
         }
 
     }
-
-
 
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
     private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
@@ -81,6 +93,12 @@ public abstract class ItemStackMixin {
                 }
             }
         }
+    }
+
+    public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
+
+    public Entity apugli$getEntity() {
+        return this.apugli$entity;
     }
 
 }

@@ -1,7 +1,7 @@
 package net.merchantpug.apugli.registry.power;
 
-import net.merchantpug.apugli.platform.Services;
 import io.github.apace100.apoli.power.Power;
+import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.power.factory.*;
 
@@ -40,6 +40,7 @@ public class ApugliPowers {
     public static final Supplier<MobsIgnorePower.Factory> MOBS_IGNORE = register(new MobsIgnorePower.Factory());
     public static final Supplier<ModifyBlockPlacedPower.Factory> MODIFY_BLOCK_PLACED = register(new ModifyBlockPlacedPower.Factory());
     public static final Supplier<ModifyBreedingCooldownPowerFactory> MODIFY_BREEDING_COOLDOWN = register("modify_breeding_cooldown", ModifyBreedingCooldownPowerFactory.class);
+    public static final Supplier<ModifyDurabilityChangePowerFactory> MODIFY_DURABILITY_CHANGE = register("modify_durability_change", ModifyDurabilityChangePowerFactory.class);
     public static final Supplier<ModifyEnchantmentDamageDealtPowerFactory> MODIFY_ENCHANTMENT_DAMAGE_DEALT = register("modify_enchantment_damage_dealt", ModifyEnchantmentDamageDealtPowerFactory.class);
     public static final Supplier<ModifyEnchantmentDamageTakenPowerFactory> MODIFY_ENCHANTMENT_DAMAGE_TAKEN = register("modify_enchantment_damage_taken", ModifyEnchantmentDamageTakenPowerFactory.class);
     public static final Supplier<ModifyEnchantmentLevelPowerFactory> MODIFY_ENCHANTMENT_LEVEL = register("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.class);
