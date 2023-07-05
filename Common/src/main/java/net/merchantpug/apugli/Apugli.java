@@ -1,5 +1,6 @@
 package net.merchantpug.apugli;
 
+import net.merchantpug.apugli.registry.ApugliEntityTypes;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import net.merchantpug.apugli.registry.action.ApugliBlockActions;
 import net.merchantpug.apugli.registry.action.ApugliEntityActions;
@@ -38,6 +39,8 @@ public class Apugli {
         ApugliItemConditions.registerAll();
 
         ApugliPowers.registerAll();
+
+        ApugliEntityTypes.registerAll();
     }
 
     public static ResourceLocation asResource(String name) {

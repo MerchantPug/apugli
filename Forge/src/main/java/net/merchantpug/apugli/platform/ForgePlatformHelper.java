@@ -1,11 +1,11 @@
 package net.merchantpug.apugli.platform;
 
+import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
@@ -13,27 +13,19 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.ApugliForgeEventHandler;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
-import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
-import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
-import com.google.auto.service.AutoService;
-import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.util.ActiveKeyUtil;
 import net.merchantpug.apugli.util.HudRenderUtil;
-import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -173,6 +165,11 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public HudRender getDefaultHudRender() {
         return HudRenderUtil.DONT_RENDER;
+    }
+
+    @Override
+    public float getEntityEyeHeight(Entity entity) {
+        return entity.getEyeHeightAccess(entity.getPose(), entity.getDimensions(entity.getPose()));
     }
 
 }

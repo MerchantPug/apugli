@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Tuple;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
@@ -24,12 +23,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class TextureUtilClient {
-    private static final Map<ResourceLocation, Tuple<ResourceLocation, String>> POWER_ID_TO_URL = new HashMap<>();
+    private static final Map<ResourceLocation, String> URL_SET = new HashMap<>();
     private static final Map<ResourceLocation, String> REGISTERED_TEXTURES = new HashMap<>();
     private static final Map<ResourceLocation, Integer> TEXTURE_TO_SHA256 = new HashMap<>();
 
-    public static Map<ResourceLocation, Tuple<ResourceLocation, String>> getPowerIdToUrl() {
-        return POWER_ID_TO_URL;
+    public static Map<ResourceLocation, String> getUrls() {
+        return URL_SET;
     }
 
     public static Map<ResourceLocation, String> getRegisteredTextures() {
@@ -37,21 +36,21 @@ public class TextureUtilClient {
     }
 
     public static void clearMaps() {
-        POWER_ID_TO_URL.clear();
+        URL_SET.clear();
         REGISTERED_TEXTURES.clear();
         TEXTURE_TO_SHA256.clear();
     }
 
     private static long fileSizeLimit = Long.MIN_VALUE;
-    private static final Map<ResourceLocation, Tuple<ResourceLocation, String>> TEMP_POWER_ID_TO_URL = new HashMap<>();
+    private static final Map<ResourceLocation, String> TEMP_URL_SET = new HashMap<>();
     private static final Map<ResourceLocation, String> TEMP_REGISTERED_TEXTURES = new HashMap<>();
     private static final Map<ResourceLocation, Integer> TEMP_TEXTURE_TO_SHA256 = new HashMap<>();
 
-    public static void registerPowerTexture(ResourceLocation powerId, ResourceLocation textureId, String url, boolean refresh) {
+    public static void registerPowerTexture(ResourceLocation textureId, String url, boolean refresh) {
         byte[] bytes = readTextureFromUrl(url);
         if (bytes == null) return;
 
-        Integer sha256Hash = Hashing.sha256().hashBytes(bytes).asInt();
+        int sha256Hash = Hashing.sha256().hashBytes(bytes).asInt();
 
         if (!TextureUtilClient.TEXTURE_TO_SHA256.containsKey(textureId) || !TEXTURE_TO_SHA256.get(textureId).equals(sha256Hash) || refresh) {
             NativeImage texture;
@@ -72,12 +71,12 @@ public class TextureUtilClient {
             }
             Minecraft.getInstance().getTextureManager().register(textureId, nativeImageBacked);
             TEMP_TEXTURE_TO_SHA256.put(textureId, sha256Hash);
-            TEMP_REGISTERED_TEXTURES.put(powerId, url);
-            TEMP_POWER_ID_TO_URL.put(powerId, new Tuple<>(textureId, url));
+            TEMP_REGISTERED_TEXTURES.put(textureId, url);
+            TEMP_URL_SET.put(textureId, url);
         } else if (TEXTURE_TO_SHA256.get(textureId).equals(sha256Hash)) {
             TEMP_TEXTURE_TO_SHA256.put(textureId, sha256Hash);
-            TEMP_REGISTERED_TEXTURES.put(powerId, url);
-            TEMP_POWER_ID_TO_URL.put(powerId, new Tuple<>(textureId, url));
+            TEMP_REGISTERED_TEXTURES.put(textureId, url);
+            TEMP_URL_SET.put(textureId, url);
         }
     }
 
@@ -93,19 +92,19 @@ public class TextureUtilClient {
     }
 
     private static void putTempValuesInMain() {
-        POWER_ID_TO_URL.putAll(TEMP_POWER_ID_TO_URL);
+        URL_SET.putAll(TEMP_URL_SET);
         REGISTERED_TEXTURES.putAll(TEMP_REGISTERED_TEXTURES);
         TEXTURE_TO_SHA256.putAll(TEMP_TEXTURE_TO_SHA256);
     }
 
     public static void clearNoLongerPresent() {
-        POWER_ID_TO_URL.entrySet().removeIf(entry -> !TEMP_POWER_ID_TO_URL.containsKey(entry.getKey()));
+        URL_SET.entrySet().removeIf(entry -> !TEMP_URL_SET.containsKey(entry.getKey()));
         REGISTERED_TEXTURES.entrySet().removeIf(entry -> !TEMP_REGISTERED_TEXTURES.containsKey(entry.getKey()));
         TEXTURE_TO_SHA256.entrySet().removeIf(entry -> !TEMP_TEXTURE_TO_SHA256.containsKey(entry.getKey()));
     }
 
     private static void clearTempMaps() {
-        TEMP_POWER_ID_TO_URL.clear();
+        TEMP_URL_SET.clear();
         TEMP_REGISTERED_TEXTURES.clear();
         TEMP_TEXTURE_TO_SHA256.clear();
     }
@@ -162,4 +161,5 @@ public class TextureUtilClient {
         }
         return fileSizeLimit;
     }
+
 }

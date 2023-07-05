@@ -1,15 +1,16 @@
 package net.merchantpug.apugli.registry.action;
 
 import net.merchantpug.apugli.action.factory.IActionFactory;
+import net.merchantpug.apugli.action.factory.entity.*;
 import net.merchantpug.apugli.action.factory.entity.meta.PacketAction;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.action.factory.entity.*;
 import net.minecraft.world.entity.Entity;
 
 public class ApugliEntityActions {
     
     public static void registerAll() {
         register("add_velocity", new AddVelocityAction());
+        register("custom_projectile", new CustomProjectileAction());
         register("explode", new ExplodeAction());
         register("fire_projectile", new FireProjectileAction());
         register("raycast", new RaycastAction());

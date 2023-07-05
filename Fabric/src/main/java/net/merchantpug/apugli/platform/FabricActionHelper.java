@@ -1,17 +1,21 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.action.factory.IActionFactory;
-import net.merchantpug.apugli.platform.services.IActionHelper;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import io.netty.buffer.Unpooled;
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.action.factory.IActionFactory;
+import net.merchantpug.apugli.platform.services.IActionHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -54,7 +58,36 @@ public class FabricActionHelper implements IActionHelper {
     public Consumer<Tuple<Entity, Entity>> biEntityConsumer(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
+
+    @Override
+    public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBiEntityDefault()) return;
+
+        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        ApoliDataTypes.BIENTITY_ACTION.send(buf, instance);
+
+        tag.putByteArray(path, buf.array());
+    }
+
+    @Override
+    public <T> T readBiEntityActionFromNbt(CompoundTag tag, String path) {
+        if (!tag.contains(path, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.setBytes(0, tag.getByteArray(path));
+
+        return (T) ApoliDataTypes.BIENTITY_ACTION.receive(buf);
+    }
+
+    @Override
+    public <T> T getBiEntityDefault() {
+        return null;
+    }
+
     @Override
     public SerializableDataType<?> blockDataType() {
         return ApoliDataTypes.BLOCK_ACTION;
@@ -73,15 +106,44 @@ public class FabricActionHelper implements IActionHelper {
 
     @Override
     public <A> void executeBlock(A action, Level level, BlockPos pos, Direction direction) {
-        if (action != null) ((Consumer<Triple<Level, BlockPos, Direction>>)action).accept(Triple.of(level, pos, direction));
+        if (action != null)
+            ((Consumer<Triple<Level, BlockPos, Direction>>) action).accept(Triple.of(level, pos, direction));
     }
-
 
     @Override
     public Consumer<Triple<Level, BlockPos, Direction>> blockConsumer(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
     }
-    
+
+    @Override
+    public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBlockDefault()) return;
+
+        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        ApoliDataTypes.BLOCK_ACTION.send(buf, instance);
+
+        tag.putByteArray(path, buf.array());
+    }
+
+    @Override
+    public <T> T readBlockActionFromNbt(CompoundTag tag, String path) {
+        if (!tag.contains(path, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.setBytes(0, tag.getByteArray(path));
+
+        return (T) ApoliDataTypes.BLOCK_ACTION.receive(buf);
+    }
+
+    @Override
+    public <T> T getBlockDefault() {
+        return null;
+    }
+
     @Override
     public SerializableDataType<?> entityDataType() {
         return ApoliDataTypes.ENTITY_ACTION;

@@ -1,0 +1,73 @@
+{
+  "type": "apugli:custom_projectile",
+  "texture_location": "minecraft:textures/item/brick.png",
+  "bientity_action_on_miss": {
+    "type": "apoli:target_action",
+    "action": {
+      "type": "apoli:and",
+      "actions": [
+        {
+          "type": "apoli:execute_command",
+          "command": "playsound minecraft:block.stone.break player @a ~ ~ ~ 1 0.7"
+        },
+        {
+          "type": "apoli:spawn_particles",
+          "particle": {
+            "type": "minecraft:item",
+            "params": "minecraft:brick"
+          },
+          "count": 8,
+          "speed": 0.1,
+          "spread": {
+            "x": 2.0,
+            "y": 0.0,
+            "z": 2.0
+          }
+        }
+      ]
+    }
+  },
+  "owner_bientity_action_on_hit": {
+    "type": "apoli:and",
+    "actions": [
+      {
+        "type": "apoli:damage",
+        "source": {
+          "name": "brick.player"
+        },
+        "amount": 8
+      },
+      {
+        "type": "apoli:target_action",
+        "action": {
+          "type": "apoli:and",
+          "actions": [
+            {
+              "type": "apoli:execute_command",
+              "command": "playsound minecraft:block.stone.break player @a ~ ~ ~ 1 0.7"
+            },
+            {
+              "type": "apoli:spawn_particles",
+              "particle": {
+                "type": "minecraft:item",
+                "params": "minecraft:brick"
+              },
+              "count": 8,
+              "speed": 0.1,
+              "spread": {
+                "x": 2.0,
+                "y": 0.0,
+                "z": 2.0
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "key": {
+    "key": "key.use"
+  },
+  "divergence": 0.0,
+  "speed": 0.8
+}
