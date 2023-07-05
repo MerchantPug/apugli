@@ -5,6 +5,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.HumanoidMobRendererAccess;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.client.renderer.*;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.mixin.forge.client.accessor.EntityRenderersEventAddLayersAccessor;
 import net.merchantpug.apugli.mixin.forge.client.accessor.PlayerModelAccessor;
@@ -12,21 +13,21 @@ import net.merchantpug.apugli.mixin.forge.common.accessor.ApoliClientEventHandle
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.registry.ApugliEntityTypes;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.util.FOVUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.ArmedModel;
+import net.minecraft.client.model.HeadedModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -125,6 +126,12 @@ public class ApugliForgeClientEventHandler {
 
     @Mod.EventBusSubscriber(modid = Apugli.ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModEvents {
+
+
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ApugliEntityTypes.CUSTOM_PROJECTILE.get(), CustomProjectileRenderer::new);
+        }
 
         @SubscribeEvent
         public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {

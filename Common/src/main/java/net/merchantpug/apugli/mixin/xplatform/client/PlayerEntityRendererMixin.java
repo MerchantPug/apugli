@@ -1,12 +1,11 @@
 package net.merchantpug.apugli.mixin.xplatform.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EntityTextureOverlayPower;
 import net.merchantpug.apugli.power.SetTexturePower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.TextureUtil;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -26,10 +25,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
 
@@ -133,7 +130,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         }
 
         RenderType renderLayer;
-        if (TextureUtilClient.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
+        if (TextureUtilClient.getUrls().containsKey(power.getUrlTextureIdentifier())) {
             renderLayer = alpha == 1.0 ? RenderType.entityCutoutNoCull(power.getUrlTextureIdentifier()) : RenderType.entityTranslucent(power.getUrlTextureIdentifier());
 
             arm.render(matrices, vertexConsumers.getBuffer(renderLayer), light, OverlayTexture.NO_OVERLAY, red, green, blue, alpha);

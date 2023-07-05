@@ -6,14 +6,17 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.merchantpug.apugli.client.renderer.CustomProjectileRenderer;
+import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
 import net.merchantpug.apugli.mixin.fabric.client.accessor.ApoliClientAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.registry.ApugliEntityTypes;
 import net.merchantpug.apugli.util.ApugliClassDataClient;
-import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -33,6 +36,7 @@ public class ApugliClientFabric implements ClientModInitializer {
 		ApugliClassDataClient.registerAll();
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
+		EntityRendererRegistry.register(ApugliEntityTypes.CUSTOM_PROJECTILE.get(), CustomProjectileRenderer::new);
 
 		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
 			TextureUtilClient.clear();

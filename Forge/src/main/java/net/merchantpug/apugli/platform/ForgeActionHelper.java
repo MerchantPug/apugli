@@ -1,22 +1,28 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.action.FabricEntityAction;
-import net.merchantpug.apugli.action.FabricItemAction;
-import net.merchantpug.apugli.action.factory.IActionFactory;
-import net.merchantpug.apugli.data.ApoliForgeDataTypes;
-import net.merchantpug.apugli.platform.services.IActionHelper;
-import net.merchantpug.apugli.registry.ApugliRegisters;
 import com.google.auto.service.AutoService;
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
+import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.action.FabricBiEntityAction;
 import net.merchantpug.apugli.action.FabricBlockAction;
+import net.merchantpug.apugli.action.FabricEntityAction;
+import net.merchantpug.apugli.action.FabricItemAction;
+import net.merchantpug.apugli.action.factory.IActionFactory;
+import net.merchantpug.apugli.data.ApoliForgeDataTypes;
+import net.merchantpug.apugli.platform.services.IActionHelper;
+import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -59,8 +65,31 @@ public class ForgeActionHelper implements IActionHelper {
         ConfiguredBiEntityAction<?, ?> action = data.get(fieldName);
         return pair -> action.execute(pair.getA(), pair.getB());
     }
-    
-    
+
+    @Override
+    public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBiEntityDefault()) return;
+
+        Tag actionTag = ConfiguredBlockAction.CODEC.encode((ConfiguredBlockAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+
+        tag.put(path, actionTag);
+    }
+
+    @Override
+    public <T> T readBiEntityActionFromNbt(CompoundTag tag, String path) {
+        var optional = ConfiguredBiEntityAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+        if (optional.isPresent()) {
+            return (T) optional.map(Pair::getFirst).get();
+        }
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+    }
+
+    @Override
+    public <T> T getBiEntityDefault() {
+        return (T) ApoliDefaultActions.BIENTITY_DEFAULT.get();
+    }
+
+
     @Override
     public SerializableDataType<?> blockDataType() {
         return ApoliForgeDataTypes.BLOCK_ACTION;
@@ -89,8 +118,31 @@ public class ForgeActionHelper implements IActionHelper {
         ConfiguredBlockAction<?, ?> action = data.get(fieldName);
         return triple -> action.execute(triple.getLeft(), triple.getMiddle(), triple.getRight());
     }
-    
-    
+
+    @Override
+    public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBlockDefault()) return;
+
+        Tag actionTag = ConfiguredBlockAction.CODEC.encode((ConfiguredBlockAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+
+        tag.put(path, actionTag);
+    }
+
+    @Override
+    public <T> T readBlockActionFromNbt(CompoundTag tag, String path) {
+        var optional = ConfiguredBlockAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+        if (optional.isPresent()) {
+            return (T) optional.map(Pair::getFirst).get();
+        }
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+    }
+
+    @Override
+    public <T> T getBlockDefault() {
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+    }
+
+
     @Override
     public SerializableDataType<?> entityDataType() {
         return ApoliForgeDataTypes.ENTITY_ACTION;

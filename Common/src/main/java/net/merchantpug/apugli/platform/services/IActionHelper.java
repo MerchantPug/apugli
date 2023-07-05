@@ -1,10 +1,11 @@
 package net.merchantpug.apugli.platform.services;
 
-import net.merchantpug.apugli.action.factory.IActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +28,14 @@ public interface IActionHelper {
     
     @Nullable
     Consumer<Tuple<Entity, Entity>> biEntityConsumer(SerializableData.Instance data, String fieldName);
-    
-    
+
+    <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object);
+
+    <T> T readBiEntityActionFromNbt(CompoundTag tag, String path);
+
+    <T> T getBiEntityDefault();
+
+
     SerializableDataType<?> blockDataType();
     
     void registerBlock(String name, IActionFactory<Triple<Level, BlockPos, Direction>> action);
@@ -38,8 +45,14 @@ public interface IActionHelper {
     <A> void executeBlock(A action, Level level, BlockPos pos, Direction direction);
     
     Consumer<Triple<Level, BlockPos, Direction>> blockConsumer(SerializableData.Instance data, String fieldName);
-    
-    
+
+    <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object);
+
+    <T> T readBlockActionFromNbt(CompoundTag tag, String path);
+
+    <T> T getBlockDefault();
+
+
     SerializableDataType<?> entityDataType();
     
     void registerEntity(String name, IActionFactory<Entity> action);
@@ -60,5 +73,5 @@ public interface IActionHelper {
     <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable);
     
     Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName);
-    
+
 }

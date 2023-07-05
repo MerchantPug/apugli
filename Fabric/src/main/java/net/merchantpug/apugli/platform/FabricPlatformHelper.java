@@ -1,10 +1,12 @@
 package net.merchantpug.apugli.platform;
 
+import com.google.auto.service.AutoService;
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.mixin.EyeHeightAccess;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ModelColorPower;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.Modifier;
@@ -12,7 +14,7 @@ import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.merchantpug.apugli.Apugli;
+import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
@@ -22,24 +24,14 @@ import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
-import com.google.auto.service.AutoService;
-import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
-import net.fabricmc.loader.api.FabricLoader;
-import net.merchantpug.apugli.power.TextureOrUrlPower;
-import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPlatformHelper.class)
@@ -165,6 +157,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public HudRender getDefaultHudRender() {
         return HudRender.DONT_RENDER;
+    }
+
+    @Override
+    public float getEntityEyeHeight(Entity entity) {
+        return ((EyeHeightAccess)entity).callGetEyeHeight(entity.getPose(), entity.getDimensions(entity.getPose()));
     }
 
 }

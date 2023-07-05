@@ -7,31 +7,29 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
-public record UpdateUrlTexturesPacket(Map<ResourceLocation, Triple<ResourceLocation, String, ResourceLocation>> powerData) implements ApugliPacketS2C {
+public record UpdateUrlTexturesPacket(Set<Triple<ResourceLocation, String, ResourceLocation>> urlTextures) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("update_url_textures");
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeInt(powerData.size());
-        for (Map.Entry<ResourceLocation, Triple<ResourceLocation, String, ResourceLocation>> entry : powerData.entrySet()) {
-            buf.writeResourceLocation(entry.getKey());
-            buf.writeResourceLocation(entry.getValue().getLeft());
-            buf.writeUtf(entry.getValue().getMiddle());
-            buf.writeBoolean(entry.getValue().getRight() != null);
-            if (entry.getValue().getRight() != null) {
-                buf.writeResourceLocation(entry.getValue().getRight());
+        buf.writeInt(urlTextures.size());
+        for (Triple<ResourceLocation, String, ResourceLocation> entry : urlTextures) {
+            buf.writeResourceLocation(entry.getLeft());
+            buf.writeUtf(entry.getMiddle());
+            buf.writeBoolean(entry.getRight() != null);
+            if (entry.getRight() != null) {
+                buf.writeResourceLocation(entry.getRight());
             }
         }
     }
 
     public static UpdateUrlTexturesPacket decode(FriendlyByteBuf buf) {
         int powerTypesSize = buf.readInt();
-        Map<ResourceLocation, Triple<ResourceLocation, String, ResourceLocation>> powerData = new HashMap<>();
+        Set<Triple<ResourceLocation, String, ResourceLocation>> powerData = new HashSet<>();
         for (int i = 0; i < powerTypesSize; ++i) {
-            ResourceLocation powerId = buf.readResourceLocation();
             ResourceLocation textureId = buf.readResourceLocation();
             String textureUrl = buf.readUtf();
             boolean hasTextureLocation = buf.readBoolean();
@@ -39,7 +37,7 @@ public record UpdateUrlTexturesPacket(Map<ResourceLocation, Triple<ResourceLocat
             if (hasTextureLocation) {
                 textureLocation =buf.readResourceLocation();
             }
-            powerData.put(powerId, Triple.of(textureId, textureUrl, textureLocation));
+            powerData.add(Triple.of(textureId, textureUrl, textureLocation));
         }
         return new UpdateUrlTexturesPacket(powerData);
     }
@@ -52,10 +50,10 @@ public record UpdateUrlTexturesPacket(Map<ResourceLocation, Triple<ResourceLocat
     @Override
     public void handle() {
         Minecraft.getInstance().execute(() -> {
-            powerData.forEach((key, value) -> {
+            urlTextures.forEach((value) -> {
                 if (value.getRight() != null && TextureUtilClient.doesTextureExist(value.getRight())) return;
 
-                TextureUtilClient.registerPowerTexture(key, value.getLeft(), value.getMiddle(), false);
+                TextureUtilClient.registerPowerTexture(value.getLeft(), value.getMiddle(), false);
             });
             TextureUtilClient.update();
         });

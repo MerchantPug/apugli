@@ -102,4 +102,6 @@ public interface IPlatformHelper {
      */
     HudRender getDefaultHudRender();
 
+    float getEntityEyeHeight(Entity entity);
+
 }

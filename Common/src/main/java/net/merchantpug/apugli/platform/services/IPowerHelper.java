@@ -1,12 +1,12 @@
 package net.merchantpug.apugli.platform.services;
 
-import io.github.apace100.apoli.power.PowerType;
-import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
-import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.merchantpug.apugli.power.factory.SimplePowerFactory;
+import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;

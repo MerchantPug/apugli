@@ -1,12 +1,11 @@
 package net.merchantpug.apugli.client.renderer;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EnergySwirlPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.TextureUtil;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -37,7 +36,7 @@ public class EnergySwirlLayer<T extends LivingEntity, M extends EntityModel<T>> 
         float f = (float)entity.tickCount + tickDelta;
 
         VertexConsumer vertexConsumer = null;
-        if (TextureUtilClient.getPowerIdToUrl().containsKey(power.getType().getIdentifier())) {
+        if (TextureUtilClient.getUrls().containsKey(power.getUrlTextureIdentifier())) {
             vertexConsumer = vertexConsumers.getBuffer(RenderType.energySwirl(power.getUrlTextureIdentifier(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));
         } else if (power.getTextureLocation() != null) {
             vertexConsumer = vertexConsumers.getBuffer(RenderType.energySwirl(power.getTextureLocation(), this.getEnergySwirlX(f, power.getSpeed()) % 1.0F, f * 0.01F % 1.0F));

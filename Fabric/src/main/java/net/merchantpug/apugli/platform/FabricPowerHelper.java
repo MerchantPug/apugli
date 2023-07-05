@@ -1,17 +1,17 @@
 package net.merchantpug.apugli.platform;
 
-import io.github.apace100.apoli.power.*;
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.platform.services.IPowerHelper;
-import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
-import net.merchantpug.apugli.power.factory.SimplePowerFactory;
-import net.merchantpug.apugli.registry.ApugliRegisters;
-import net.merchantpug.apugli.registry.services.RegistryObject;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.*;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.platform.services.IPowerHelper;
+import net.merchantpug.apugli.power.factory.SimplePowerFactory;
+import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
+import net.merchantpug.apugli.registry.ApugliRegisters;
+import net.merchantpug.apugli.registry.services.RegistryObject;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
