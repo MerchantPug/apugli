@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.registry.action;
 
 import net.merchantpug.apugli.action.factory.IActionFactory;
+import net.merchantpug.apugli.action.factory.block.AreaOfEffectAction;
 import net.merchantpug.apugli.action.factory.block.DestroyAction;
 import net.merchantpug.apugli.action.factory.block.LightUpAction;
 import net.merchantpug.apugli.platform.Services;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.tuple.Triple;
 public class ApugliBlockActions {
     
     public static void registerAll() {
+        register("area_of_effect", new AreaOfEffectAction());
         register("destroy", new DestroyAction());
         register("light_up", new LightUpAction());
     }
