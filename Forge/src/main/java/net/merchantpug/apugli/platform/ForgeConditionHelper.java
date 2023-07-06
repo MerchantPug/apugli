@@ -43,7 +43,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public <C> boolean checkBiEntity(C condition, Entity actor, Entity target) {
-        return condition != null && ((ConfiguredBiEntityCondition<?, ?>)condition).check(actor, target);
+        return condition == null || ((ConfiguredBiEntityCondition<?, ?>)condition).check(actor, target);
     }
 
     @Override
