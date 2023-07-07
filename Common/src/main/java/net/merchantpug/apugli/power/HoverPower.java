@@ -9,6 +9,7 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public class HoverPower extends Power {
@@ -27,12 +28,16 @@ public class HoverPower extends Power {
         return correctionRange;
     }
 
-    public static Optional<Double> getCorrectionRange(LivingEntity entity) {
-        return Services.POWER.getPowers(entity, ApugliPowers.HOVER.get())
+    public static Optional<Double> getCorrectionRange(LivingEntity living) {
+        List<HoverPower> powerList = Services.POWER.getPowers(living, ApugliPowers.HOVER.get())
                 .stream()
                 .filter(HoverPower::canCorrectHeight)
-                .map(HoverPower::getCorrectionRange)
-                .max(Double::compare);
+                .toList();
+        if (!powerList.isEmpty()) {
+            return powerList.stream().map(HoverPower::getCorrectionRange)
+                    .max(Double::compare);
+        }
+        return Optional.empty();
     }
 
     public static class Factory extends SimplePowerFactory<HoverPower> {
