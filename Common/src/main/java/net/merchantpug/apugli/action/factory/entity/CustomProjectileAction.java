@@ -22,6 +22,7 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
     @Override
     public SerializableData getSerializableData() {
         return new SerializableData()
+                .add("entity_id", SerializableDataTypes.IDENTIFIER)
                 .add("texture_location", SerializableDataTypes.IDENTIFIER, null)
                 .add("texture_url", SerializableDataTypes.STRING, null)
                 .add("count", SerializableDataTypes.INT, 1)
@@ -35,8 +36,12 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
                 .add("block_action_on_hit", Services.ACTION.blockDataType(), null)
                 .add("bientity_action_on_miss", Services.ACTION.biEntityDataType(), null)
                 .add("bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
-                .add("owner_bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
-                .add("block_action_cancels_miss_action", SerializableDataTypes.BOOLEAN, false);
+                .add("owner_target_bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
+                .add("block_action_cancels_miss_action", SerializableDataTypes.BOOLEAN, false)
+                .add("block_condition", Services.CONDITION.blockDataType(), null)
+                .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                .add("owner_bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                .add("tick_bientity_action", Services.ACTION.biEntityDataType(), null);
     }
 
     @Override
@@ -64,14 +69,19 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
         Vec3 spawnPos = actor.position().add(0.0D, actor.getEyeHeight(), 0.0D).add(rotationVec);
         CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), actor, actor.level);
 
+        projectile.setEntityId(data.getId("entity_id"));
         projectile.setOwner(actor);
         projectile.shootFromRotation(actor, pitch, yaw, 0.0F, data.getFloat("speed"), data.getFloat("divergence") * 0.075F);
         projectile.setImpactBlockAction(data, "block_action_on_hit");
         projectile.setBlockActionCancelsMissAction(data.getBoolean("block_action_cancels_miss_action"));
         projectile.setMissBiEntityAction(data, "bientity_action_on_miss");
         projectile.setImpactBiEntityAction(data, "bientity_action_on_hit");
-        projectile.setOwnerImpactBiEntityAction(data, "owner_bientity_action_on_hit");
+        projectile.setOwnerImpactBiEntityAction(data, "owner_target_bientity_action_on_hit");
         projectile.setTextureLocation(data.getId("texture_location"));
+        projectile.setBlockCondition(data, "block_condition");
+        projectile.setOwnerBiEntityCondition(data, "owner_bientity_condition");
+        projectile.setBiEntityCondition(data, "bientity_condition");
+        projectile.setTickBiEntityAction(data, "tick_bientity_action");
         if (data.isPresent("texture_url")) {
             projectile.setUrlLocation(getTextureUrl(data.getString("texture_url")));
         }

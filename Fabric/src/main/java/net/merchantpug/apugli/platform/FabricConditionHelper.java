@@ -1,17 +1,23 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.condition.factory.IConditionFactory;
-import net.merchantpug.apugli.platform.services.IConditionHelper;
 import com.google.auto.service.AutoService;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.merchantpug.apugli.platform.services.IConditionHelper;
+import net.merchantpug.apugli.util.ConditionFactoryWrapperCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,6 +29,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
@@ -54,6 +61,45 @@ public class FabricConditionHelper implements IConditionHelper {
     @Nullable
     public Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName) {
         return data.get(fieldName);
+    }
+
+    @Override
+    public <T> void writeBiEntityConditionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBiEntityDefault()) return;
+
+        ConditionFactory<Tuple<Entity, Entity>>.Instance instance = (ConditionFactory<Tuple<Entity, Entity>>.Instance) object;
+        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION);
+
+        Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode bi-entity condition to tag: {}", s));
+        if (tagOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to serialize bi-entity condition to tag.");
+            return;
+        }
+        tag.put(path, tagOptional.get());
+    }
+
+    @Override
+    public <T> T readBiEntityConditionFromNbt(CompoundTag tag, String path) {
+        if (!tag.contains(path, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+
+        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION);
+        Optional<ConditionFactory<Tuple<Entity, Entity>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity condition from tag: {}", s)).map(Pair::getFirst);
+
+        if (instanceOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to deserialize bi-entity condition from tag.");
+            return null;
+        }
+
+        return (T) instanceOptional.get();
+    }
+
+    @Override
+    public <T> T getBiEntityDefault() {
+        return null;
     }
 
 
@@ -103,6 +149,45 @@ public class FabricConditionHelper implements IConditionHelper {
     @Override
     public <C> boolean checkBlock(C condition, Level level, BlockPos pos) {
         return condition == null || ((Predicate<BlockInWorld>)condition).test(new BlockInWorld(level, pos, true));
+    }
+
+    @Override
+    public <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBlockDefault()) return;
+
+        ConditionFactory<BlockInWorld>.Instance instance = (ConditionFactory<BlockInWorld>.Instance) object;
+        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION);
+
+        Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode block condition to tag: {}", s));
+        if (tagOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to serialize block condition to tag.");
+            return;
+        }
+        tag.put(path, tagOptional.get());
+    }
+
+    @Override
+    public <T> T readBlockConditionFromNbt(CompoundTag tag, String path) {
+        if (!tag.contains(path, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+
+        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION);
+        Optional<ConditionFactory<BlockInWorld>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode block condition from tag: {}", s)).map(Pair::getFirst);
+
+        if (instanceOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to deserialize block condition from tag.");
+            return null;
+        }
+
+        return (T) instanceOptional.get();
+    }
+
+    @Override
+    public <T> T getBlockDefault() {
+        return null;
     }
 
     @Override
