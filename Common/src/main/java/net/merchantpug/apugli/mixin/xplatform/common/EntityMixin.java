@@ -8,17 +8,19 @@ import net.merchantpug.apugli.power.HoverPower;
 import net.merchantpug.apugli.power.StepHeightPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,6 +39,8 @@ public abstract class EntityMixin implements EntityAccess {
     @Shadow public abstract double getY();
 
     @Shadow public abstract double getZ();
+
+    @Shadow public abstract void load(CompoundTag compound);
 
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
@@ -99,7 +103,11 @@ public abstract class EntityMixin implements EntityAccess {
                             handledLowerRange = true;
                             break;
                         }
-                        correction += 1.0;
+                        double checkAddition = lowerCorrectionRange % 1.0;
+                        if (checkAddition == 0.0) {
+                            checkAddition = 1.0;
+                        }
+                        correction += checkAddition;
                     }
 
                     if (handledLowerRange) return;
@@ -121,7 +129,11 @@ public abstract class EntityMixin implements EntityAccess {
                             }
                             break;
                         }
-                        correction += 1.0;
+                        double checkAddition = lowerCorrectionRange % 1.0;
+                        if (checkAddition == 0.0) {
+                            checkAddition = 1.0;
+                        }
+                        correction += checkAddition;
                     }
                 }
             }
