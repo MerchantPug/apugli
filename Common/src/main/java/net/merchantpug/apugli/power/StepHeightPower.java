@@ -9,6 +9,7 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public class StepHeightPower extends Power {
@@ -44,19 +45,27 @@ public class StepHeightPower extends Power {
     }
 
     public static Optional<Double> getLowerCorrectionRange(LivingEntity living) {
-        return Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
+        List<StepHeightPower> powerList = Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
                 .stream()
                 .filter(StepHeightPower::canCorrectLowerHeight)
-                .map(StepHeightPower::getLowerCorrectionRange)
-                .max(Double::compare);
+                .toList();
+        if (!powerList.isEmpty()) {
+            return powerList.stream().map(StepHeightPower::getLowerCorrectionRange)
+                    .max(Double::compare);
+        }
+        return Optional.empty();
     }
 
     public static Optional<Double> getUpperCorrectionRange(LivingEntity living) {
-        return Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
+        List<StepHeightPower> powerList = Services.POWER.getPowers(living, ApugliPowers.STEP_HEIGHT.get())
                 .stream()
                 .filter(StepHeightPower::canCorrectUpperHeight)
-                .map(StepHeightPower::getUpperCorrectionRange)
-                .max(Double::compare);
+                .toList();
+        if (!powerList.isEmpty()) {
+            return powerList.stream().map(StepHeightPower::getUpperCorrectionRange)
+                    .max(Double::compare);
+        }
+        return Optional.empty();
     }
 
     public static class Factory extends SimplePowerFactory<StepHeightPower> {
