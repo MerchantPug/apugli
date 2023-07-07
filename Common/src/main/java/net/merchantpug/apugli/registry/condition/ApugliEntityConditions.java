@@ -25,10 +25,12 @@ public class ApugliEntityConditions {
         register("moving", new MovingCondition());
         register("particle_in_radius", new ParticleInRadiusCondition());
         register("player_model_type", new PlayerModelTypeCondition());
+        register("raining", new RainingCondition());
         register("raycast", new RaycastCondition());
         register("status_effect_tag", new StatusEffectTagCondition());
         register("structure", new StructureCondition());
         register("trident_enchantment", new TridentEnchantmentCondition());
+        register("thundering", new ThunderingCondition());
         register("velocity", new VelocityCondition());
     }
     
