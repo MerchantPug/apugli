@@ -2,6 +2,7 @@
   "type": "apugli:action_on_jump",
   "entity_action": {
     "type": "apugli:custom_projectile",
+    "entity_id": "apugli:realistic_brick",
     "texture_url": "https://freepngimg.com/thumb/bricks/8-2-bricks-png.png",
     "bientity_action_on_miss": {
       "type": "apoli:target_action",
@@ -29,7 +30,7 @@
         ]
       }
     },
-    "owner_bientity_action_on_hit": {
+    "owner_target_bientity_action_on_hit": {
       "type": "apoli:and",
       "actions": [
         {
