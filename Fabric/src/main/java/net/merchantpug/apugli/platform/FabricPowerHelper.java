@@ -12,6 +12,7 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.merchantpug.apugli.registry.services.RegistryObject;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
@@ -138,6 +139,42 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         }
         Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerType.getIdentifier());
         return OptionalInt.empty();
+    }
+
+    @Override
+    public <P> ResourceLocation getPowerFromParameter(P power) {
+        return ((PowerTypeReference)power).getIdentifier();
+    }
+
+    @Override
+    public <P> ResourceLocation getPowerId(P power) {
+        return ((Power)power).getType().getIdentifier();
+    }
+
+    @Override
+    public void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        if (!PowerTypeRegistry.contains(powerId)) return;
+        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+        component.addPower(PowerTypeRegistry.get(powerId), source);
+        component.sync();
+    }
+
+    @Override
+    public void revokePower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        if (!PowerTypeRegistry.contains(powerId)) return;
+        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+        PowerType<?> powerType = PowerTypeRegistry.get(powerId);
+        if (component.hasPower(powerType, source)) {
+            component.removePower(powerType, source);
+            component.sync();
+        }
+    }
+
+    @Override
+    public boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        if (!PowerTypeRegistry.contains(powerId))
+            return false;
+        return PowerHolderComponent.KEY.get(entity).hasPower(PowerTypeRegistry.get(powerId), source);
     }
 
 }

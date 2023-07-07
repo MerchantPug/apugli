@@ -22,10 +22,12 @@
     "common.StatusEffectMixin",
     "common.TemptGoalMixin",
     "common.accessor.AbstractFurnaceBlockEntityAccessor",
+    "common.accessor.AreaEffectCloudEntityAccessor",
     "common.accessor.BrewingStandBlockEntityAccessor",
     "common.accessor.ItemAccessor",
     "common.accessor.LivingEntityAccessor",
     "common.accessor.PlayerEntityAccessor",
+    "common.accessor.ProjectileEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
     "common.accessor.TridentEntityAccessor"
   ],

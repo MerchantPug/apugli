@@ -1,21 +1,23 @@
 package net.merchantpug.apugli.platform;
 
 import com.google.auto.service.AutoService;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
-import io.netty.buffer.Unpooled;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.services.IActionHelper;
+import net.merchantpug.apugli.util.ActionFactoryWrapperCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -26,6 +28,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
@@ -63,12 +66,16 @@ public class FabricActionHelper implements IActionHelper {
     public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
         if (object == getBiEntityDefault()) return;
 
-        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+        ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
+        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        ApoliDataTypes.BIENTITY_ACTION.send(buf, instance);
-
-        tag.putByteArray(path, buf.array());
+        Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode bi-entity action to tag: {}", s));
+        if (tagOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to serialize bi-entity action to tag.");
+            return;
+        }
+        tag.put(path, tagOptional.get());
     }
 
     @Override
@@ -77,10 +84,16 @@ public class FabricActionHelper implements IActionHelper {
             return null;
         }
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.setBytes(0, tag.getByteArray(path));
+        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
+        Optional<ActionFactory<Tuple<Entity, Entity>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity action from tag: {}", s)).map(Pair::getFirst);
 
-        return (T) ApoliDataTypes.BIENTITY_ACTION.receive(buf);
+        if (instanceOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to deserialize bi-entity action from tag.");
+            return null;
+        }
+
+        return (T) instanceOptional.get();
     }
 
     @Override
@@ -119,12 +132,16 @@ public class FabricActionHelper implements IActionHelper {
     public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
         if (object == getBlockDefault()) return;
 
-        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+        ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
+        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        ApoliDataTypes.BLOCK_ACTION.send(buf, instance);
-
-        tag.putByteArray(path, buf.array());
+        Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode block action to tag: {}", s));
+        if (tagOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to serialize block action to tag.");
+            return;
+        }
+        tag.put(path, tagOptional.get());
     }
 
     @Override
@@ -133,10 +150,16 @@ public class FabricActionHelper implements IActionHelper {
             return null;
         }
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.setBytes(0, tag.getByteArray(path));
+        Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION);
+        Optional<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity action from tag: {}", s)).map(Pair::getFirst);
 
-        return (T) ApoliDataTypes.BLOCK_ACTION.receive(buf);
+        if (instanceOptional.isEmpty()) {
+            Apugli.LOG.error("Failed to deserialize bi-entity action from tag.");
+            return null;
+        }
+
+        return (T) instanceOptional.get();
     }
 
     @Override

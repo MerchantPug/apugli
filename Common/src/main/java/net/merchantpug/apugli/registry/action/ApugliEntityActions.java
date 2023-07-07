@@ -18,6 +18,7 @@ public class ApugliEntityActions {
         register("explosion_raycast", new ExplosionRaycastAction());
         register("packet", new PacketAction());
         register("set_no_gravity", new SetNoGravityAction());
+        register("spawn_custom_effect_cloud", new SpawnCustomEffectCloudAction());
         register("spawn_item", new SpawnItemAction());
         register("spawn_particles", new SpawnParticlesAction());
         register("zombify_villager", new ZombifyVillagerAction());

@@ -27,7 +27,7 @@
       ]
     }
   },
-  "owner_bientity_action_on_hit": {
+  "owner_target_bientity_action_on_hit": {
     "type": "apoli:and",
     "actions": [
       {

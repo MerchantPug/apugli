@@ -34,9 +34,13 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
                 .add("block_action_on_hit", Services.ACTION.blockDataType(), null)
                 .add("bientity_action_on_miss", Services.ACTION.biEntityDataType(), null)
                 .add("bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
-                .add("owner_bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
+                .add("owner_target_bientity_action_on_hit", Services.ACTION.biEntityDataType(), null)
                 .add("allow_conditional_cancelling", SerializableDataTypes.BOOLEAN, false)
-                .add("block_action_cancels_miss_action", SerializableDataTypes.BOOLEAN, false);
+                .add("block_action_cancels_miss_action", SerializableDataTypes.BOOLEAN, false)
+                .add("block_condition", Services.CONDITION.blockDataType(), null)
+                .add("bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                .add("owner_bientity_condition", Services.CONDITION.biEntityDataType(), null)
+                .add("tick_bientity_action", Services.ACTION.biEntityDataType(), null);
     }
 
     default void cacheTextureUrl(ResourceLocation powerId, P power) {
@@ -135,15 +139,20 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
         Vec3 spawnPos = entity.position().add(0.0D, entity.getEyeHeight(), 0.0D).add(rotationVec);
         CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), entity, entity.level());
 
+        projectile.setEntityId(getPowerId(power));
         projectile.setOwner(entity);
         projectile.shootFromRotation(entity, pitch, yaw, 0.0F, data.getFloat("speed"), data.getFloat("divergence") * 0.075F);
         projectile.setImpactBlockAction(data, "block_action_on_hit");
         projectile.setBlockActionCancelsMissAction(data.getBoolean("block_action_cancels_miss_action"));
         projectile.setMissBiEntityAction(data, "bientity_action_on_miss");
         projectile.setImpactBiEntityAction(data, "bientity_action_on_hit");
-        projectile.setOwnerImpactBiEntityAction(data, "owner_bientity_action_on_hit");
+        projectile.setOwnerImpactBiEntityAction(data, "owner_target_bientity_action_on_hit");
         projectile.setTextureLocation(data.getId("texture_location"));
         projectile.setUrlLocation(getUrlTextureIdentifier(getPowerId(power)));
+        projectile.setBlockCondition(data, "block_condition");
+        projectile.setOwnerBiEntityCondition(data, "owner_bientity_condition");
+        projectile.setBiEntityCondition(data, "bientity_condition");
+        projectile.setTickBiEntityAction(data, "tick_bientity_action");
 
         if (data.get("tag") != null) {
             CompoundTag mergedTag = entity.saveWithoutId(new CompoundTag());

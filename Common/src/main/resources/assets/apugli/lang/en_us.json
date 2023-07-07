@@ -6,5 +6,8 @@
   "apugli.config.fileConnectionTimeout": "Connection Timeout (Milliseconds)",
   "apugli.config.fileSizeLimit": "File Size Limit",
   "apugli.config.hitsOnTargetOptions": "§nHits on Target Options§r",
-  "apugli.config.resetTimerTicks": "Reset Timer Ticks"
+  "apugli.config.resetTimerTicks": "Reset Timer Ticks",
+
+  "entity.apugli.custom_projectile": "Custom Projectile",
+  "entity.apugli.custom_area_effect_cloud": "Custom Area Effect Cloud"
 }

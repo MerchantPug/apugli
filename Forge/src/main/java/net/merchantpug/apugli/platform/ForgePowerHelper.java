@@ -1,7 +1,15 @@
 package net.merchantpug.apugli.platform;
 
+import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableList;
+import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.calio.data.SerializableDataType;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -10,15 +18,8 @@ import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.merchantpug.apugli.registry.services.RegistryObject;
-import com.google.auto.service.AutoService;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.calio.data.SerializableDataType;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -139,6 +140,43 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
         }
         Apugli.LOG.warn("Failed to set resource for power [{}], because it doesn't hold any resource!", powerId.orElse(null));
         return OptionalInt.empty();
+    }
+
+    @Override
+    public <P> ResourceLocation getPowerFromParameter(P power) {
+        return ((Holder<ConfiguredPower<?, ?>>)power).get().getRegistryName();
+    }
+
+    @Override
+    public <P> ResourceLocation getPowerId(P power) {
+        return ((ConfiguredPower<?, ?>)power).getRegistryName();
+    }
+
+    @Override
+    public void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        IPowerContainer container = ApoliAPI.getPowerContainer(entity);
+        if (container != null) {
+            container.addPower(powerId, source);
+            container.sync();
+        }
+    }
+
+    @Override
+    public void revokePower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        IPowerContainer container = ApoliAPI.getPowerContainer(entity);
+        if (container != null) {
+            container.removePower(powerId, source);
+            container.sync();
+        }
+    }
+
+    @Override
+    public boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
+        IPowerContainer container = ApoliAPI.getPowerContainer(entity);
+        if (container != null) {
+            return container.hasPower(powerId, source);
+        }
+        return false;
     }
 
 }

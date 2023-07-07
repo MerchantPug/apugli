@@ -7,6 +7,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -52,5 +53,15 @@ public interface IPowerHelper<T> {
     default OptionalInt setResource(LivingEntity entity, SerializableData.Instance data, String fieldName, int value) {
         return setResource(entity, data.get(fieldName), value);
     }
+
+    <P> ResourceLocation getPowerFromParameter(P power);
+
+    <P> ResourceLocation getPowerId(P power);
+
+    void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
+
+    void revokePower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
+
+    boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
 
 }

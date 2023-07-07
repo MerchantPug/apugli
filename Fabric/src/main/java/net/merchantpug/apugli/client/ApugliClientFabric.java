@@ -19,6 +19,7 @@ import net.merchantpug.apugli.registry.ApugliEntityTypes;
 import net.merchantpug.apugli.util.ApugliClassDataClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
@@ -36,6 +37,8 @@ public class ApugliClientFabric implements ClientModInitializer {
 		ApugliClassDataClient.registerAll();
 
 		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
+
+        EntityRendererRegistry.register(ApugliEntityTypes.CUSTOM_AREA_EFFECT_CLOUD.get(), NoopRenderer::new);
 		EntityRendererRegistry.register(ApugliEntityTypes.CUSTOM_PROJECTILE.get(), CustomProjectileRenderer::new);
 
 		ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {

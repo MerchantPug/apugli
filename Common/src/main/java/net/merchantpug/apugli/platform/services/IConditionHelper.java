@@ -1,10 +1,11 @@
 package net.merchantpug.apugli.platform.services;
 
-import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -30,6 +31,12 @@ public interface IConditionHelper {
     @Nullable
     Predicate<Tuple<Entity, Entity>> biEntityPredicate(SerializableData.Instance data, String fieldName);
 
+    <T> void writeBiEntityConditionToNbt(CompoundTag tag, String path, T object);
+
+    <T> T readBiEntityConditionFromNbt(CompoundTag tag, String path);
+
+    <T> T getBiEntityDefault();
+
 
     SerializableDataType<?> biomeDataType();
     
@@ -50,7 +57,14 @@ public interface IConditionHelper {
     boolean checkBlock(SerializableData.Instance data, String fieldName, Level level, BlockPos pos);
 
     <C> boolean checkBlock(C condition, Level level, BlockPos pos);
-    
+
+    <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object);
+
+    <T> T readBlockConditionFromNbt(CompoundTag tag, String path);
+
+    <T> T getBlockDefault();
+
+
     @Nullable
     Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName);
 

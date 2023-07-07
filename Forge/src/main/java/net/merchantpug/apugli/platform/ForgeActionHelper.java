@@ -70,7 +70,7 @@ public class ForgeActionHelper implements IActionHelper {
     public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
         if (object == getBiEntityDefault()) return;
 
-        Tag actionTag = ConfiguredBlockAction.CODEC.encode((ConfiguredBlockAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+        Tag actionTag = ConfiguredBiEntityAction.CODEC.encode((ConfiguredBiEntityAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
 
         tag.put(path, actionTag);
     }

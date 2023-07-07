@@ -1,16 +1,22 @@
 package net.merchantpug.apugli.platform;
 
-import net.merchantpug.apugli.condition.*;
-import net.merchantpug.apugli.data.ApoliForgeDataTypes;
-import net.merchantpug.apugli.condition.factory.IConditionFactory;
-import net.merchantpug.apugli.platform.services.IConditionHelper;
-import net.merchantpug.apugli.registry.ApugliRegisters;
 import com.google.auto.service.AutoService;
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
+import net.merchantpug.apugli.Apugli;
+import net.merchantpug.apugli.condition.*;
+import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.merchantpug.apugli.data.ApoliForgeDataTypes;
+import net.merchantpug.apugli.platform.services.IConditionHelper;
+import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -53,6 +59,29 @@ public class ForgeConditionHelper implements IConditionHelper {
             return null;
         }
         return pair -> ((ConfiguredBiEntityCondition<?, ?>)data.get(fieldName)).check(pair.getA(), pair.getB());
+    }
+
+    @Override
+    public <T> void writeBiEntityConditionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBiEntityDefault()) return;
+
+        Tag actionTag = ConfiguredBiEntityAction.CODEC.encode((ConfiguredBiEntityAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+
+        tag.put(path, actionTag);
+    }
+
+    @Override
+    public <T> T readBiEntityConditionFromNbt(CompoundTag tag, String path) {
+        var optional = ConfiguredBiEntityAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+        if (optional.isPresent()) {
+            return (T) optional.map(Pair::getFirst).get();
+        }
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+    }
+
+    @Override
+    public <T> T getBiEntityDefault() {
+        return (T) ApoliDefaultActions.BIENTITY_DEFAULT.get();
     }
 
 
@@ -104,6 +133,29 @@ public class ForgeConditionHelper implements IConditionHelper {
     @Override
     public <C> boolean checkBlock(C condition, Level level, BlockPos pos) {
         return condition != null && ((ConfiguredBlockCondition<?, ?>)condition).check(level, pos, () -> level.getBlockState(pos));
+    }
+
+    @Override
+    public <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object) {
+        if (object == getBlockDefault()) return;
+
+        Tag actionTag = ConfiguredBlockCondition.CODEC.encode((ConfiguredBlockCondition<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+
+        tag.put(path, actionTag);
+    }
+
+    @Override
+    public <T> T readBlockConditionFromNbt(CompoundTag tag, String path) {
+        var optional = ConfiguredBlockCondition.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+        if (optional.isPresent()) {
+            return (T) optional.map(Pair::getFirst).get();
+        }
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+    }
+
+    @Override
+    public <T> T getBlockDefault() {
+        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
     }
 
     @Override

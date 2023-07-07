@@ -25,6 +25,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -130,6 +131,7 @@ public class ApugliForgeClientEventHandler {
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ApugliEntityTypes.CUSTOM_AREA_EFFECT_CLOUD.get(), NoopRenderer::new);
             event.registerEntityRenderer(ApugliEntityTypes.CUSTOM_PROJECTILE.get(), CustomProjectileRenderer::new);
         }
 
