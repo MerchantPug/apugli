@@ -2,9 +2,7 @@ package net.merchantpug.apugli.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.entity.CustomProjectile;
@@ -15,6 +13,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class CustomProjectileRenderer<T extends CustomProjectile> extends EntityRenderer<T> {
 
@@ -27,7 +27,7 @@ public class CustomProjectileRenderer<T extends CustomProjectile> extends Entity
         matrixStack.pushPose();
         matrixStack.scale(1.0F, 1.0F, 1.0F);
         matrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         PoseStack.Pose pose = matrixStack.last();
         Matrix4f matrix4f = pose.pose();
         Matrix3f matrix3f = pose.normal();

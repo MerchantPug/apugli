@@ -45,7 +45,7 @@ public class CustomProjectile extends ThrowableProjectile {
 
     @Override
     public void onHitBlock(BlockHitResult result) {
-        Services.ACTION.executeBlock(impactBlockAction, this.getLevel(), result.getBlockPos(), result.getDirection());
+        Services.ACTION.executeBlock(impactBlockAction, this.level(), result.getBlockPos(), result.getDirection());
         if (!blockActionCancelsMissAction) {
             Services.ACTION.executeBiEntity(missBiEntityAction, this.getOwner(), this);
         }

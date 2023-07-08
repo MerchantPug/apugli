@@ -15,6 +15,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
@@ -30,6 +31,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -124,7 +126,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
         if (!component.getKeysToCheck().contains(key)) {
             component.addKeyToCheck(key);
             component.changePreviousKeysToCheckToCurrent();
-        } else if (player.level.isClientSide && player instanceof LocalPlayer) {
+        } else if (player.level().isClientSide && player instanceof LocalPlayer) {
             ApugliClientFabric.handleActiveKeys();
         }
     }
@@ -162,6 +164,11 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public float getEntityEyeHeight(Entity entity) {
         return ((EyeHeightAccess)entity).callGetEyeHeight(entity.getPose(), entity.getDimensions(entity.getPose()));
+    }
+
+    @Override
+    public Entity getItemStackLinkedEntity(ItemStack stack) {
+        return ((ItemStackAccess)(Object)stack).getEntity();
     }
 
 }

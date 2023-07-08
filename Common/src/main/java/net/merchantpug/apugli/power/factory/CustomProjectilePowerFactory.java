@@ -77,7 +77,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
                 if (this.getShotProjectiles(power, entity) <= data.getInt("count")) {
                     playSound(data, entity);
 
-                    if (!entity.level.isClientSide) {
+                    if (!entity.level().isClientSide) {
                         this.fireProjectile(power, data, entity);
                     }
                 } else {
@@ -86,7 +86,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
             } else if (data.getInt("interval") == 0 && finishedStartDelay(power, entity)) {
                 playSound(data, entity);
 
-                if (!entity.level.isClientSide) {
+                if (!entity.level().isClientSide) {
                     while(this.getShotProjectiles(power, entity) < data.getInt("count")) {
                         this.fireProjectile(power, data, entity);
                         setShotProjectiles(power, entity, getShotProjectiles(power, entity) + 1);
@@ -99,7 +99,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
                 if (this.getShotProjectiles(power, entity) <= data.getInt("count")) {
                     playSound(data, entity);
 
-                    if (!entity.level.isClientSide) {
+                    if (!entity.level().isClientSide) {
                         this.fireProjectile(power, data, entity);
                     }
                 } else {
@@ -111,7 +111,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
 
     default void playSound(SerializableData.Instance data, LivingEntity entity) {
         if (data.get("sound") != null) {
-            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
         }
     }
 
@@ -133,7 +133,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
         float pitch = entity.getXRot();
         Vec3 rotationVec = entity.getLookAngle();
         Vec3 spawnPos = entity.position().add(0.0D, entity.getEyeHeight(), 0.0D).add(rotationVec);
-        CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), entity, entity.level);
+        CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), entity, entity.level());
 
         projectile.setOwner(entity);
         projectile.shootFromRotation(entity, pitch, yaw, 0.0F, data.getFloat("speed"), data.getFloat("divergence") * 0.075F);
@@ -151,7 +151,7 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
             entity.load(mergedTag);
         }
 
-        entity.level.addFreshEntity(projectile);
+        entity.level().addFreshEntity(projectile);
         Services.ACTION.executeBiEntity(data, "bientity_action_after_firing", entity, projectile);
     }
 

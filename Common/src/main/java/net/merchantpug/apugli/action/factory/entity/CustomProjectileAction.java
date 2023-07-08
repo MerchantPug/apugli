@@ -42,13 +42,13 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
         if (data.isPresent("sound")) {
-            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), data.get("sound"), SoundSource.NEUTRAL, 0.5F, 0.4F / (((LivingEntity) entity).getRandom().nextFloat() * 0.4F + 0.8F));
         }
 
         for (int i = 0; i < data.getInt("count"); ++i) {
             Entity result = createProjectile(data, (LivingEntity) entity);
             if (result != null) {
-                entity.level.addFreshEntity(result);
+                entity.level().addFreshEntity(result);
                 Services.ACTION.executeBiEntity(data, "bientity_action_after_firing", entity, result);
             }
         }
@@ -62,7 +62,7 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
         float pitch = actor.getXRot();
         Vec3 rotationVec = actor.getLookAngle();
         Vec3 spawnPos = actor.position().add(0.0D, actor.getEyeHeight(), 0.0D).add(rotationVec);
-        CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), actor, actor.level);
+        CustomProjectile projectile = new CustomProjectile(spawnPos.x(), spawnPos.y(), spawnPos.z(), actor, actor.level());
 
         projectile.setOwner(actor);
         projectile.shootFromRotation(actor, pitch, yaw, 0.0F, data.getFloat("speed"), data.getFloat("divergence") * 0.075F);
