@@ -6,7 +6,6 @@
   "mixins": [
     "common.ActionFactoryInstanceMixin",
     "common.ActionTypeMixin",
-    "common.ActiveKeyMixin",
     "common.AnimalEntityMixin",
     "common.BoneMealItemMixin",
     "common.ConditionFactoryInstanceMixin",
