@@ -2,10 +2,15 @@ package net.merchantpug.apugli;
 
 import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
+import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
+import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.capability.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.KeyPressCapability;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
@@ -16,6 +21,7 @@ import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -56,6 +62,23 @@ public class ApugliForgeEventHandler {
             event.addCapability(KeyPressCapability.ID, new KeyPressCapability(player));
         if (event.getObject() instanceof LivingEntity living)
             event.addCapability(HitsOnTargetCapability.ID, new HitsOnTargetCapability(living));
+    }
+
+    @SubscribeEvent
+    public static void onCalioDynamicRegistry(CalioDynamicRegistryEvent event) {
+        Registry<ConfiguredEntityAction<?, ?>> registry = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY);
+        registry.forEach(action -> {
+            if (action.getConfiguration() instanceof FabricActionConfiguration<?> fabricConfig && action == registry.get(Apugli.asResource("custom_projectile"))) {
+                if (fabricConfig.data().isPresent("texture_url")) {
+                    String url = fabricConfig.data().getString("texture_url");
+                    ResourceLocation textureLocation = null;
+                    if (fabricConfig.data().isPresent("texture_location")) {
+                        textureLocation = ResourceLocation.of(fabricConfig.data().getString("texture_location"), ':');
+                    }
+                    TextureUtil.cacheOneOff(CustomProjectileAction.getTextureUrl(url), url, textureLocation);
+                }
+            }
+        });
     }
 
     @SubscribeEvent
