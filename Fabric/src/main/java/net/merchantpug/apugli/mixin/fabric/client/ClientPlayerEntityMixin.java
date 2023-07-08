@@ -22,7 +22,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
         super(clientLevel, gameProfile);
     }
 
-    @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 9), ordinal = 0)
+    @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 1), ordinal = 5)
     private boolean resetPowerSprinting(boolean value) {
         if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isUnderWater() && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision)) {
             return true;
