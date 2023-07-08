@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(CooldownPower.class)
 public interface CooldownPowerAccessor {
 
-    @Accessor("lastUseTime")
+    @Accessor(value = "lastUseTime", remap = false)
     long getLastUseTime();
 
 }
