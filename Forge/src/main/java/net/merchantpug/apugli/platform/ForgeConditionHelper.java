@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.condition.*;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
@@ -63,25 +63,22 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public <T> void writeBiEntityConditionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBiEntityDefault()) return;
+        if (object == null) return;
 
-        Tag actionTag = ConfiguredBiEntityAction.CODEC.encode((ConfiguredBiEntityAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+        Tag actionTag = ConfiguredBiEntityCondition.CODEC.encode((ConfiguredBiEntityCondition<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
 
         tag.put(path, actionTag);
     }
 
     @Override
     public <T> T readBiEntityConditionFromNbt(CompoundTag tag, String path) {
-        var optional = ConfiguredBiEntityAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
-        if (optional.isPresent()) {
-            return (T) optional.map(Pair::getFirst).get();
+        if (tag.contains(path, Tag.TAG_COMPOUND)) {
+            var optional = ConfiguredBiEntityCondition.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+            if (optional.isPresent()) {
+                return (T) optional.map(Pair::getFirst).get();
+            }
         }
-        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
-    }
-
-    @Override
-    public <T> T getBiEntityDefault() {
-        return (T) ApoliDefaultActions.BIENTITY_DEFAULT.get();
+        return (T) ApoliDefaultConditions.BIENTITY_DEFAULT.get();
     }
 
 
@@ -137,7 +134,7 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBlockDefault()) return;
+        if (object == null) return;
 
         Tag actionTag = ConfiguredBlockCondition.CODEC.encode((ConfiguredBlockCondition<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
 
@@ -146,18 +143,14 @@ public class ForgeConditionHelper implements IConditionHelper {
 
     @Override
     public <T> T readBlockConditionFromNbt(CompoundTag tag, String path) {
-        var optional = ConfiguredBlockCondition.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
-        if (optional.isPresent()) {
-            return (T) optional.map(Pair::getFirst).get();
+        if (tag.contains(path, Tag.TAG_COMPOUND)) {
+            var optional = ConfiguredBlockCondition.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+            if (optional.isPresent()) {
+                return (T) optional.map(Pair::getFirst).get();
+            }
         }
-        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
+        return (T) ApoliDefaultConditions.BLOCK_DEFAULT.get();
     }
-
-    @Override
-    public <T> T getBlockDefault() {
-        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
-    }
-
     @Override
     @Nullable
     public Predicate<BlockInWorld> blockPredicate(SerializableData.Instance data, String fieldName) {

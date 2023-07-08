@@ -35,8 +35,6 @@ public interface IConditionHelper {
 
     <T> T readBiEntityConditionFromNbt(CompoundTag tag, String path);
 
-    <T> T getBiEntityDefault();
-
 
     SerializableDataType<?> biomeDataType();
     
@@ -61,8 +59,6 @@ public interface IConditionHelper {
     <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object);
 
     <T> T readBlockConditionFromNbt(CompoundTag tag, String path);
-
-    <T> T getBlockDefault();
 
 
     @Nullable

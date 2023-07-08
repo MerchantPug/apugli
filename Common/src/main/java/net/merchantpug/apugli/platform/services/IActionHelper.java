@@ -33,8 +33,6 @@ public interface IActionHelper {
 
     <T> T readBiEntityActionFromNbt(CompoundTag tag, String path);
 
-    <T> T getBiEntityDefault();
-
 
     SerializableDataType<?> blockDataType();
     
@@ -49,8 +47,6 @@ public interface IActionHelper {
     <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object);
 
     <T> T readBlockActionFromNbt(CompoundTag tag, String path);
-
-    <T> T getBlockDefault();
 
 
     SerializableDataType<?> entityDataType();
