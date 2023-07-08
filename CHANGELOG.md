@@ -5,7 +5,6 @@
 - Added `custom_projectile` and `spawn_custom_effect_cloud` entity action types.
 - Added `spawn_custom_effect_cloud` bi-entity action type.
 - Added `schedule_tick` block action type.
-- Backported `apoli:area_of_effect` block action type.
 
 ### Condition Types
 - Added `custom_entity_id` and `owner` bi-entity condtiion types.
