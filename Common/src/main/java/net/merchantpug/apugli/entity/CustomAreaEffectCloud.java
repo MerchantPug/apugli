@@ -137,7 +137,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
         super.tick();
         boolean bl = this.isWaiting();
         float f = this.getRadius();
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             if (bl && this.random.nextBoolean()) {
                 return;
             }
@@ -179,7 +179,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                     p = (float)(m & 255) / 255.0F;
                 }
 
-                this.level.addAlwaysVisibleParticle(particleOptions, d, e, l, n, o, p);
+                this.level().addAlwaysVisibleParticle(particleOptions, d, e, l, n, o, p);
             }
         } else {
             if (this.tickCount >= this.getWaitTime() + this.getDuration()) {
@@ -221,7 +221,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                     }
                 }
 
-                List<LivingEntity> list2 = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
+                List<LivingEntity> list2 = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
                 if (!list2.isEmpty()) {
                     Iterator<LivingEntity> var27 = list2.iterator();
 

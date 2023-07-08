@@ -20,7 +20,7 @@ public class SpawnCustomEffectCloudAction extends CustomEffectCloudBaseAction im
     public void execute(SerializableData.Instance data, Tuple<Entity, Entity> pair) {
         Entity positionalEntity = data.get("spawn_target") == PairEntity.TARGET ? pair.getB() : pair.getA();
         CustomAreaEffectCloud cloud = createCloud(data, pair.getA(), positionalEntity.getX(), positionalEntity.getY(), positionalEntity.getZ());
-        pair.getA().level.addFreshEntity(cloud);
+        pair.getA().level().addFreshEntity(cloud);
     }
 
     private enum PairEntity {

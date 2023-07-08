@@ -20,7 +20,7 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
     public <A> DataResult<Pair<ConditionFactory<T>.Instance, A>> decode(DynamicOps<A> ops, A input) {
         JsonElement json = ops.convertMap(JsonOps.INSTANCE, input);
         if (!(json instanceof JsonObject jsonObject)) {
-            return DataResult.error("JSON from ConditionFactory is not a JsonObject.");
+            return DataResult.error(() -> "JSON from ConditionFactory is not a JsonObject.");
         }
         ResourceLocation factoryLocation = ResourceLocation.tryParse(GsonHelper.getAsString(jsonObject, "type"));
 
@@ -30,8 +30,10 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
 
         ConditionFactory<T> factory = registry.get(factoryLocation);
         if (factory == null) {
-            return DataResult.error("ConditionFactory `" + factoryLocation + "` does not exist.");
+            ResourceLocation finalFactoryLocation = factoryLocation;
+            return DataResult.error(() -> "ActionFactory `" + finalFactoryLocation + "` does not exist.");
         }
+
         ConditionFactory<T>.Instance instance = factory.read(jsonObject);
         ((FactoryInstanceAccess)instance).setJson(json);
         return DataResult.success(Pair.of(instance, ops.empty()));
@@ -41,7 +43,7 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
     public <A> DataResult<A> encode(ConditionFactory<T>.Instance input, DynamicOps<A> ops, A prefix) {
         JsonElement json = ((FactoryInstanceAccess)input).getJson();
         if (json == null) {
-            return DataResult.error("Could not find JSON associated with ConditionFactory.");
+            return DataResult.error(() -> "Could not find JSON associated with ConditionFactory.");
         }
         return DataResult.success(JsonOps.INSTANCE.convertTo(ops, json));
     }

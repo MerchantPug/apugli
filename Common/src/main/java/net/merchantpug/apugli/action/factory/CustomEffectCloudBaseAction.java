@@ -32,7 +32,7 @@ public class CustomEffectCloudBaseAction {
     }
 
     public CustomAreaEffectCloud createCloud(SerializableData.Instance data, Entity owner, double x, double y, double z) {
-        CustomAreaEffectCloud cloud = new CustomAreaEffectCloud(owner.level, x, y, z);
+        CustomAreaEffectCloud cloud = new CustomAreaEffectCloud(owner.level(), x, y, z);
         if (owner instanceof LivingEntity living)
             cloud.setOwner(living);
         cloud.setEntityId(data.getId("entity_id"));
