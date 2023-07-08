@@ -522,7 +522,7 @@
 
                                   "type": "apoli:block_action_at",
                                   "block_action": {
-                                    "type": "apugli:area_of_effect",
+                                    "type": "apoli:area_of_effect",
                                     "radius": 4,
                                     "shape": "SPHERE",
                                     "block_action": {
