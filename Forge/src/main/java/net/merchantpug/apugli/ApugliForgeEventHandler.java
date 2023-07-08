@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.merchantpug.apugli.access.ItemStackAccess;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -65,10 +67,10 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void onCalioDynamicRegistry(CalioDynamicRegistryEvent event) {
+    public static void onCalioDynamicRegistryLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
         Registry<ConfiguredEntityAction<?, ?>> registry = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY);
         registry.forEach(action -> {
-            if (action.getConfiguration() instanceof FabricActionConfiguration<?> fabricConfig && action == registry.get(Apugli.asResource("custom_projectile"))) {
+            if (action.getConfiguration() instanceof FabricActionConfiguration<?> fabricConfig && action.getFactory() == ApoliRegistries.ENTITY_ACTION.get().getValue(Apugli.asResource("custom_projectile"))) {
                 if (fabricConfig.data().isPresent("texture_url")) {
                     String url = fabricConfig.data().getString("texture_url");
                     ResourceLocation textureLocation = null;
@@ -292,6 +294,11 @@ public class ApugliForgeEventHandler {
         if (!(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) return;
         parentA.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
         parentB.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
+    }
+
+    @SubscribeEvent
+    public static void prePowerLoad(AddReloadListenerEvent event) {
+        TextureUtil.getCache().clear();
     }
 
     @SubscribeEvent
