@@ -390,7 +390,7 @@
                   "duration": 100,
                   "particle": "minecraft:dragon_breath",
                   "powers_to_apply": [
-                    "apugli:fire_cloud_effect"
+                    "apugli:dragonborn/fire_cloud_effect"
                   ],
                   "bientity_condition": {
                     "type": "apoli:invert",
@@ -420,7 +420,7 @@
                       "duration": 100,
                       "particle": "minecraft:dragon_breath",
                       "powers_to_apply": [
-                        "apugli:fire_cloud_effect"
+                        "apugli:dragonborn/fire_cloud_effect"
                       ],
                       "bientity_condition": {
                         "type": "apoli:invert",
@@ -595,7 +595,7 @@
                         "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
                       },
                       "powers_to_apply": [
-                        "apugli:frost_cloud_effect"
+                        "apugli:dragonborn/frost_cloud_effect"
                       ],
                       "bientity_condition": {
                         "type": "apoli:invert",
@@ -628,7 +628,7 @@
                             "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
                           },
                           "powers_to_apply": [
-                            "apugli:frost_cloud_effect"
+                            "apugli:dragonborn/frost_cloud_effect"
                           ],
                           "bientity_condition": {
                             "type": "apoli:invert",
@@ -735,7 +735,7 @@
                       "radius_per_tick": 0.01,
                       "duration": 80,
                       "powers_to_apply": [
-                        "apugli:thunder_cloud_effect"
+                        "apugli:dragonborn/thunder_cloud_effect"
                       ],
                       "particle": {
                         "type": "minecraft:dust",
@@ -768,7 +768,7 @@
                           "radius_per_tick": 0.02,
                           "duration": 80,
                           "powers_to_apply": [
-                            "apugli:thunder_cloud_effect"
+                            "apugli:dragonborn/thunder_cloud_effect"
                           ],
                           "particle": {
                             "type": "minecraft:dust",

@@ -68,24 +68,21 @@ public class ForgeActionHelper implements IActionHelper {
 
     @Override
     public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBiEntityDefault()) return;
+        if (object == null) return;
 
-        Tag actionTag = ConfiguredBiEntityAction.CODEC.encode((ConfiguredBiEntityAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+        Tag actionTag = ConfiguredBiEntityAction.CODEC.encodeStart(NbtOps.INSTANCE, (ConfiguredBiEntityAction<?, ?>) object).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
 
         tag.put(path, actionTag);
     }
 
     @Override
     public <T> T readBiEntityActionFromNbt(CompoundTag tag, String path) {
-        var optional = ConfiguredBiEntityAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
-        if (optional.isPresent()) {
-            return (T) optional.map(Pair::getFirst).get();
+        if (tag.contains(path, Tag.TAG_COMPOUND)) {
+            var optional = ConfiguredBiEntityAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+            if (optional.isPresent()) {
+                return (T) optional.map(Pair::getFirst).get();
+            }
         }
-        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
-    }
-
-    @Override
-    public <T> T getBiEntityDefault() {
         return (T) ApoliDefaultActions.BIENTITY_DEFAULT.get();
     }
 
@@ -121,24 +118,21 @@ public class ForgeActionHelper implements IActionHelper {
 
     @Override
     public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBlockDefault()) return;
+        if (object == null) return;
 
-        Tag actionTag = ConfiguredBlockAction.CODEC.encode((ConfiguredBlockAction<?, ?>) object, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
+        Tag actionTag = ConfiguredBlockAction.CODEC.encodeStart(NbtOps.INSTANCE, (ConfiguredBlockAction<?, ?>) object).resultOrPartial(Apugli.LOG::error).orElse(new CompoundTag());
 
         tag.put(path, actionTag);
     }
 
     @Override
     public <T> T readBlockActionFromNbt(CompoundTag tag, String path) {
-        var optional = ConfiguredBlockAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
-        if (optional.isPresent()) {
-            return (T) optional.map(Pair::getFirst).get();
+        if (tag.contains(path, Tag.TAG_COMPOUND)) {
+            var optional = ConfiguredBlockAction.CODEC.decode(NbtOps.INSTANCE, tag.getCompound(path)).resultOrPartial(Apugli.LOG::error);
+            if (optional.isPresent()) {
+                return (T) optional.map(Pair::getFirst).get();
+            }
         }
-        return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
-    }
-
-    @Override
-    public <T> T getBlockDefault() {
         return (T) ApoliDefaultActions.BLOCK_DEFAULT.get();
     }
 

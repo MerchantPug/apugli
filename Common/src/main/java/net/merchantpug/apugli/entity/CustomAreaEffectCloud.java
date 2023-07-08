@@ -85,7 +85,9 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
     }
 
     public <P> void addPowerToApply(P value) {
-        powersToApply.add(Services.POWER.getPowerFromParameter(value));
+        ResourceLocation location = Services.POWER.getPowerFromParameter(value);
+        if (location == null) return;
+        powersToApply.add(location);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {

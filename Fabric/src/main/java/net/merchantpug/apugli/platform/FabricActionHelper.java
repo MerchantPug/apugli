@@ -64,7 +64,7 @@ public class FabricActionHelper implements IActionHelper {
 
     @Override
     public <T> void writeBiEntityActionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBiEntityDefault()) return;
+        if (object == null) return;
 
         ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
         Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
@@ -97,11 +97,6 @@ public class FabricActionHelper implements IActionHelper {
     }
 
     @Override
-    public <T> T getBiEntityDefault() {
-        return null;
-    }
-
-    @Override
     public SerializableDataType<?> blockDataType() {
         return ApoliDataTypes.BLOCK_ACTION;
     }
@@ -130,7 +125,7 @@ public class FabricActionHelper implements IActionHelper {
 
     @Override
     public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBlockDefault()) return;
+        if (object == null) return;
 
         ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
         Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
@@ -160,11 +155,6 @@ public class FabricActionHelper implements IActionHelper {
         }
 
         return (T) instanceOptional.get();
-    }
-
-    @Override
-    public <T> T getBlockDefault() {
-        return null;
     }
 
     @Override

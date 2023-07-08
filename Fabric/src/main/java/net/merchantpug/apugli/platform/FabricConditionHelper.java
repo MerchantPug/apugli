@@ -65,7 +65,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <T> void writeBiEntityConditionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBiEntityDefault()) return;
+        if (object ==  null) return;
 
         ConditionFactory<Tuple<Entity, Entity>>.Instance instance = (ConditionFactory<Tuple<Entity, Entity>>.Instance) object;
         Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION);
@@ -95,11 +95,6 @@ public class FabricConditionHelper implements IConditionHelper {
         }
 
         return (T) instanceOptional.get();
-    }
-
-    @Override
-    public <T> T getBiEntityDefault() {
-        return null;
     }
 
 
@@ -153,7 +148,7 @@ public class FabricConditionHelper implements IConditionHelper {
 
     @Override
     public <T> void writeBlockConditionToNbt(CompoundTag tag, String path, T object) {
-        if (object == getBlockDefault()) return;
+        if (object == null) return;
 
         ConditionFactory<BlockInWorld>.Instance instance = (ConditionFactory<BlockInWorld>.Instance) object;
         Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION);
@@ -183,11 +178,6 @@ public class FabricConditionHelper implements IConditionHelper {
         }
 
         return (T) instanceOptional.get();
-    }
-
-    @Override
-    public <T> T getBlockDefault() {
-        return null;
     }
 
     @Override

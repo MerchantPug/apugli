@@ -144,7 +144,11 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
 
     @Override
     public <P> ResourceLocation getPowerFromParameter(P power) {
-        return ((Holder<ConfiguredPower<?, ?>>)power).get().getRegistryName();
+        var holder = ((Holder<ConfiguredPower<?, ?>>)power);
+        if (holder.isBound() && holder.unwrapKey().isPresent()) {
+            return holder.unwrapKey().get().location();
+        }
+        return null;
     }
 
     @Override
