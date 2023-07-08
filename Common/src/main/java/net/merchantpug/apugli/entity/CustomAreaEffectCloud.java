@@ -21,10 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomAreaEffectCloud extends AreaEffectCloud {
     private static final EntityDataAccessor<String> DATA_ENTITY_ID = SynchedEntityData.defineId(CustomAreaEffectCloud.class, EntityDataSerializers.STRING);
@@ -35,6 +32,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
     private Object cloudTargetBiEntityAction;
     private Object biEntityCondition;
     private Object ownerTargetBiEntityCondition;
+    private final Map<Entity, Integer> victims = new HashMap<>();
 
     public CustomAreaEffectCloud(EntityType<CustomAreaEffectCloud> entityType, Level world) {
         super(entityType, world);
@@ -48,7 +46,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
 
     @Override
     public void remove(RemovalReason reason) {
-        for (Map.Entry<Entity, Integer> next : ((AreaEffectCloudEntityAccessor) this).getAffectedEntities().entrySet()) {
+        for (Map.Entry<Entity, Integer> next : this.victims.entrySet()) {
             if (next.getKey() instanceof LivingEntity living) {
                 for (ResourceLocation power : this.powersToApply) {
                     Services.POWER.revokePower(power, getEntityId(), living);
@@ -209,7 +207,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
             }
 
             if (this.tickCount % 5 == 0) {
-                Iterator<Map.Entry<Entity, Integer>> victimIterator = ((AreaEffectCloudEntityAccessor) this).getAffectedEntities().entrySet().iterator();
+                Iterator<Map.Entry<Entity, Integer>> victimIterator = this.victims.entrySet().iterator();
 
                 while (victimIterator.hasNext()) {
                     var next = victimIterator.next();
@@ -224,7 +222,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                 }
 
                 List<LivingEntity> list2 = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
-                if (!list2.isEmpty()) {
+                if (!list2.isEmpty() && !this.isRemoved()) {
                     Iterator<LivingEntity> var27 = list2.iterator();
 
                     while (true) {
@@ -238,13 +236,15 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                                     }
 
                                     livingEntity = var27.next();
-                                } while (((AreaEffectCloudEntityAccessor) this).getAffectedEntities().containsKey(livingEntity));
+                                } while (this.victims.containsKey(livingEntity));
                             } while (!Services.CONDITION.checkBiEntity(biEntityCondition, this, livingEntity) || !Services.CONDITION.checkBiEntity(ownerTargetBiEntityCondition, this.getOwner(), livingEntity));
 
                             double q = livingEntity.getX() - this.getX();
                             double r = livingEntity.getZ() - this.getZ();
                             s = q * q + r * r;
                         } while (!(s <= (double) (f * f)));
+
+                        this.victims.put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).getReapplicationDelay());;
 
                         for (ResourceLocation power : powersToApply) {
                             if (!Services.POWER.hasPowerType(power, getEntityId(), livingEntity)) {
@@ -255,8 +255,6 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                         Services.ACTION.executeBiEntity(ownerCloudBiEntityAction, this.getOwner(), this);
                         Services.ACTION.executeBiEntity(ownerTargetBiEntityAction, this.getOwner(), livingEntity);
                         Services.ACTION.executeBiEntity(cloudTargetBiEntityAction, this, livingEntity);
-
-                        ((AreaEffectCloudEntityAccessor) this).getAffectedEntities().put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).getReapplicationDelay());;
 
                         if (this.getRadiusOnUse() != 0.0F) {
                             f += this.getRadiusOnUse();
