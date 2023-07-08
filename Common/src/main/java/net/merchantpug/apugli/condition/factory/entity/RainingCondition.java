@@ -8,7 +8,7 @@ public class RainingCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        return entity.level.isRaining();
+        return entity.level().isRaining();
     }
 
 }

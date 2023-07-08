@@ -8,7 +8,7 @@ public class ThunderingCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
-        return entity.level.isThundering();
+        return entity.level().isThundering();
     }
 
 }
