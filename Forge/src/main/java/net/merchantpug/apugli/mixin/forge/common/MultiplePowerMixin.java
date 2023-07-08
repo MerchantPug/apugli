@@ -11,6 +11,7 @@ import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiplePower.class)
 public class MultiplePowerMixin {
+    @Unique
     private static String apugli$suffix;
 
     @Inject(method = "reconfigure", at = @At(value = "HEAD"), remap = false)
