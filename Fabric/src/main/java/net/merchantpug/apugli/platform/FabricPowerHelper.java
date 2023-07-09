@@ -88,12 +88,13 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     
     @Override
     public <P> boolean hasPower(LivingEntity entity, SpecialPowerFactory<P> factory) {
-        List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers();
-        Class<P> cls = factory.getPowerClass();
-        List<P> list = new LinkedList<>();
-        for(Power power : powers) {
-            if(cls.isAssignableFrom(power.getClass()) && power.isActive()) {
-                return true;
+        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+            List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers();
+            Class<P> cls = factory.getPowerClass();
+            for(Power power : powers) {
+                if(cls.isAssignableFrom(power.getClass()) && power.isActive()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -153,7 +154,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
 
     @Override
     public void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
-        if (!PowerTypeRegistry.contains(powerId)) return;
+        if (!PowerHolderComponent.KEY.isProvidedBy(entity) || !PowerTypeRegistry.contains(powerId)) return;
         PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
         component.addPower(PowerTypeRegistry.get(powerId), source);
         component.sync();
@@ -161,7 +162,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
 
     @Override
     public void revokePower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
-        if (!PowerTypeRegistry.contains(powerId)) return;
+        if (!PowerHolderComponent.KEY.isProvidedBy(entity) || !PowerTypeRegistry.contains(powerId)) return;
         PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
         PowerType<?> powerType = PowerTypeRegistry.get(powerId);
         if (component.hasPower(powerType, source)) {
