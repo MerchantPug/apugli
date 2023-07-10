@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ConditionType.class)
+@Mixin(value = ConditionType.class, remap = false)
 public class ConditionTypeMixin<T> {
 
     @Inject(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/apoli/power/factory/condition/ConditionFactory$Instance;", at = @At(value = "RETURN"), remap = false)

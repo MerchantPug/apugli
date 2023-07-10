@@ -6,7 +6,7 @@ import net.merchantpug.apugli.access.FactoryInstanceAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(ConditionFactory.Instance.class)
+@Mixin(value = ConditionFactory.Instance.class, remap = false)
 public class ConditionFactoryInstanceMixin implements FactoryInstanceAccess {
     @Unique
     private JsonElement apugli$jsonObject;
