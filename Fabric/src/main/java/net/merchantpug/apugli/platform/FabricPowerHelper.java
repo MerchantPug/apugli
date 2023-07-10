@@ -50,7 +50,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
 
     @Override
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive) {
-        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+        if (entity != null && PowerHolderComponent.KEY.isProvidedBy(entity)) {
             return PowerHolderComponent.KEY.get(entity).getPowers(factory.getPowerClass(), includeInactive);
         }
         return List.of();
@@ -59,7 +59,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory) {
         List<P> list = new LinkedList<>();
-        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+        if (entity != null && PowerHolderComponent.KEY.isProvidedBy(entity)) {
             Class<P> cls = factory.getPowerClass();
             return (List<P>) PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls);
         }
@@ -69,7 +69,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public <P> List<P> getPowers(LivingEntity entity, SpecialPowerFactory<P> factory, boolean includeInactive) {
         List<P> list = new LinkedList<>();
-        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+        if (entity != null && PowerHolderComponent.KEY.isProvidedBy(entity)) {
             Class<P> cls = factory.getPowerClass();
             List<? extends Power> powers = PowerHolderComponent.KEY.get(entity).getPowers((Class<? extends Power>) cls, includeInactive);
             for(Power power : powers) {
@@ -88,7 +88,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     
     @Override
     public <P> boolean hasPower(LivingEntity entity, SpecialPowerFactory<P> factory) {
-        if (PowerHolderComponent.KEY.isProvidedBy(entity)) {
+        if (entity != null && PowerHolderComponent.KEY.isProvidedBy(entity)) {
             List<Power> powers = PowerHolderComponent.KEY.get(entity).getPowers();
             Class<P> cls = factory.getPowerClass();
             for(Power power : powers) {
