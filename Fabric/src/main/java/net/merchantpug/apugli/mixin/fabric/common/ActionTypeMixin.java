@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(ActionType.class)
+@Mixin(value = ActionType.class, remap = false)
 public class ActionTypeMixin<T> {
 
     @Shadow @Final private String actionTypeName;
