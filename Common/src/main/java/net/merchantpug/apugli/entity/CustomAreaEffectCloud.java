@@ -32,6 +32,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
     private Object cloudTargetBiEntityAction;
     private Object biEntityCondition;
     private Object ownerTargetBiEntityCondition;
+    private double heightIncrease = 0.0;
     private final Map<Entity, Integer> victims = new HashMap<>();
 
     public CustomAreaEffectCloud(EntityType<CustomAreaEffectCloud> entityType, Level world) {
@@ -60,6 +61,10 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.getEntityData().define(DATA_ENTITY_ID, "");
+    }
+
+    public void setHeightIncrease(double value) {
+        this.heightIncrease = value;
     }
 
     public void setOwnerCloudBiEntityAction(SerializableData.Instance data, String fieldName) {
@@ -101,6 +106,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
         }
         if (!powerTag.isEmpty())
             compound.put("PowersToApply", powerTag);
+        compound.putDouble("HeightIncrease", heightIncrease);
         Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerCloudBiEntityAction", ownerCloudBiEntityAction);
         Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerTargetBiEntityAction", ownerTargetBiEntityAction);
         Services.ACTION.writeBiEntityActionToNbt(compound, "CloudTargetBiEntityAction", cloudTargetBiEntityAction);
@@ -119,6 +125,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                 powersToApply.add(new ResourceLocation(tag.getAsString()));
             }
         }
+        heightIncrease = compound.getDouble("HeightIncrease");
         ownerCloudBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerCloudBiEntityAction");
         ownerTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerTargetBiEntityAction");
         cloudTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "CloudTargetBiEntityAction");
@@ -207,12 +214,14 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
             }
 
             if (this.tickCount % 5 == 0) {
+                List<LivingEntity> list2 = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().expandTowards(0.0, heightIncrease, 0.0));
+
                 Iterator<Map.Entry<Entity, Integer>> victimIterator = this.victims.entrySet().iterator();
 
                 while (victimIterator.hasNext()) {
                     var next = victimIterator.next();
                     if (this.tickCount >= next.getValue()) {
-                        if (next.getKey() instanceof LivingEntity living) {
+                        if (next.getKey() instanceof LivingEntity living && !list2.contains(living)) {
                             for (ResourceLocation power : powersToApply) {
                                 Services.POWER.revokePower(power, getEntityId(), living);
                             }
@@ -221,7 +230,6 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                     }
                 }
 
-                List<LivingEntity> list2 = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
                 if (!list2.isEmpty() && !this.isRemoved()) {
                     Iterator<LivingEntity> var27 = list2.iterator();
 
