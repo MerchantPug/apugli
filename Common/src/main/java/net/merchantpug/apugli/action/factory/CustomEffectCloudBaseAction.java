@@ -23,6 +23,7 @@ public class CustomEffectCloudBaseAction {
                 .add("duration", SerializableDataTypes.INT, 600)
                 .add("reapplication_delay", SerializableDataTypes.INT, 20)
                 .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE)
+                .add("height_increase", SerializableDataTypes.DOUBLE, 0.0)
                 .add("powers_to_apply", SerializableDataType.list(Services.POWER.getPowerTypeDataType()), null)
                 .add("owner_cloud_bientity_action", Services.ACTION.biEntityDataType(), null)
                 .add("cloud_target_bientity_action", Services.ACTION.biEntityDataType(), null)
@@ -41,6 +42,7 @@ public class CustomEffectCloudBaseAction {
         cloud.setWaitTime(data.getInt("wait_time"));
         cloud.setDuration(data.getInt("duration"));
         cloud.setRadiusPerTick(data.getFloat("radius_per_tick"));
+        cloud.setHeightIncrease(data.getDouble("height_increase"));
         cloud.setOwnerCloudBiEntityAction(data, "owner_cloud_bientity_action");
         cloud.setCloudTargetBiEntityAction(data, "cloud_target_bientity_action");
         cloud.setOwnerTargetBiEntityAction(data, "owner_target_bientity_action");
