@@ -8,12 +8,12 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
-import net.merchantpug.apugli.capability.HitsOnTargetCapability;
-import net.merchantpug.apugli.capability.KeyPressCapability;
+import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
+import net.merchantpug.apugli.capability.entity.KeyPressCapability;
+import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
@@ -27,10 +27,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -59,11 +61,16 @@ import java.util.stream.Collectors;
 public class ApugliForgeEventHandler {
 
     @SubscribeEvent
-    public static void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {
+    public static void attachEntityCapabilities(final AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player player)
             event.addCapability(KeyPressCapability.ID, new KeyPressCapability(player));
         if (event.getObject() instanceof LivingEntity living)
             event.addCapability(HitsOnTargetCapability.ID, new HitsOnTargetCapability(living));
+    }
+
+    @SubscribeEvent
+    public static void attachItemCapabilities(final AttachCapabilitiesEvent<ItemStack> event) {
+        event.addCapability(EntityLinkCapability.ID, new EntityLinkCapability(event.getObject()));
     }
 
     @SubscribeEvent
@@ -91,7 +98,7 @@ public class ApugliForgeEventHandler {
     @SubscribeEvent
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem().copy();
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(event.getEntity(), stack);
@@ -140,9 +147,17 @@ public class ApugliForgeEventHandler {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
         for (ItemStack stack : event.getEntity().getAllSlots()) {
-            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
-                ((ItemStackAccess)(Object)stack).setEntity(event.getEntity());
-            }
+            ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item)null) : stack;
+            iteratedStack.getCapability(EntityLinkCapability.INSTANCE).ifPresent(cap -> {
+                if (cap.getEntity() == null) {
+                    cap.setEntity(event.getEntity());
+                    for (EquipmentSlot slot : EquipmentSlot.values()) {
+                        if (ItemStack.matches(iteratedStack, event.getEntity().getItemBySlot(slot))) {
+                            event.getEntity().setItemSlot(slot, iteratedStack);
+                        }
+                    }
+                }
+            });
         }
 
         if (event.getEntity().isDeadOrDying()) return;

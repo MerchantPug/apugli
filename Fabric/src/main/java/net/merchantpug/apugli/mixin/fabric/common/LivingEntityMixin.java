@@ -18,6 +18,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -50,6 +51,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract void push(Entity pEntity);
 
+    @Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
+
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
@@ -57,8 +60,15 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void setItemStackEntities(CallbackInfo ci) {
         for (ItemStack stack : this.getAllSlots()) {
-            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
-                ((ItemStackAccess)(Object)stack).setEntity(this);
+            ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item)null) : stack;
+            if (((ItemStackAccess)(Object)iteratedStack).getEntity() == null) {
+                ((ItemStackAccess)(Object)iteratedStack).setEntity(this);
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
+                        this.setItemSlot(slot, iteratedStack);
+                    }
+                }
+
             }
         }
     }

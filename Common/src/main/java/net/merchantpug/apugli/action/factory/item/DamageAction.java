@@ -2,8 +2,8 @@ package net.merchantpug.apugli.action.factory.item;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
+import net.merchantpug.apugli.platform.Services;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -43,7 +43,7 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
                 return;
             }
         }
-        Entity entity = ((ItemStackAccess)(Object)stack).getEntity();
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(stack);
         int newDamage = stack.getDamageValue() + damage;
         if(newDamage >= stack.getMaxDamage()) {
             if(entity instanceof LivingEntity holder) {

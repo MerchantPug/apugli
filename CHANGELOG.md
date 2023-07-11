@@ -16,3 +16,4 @@
 - Fixed errors involving the `step_assist` field's functionality in the `hover` power, these fixes also carry over to the new `step_assist` power.
 - Removed code that may have caused `action_on_durability_change` to run more times than what's necessary.
 - [FABRIC] Fixed crash when checking if the entity has powers using non living entity. #44
+- [FORGE] Fixed NPE with `modify_enchantment_level` targeting the wrong location. #45

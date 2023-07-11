@@ -1,13 +1,8 @@
-package net.merchantpug.apugli.capability;
+package net.merchantpug.apugli.capability.entity;
 
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Set;
 

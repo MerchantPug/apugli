@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnchantmentHelper.class)
 public abstract class EnchantmentHelperMixin {
 
+    @Unique
     private static ItemStack apugli$runIterationOnItem;
 
     @Inject(method = "runIterationOnItem", at = @At(value = "HEAD"))
@@ -30,6 +32,7 @@ public abstract class EnchantmentHelperMixin {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$runIterationOnItem, original);
     }
 
+    @Unique
     private static ItemStack apugli$itemEnchantmentLevelStack;
 
     @Inject(method = "getItemEnchantmentLevel", at = @At("HEAD"))
@@ -39,7 +42,7 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyExpressionValue(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private static boolean getLevelIsEmpty(boolean original) {
-        if (((ItemStackAccess) (Object) apugli$itemEnchantmentLevelStack).getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+        if (apugli$itemEnchantmentLevelStack != null && apugli$itemEnchantmentLevelStack.isEmpty()  && ((ItemStackAccess) (Object) apugli$itemEnchantmentLevelStack).getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getStringUUID())) {
             return false;
         }
         return original;
