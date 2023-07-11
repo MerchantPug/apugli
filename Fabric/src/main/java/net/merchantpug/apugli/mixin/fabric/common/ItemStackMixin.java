@@ -47,9 +47,9 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         }
     }
 
-    public void setEntity(Entity entity) { this.apugli$entity = entity; }
+    public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
 
-    public Entity getEntity() {
+    public Entity apugli$getEntity() {
         return this.apugli$entity;
     }
 
