@@ -13,6 +13,7 @@ public class ApugliEntityActions {
         register("custom_projectile", new CustomProjectileAction());
         register("explode", new ExplodeAction());
         register("fire_projectile", new FireProjectileAction());
+        register("item_cooldown", new ItemCooldownAction());
         register("raycast", new RaycastAction());
         register("resource_transfer", new ResourceTransferAction());
         register("explosion_raycast", new ExplosionRaycastAction());
