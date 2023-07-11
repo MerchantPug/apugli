@@ -1,9 +1,8 @@
-package net.merchantpug.apugli.capability;
+package net.merchantpug.apugli.capability.entity;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
-import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;

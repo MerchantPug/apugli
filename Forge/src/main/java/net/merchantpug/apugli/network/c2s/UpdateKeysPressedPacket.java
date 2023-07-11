@@ -2,7 +2,7 @@ package net.merchantpug.apugli.network.c2s;
 
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.capability.KeyPressCapability;
+import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.minecraft.nbt.CompoundTag;

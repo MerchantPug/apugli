@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.capability;
+package net.merchantpug.apugli.capability.entity;
 
 import net.merchantpug.apugli.Apugli;
 import net.minecraft.resources.ResourceLocation;

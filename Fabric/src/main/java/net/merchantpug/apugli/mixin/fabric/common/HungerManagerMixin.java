@@ -22,7 +22,7 @@ public abstract class HungerManagerMixin {
 
     @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     private void eat(Item item, ItemStack stack, CallbackInfo ci) {
-        if (Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
             power.ifPresent(p -> {
                 this.eat(p.getFoodComponent().getNutrition(), p.getFoodComponent().getSaturationModifier());

@@ -16,3 +16,4 @@
 - Removed code that may have caused `action_on_durability_change` to run more times than what's necessary.
 - Fixed certain content that references an entity from an ItemStack not functioning. e.g. `modify_enchantment_level`.
 - [FABRIC] Fixed crash when checking if the entity has powers using non living entity. #44
+- [FORGE] Fixed NPE with `modify_enchantment_level` targeting the wrong location. #45

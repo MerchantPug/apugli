@@ -16,7 +16,7 @@ public class ItemConditionsMixin {
 
     @Inject(method = "lambda$register$10", at = @At("HEAD"), cancellable = true)
     private static void isPowerFoodMeat(SerializableData.Instance data, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (Services.PLATFORM.getItemStackLinkedEntity(stack)instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.EDIBLE_ITEM.get()) &&
+        if (Services.PLATFORM.getEntityFromItemStack(stack)instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.EDIBLE_ITEM.get()) &&
             Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(power -> power.doesApply(living.level(), stack) && power.getFoodComponent().isMeat()))
             cir.setReturnValue(true);
     }

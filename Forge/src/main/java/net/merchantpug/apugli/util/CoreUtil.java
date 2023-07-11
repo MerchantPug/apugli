@@ -1,8 +1,6 @@
 package net.merchantpug.apugli.util;
 
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.ListTag;
@@ -12,7 +10,6 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.Optional;
 public class CoreUtil {
 
     public static int getModifiedEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
-        if (((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), stack.getItem().getEnchantmentLevel(stack, enchantment), p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));
         }
         return stack.getItem().getEnchantmentLevel(stack, enchantment);

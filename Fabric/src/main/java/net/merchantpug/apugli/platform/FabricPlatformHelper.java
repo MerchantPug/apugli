@@ -126,7 +126,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
         if (!component.getKeysToCheck().contains(key)) {
             component.addKeyToCheck(key);
             component.changePreviousKeysToCheckToCurrent();
-        } else if (player.level().isClientSide && player instanceof LocalPlayer) {
+        } else if (player.level().isClientSide() && player instanceof LocalPlayer) {
             ApugliClientFabric.handleActiveKeys();
         }
     }
@@ -167,8 +167,8 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Entity getItemStackLinkedEntity(ItemStack stack) {
-        return ((ItemStackAccess)(Object)stack).getEntity();
+    public Entity getEntityFromItemStack(ItemStack stack) {
+        return stack == null ? null : ((ItemStackAccess)(Object)stack).getEntity();
     }
 
 }

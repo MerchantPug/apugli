@@ -105,6 +105,6 @@ public interface IPlatformHelper {
 
     float getEntityEyeHeight(Entity entity);
 
-    Entity getItemStackLinkedEntity(ItemStack stack);
+    Entity getEntityFromItemStack(ItemStack stack);
 
 }

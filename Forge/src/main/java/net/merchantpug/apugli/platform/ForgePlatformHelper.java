@@ -13,8 +13,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.merchantpug.apugli.capability.HitsOnTargetCapability;
-import net.merchantpug.apugli.capability.KeyPressCapability;
+import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
+import net.merchantpug.apugli.capability.entity.KeyPressCapability;
+import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
@@ -31,6 +32,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgePlayer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -170,6 +172,14 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public float getEntityEyeHeight(Entity entity) {
         return entity.getEyeHeightAccess(entity.getPose(), entity.getDimensions(entity.getPose()));
+    }
+
+    @Override
+    public Entity getEntityFromItemStack(ItemStack stack) {
+        if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
+            return stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get().getEntity();
+        }
+        return null;
     }
 
 }

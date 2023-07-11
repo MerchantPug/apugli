@@ -50,6 +50,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract void push(Entity pEntity);
 
+    @Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
+
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
@@ -62,8 +64,15 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void setItemStackEntities(CallbackInfo ci) {
         for (ItemStack stack : this.getAllSlots()) {
-            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
-                ((ItemStackAccess)(Object)stack).setEntity(this);
+            ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Void)null) : stack;
+            if (((ItemStackAccess)(Object)iteratedStack).getEntity() == null) {
+                ((ItemStackAccess)(Object)iteratedStack).setEntity(this);
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
+                        this.setItemSlot(slot, iteratedStack);
+                    }
+                }
+
             }
         }
     }
@@ -161,7 +170,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (Services.PLATFORM.getItemStackLinkedEntity(stack) instanceof LivingEntity living) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
                 world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);

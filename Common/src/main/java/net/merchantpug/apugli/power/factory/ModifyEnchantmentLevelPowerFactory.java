@@ -16,7 +16,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPowerFactory<P> {
@@ -61,7 +63,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag generateEnchantments(ListTag enchants, ItemStack self) {
-        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
 
         if(!(entity instanceof LivingEntity living)) return enchants;
 
@@ -92,7 +94,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
-        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(entity.getStringUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             ComparableItemStack comparableStack = new ComparableItemStack(self.copy());
@@ -106,7 +108,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
-        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             ComparableItemStack comparableItemStack = new ComparableItemStack(self);
@@ -130,7 +132,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
-        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(self);
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
             ComparableItemStack comparableStack = new ComparableItemStack(self);

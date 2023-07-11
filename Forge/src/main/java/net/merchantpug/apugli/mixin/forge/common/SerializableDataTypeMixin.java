@@ -6,7 +6,10 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 // TODO: Remove this class once https://github.com/EdwinMindcraft/origins-architectury/issues/335 has been closed.
-@Mixin(SerializableDataType.class)
+@Mixin(value = SerializableDataType.class, remap = false)
 public abstract class SerializableDataTypeMixin<T> {
 
     @Mutable @Shadow @Final private BiConsumer<FriendlyByteBuf, T> send;
@@ -28,7 +31,7 @@ public abstract class SerializableDataTypeMixin<T> {
 
     @Mutable @Shadow @Final private Function<FriendlyByteBuf, T> receive;
 
-    @Inject(method = "<init>(Ljava/lang/Class;Lcom/mojang/serialization/Codec;)V", at = @At("TAIL"))
+    @Inject(method = "<init>(Ljava/lang/Class;Lcom/mojang/serialization/Codec;)V", at = @At("TAIL"), remap = false)
     private void manageInit(Class<T> dataClass, Codec<T> codec, CallbackInfo ci) {
         this.send = (buf, t) -> apugli$writeWithCodec(buf, this.codec, t);
         this.receive = buf -> apugli$readWithCodec(buf, this.codec);

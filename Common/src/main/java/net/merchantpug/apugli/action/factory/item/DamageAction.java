@@ -43,7 +43,7 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
                 return;
             }
         }
-        Entity entity = Services.PLATFORM.getItemStackLinkedEntity(stack);
+        Entity entity = Services.PLATFORM.getEntityFromItemStack(stack);
         int newDamage = stack.getDamageValue() + damage;
         if(newDamage >= stack.getMaxDamage()) {
             if(entity instanceof LivingEntity holder) {
