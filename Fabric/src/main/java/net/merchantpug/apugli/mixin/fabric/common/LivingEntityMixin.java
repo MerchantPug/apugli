@@ -64,15 +64,16 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void setItemStackEntities(CallbackInfo ci) {
         for (ItemStack stack : this.getAllSlots()) {
-            ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Void)null) : stack;
-            if (((ItemStackAccess)(Object)iteratedStack).getEntity() == null) {
+            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
+                ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Void)null) : stack;
                 ((ItemStackAccess)(Object)iteratedStack).setEntity(this);
-                for (EquipmentSlot slot : EquipmentSlot.values()) {
-                    if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
-                        this.setItemSlot(slot, iteratedStack);
+                if (stack.isEmpty()) {
+                    for (EquipmentSlot slot : EquipmentSlot.values()) {
+                        if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
+                            this.setItemSlot(slot, iteratedStack);
+                        }
                     }
                 }
-
             }
         }
     }

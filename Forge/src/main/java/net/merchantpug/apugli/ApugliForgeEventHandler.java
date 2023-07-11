@@ -147,17 +147,22 @@ public class ApugliForgeEventHandler {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
         for (ItemStack stack : event.getEntity().getAllSlots()) {
-            ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item)null) : stack;
-            iteratedStack.getCapability(EntityLinkCapability.INSTANCE).ifPresent(cap -> {
+            if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
+                var cap = stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get();
                 if (cap.getEntity() == null) {
-                    cap.setEntity(event.getEntity());
-                    for (EquipmentSlot slot : EquipmentSlot.values()) {
-                        if (ItemStack.matches(iteratedStack, event.getEntity().getItemBySlot(slot))) {
-                            event.getEntity().setItemSlot(slot, iteratedStack);
+                    ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item) null) : stack;
+                    iteratedStack.getCapability(EntityLinkCapability.INSTANCE).ifPresent(cap2 -> {
+                        cap2.setEntity(event.getEntity());
+                    });
+                    if (iteratedStack.isEmpty()) {
+                        for (EquipmentSlot slot : EquipmentSlot.values()) {
+                            if (ItemStack.matches(iteratedStack, event.getEntity().getItemBySlot(slot))) {
+                                event.getEntity().setItemSlot(slot, iteratedStack);
+                            }
                         }
                     }
                 }
-            });
+            }
         }
 
         if (event.getEntity().isDeadOrDying()) return;
