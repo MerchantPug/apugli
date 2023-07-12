@@ -12,12 +12,12 @@ public class ConditionFactoryInstanceMixin implements FactoryInstanceAccess {
     private JsonElement apugli$jsonObject;
 
     @Override
-    public JsonElement getJson() {
+    public JsonElement apugli$getJson() {
         return this.apugli$jsonObject;
     }
 
     @Override
-    public void setJson(JsonElement json) {
+    public void apugli$setJson(JsonElement json) {
         this.apugli$jsonObject = json;
     }
 }
