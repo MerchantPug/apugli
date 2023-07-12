@@ -6,7 +6,6 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.action.ActionType;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.access.FactoryInstanceAccess;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -36,8 +35,6 @@ public class ActionTypeMixin<T> {
                 TextureUtil.cacheOneOff(CustomProjectileAction.getTextureUrl(url), url, textureLocation);
             }
         }
-        ActionFactory<T>.Instance action = cir.getReturnValue();
-        ((FactoryInstanceAccess)action).setJson(jsonElement);
     }
 
 }

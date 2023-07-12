@@ -35,13 +35,13 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
         }
 
         ConditionFactory<T>.Instance instance = factory.read(jsonObject);
-        ((FactoryInstanceAccess)instance).setJson(json);
+        ((FactoryInstanceAccess)instance).apugli$setJson(json);
         return DataResult.success(Pair.of(instance, ops.empty()));
     }
 
     @Override
     public <A> DataResult<A> encode(ConditionFactory<T>.Instance input, DynamicOps<A> ops, A prefix) {
-        JsonElement json = ((FactoryInstanceAccess)input).getJson();
+        JsonElement json = ((FactoryInstanceAccess)input).apugli$getJson();
         if (json == null) {
             return DataResult.error(() -> "Could not find JSON associated with ConditionFactory.");
         }
