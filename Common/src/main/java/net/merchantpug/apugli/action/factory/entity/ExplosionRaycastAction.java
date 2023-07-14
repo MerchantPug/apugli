@@ -96,7 +96,8 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
         double distanceTo = hitResult.distanceTo(entity);
 
         for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(d / distanceTo, entity.getX(), hitResult.getLocation().x()), Mth.lerp(d / distanceTo, entity.getY(), hitResult.getLocation().y()), Mth.lerp(d / distanceTo, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
+            double lerpValue = Mth.clamp(d / distanceTo, 0.0, 1.0);
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getX(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getY(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
 

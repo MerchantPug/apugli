@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.action.factory.bientity;
 
+import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.action.factory.IActionFactory;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class RaycastBetweenAction implements IActionFactory<Tuple<Entity, Entity>> {
 
@@ -28,19 +30,22 @@ public class RaycastBetweenAction implements IActionFactory<Tuple<Entity, Entity
     @Override
     public void execute(SerializableData.Instance data, Tuple<Entity, Entity> pair) {
         double distance = pair.getA().distanceTo(pair.getB());
+        Vec3 direction = createDirectionVector(pair.getA().position(), pair.getB().position());
+
         //Block Hit
-        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(pair.getA(), distance, data.get("direction"), data.get("space"));
+        BlockHitResult blockHitResult = RaycastUtil.raycastBlock(pair.getA(), distance, direction, Space.WORLD);
         HitResult.Type blockHitResultType = blockHitResult.getType();
-        //Entity Hit
-        EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, pair.getA(), distance, data.get("direction"), data.get("space"), null);
-        HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
 
         if (data.isPresent("block_action") && blockHitResultType == HitResult.Type.BLOCK) {
             createParticlesAtHitPos(data, pair.getA(), blockHitResult);
             onHitBlock(data, pair.getA(), blockHitResult);
-        } else if (entityHitResultType == HitResult.Type.ENTITY) {
-            createParticlesAtHitPos(data, pair.getA(), entityHitResult);
+        } else {
+            createParticlesAtHitPos(data, pair.getA(), new EntityHitResult(pair.getB()));
         }
+    }
+
+    protected Vec3 createDirectionVector(Vec3 pos1, Vec3 pos2) {
+        return new Vec3(pos2.x() - pos1.x(), pos2.y() - pos1.y(), pos2.z() - pos1.z()).normalize();
     }
 
     protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, HitResult hitResult) {
@@ -49,7 +54,8 @@ public class RaycastBetweenAction implements IActionFactory<Tuple<Entity, Entity
         double distanceTo = hitResult.distanceTo(entity);
 
         for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(d / distanceTo, entity.getEyePosition().x(), hitResult.getLocation().x()), Mth.lerp(d / distanceTo, entity.getEyePosition().y(), hitResult.getLocation().y()), Mth.lerp(d / distanceTo, entity.getEyePosition().z(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
+            double lerpValue = Mth.clamp(d / distanceTo, 0.0, 1.0);
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getEyePosition().x(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getEyePosition().y(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getEyePosition().z(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
 
