@@ -15,7 +15,7 @@ public class SpawnCustomEffectCloudAction extends CustomEffectCloudBaseAction im
 
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
-        CustomAreaEffectCloud cloud = createCloud(data, entity, entity.getX(), entity.getY(), entity.getZ());
+        CustomAreaEffectCloud cloud = createCloud(data, entity, entity, entity.getX(), entity.getY(), entity.getZ());
         entity.level().addFreshEntity(cloud);
     }
 
