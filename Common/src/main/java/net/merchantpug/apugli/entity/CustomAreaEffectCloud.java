@@ -97,17 +97,18 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
             compound.putString("EntityId", this.getEntityData().get(DATA_ENTITY_ID));
         }
 
+        compound.putDouble("HeightIncrease", heightIncrease);
+        Services.CONDITION.writeBiEntityConditionToNbt(compound, "BiEntityCondition", biEntityCondition);
+        Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerCloudBiEntityAction", ownerCloudBiEntityAction);
+        Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerTargetBiEntityAction", ownerTargetBiEntityAction);
+        Services.ACTION.writeBiEntityActionToNbt(compound, "CloudTargetBiEntityAction", cloudTargetBiEntityAction);
+
         ListTag powerTag = new ListTag();
         for (ResourceLocation power : powersToApply) {
             powerTag.add(StringTag.valueOf(power.toString()));
         }
         if (!powerTag.isEmpty())
             compound.put("PowersToApply", powerTag);
-        compound.putDouble("HeightIncrease", heightIncrease);
-        Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerCloudBiEntityAction", ownerCloudBiEntityAction);
-        Services.ACTION.writeBiEntityActionToNbt(compound, "OwnerTargetBiEntityAction", ownerTargetBiEntityAction);
-        Services.ACTION.writeBiEntityActionToNbt(compound, "CloudTargetBiEntityAction", cloudTargetBiEntityAction);
-        Services.CONDITION.writeBiEntityConditionToNbt(compound, "BiEntityCondition", biEntityCondition);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -115,6 +116,13 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
         if (compound.contains("EntityId", Tag.TAG_STRING)) {
             this.getEntityData().set(DATA_ENTITY_ID, compound.getString("EntityId"));
         }
+
+        heightIncrease = compound.getDouble("HeightIncrease");
+        biEntityCondition = Services.CONDITION.readBiEntityConditionFromNbt(compound, "BiEntityCondition");
+        ownerCloudBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerCloudBiEntityAction");
+        ownerTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerTargetBiEntityAction");
+        cloudTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "CloudTargetBiEntityAction");
+
         if (compound.contains("PowersToApply", Tag.TAG_LIST)) {
             ListTag powerTag = compound.getList("PowersToApply", Tag.TAG_STRING);
 
@@ -122,11 +130,6 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                 powersToApply.add(new ResourceLocation(tag.getAsString()));
             }
         }
-        heightIncrease = compound.getDouble("HeightIncrease");
-        ownerCloudBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerCloudBiEntityAction");
-        ownerTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "OwnerTargetBiEntityAction");
-        cloudTargetBiEntityAction = Services.ACTION.readBiEntityActionFromNbt(compound, "CloudTargetBiEntityAction");
-        biEntityCondition = Services.CONDITION.readBiEntityConditionFromNbt(compound, "BiEntityCondition");
     }
 
     public ResourceLocation getEntityId() {
@@ -135,6 +138,14 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
 
     public void setEntityId(ResourceLocation location) {
         this.getEntityData().set(DATA_ENTITY_ID, location.toString());
+    }
+
+    private boolean isOwnerRemovedOrDiscarded() {
+        AreaEffectCloudEntityAccessor accessor = (AreaEffectCloudEntityAccessor)this;
+        if (accessor.getOwner() == null) {
+            return false;
+        }
+        return accessor.getOwner().getRemovalReason() == RemovalReason.KILLED || accessor.getOwner().getRemovalReason() == RemovalReason.DISCARDED;
     }
 
     public void tick() {
@@ -186,6 +197,11 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                 this.getLevel().addAlwaysVisibleParticle(particleOptions, d, e, l, n, o, p);
             }
         } else {
+            if (isOwnerRemovedOrDiscarded()) {
+                this.discard();
+                return;
+            }
+
             if (this.tickCount >= this.getWaitTime() + this.getDuration()) {
                 this.discard();
                 return;

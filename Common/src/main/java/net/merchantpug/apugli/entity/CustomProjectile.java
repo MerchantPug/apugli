@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,6 +56,27 @@ public class CustomProjectile extends ThrowableProjectile {
     }
 
     @Override
+    public Entity getOwner() {
+        ProjectileEntityAccessor accessor = (ProjectileEntityAccessor)this;
+        if (accessor.getCachedOwner() != null && !isOwnerRemovedOrDiscarded()) {
+            return accessor.getCachedOwner();
+        } else if (accessor.getOwnerUUID() != null && this.getLevel() instanceof ServerLevel serverLevel) {
+            accessor.setCachedOwner(serverLevel.getEntity(accessor.getOwnerUUID()));
+            return accessor.getCachedOwner();
+        } else {
+            return null;
+        }
+    }
+
+    private boolean isOwnerRemovedOrDiscarded() {
+        ProjectileEntityAccessor accessor = (ProjectileEntityAccessor)this;
+        if (accessor.getCachedOwner() == null) {
+            return false;
+        }
+        return accessor.getCachedOwner().getRemovalReason() == RemovalReason.KILLED || accessor.getCachedOwner().getRemovalReason() == RemovalReason.DISCARDED;
+    }
+
+    @Override
     public void onHitEntity(EntityHitResult result) {
         Services.ACTION.executeBiEntity(impactBiEntityAction, this, result.getEntity());
         Services.ACTION.executeBiEntity(ownerImpactBiEntityAction, this.getOwner(), result.getEntity());
@@ -86,6 +108,10 @@ public class CustomProjectile extends ThrowableProjectile {
     @Override
     public void tick() {
         super.tick();
+        if (isOwnerRemovedOrDiscarded()) {
+            this.discard();
+            return;
+        }
         Services.ACTION.executeBiEntity(tickBiEntityAction, this.getOwner(), this);
     }
 

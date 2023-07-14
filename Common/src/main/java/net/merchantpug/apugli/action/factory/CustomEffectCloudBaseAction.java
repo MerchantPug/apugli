@@ -32,10 +32,10 @@ public class CustomEffectCloudBaseAction {
                 .add("owner_target_bientity_condition", Services.CONDITION.biEntityDataType(), null);
     }
 
-    public CustomAreaEffectCloud createCloud(SerializableData.Instance data, Entity owner, double x, double y, double z) {
-        CustomAreaEffectCloud cloud = new CustomAreaEffectCloud(owner.level, x, y, z);
-        if (owner instanceof LivingEntity living)
-            cloud.setOwner(living);
+    public CustomAreaEffectCloud createCloud(SerializableData.Instance data, Entity owner, Entity levelGetter, double x, double y, double z) {
+        CustomAreaEffectCloud cloud = new CustomAreaEffectCloud(levelGetter.getLevel(), x, y, z);
+        if (owner instanceof LivingEntity livingOwner)
+            cloud.setOwner(livingOwner);
         cloud.setEntityId(data.getId("entity_id"));
         cloud.setRadius(data.getFloat("radius"));
         cloud.setRadiusOnUse(data.getFloat("radius_on_use"));
