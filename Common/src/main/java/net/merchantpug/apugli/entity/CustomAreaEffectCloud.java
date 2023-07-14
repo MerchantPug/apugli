@@ -16,7 +16,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -33,7 +32,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
     private Object biEntityCondition;
     private Object ownerTargetBiEntityCondition;
     private double heightIncrease = 0.0;
-    private final Map<Entity, Integer> victims = new HashMap<>();
+    private final Map<LivingEntity, Integer> victims = new HashMap<>();
 
     public CustomAreaEffectCloud(EntityType<CustomAreaEffectCloud> entityType, Level world) {
         super(entityType, world);
@@ -47,11 +46,9 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
 
     @Override
     public void remove(RemovalReason reason) {
-        for (Map.Entry<Entity, Integer> next : this.victims.entrySet()) {
-            if (next.getKey() instanceof LivingEntity living) {
-                for (ResourceLocation power : this.powersToApply) {
-                    Services.POWER.revokePower(power, getEntityId(), living);
-                }
+        for (Map.Entry<LivingEntity, Integer> next : this.victims.entrySet()) {
+            for (ResourceLocation power : this.powersToApply) {
+                Services.POWER.revokePower(power, getEntityId(), next.getKey());
             }
         }
         super.remove(reason);
@@ -216,17 +213,17 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
             if (this.tickCount % 5 == 0) {
                 List<LivingEntity> list2 = this.getLevel().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().expandTowards(0.0, heightIncrease, 0.0));
 
-                Iterator<Map.Entry<Entity, Integer>> victimIterator = this.victims.entrySet().iterator();
+                Iterator<Map.Entry<LivingEntity, Integer>> victimIterator = this.victims.entrySet().iterator();
 
                 while (victimIterator.hasNext()) {
                     var next = victimIterator.next();
                     if (this.tickCount >= next.getValue()) {
-                        if (next.getKey() instanceof LivingEntity living && !list2.contains(living)) {
+                        if (!list2.contains(next.getKey())) {
                             for (ResourceLocation power : powersToApply) {
-                                Services.POWER.revokePower(power, getEntityId(), living);
+                                Services.POWER.revokePower(power, getEntityId(), next.getKey());
                             }
+                            victimIterator.remove();
                         }
-                        victimIterator.remove();
                     }
                 }
 
