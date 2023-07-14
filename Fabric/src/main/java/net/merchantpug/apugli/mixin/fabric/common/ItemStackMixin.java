@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
 
@@ -40,23 +39,16 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Unique
     public Entity apugli$entity;
 
-    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
-        if (this.apugli$entity != null) {
-            ((ItemStackAccess) (Object) itemStack).setEntity(this.apugli$entity);
-        }
-    }
+    public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
 
-    public void setEntity(Entity entity) { this.apugli$entity = entity; }
-
-    public Entity getEntity() {
+    public Entity apugli$getEntity() {
         return this.apugli$entity;
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
-        Optional<EdibleItemPower> power = PowerHolderComponent.getPowers(((ItemStackAccess)(Object)stack).getEntity(), EdibleItemPower.class).stream().filter(p -> p.doesApply(world, stack)).findFirst();
+        Optional<EdibleItemPower> power = PowerHolderComponent.getPowers(((ItemStackAccess)(Object)stack).apugli$getEntity(), EdibleItemPower.class).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
             ItemStack itemStack = user.getItemInHand(hand);
             if (user.canEat(power.get().getFoodComponent().canAlwaysEat())) {
@@ -74,7 +66,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
     private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack stack = (ItemStack)(Object)this;
-        if (!(((ItemStackAccess)(Object)stack).getEntity() instanceof LivingEntity living)) return;
+        if (!(((ItemStackAccess)(Object)stack).apugli$getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(user, stack);

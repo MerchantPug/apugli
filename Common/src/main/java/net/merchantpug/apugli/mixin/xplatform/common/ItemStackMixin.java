@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Optional;
 
@@ -31,6 +32,13 @@ public abstract class ItemStackMixin {
 
     @Unique
     private int apugli$previousDamage;
+
+    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
+        if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) != null) {
+            Services.PLATFORM.setEntityToItemStack(itemStack, Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this));
+        }
+    }
 
     @ModifyVariable(method = "setDamageValue", at = @At(value = "HEAD"), argsOnly = true)
     private int captureDamageValue(int newDamage) {

@@ -103,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/DamageSource;getEntity()Lnet/minecraft/world/entity/Entity;"))
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
-        if (this.level().isClientSide) return;
+        if (this.getLevel().isClientSide) return;
 
         if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit()) && this.getKillCredit() != null) {
             ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(this.getKillCredit(), (LivingEntity) (Object) this, source, apugli$damageAmountOnDeath, true);
@@ -122,7 +122,7 @@ public abstract class LivingEntityMixin extends Entity {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
-        if (source.getEntity() instanceof LivingEntity attacker && !source.isIndirect()) {
+        if (source.getEntity() instanceof LivingEntity attacker && source.getDirectEntity() == attacker) {
             additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 
@@ -134,7 +134,7 @@ public abstract class LivingEntityMixin extends Entity {
 
         if (additionalValue > 0.0F && source.getEntity() instanceof Player attacker) {
             float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), this.getMobType());
-            if (enchantmentDamageBonus <= 0.0F && !this.level().isClientSide) {
+            if (enchantmentDamageBonus <= 0.0F && !this.getLevel().isClientSide) {
                 attacker.magicCrit(this);
             }
         }
@@ -184,7 +184,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3 movementInput, CallbackInfo ci) {
-        if (this.isDeadOrDying() || this.level().isClientSide) return;
+        if (this.isDeadOrDying() || this.getLevel().isClientSide) return;
         ApugliPowers.BUNNY_HOP.get().onTravel((LivingEntity)(Object)this, movementInput);
     }
 
