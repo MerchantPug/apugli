@@ -50,8 +50,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract void push(Entity pEntity);
 
-    @Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
-
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
@@ -122,7 +120,7 @@ public abstract class LivingEntityMixin extends Entity {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
-        if (source.getEntity() instanceof LivingEntity attacker && !source.isIndirect()) {
+        if (source.getEntity() instanceof LivingEntity attacker && source.getDirectEntity() == attacker) {
             additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 

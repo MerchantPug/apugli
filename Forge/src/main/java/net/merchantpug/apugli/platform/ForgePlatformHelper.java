@@ -182,4 +182,9 @@ public class ForgePlatformHelper implements IPlatformHelper {
         return null;
     }
 
+    @Override
+    public void setEntityToItemStack(ItemStack stack, Entity entity) {
+        stack.getCapability(EntityLinkCapability.INSTANCE).resolve().ifPresent(cap -> cap.setEntity(entity));
+    }
+
 }
