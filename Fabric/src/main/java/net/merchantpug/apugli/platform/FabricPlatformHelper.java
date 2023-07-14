@@ -171,4 +171,9 @@ public class FabricPlatformHelper implements IPlatformHelper {
         return stack == null ? null : ((ItemStackAccess)(Object)stack).getEntity();
     }
 
+    @Override
+    public void setEntityToItemStack(ItemStack stack, Entity entity) {
+        ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
+    }
+
 }

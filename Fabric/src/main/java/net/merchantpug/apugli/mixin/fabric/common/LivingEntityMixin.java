@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
@@ -10,6 +9,7 @@ import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -18,7 +18,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -57,26 +56,14 @@ public abstract class LivingEntityMixin extends Entity {
         super(entityType, level);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void setItemStackEntities(CallbackInfo ci) {
-        for (ItemStack stack : this.getAllSlots()) {
-            if (((ItemStackAccess)(Object)stack).getEntity() == null) {
-                ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item)null) : stack;
-                ((ItemStackAccess)(Object)iteratedStack).setEntity(this);
-                if (stack.isEmpty()) {
-                    for (EquipmentSlot slot : EquipmentSlot.values()) {
-                        if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
-                            this.setItemSlot(slot, iteratedStack);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     @Inject(method = "jumpFromGround", at = @At("TAIL"))
     private void handleGroundJump(CallbackInfo ci) {
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void setItemStackEntities(CallbackInfo ci) {
+        IndividualisedEmptyStackUtil.addEntityToStack((LivingEntity)(Object)this);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))
@@ -116,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/DamageSource;getEntity()Lnet/minecraft/world/entity/Entity;"))
     private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
-        if (this.level.isClientSide) return;
+        if (this.level().isClientSide) return;
 
         if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit()) && this.getKillCredit() != null) {
             ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(this.getKillCredit(), (LivingEntity) (Object) this, source, apugli$damageAmountOnDeath, true);
@@ -135,7 +122,7 @@ public abstract class LivingEntityMixin extends Entity {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
-        if (source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
+        if (source.getEntity() instanceof LivingEntity attacker && !source.isIndirect()) {
             additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, thisAsLiving);
         }
 
@@ -147,7 +134,7 @@ public abstract class LivingEntityMixin extends Entity {
 
         if (additionalValue > 0.0F && source.getEntity() instanceof Player attacker) {
             float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), this.getMobType());
-            if (enchantmentDamageBonus <= 0.0F && !this.level.isClientSide) {
+            if (enchantmentDamageBonus <= 0.0F && !this.level().isClientSide) {
                 attacker.magicCrit(this);
             }
         }
@@ -172,7 +159,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (((ItemStackAccess) (Object) stack).getEntity() instanceof LivingEntity living) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
                 world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
@@ -197,7 +184,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "travel", at = @At("HEAD"))
     private void travel(Vec3 movementInput, CallbackInfo ci) {
-        if (this.isDeadOrDying() || this.level.isClientSide) return;
+        if (this.isDeadOrDying() || this.level().isClientSide) return;
         ApugliPowers.BUNNY_HOP.get().onTravel((LivingEntity)(Object)this, movementInput);
     }
 

@@ -20,6 +20,7 @@ import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -27,12 +28,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -146,26 +145,9 @@ public class ApugliForgeEventHandler {
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
-        for (ItemStack stack : event.getEntity().getAllSlots()) {
-            if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
-                var cap = stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get();
-                if (cap.getEntity() == null) {
-                    ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item) null) : stack;
-                    iteratedStack.getCapability(EntityLinkCapability.INSTANCE).ifPresent(cap2 -> {
-                        cap2.setEntity(event.getEntity());
-                    });
-                    if (iteratedStack.isEmpty()) {
-                        for (EquipmentSlot slot : EquipmentSlot.values()) {
-                            if (ItemStack.matches(iteratedStack, event.getEntity().getItemBySlot(slot))) {
-                                event.getEntity().setItemSlot(slot, iteratedStack);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         if (event.getEntity().isDeadOrDying()) return;
+
+        IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(1.0, 0.0, 1.0));

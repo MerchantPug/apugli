@@ -107,4 +107,6 @@ public interface IPlatformHelper {
 
     Entity getEntityFromItemStack(ItemStack stack);
 
+    void setEntityToItemStack(ItemStack stack, Entity entity);
+
 }
