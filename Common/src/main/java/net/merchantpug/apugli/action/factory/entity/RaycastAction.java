@@ -2,15 +2,18 @@ package net.merchantpug.apugli.action.factory.entity;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Space;
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.util.RaycastUtil;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
 
@@ -48,9 +51,6 @@ public class RaycastAction implements IActionFactory<Entity> {
             Services.PLATFORM.getAttackRange(entity);
         EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance, data.get("direction"), data.get("space"), null);
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : null;
-
-        double squaredParticleDistance = entityHitResult != null && !data.getBoolean("pierce") ? entityHitResult.getLocation().distanceToSqr(entity.getEyePosition()) : entityDistance * entityDistance;
-        createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
         //Execute Actions
         if(data.getBoolean("pierce")) {
             List<EntityHitResult> list = RaycastUtil.raycastEntities(entity, (traceEntity) -> !traceEntity.isSpectator() && traceEntity.isPickable(), entityDistance, data.get("direction"), data.get("space"));
@@ -58,26 +58,35 @@ public class RaycastAction implements IActionFactory<Entity> {
             return;
         }
         if(entityHitResultType == HitResult.Type.ENTITY) {
+            createParticlesAtHitPos(data, entity, entityHitResult);
             onHitEntity(data, entity, entityHitResult, false);
             return;
         }
         if(blockHitResultType == HitResult.Type.BLOCK) {
+            createParticlesAtHitPos(data, entity, blockHitResult);
             onHitBlock(data, entity, blockHitResult);
         }
     }
     
-    protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
+    protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, HitResult hitResult) {
         if(!data.isPresent("particle") || entity.level().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
+        double distanceTo = hitResult.distanceTo(entity);
         
-        for(double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
+        for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(d / distanceTo, entity.getX(), hitResult.getLocation().x()), Mth.lerp(d / distanceTo, entity.getY(), hitResult.getLocation().y()), Mth.lerp(d / distanceTo, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
     
     protected void handlePierce(SerializableData.Instance data, Entity entity, List<EntityHitResult> list) {
         if(list.isEmpty()) return;
-        list.forEach(targetEntity -> onHitEntity(data, entity, targetEntity, true));
+
+        Entity previousEntity = entity;
+        for (EntityHitResult result : list) {
+            createParticlesAtHitPos(data, previousEntity, result);
+            previousEntity = result.getEntity();
+            onHitEntity(data, entity, result, true);
+        }
         executeSelfAction(data, entity);
     }
 
@@ -87,7 +96,7 @@ public class RaycastAction implements IActionFactory<Entity> {
     }
 
     protected void onHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
-        if(!data.isPresent("block_action") && !Services.CONDITION.checkBlock(data, "block_condition", entity.level(), result.getBlockPos())) return;
+        if(!data.isPresent("block_action") || !Services.CONDITION.checkBlock(data, "block_condition", entity.level(), result.getBlockPos())) return;
         Services.ACTION.executeBlock(data,"block_action", entity.level(), result.getBlockPos(), result.getDirection());
         executeSelfAction(data, entity);
     }

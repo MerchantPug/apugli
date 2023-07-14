@@ -3,7 +3,7 @@
 
 ### Action Types
 - Added `custom_projectile`, `item_cooldown` and `spawn_custom_effect_cloud` entity action types.
-- Added `raycast_between` and `spawn_custom_effect_cloud` bi-entity action typeS.
+- Added `raycast_between` and `spawn_custom_effect_cloud` bi-entity action types.
 - Added `schedule_tick` block action type.
 - Added `cooldown` item action type.
 
@@ -17,4 +17,5 @@
 - Fixed errors involving the `step_assist` field's functionality in the `hover` power, these fixes also carry over to the new `step_assist` power.
 - Removed code that may have caused `action_on_durability_change` to run more times than what's necessary.
 - Fixed certain content that references an entity from an ItemStack not functioning. e.g. `modify_enchantment_level`.
+- Fix bugs with raycast centric action types.
 - [FABRIC] Fixed crash when checking if the entity has powers using non living entity. #44

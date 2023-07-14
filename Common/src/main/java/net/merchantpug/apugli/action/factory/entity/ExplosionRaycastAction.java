@@ -3,7 +3,6 @@ package net.merchantpug.apugli.action.factory.entity;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Space;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
@@ -13,9 +12,8 @@ import net.merchantpug.apugli.util.RaycastUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -82,22 +80,23 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
         EntityHitResult entityHitResult = RaycastUtil.raycastEntity(blockHitResult, entity, entityDistance, data.get("direction"), data.get("space"), Services.CONDITION.biEntityPredicate(data, "targetable_bientity_condition"));
         HitResult.Type entityHitResultType = entityHitResult != null ? entityHitResult.getType() : HitResult.Type.MISS;
 
-        double squaredParticleDistance = entityHitResultType != HitResult.Type.MISS ? entityHitResult.getLocation().distanceToSqr(entity.getEyePosition()) : blockDistance * blockDistance;
-        createParticlesAtHitPos(data, entity, Math.sqrt(squaredParticleDistance));
         //Execute Actions
         if (entityHitResultType == HitResult.Type.ENTITY) {
+            createParticlesAtHitPos(data, entity, entityHitResult);
             onHitEntity(data, entity, entityHitResult);
         } else if (blockHitResultType == HitResult.Type.BLOCK) {
+            createParticlesAtHitPos(data, entity, blockHitResult);
             onHitBlock(data, entity, blockHitResult);
         }
     }
-    
-    protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, double entityReach) {
+
+    protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, HitResult hitResult) {
         if(!data.isPresent("particle") || entity.level().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
-        
-        for(double d = data.getDouble("spacing"); d < entityReach; d += data.getDouble("spacing")) {
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, entity.getEyePosition().x() + d * entity.getViewVector(0).x(), entity.getEyePosition().y() + d * entity.getViewVector(0).y(), entity.getEyePosition().z() + d * entity.getViewVector(0).z(), 1, 0, 0, 0, 0);
+        double distanceTo = hitResult.distanceTo(entity);
+
+        for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
+            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(d / distanceTo, entity.getX(), hitResult.getLocation().x()), Mth.lerp(d / distanceTo, entity.getY(), hitResult.getLocation().y()), Mth.lerp(d / distanceTo, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
 
