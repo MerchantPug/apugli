@@ -235,13 +235,11 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                         LivingEntity livingEntity;
                         do {
                             do {
-                                do {
-                                    if (!var27.hasNext()) {
-                                        return;
-                                    }
+                                if (!var27.hasNext()) {
+                                    return;
+                                }
 
-                                    livingEntity = var27.next();
-                                } while (this.victims.containsKey(livingEntity));
+                                livingEntity = var27.next();
                             } while (!Services.CONDITION.checkBiEntity(biEntityCondition, this, livingEntity) || !Services.CONDITION.checkBiEntity(ownerTargetBiEntityCondition, this.getOwner(), livingEntity));
 
                             double q = livingEntity.getX() - this.getX();
@@ -249,7 +247,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                             s = q * q + r * r;
                         } while (!(s <= (double) (f * f)));
 
-                        this.victims.put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).getReapplicationDelay());;
+                        this.victims.put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).getReapplicationDelay());
 
                         for (ResourceLocation power : powersToApply) {
                             if (!Services.POWER.hasPowerType(power, getEntityId(), livingEntity)) {
