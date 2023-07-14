@@ -146,26 +146,9 @@ public class ApugliForgeEventHandler {
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
-        for (ItemStack stack : event.getEntity().getAllSlots()) {
-            if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
-                var cap = stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get();
-                if (cap.getEntity() == null) {
-                    ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Item) null) : stack;
-                    iteratedStack.getCapability(EntityLinkCapability.INSTANCE).ifPresent(cap2 -> {
-                        cap2.setEntity(event.getEntity());
-                    });
-                    if (iteratedStack.isEmpty()) {
-                        for (EquipmentSlot slot : EquipmentSlot.values()) {
-                            if (ItemStack.matches(iteratedStack, event.getEntity().getItemBySlot(slot))) {
-                                event.getEntity().setItemSlot(slot, iteratedStack);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         if (event.getEntity().isDeadOrDying()) return;
+
+        IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(1.0, 0.0, 1.0));

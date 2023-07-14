@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
@@ -10,6 +9,7 @@ import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -63,19 +63,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void setItemStackEntities(CallbackInfo ci) {
-        for (ItemStack stack : this.getAllSlots()) {
-            if (((ItemStackAccess)(Object)stack).apugli$getEntity() == null) {
-                ItemStack iteratedStack = stack.isEmpty() ? new ItemStack((Void)null) : stack;
-                ((ItemStackAccess)(Object)iteratedStack).apugli$setEntity(this);
-                if (stack.isEmpty()) {
-                    for (EquipmentSlot slot : EquipmentSlot.values()) {
-                        if (ItemStack.matches(iteratedStack, this.getItemBySlot(slot))) {
-                            this.setItemSlot(slot, iteratedStack);
-                        }
-                    }
-                }
-            }
-        }
+        IndividualisedEmptyStackUtil.addEntityToStack((LivingEntity)(Object)this);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))
