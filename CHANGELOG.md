@@ -3,7 +3,7 @@
 
 ### Action Types
 - Added `custom_projectile`, `item_cooldown` and `spawn_custom_effect_cloud` entity action types.
-- Added `spawn_custom_effect_cloud` bi-entity action type.
+- Added `raycast_between` and `spawn_custom_effect_cloud` bi-entity action typeS.
 - Added `schedule_tick` block action type.
 - Added `cooldown` item action type.
 - Backported `apoli:area_of_effect` block action type.
