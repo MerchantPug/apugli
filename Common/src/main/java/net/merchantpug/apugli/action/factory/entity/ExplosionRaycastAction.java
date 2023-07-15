@@ -43,7 +43,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                 .add("bientity_action", Services.ACTION.biEntityDataType(), null)
                 .add("action_on_hit", Services.ACTION.entityDataType(), null)
                 .add("power", SerializableDataTypes.FLOAT)
-                .add("destruction_type", ApoliDataTypes.BACKWARDS_COMPATIBLE_DESTRUCTION_TYPE, Explosion.BlockInteraction.KEEP)
+                .add("destruction_type", SerializableDataTypes.DESTRUCTION_TYPE, Explosion.BlockInteraction.NONE)
                 .add("damage_self", SerializableDataTypes.BOOLEAN, false)
                 .add("indestructible", Services.CONDITION.blockDataType(), null)
                 .add("destructible", Services.CONDITION.blockDataType(), null)
@@ -66,7 +66,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
     
     @Override
     public void execute(SerializableData.Instance data, Entity entity) {
-        if (entity.level().isClientSide) return;
+        if (entity.getLevel().isClientSide) return;
         //Block Hit
         double blockDistance = data.isPresent("distance") ?
             data.getDouble("distance") :
@@ -91,19 +91,19 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
     }
 
     protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, HitResult hitResult) {
-        if(!data.isPresent("particle") || entity.level().isClientSide()) return;
+        if(!data.isPresent("particle") || entity.getLevel().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
         double distanceTo = hitResult.distanceTo(entity);
 
         for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
             double lerpValue = Mth.clamp(d / distanceTo, 0.0, 1.0);
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getX(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getY(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
+            ((ServerLevel)entity.getLevel()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getX(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getY(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getZ(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
 
     protected void onHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
         if(!data.isPresent("block_action") && !data.isPresent("action_on_hit")) return;
-        Services.ACTION.executeBlock(data,"block_action", entity.level(), result.getBlockPos(), result.getDirection());
+        Services.ACTION.executeBlock(data,"block_action", entity.getLevel(), result.getBlockPos(), result.getDirection());
         summonExplosion(data, entity, result);
         executeSelfAction(data, entity);
     }
@@ -141,15 +141,15 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
         boolean indestructible = false;
         String blockConditionFieldKey = null;
         if (data.isPresent("destructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.level(), false);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "indestructible", entity.getLevel(), false);
             blockConditionFieldKey = "destructible";
         } else if (data.isPresent("indestructible")) {
-            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.level(), true);
+            calculator = createBlockConditionedExplosionDamageCalculator(data, "destructible", entity.getLevel(), true);
             indestructible = true;
             blockConditionFieldKey = "indestructible";
         }
         if(calculator != null) {
-            Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
+            Explosion explosion = new Explosion(entity.getLevel(), damageSelf ? null : entity,
                     null, calculator, result.getLocation().x(), result.getLocation().y(), result.getLocation().z(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
@@ -173,7 +173,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                     power,
                     data.get("destruction_type")), entity);
         } else {
-            Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
+            Explosion explosion = new Explosion(entity.getLevel(), damageSelf ? null : entity,
                     null, null,
                     result.getLocation().x(), result.getLocation().y(), result.getLocation().z(), power, createFire, destructionType);
             ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));

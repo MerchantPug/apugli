@@ -49,19 +49,19 @@ public class RaycastBetweenAction implements IActionFactory<Tuple<Entity, Entity
     }
 
     protected void createParticlesAtHitPos(SerializableData.Instance data, Entity entity, HitResult hitResult) {
-        if(!data.isPresent("particle") || entity.level().isClientSide()) return;
+        if(!data.isPresent("particle") || entity.getLevel().isClientSide()) return;
         ParticleOptions particleEffect = data.get("particle");
         double distanceTo = hitResult.distanceTo(entity);
 
         for(double d = data.getDouble("spacing"); d < distanceTo; d += data.getDouble("spacing")) {
             double lerpValue = Mth.clamp(d / distanceTo, 0.0, 1.0);
-            ((ServerLevel)entity.level()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getEyePosition().x(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getEyePosition().y(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getEyePosition().z(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
+            ((ServerLevel)entity.getLevel()).sendParticles(particleEffect, Mth.lerp(lerpValue, entity.getEyePosition().x(), hitResult.getLocation().x()), Mth.lerp(lerpValue, entity.getEyePosition().y(), hitResult.getLocation().y()), Mth.lerp(lerpValue, entity.getEyePosition().z(), hitResult.getLocation().z()), 1, 0, 0, 0, 0);
         }
     }
 
     protected void onHitBlock(SerializableData.Instance data, Entity entity, BlockHitResult result) {
-        if(!data.isPresent("block_action") || !Services.CONDITION.checkBlock(data, "block_condition", entity.level(), result.getBlockPos())) return;
-        Services.ACTION.executeBlock(data,"block_action", entity.level(), result.getBlockPos(), result.getDirection());
+        if(!data.isPresent("block_action") || !Services.CONDITION.checkBlock(data, "block_condition", entity.getLevel(), result.getBlockPos())) return;
+        Services.ACTION.executeBlock(data,"block_action", entity.getLevel(), result.getBlockPos(), result.getDirection());
     }
 
 }
