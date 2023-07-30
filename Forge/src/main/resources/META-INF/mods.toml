@@ -30,6 +30,6 @@ description="Pug's extension to A Power Library."
 [[dependencies.apugli]]
     modId="apoli"
     mandatory=true
-    versionRange="[1.19.2-2.6.1.0,)"
+    versionRange="[1.19.2-2.6.1.1,)"
     ordering="AFTER"
     side="BOTH"

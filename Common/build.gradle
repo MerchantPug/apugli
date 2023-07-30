@@ -72,7 +72,7 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-1.19.3:${parchment_version}@zip")
     }
     //Apoli
-    modCompileOnly "com.github.apace100:apoli:${apoli_version}"
+    modCompileOnly "com.github.apace100:apoli:${apoli_fabric_version}"
     //MixinExtras
     annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     //JSR305
