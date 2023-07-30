@@ -1,21 +1,3 @@
-### Power Types
-- Added `action_on_jump`, `custom_projectile`, `modify_durability_change`, `modify_fov`, `prevent_movement_check`, `sprinting`, and `step_assist` power types.
-
-### Action Types
-- Added `custom_projectile`, `item_cooldown` and `spawn_custom_effect_cloud` entity action types.
-- Added `raycast_between` and `spawn_custom_effect_cloud` bi-entity action types.
-- Added `schedule_tick` block action type.
-- Added `cooldown` item action type.
-
-### Condition Types
-- Added `custom_entity_id` and `owner` bi-entity condtiion types.
-- Added `in_rain`, `raining` and `thundering` block condition types.
-- Added `grounded`, `raining`, `thundering` entity condition types.
-- Added `on_cooldown` item condition type.
-
-### Bugfixes
-- Fixed errors involving the `step_assist` field's functionality in the `hover` power, these fixes also carry over to the new `step_assist` power.
-- Removed code that may have caused `action_on_durability_change` to run more times than what's necessary.
-- Fixed certain content that references an entity from an ItemStack not functioning. e.g. `modify_enchantment_level`.
-- Fixed raycast centric action types' particles not applying in the correct direction.
-- [FABRIC] Fixed crash when checking if the entity has powers using non living entity. #44
+### Dependencies
+- Updated Mixin Extras version to 0.2.0-beta.9.
+- [FORGE] Updated Apoli Forge dependency to 2.6.1.1. (Equivalent Origins Forge: 1.7.1.1)
