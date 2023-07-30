@@ -30,7 +30,7 @@ jarJar.enable()
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
 
-    maven { url 'https://maven.merchantpug.net' }
+    maven { url 'https://maven.merchantpug.net/releases' }
 
     maven {
         name = "JitPack"
@@ -111,7 +111,7 @@ dependencies {
     //Caelus
     implementation(fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}"))
     // AdditionalEntityAttributes
-    implementation(fg.deobf("com.github.MerchantPug.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
+    implementation(fg.deobf("com.github.EdwinMindcraft.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
         exclude group: 'net.minecraftforge'
     })
     //MixinExtras
