@@ -30,6 +30,8 @@ jarJar.enable()
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
 
+    maven { url 'https://maven.merchantpug.net' }
+
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
