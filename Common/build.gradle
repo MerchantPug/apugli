@@ -73,7 +73,7 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
     }
     //Apoli
-    modCompileOnly "com.github.eggohito:apoli:${apoli_version}"
+    modCompileOnly "com.github.eggohito:apoli:${apoli_fabric_version}"
     //MixinExtras
     annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     //Mixin

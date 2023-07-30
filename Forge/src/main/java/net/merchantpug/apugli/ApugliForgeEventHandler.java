@@ -8,7 +8,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
-import net.merchantpug.apugli.access.PowerLoadEventPostAccess;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
@@ -305,9 +304,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void postPowerLoad(PowerLoadEvent.Post event) {
-        ConfiguredPower<?, ?> power = event.getPower();
-        ResourceLocation id = ((PowerLoadEventPostAccess)event).getFixedId() != null ? ((PowerLoadEventPostAccess)event).getFixedId() : event.getId();
-        handleUrlPower(id, power);
+        handleUrlPower(event.getId(), event.getPower());
     }
 
     private static void handleUrlPower(ResourceLocation id, ConfiguredPower<?, ?> power) {
