@@ -8,9 +8,6 @@
     "common.FoodDataMixin",
     "common.ItemStackMixin",
     "common.LivingEntityMixin",
-    "common.MultiplePowerMixin",
-    "common.PowerLoadEventPostMixin",
-    "common.SerializableDataTypeMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.accessor.ApoliClientEventHandlerAccessor",
     "common.accessor.FabricPowerFactoryAccessor"
