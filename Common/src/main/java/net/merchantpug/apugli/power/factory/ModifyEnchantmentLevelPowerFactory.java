@@ -30,16 +30,16 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default void onAdded(P power, Entity entity) {
         if (!(entity instanceof LivingEntity living)) return;
-        getEntityItemEnchants().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
-        ConcurrentHashMap<P, Tuple<Integer, Boolean>> cache = getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
+        getEntityItemEnchants().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>());
+        ConcurrentHashMap<P, Tuple<Integer, Boolean>> cache = getPowerModifierCache().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>());
         cache.compute(power, (p, _val) -> new Tuple<>(0, false));
     }
 
     default void onRemoved(P power, Entity entity) {
         if (!(entity instanceof LivingEntity living)) return;
-        getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>()).remove(power);
+        getPowerModifierCache().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>()).remove(power);
         if (Services.POWER.getPowers(living, this).size() - 1 <= 0) {
-            getEntityItemEnchants().remove(entity.getStringUUID());
+            getEntityItemEnchants().remove(living);
         }
     }
 
@@ -95,8 +95,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
         Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(entity.getStringUUID())) {
-            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living)) {
+            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living);
             ComparableItemStack comparableStack = new ComparableItemStack(self.copy());
             if (shouldReapplyEnchantments(living, comparableStack)) {
                 itemEnchants.computeIfAbsent(comparableStack, tag -> originalTag);
@@ -109,8 +109,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
         Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
-            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living)) {
+            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living);
             ComparableItemStack comparableItemStack = new ComparableItemStack(self);
             return EnchantmentHelper.deserializeEnchantments(itemEnchants.computeIfAbsent(comparableItemStack, stack -> stack.stack().getEnchantmentTags()));
         }
@@ -118,7 +118,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default int getEnchantmentLevel(Enchantment enchantment, LivingEntity living) {
-        if (getEntityItemEnchants().containsKey(living.getStringUUID())) {
+        if (getEntityItemEnchants().containsKey(living)) {
             int i = 0;
             for (ItemStack stack : living.getAllSlots()) {
                 int j = getItemEnchantmentLevel(enchantment, stack);
@@ -133,8 +133,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
         Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getStringUUID())) {
-            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity.getStringUUID());
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living)) {
+            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living);
             ComparableItemStack comparableStack = new ComparableItemStack(self);
             ResourceLocation id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment);
             ListTag newEnchants = itemEnchants.getOrDefault(comparableStack, self.getEnchantmentTags());
@@ -164,11 +164,11 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default boolean shouldReapplyEnchantments(LivingEntity living, ComparableItemStack stack) {
         List<P> powers = Services.POWER.getPowers(living, this, true);
-        ConcurrentHashMap<ComparableItemStack, ListTag> enchants = getEntityItemEnchants().get(living.getStringUUID());
-        ConcurrentHashMap<P, Tuple<Integer, Boolean>> cache = getPowerModifierCache().computeIfAbsent(living.getStringUUID(), (_uuid) -> new ConcurrentHashMap<>());
+        ConcurrentHashMap<ComparableItemStack, ListTag> enchants = getEntityItemEnchants().get(living);
+        ConcurrentHashMap<P, Tuple<Integer, Boolean>> cache = getPowerModifierCache().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>());
         return !enchants.containsKey(stack) || powers.stream().anyMatch(power -> updateIfDifferent(cache, power, (int) Services.PLATFORM.applyModifiers(living, getModifiers(power, living), 0), Services.POWER.isActive(power, living) && checkItemCondition(power, living.level(), stack.stack())));
     }
 
-    ConcurrentHashMap<String, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants();
-    ConcurrentHashMap<String, ConcurrentHashMap<P, Tuple<Integer, Boolean>>> getPowerModifierCache();
+    ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants();
+    ConcurrentHashMap<LivingEntity, ConcurrentHashMap<P, Tuple<Integer, Boolean>>> getPowerModifierCache();
 }

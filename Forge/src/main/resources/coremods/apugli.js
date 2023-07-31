@@ -17,16 +17,23 @@ function initializeCoreMod() {
                 'methodDesc': '(Lnet/minecraft/world/item/enchantment/Enchantment;)I'
             },
             'transformer': function(node) {
-                // return CoreUtil.getModifiedEnchantmentLevel(this.self(), enchantment);
+                // return CoreUtil.getModifiedEnchantmentLevel(prev, this.self(), enchantment);
                 var ls = new InsnList();
                 // this.self()
                 ls.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                 ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
                 // enchantment
                 ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantmentLevel", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/enchantment/Enchantment;)I"));
-                ls.add(new InsnNode(Opcodes.IRETURN));
-				node.instructions.insert(ls);
+                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantmentLevel", "(ILnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/enchantment/Enchantment;)I"));
+				var iterator = node.instructions.iterator();
+                var insertionSlot = null;
+                while (iterator.hasNext()) {
+                    var ain = iterator.next();
+                    if (ain.getOpcode() === Opcodes.IRETURN)
+                        insertionSlot = ain;
+                }
+                if (insertionSlot != null)
+                    node.instructions.insertBefore(insertionSlot, ls);
 				return node;
             }
         },
@@ -38,14 +45,21 @@ function initializeCoreMod() {
                 'methodDesc': '()Ljava/util/Map;'
             },
             'transformer': function(node) {
-                // return CoreUtil.getModifiedEnchantments(this.self());
+                // return CoreUtil.getModifiedEnchantments(prev, this.self());
                 var ls = new InsnList();
                 // this.self()
                 ls.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                 ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
-                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantments", "(Lnet/minecraft/world/item/ItemStack;)Ljava/util/Map;"));
-                ls.add(new InsnNode(Opcodes.ARETURN));
-				node.instructions.insert(ls);
+                ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/merchantpug/apugli/util/CoreUtil", "getModifiedEnchantments", "(Ljava/util/Map;Lnet/minecraft/world/item/ItemStack;)Ljava/util/Map;"));
+				var iterator = node.instructions.iterator();
+                var insertionSlot = null;
+                while (iterator.hasNext()) {
+                    var ain = iterator.next();
+                    if (ain.getOpcode() === Opcodes.ARETURN)
+                        insertionSlot = ain;
+                }
+                if (insertionSlot != null)
+                    node.instructions.insertBefore(insertionSlot, ls);
 				return node;
             }
         },
