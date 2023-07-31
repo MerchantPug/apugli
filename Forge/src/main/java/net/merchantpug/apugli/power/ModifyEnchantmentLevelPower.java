@@ -8,13 +8,14 @@ import net.merchantpug.apugli.util.ComparableItemStack;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower implements ModifyEnchantmentLevelPowerFactory<ConfiguredPower<FabricValueModifyingConfiguration, ?>> {
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
         super(ModifyEnchantmentLevelPowerFactory.getSerializableData().xmap(
@@ -34,12 +35,12 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower imp
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
+    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
         return ENTITY_ITEM_ENCHANTS;
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> getPowerModifierCache() {
+    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ConfiguredPower<FabricValueModifyingConfiguration, ?>, Tuple<Integer, Boolean>>> getPowerModifierCache() {
         return POWER_MODIFIER_CACHE;
     }
 

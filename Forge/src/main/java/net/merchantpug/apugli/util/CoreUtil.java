@@ -18,17 +18,21 @@ import java.util.Optional;
 
 public class CoreUtil {
 
-    public static int getModifiedEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
-            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), stack.getItem().getEnchantmentLevel(stack, enchantment), p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));
+    public static int getModifiedEnchantmentLevel(int original, ItemStack stack, Enchantment enchantment) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), original, p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));
         }
-        return stack.getItem().getEnchantmentLevel(stack, enchantment);
+        return original;
     }
 
-    public static Map<Enchantment, Integer> getModifiedEnchantments(ItemStack stack) {
-        ListTag serializedEnchantments = serializeEnchantments(stack.getItem().getAllEnchantments(stack));
-        return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, serializedEnchantments));
+    public static Map<Enchantment, Integer> getModifiedEnchantments(Map<Enchantment, Integer> original, ItemStack stack) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+            ListTag serializedEnchantments = serializeEnchantments(original);
+            return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, serializedEnchantments));
+        }
+        return original;
     }
+
 
     private static ListTag serializeEnchantments(Map<Enchantment, Integer> deserialized) {
         ListTag tag = new ListTag();

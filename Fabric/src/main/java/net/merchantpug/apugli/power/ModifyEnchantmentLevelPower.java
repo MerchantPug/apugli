@@ -6,7 +6,6 @@ import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.ComparableItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<ModifyEnchantmentLevelPower.Instance> implements ModifyEnchantmentLevelPowerFactory<ModifyEnchantmentLevelPower.Instance> {
-        private static final ConcurrentHashMap<String, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
         super("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.getSerializableData(),
@@ -30,12 +29,12 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
+    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
         return ENTITY_ITEM_ENCHANTS;
     }
 
     @Override
-    public ConcurrentHashMap<String, ConcurrentHashMap<Instance, Tuple<Integer, Boolean>>> getPowerModifierCache() {
+    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<Instance, Tuple<Integer, Boolean>>> getPowerModifierCache() {
         return POWER_MODIFIER_CACHE;
     }
 
