@@ -41,7 +41,7 @@ public interface ModifyFovPowerFactory<P> extends ValueModifyingPowerFactory<P> 
             double lerpedFovMultiplier = ApugliPowers.MODIFY_FOV.get().getLerpedFovMultiplier();
             setHadPowerPreviously(true);
             setHasResetPreviousValue(false);
-            return FOVUtil.redoModifications(originalFov, activeRenderInfo, getPartialTicks()) * Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, lerpedFovMultiplier);
+            return FOVUtil.redoModifications(originalFov, activeRenderInfo, getPartialTicks()) * Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, Mth.clamp(lerpedFovMultiplier, 0.1, 1.5));
         } else if (!Services.POWER.hasPower(living, this) && hadPowerPreviously()) {
             if (!Minecraft.getInstance().isPaused()) {
                 setPartialTicks(getPartialTicks() + (Minecraft.getInstance().getDeltaFrameTime() * (1.0F / getPreviousFovMultiplier() + 1.0F) / getPreviousChangeDivisor()));
@@ -57,7 +57,7 @@ public interface ModifyFovPowerFactory<P> extends ValueModifyingPowerFactory<P> 
                 setPreviousFovMultiplier(Double.NaN);
                 setPartialTicks(0.0);
             }
-            return FOVUtil.redoModifications(originalFov, activeRenderInfo, getPartialTicks()) * Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, lerpedFovMultiplier);
+            return FOVUtil.redoModifications(originalFov, activeRenderInfo, getPartialTicks()) * Mth.lerp(Minecraft.getInstance().options.fovEffectScale().get(), 1.0F, Mth.clamp(lerpedFovMultiplier, 0.1, 1.5));
         }
         return originalFov;
     }
