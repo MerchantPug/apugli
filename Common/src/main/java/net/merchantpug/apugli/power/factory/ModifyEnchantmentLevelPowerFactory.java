@@ -94,8 +94,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
         Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(entity)) {
-            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(entity);
+        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living)) {
+            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living);
             ComparableItemStack comparableStack = new ComparableItemStack(self.copy());
             if (shouldReapplyEnchantments(living, comparableStack)) {
                 itemEnchants.computeIfAbsent(comparableStack, tag -> originalTag);
