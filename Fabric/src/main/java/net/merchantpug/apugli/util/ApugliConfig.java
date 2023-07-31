@@ -11,8 +11,8 @@ public class ApugliConfig extends MidnightConfig {
     @Entry(name = "apugli.config.fileConnectionTimeout")
     public static int fileConnectionTimeout = 30000;
 
-    @Server
+    @Server @Entry
     public static int resetTimerTicks = 100;
-    @Server
+    @Server @Entry
     public static boolean performVersionCheck = true;
 }
