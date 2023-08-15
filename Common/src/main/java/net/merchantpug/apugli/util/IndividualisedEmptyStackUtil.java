@@ -16,23 +16,23 @@ public class IndividualisedEmptyStackUtil {
 
     public static ItemStack getEntityLinkedEmptyStack(Entity entity) {
         if (!ENTITY_EMPTY_STACK_MAP.containsKey(entity)) {
-            ENTITY_EMPTY_STACK_MAP.put(entity, new ItemStack((Item) null));
+            ItemStack stack = new ItemStack((Item) null);
+            Services.PLATFORM.setEntityToItemStack(stack, entity);
+            ENTITY_EMPTY_STACK_MAP.put(entity, stack);
         }
         return ENTITY_EMPTY_STACK_MAP.get(entity);
     }
 
     public static void addEntityToStack(LivingEntity entity) {
-        for (ItemStack stack : entity.getAllSlots()) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stack = entity.getItemBySlot(slot);
             if (Services.PLATFORM.getEntityFromItemStack(stack) == null) {
-                ItemStack iteratedStack = stack.isEmpty() ? getEntityLinkedEmptyStack(entity) : stack;
-                Services.PLATFORM.setEntityToItemStack(iteratedStack, entity);
                 if (stack.isEmpty()) {
-                    for (EquipmentSlot slot : EquipmentSlot.values()) {
-                        if (ItemStack.matches(iteratedStack, entity.getItemBySlot(slot))) {
-                            entity.setItemSlot(slot, iteratedStack);
-                        }
-                    }
+                    ItemStack newStack = getEntityLinkedEmptyStack(entity);
+                    entity.setItemSlot(slot, newStack);
                 }
+                else
+                    Services.PLATFORM.setEntityToItemStack(stack, entity);
             }
         }
     }
