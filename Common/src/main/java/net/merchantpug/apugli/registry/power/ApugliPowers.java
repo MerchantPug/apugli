@@ -32,6 +32,8 @@ public class ApugliPowers {
     public static final Supplier<CustomDeathSoundPower.Factory> CUSTOM_DEATH_SOUND = register(new CustomDeathSoundPower.Factory());
     public static final Supplier<CustomFootstepPower.Factory> CUSTOM_FOOTSTEP = register(new CustomFootstepPower.Factory());
     public static final Supplier<CustomHurtSoundPower.Factory> CUSTOM_HURT_SOUND = register(new CustomHurtSoundPower.Factory());
+    public static final Supplier<DamageNearbyOnHitPowerFactory> DAMAGE_NEARBY_ON_HIT = register("damage_nearby_on_hit", DamageNearbyOnHitPowerFactory.class);
+    public static final Supplier<DamageNearbyWhenHitPowerFactory> DAMAGE_NEARBY_WHEN_HIT = register("damage_nearby_when_hit", DamageNearbyWhenHitPowerFactory.class);
     public static final Supplier<EdibleItemPower.Factory> EDIBLE_ITEM = register(new EdibleItemPower.Factory());
     public static final Supplier<EnergySwirlPower.Factory> ENERGY_SWIRL = register(new EnergySwirlPower.Factory());
     public static final Supplier<EntityTextureOverlayPower.Factory> ENTITY_TEXTURE_OVERLAY = register(new EntityTextureOverlayPower.Factory());

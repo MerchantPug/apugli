@@ -205,8 +205,10 @@ public class ApugliForgeEventHandler {
         if (!event.isCanceled()) {
             if (source.getEntity() instanceof LivingEntity living) {
                 Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_HARM.get()).forEach(p -> ApugliPowers.ACTION_ON_HARM.get().execute(p, living, source, amount, target));
+                Services.POWER.getPowers(living, ApugliPowers.DAMAGE_NEARBY_ON_HIT.get()).forEach(p -> ApugliPowers.DAMAGE_NEARBY_ON_HIT.get().execute(p, living, amount, target));
             }
             Services.POWER.getPowers(target, ApugliPowers.ACTION_WHEN_HARMED.get()).forEach(p -> ApugliPowers.ACTION_WHEN_HARMED.get().execute(p, target, source, amount));
+            Services.POWER.getPowers(target, ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get()).forEach(p -> ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get().execute(p, target, source, amount));
 
             if (target.getLastHurtByMob() != null) {
                 ApugliPowers.ACTION_ON_ATTACKER_HURT.get().execute(target, source, amount);

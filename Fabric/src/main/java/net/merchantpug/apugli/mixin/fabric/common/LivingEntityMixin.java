@@ -152,9 +152,13 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     private void runDamageFunctionsBeforeDamaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (amount == 0.0F) return;
-        if ((source.getEntity() instanceof LivingEntity living))
+        if ((source.getEntity() instanceof LivingEntity living)) {
             Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_HARM.get()).forEach(p -> ApugliPowers.ACTION_ON_HARM.get().execute(p, living, source, amount, (LivingEntity)(Object)this));
+            Services.POWER.getPowers(living, ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get()).forEach(p -> ApugliPowers.DAMAGE_NEARBY_ON_HIT.get().execute(p, living, amount, (LivingEntity)(Object)this));
+        }
+
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_WHEN_HARMED.get()).forEach(p -> ApugliPowers.ACTION_WHEN_HARMED.get().execute(p, (LivingEntity)(Object)this, source, amount));
+        Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get()).forEach(p -> ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get().execute(p, (LivingEntity)(Object)this, source, amount));
     }
 
     @Inject(method = "eat", at = @At("HEAD"))
