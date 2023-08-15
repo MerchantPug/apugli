@@ -17,6 +17,7 @@
     "common.ItemConditionsMixin",
     "common.ItemPredicateMixin",
     "common.ItemStackMixin",
+    "common.LightningBoltMixin",
     "common.LivingEntityMixin",
     "common.MobEntityMixin",
     "common.ProjectileEntityMixin",

@@ -1,0 +1,12 @@
+{
+  "type": "apugli:action_when_lightning_struck",
+  "entity_action": {
+    "type": "apoli:apply_effect",
+    "effect": {
+      "effect": "minecraft:speed",
+      "amplifier": 0,
+      "duration": 9600
+    }
+  },
+  "cooldown": 20
+}

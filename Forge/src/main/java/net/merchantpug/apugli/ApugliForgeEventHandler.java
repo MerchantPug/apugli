@@ -40,6 +40,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -85,6 +86,12 @@ public class ApugliForgeEventHandler {
                 }
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void onStruckByLightning(EntityStruckByLightningEvent event) {
+        if (event.getEntity() instanceof LivingEntity living)
+            Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_LIGHTNING_STRUCK.get()).forEach(p -> ApugliPowers.ACTION_WHEN_LIGHTNING_STRUCK.get().execute(p, living, event.getLightning()));
     }
 
     @SubscribeEvent
