@@ -5,3 +5,6 @@
 ### Config
 - Removed `performVersionCheck` config setting and its related code from the mod.
   - It was causing more issues than it was solving.
+
+### Bugfixes
+- Fix Elytras outside of powers not rendering on Forge. - #50
