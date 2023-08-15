@@ -24,41 +24,26 @@ SOFTWARE.
 
 package net.merchantpug.apugli.network;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.*;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.ModOrigin;
-import net.merchantpug.apugli.Apugli;;
-import net.merchantpug.apugli.client.ApugliClientFabric;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.*;
-import net.merchantpug.apugli.util.ApugliConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.apache.logging.log4j.util.TriConsumer;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ApugliPackets {
-    public static final ResourceLocation HANDSHAKE = Apugli.asResource("handshake");
 
     public static void registerS2C() {
-        ClientLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshake);
         ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> {
             ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncHitsOnTargetLessenedPacket.ID, createS2CHandler(SyncHitsOnTargetLessenedPacket::decode, SyncHitsOnTargetLessenedPacket::handle));
@@ -84,19 +69,7 @@ public class ApugliPackets {
         return (client, _handler, buf, responseSender) -> handler.accept(decode.apply(buf));
     }
 
-    private static CompletableFuture<FriendlyByteBuf> handleHandshake(Minecraft minecraftClient, ClientHandshakePacketListenerImpl clientLoginNetworkHandler, FriendlyByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
-        FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(Apugli.SEMVER.length);
-        for(int i = 0; i < Apugli.SEMVER.length; i++) {
-            buf.writeInt(Apugli.SEMVER[i]);
-        }
-        ApugliClientFabric.isServerRunningApugli = true;
-        return CompletableFuture.completedFuture(buf);
-    }
-
     public static void registerC2S() {
-        ServerLoginConnectionEvents.QUERY_START.register(ApugliPackets::handshake);
-        ServerLoginNetworking.registerGlobalReceiver(ApugliPackets.HANDSHAKE, ApugliPackets::handleHandshakeReply);
         ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
         ServerPlayNetworking.registerGlobalReceiver(ExecuteEntityActionServerPacket.ID, createC2SHandler(ExecuteEntityActionServerPacket::decode, ExecuteEntityActionServerPacket::handle));
         ServerPlayNetworking.registerGlobalReceiver(ExecuteBiEntityActionServerPacket.ID, createC2SHandler(ExecuteBiEntityActionServerPacket::decode, ExecuteBiEntityActionServerPacket::handle));
@@ -106,43 +79,8 @@ public class ApugliPackets {
         ClientPlayNetworking.send(packet.getFabricId(), packet.toBuf());
     }
 
-    private static void handshake(ServerLoginPacketListenerImpl serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
-        if (!ApugliConfig.performVersionCheck) return;
-        packetSender.sendPacket(ApugliPackets.HANDSHAKE, PacketByteBufs.empty());
-    }
-
     private static <T extends ApugliPacketC2S> ServerPlayNetworking.PlayChannelHandler createC2SHandler(Function<FriendlyByteBuf, T> decode, TriConsumer<T, MinecraftServer, ServerPlayer> handler) {
         return (server, player, _handler, buf, sender) -> handler.accept(decode.apply(buf), server, player);
-    }
-
-    private static void handleHandshakeReply(MinecraftServer server, ServerLoginPacketListenerImpl handler, boolean understood, FriendlyByteBuf buf, ServerLoginNetworking.LoginSynchronizer synchronizer, PacketSender sender) {
-        boolean shouldCheckVersion = ApugliConfig.performVersionCheck && FabricLoader.getInstance().getModContainer(Apugli.ID).isEmpty() || !FabricLoader.getInstance().getModContainer(Apugli.ID).get().getOrigin().getKind().equals(ModOrigin.Kind.NESTED);
-
-        if (shouldCheckVersion) {
-            if (understood) {
-                int clientSemVerLength = buf.readInt();
-                int[] clientSemVer = new int[clientSemVerLength];
-                boolean mismatch = clientSemVerLength != Apugli.SEMVER.length;
-                for (int i = 0; i < clientSemVerLength; i++) {
-                    clientSemVer[i] = buf.readInt();
-                    if (i < clientSemVerLength - 1 && clientSemVer[i] != Apugli.SEMVER[i]) {
-                        mismatch = true;
-                    }
-                }
-                if (mismatch) {
-                    StringBuilder clientVersionString = new StringBuilder();
-                    for (int i = 0; i < clientSemVerLength; i++) {
-                        clientVersionString.append(clientSemVer[i]);
-                        if (i < clientSemVerLength - 1) {
-                            clientVersionString.append(".");
-                        }
-                    }
-                    handler.disconnect(Component.translatable("apugli.gui.version_mismatch", Apugli.VERSION, clientVersionString));
-                }
-            } else {
-                handler.disconnect(Component.literal("This server requires you to install the Apugli mod (v" + Apugli.VERSION + ") to play."));
-            }
-        }
     }
 
 }
