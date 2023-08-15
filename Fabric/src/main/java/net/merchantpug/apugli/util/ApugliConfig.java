@@ -13,6 +13,4 @@ public class ApugliConfig extends MidnightConfig {
 
     @Server @Entry
     public static int resetTimerTicks = 100;
-    @Server @Entry
-    public static boolean performVersionCheck = true;
 }
