@@ -21,6 +21,7 @@ public class ApugliPowers {
     public static final Supplier<ActionOnTameHitPowerFactory> ACTION_ON_TAME_HIT = register("action_on_tame_hit", ActionOnTameHitPowerFactory.class);
     public static final Supplier<ActionOnTargetDeathPowerFactory> ACTION_ON_TARGET_DEATH = register("action_on_target_death", ActionOnTargetDeathPowerFactory.class);
     public static final Supplier<ActionOnTargetHurtPowerFactory> ACTION_ON_TARGET_HURT = register("action_on_target_hurt", ActionOnTargetHurtPowerFactory.class);
+    public static final Supplier<ActionWhenLightningStruckPowerFactory> ACTION_WHEN_LIGHTNING_STRUCK = register("action_when_lightning_struck", ActionWhenLightningStruckPowerFactory.class);
     public static final Supplier<ActionWhenProjectileHitPowerFactory> ACTION_WHEN_PROJECTILE_HIT = register("action_when_projectile_hit", ActionWhenProjectileHitPowerFactory.class);
     public static final Supplier<ActionWhenHarmedPowerFactory> ACTION_WHEN_HARMED = register("action_when_harmed", ActionWhenHarmedPowerFactory.class);
     public static final Supplier<ActionWhenTameHitPowerFactory> ACTION_WHEN_TAME_HIT = register("action_when_tame_hit", ActionWhenTameHitPowerFactory.class);
