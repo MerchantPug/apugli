@@ -29,7 +29,9 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyVariable(method = "runIterationOnItem", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
     private static ListTag getEnchantmentsForEachEnchantment(ListTag original) {
-        return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$runIterationOnItem, original);
+        ListTag returnValue = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$runIterationOnItem, original);
+        apugli$runIterationOnItem = null;
+        return returnValue;
     }
 
     @Unique
@@ -50,7 +52,9 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyVariable(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
     private static ListTag getEnchantmentsGetLevel(ListTag original) {
-        return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemEnchantmentLevelStack, original);
+        ListTag returnValue = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemEnchantmentLevelStack, original);
+        apugli$itemEnchantmentLevelStack = null;
+        return returnValue;
     }
 
 }

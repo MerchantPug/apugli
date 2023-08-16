@@ -34,7 +34,9 @@ public class GameRendererMixin {
     private double modifyFov(double original) {
         if (this.apugli$capturedUseFOVSetting && this.apugli$capturedActiveRenderInfo.getEntity() instanceof LivingEntity living) {
             double fov = FOVUtil.undoModifications(original, this.apugli$capturedActiveRenderInfo, this.apugli$capturedPartialTicks);
-            return ApugliPowers.MODIFY_FOV.get().getFov(fov, this.apugli$capturedActiveRenderInfo, living);
+            double retVal = ApugliPowers.MODIFY_FOV.get().getFov(fov, this.apugli$capturedActiveRenderInfo, living);
+            this.apugli$capturedActiveRenderInfo = null;
+            return retVal;
         }
         return original;
     }

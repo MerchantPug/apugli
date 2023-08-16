@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class GameRendererMixin implements ResourceManagerReloadListener, AutoCloseable {
     @Shadow
     @Final
-    private Minecraft minecraft;
+    Minecraft minecraft;
 
     @ModifyVariable(method = "tickFov", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/player/AbstractClientPlayer;getFieldOfViewModifier()F"))
     private float modifyF(float f) {
