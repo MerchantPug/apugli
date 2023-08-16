@@ -159,6 +159,14 @@ public abstract class LivingEntityMixin extends Entity {
         return original;
     }
 
+    @ModifyExpressionValue(method = "tryAddFrost", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isAir()Z"))
+    private boolean addFrostWithPower(boolean original) {
+        if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
+            return false;
+        }
+        return original;
+    }
+
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getTicksFrozen()I"))
     private void freezeEntityFromPower(CallbackInfo ci) {
         if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
