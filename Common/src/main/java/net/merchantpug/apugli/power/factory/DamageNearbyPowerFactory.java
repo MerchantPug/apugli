@@ -1,5 +1,7 @@
 package net.merchantpug.apugli.power.factory;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
@@ -16,7 +18,8 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
     static SerializableData getSerializableData() {
         return CooldownPowerFactory.getSerializableData()
                 .add("damage_condition", Services.CONDITION.damageDataType(), null)
-                .add("source", SerializableDataTypes.DAMAGE_SOURCE)
+                .add("damage_type", SerializableDataTypes.DAMAGE_TYPE, null)
+                .add("source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null)
                 .add("modifier", Services.PLATFORM.getModifierDataType(), null)
                 .add("modifiers", Services.PLATFORM.getModifiersDataType(), null)
                 .add("radius", SerializableDataTypes.FLOAT, 16.0F);
@@ -27,12 +30,17 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
         SerializableData.Instance data = getDataFromPower(power);
         if (canUse(power, powerHolder) && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_" + targetName + "_bientity_condition", attacker, target))) {
             float radius = data.getFloat("radius");
-            List<?> modifiers = new ArrayList<>(data.<List<?>>get("modifiers"));
-            modifiers.add(data.get("modifier"));
+            List<?> modifiers = new ArrayList<>();
+            if (data.isPresent("modifiers"))
+                modifiers = data.get("modifiers");
 
-            for (LivingEntity nearby : target.getLevel().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(target.getPosition(1F), radius, radius, radius))) {
+            if (data.isPresent("modifier"))
+                modifiers.add(data.get("modifier"));
+
+
+            for (LivingEntity nearby : target.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(target.getPosition(1F), radius, radius, radius))) {
                 if (nearby != attacker && nearby != target && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_nearby_bientity_condition", attacker, nearby)) && Services.CONDITION.checkBiEntity(data, targetName + "_nearby_bientity_condition", target, nearby)) {
-                    nearby.hurt(data.get("source"), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
+                    nearby.hurt(MiscUtil.createDamageSource(attacker.damageSources(), data.get("source"), data.get("damage_type"), attacker), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
                 }
             }
             this.use(power, powerHolder);
