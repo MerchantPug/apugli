@@ -80,6 +80,7 @@ public abstract class AnimalEntityMixin extends AgeableMob {
             this.apugli$otherAnimalEntity = null;
             return returnValue;
         }
+        this.apugli$otherAnimalEntity = null;
         return age;
     }
 
