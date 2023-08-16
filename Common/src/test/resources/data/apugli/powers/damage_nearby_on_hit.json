@@ -1,7 +1,7 @@
 {
-  "type": "apugli:damage_nearby_when_hit",
+  "type": "apugli:damage_nearby_on_hit",
   "source": {
-    "name": "dragonbornShock",
+    "name": "indirectMagic",
     "bypasses_armor": true,
     "magic": true
   },

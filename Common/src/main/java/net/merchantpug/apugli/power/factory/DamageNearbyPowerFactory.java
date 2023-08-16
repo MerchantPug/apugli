@@ -3,6 +3,8 @@ package net.merchantpug.apugli.power.factory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -32,11 +34,31 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
 
             for (LivingEntity nearby : target.getLevel().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(target.getPosition(1F), radius, radius, radius))) {
                 if (nearby != attacker && nearby != target && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_nearby_bientity_condition", attacker, nearby)) && Services.CONDITION.checkBiEntity(data, targetName + "_nearby_bientity_condition", target, nearby)) {
-                    nearby.hurt(data.get("source"), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
+                    nearby.hurt(createDamageSource(data.get("source"), attacker), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
                 }
             }
             this.use(power, powerHolder);
         }
+    }
+
+    default DamageSource createDamageSource(DamageSource source, Entity attacker) {
+        DamageSource newSource = new EntityDamageSource(source.getMsgId(), attacker);
+        if(source.isExplosion()) {
+            newSource.setExplosion();
+        }
+        if(source.isProjectile()) {
+            newSource.setProjectile();
+        }
+        if(source.isFall()) {
+            newSource.setIsFall();
+        }
+        if(source.isMagic()) {
+            newSource.setMagic();
+        }
+        if(source.isNoAggro()) {
+            newSource.isNoAggro();
+        }
+        return newSource;
     }
 
 }
