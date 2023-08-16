@@ -29,8 +29,12 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
         SerializableData.Instance data = getDataFromPower(power);
         if (canUse(power, powerHolder) && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_" + targetName + "_bientity_condition", attacker, target))) {
             float radius = data.getFloat("radius");
-            List<?> modifiers = new ArrayList<>(data.<List<?>>get("modifiers"));
-            modifiers.add(data.get("modifier"));
+            List<?> modifiers = new ArrayList<>();
+            if (data.isPresent("modifiers"))
+                modifiers = data.get("modifiers");
+
+            if (data.isPresent("modifier"))
+                modifiers.add(data.get("modifier"));
 
             for (LivingEntity nearby : target.getLevel().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(target.getPosition(1F), radius, radius, radius))) {
                 if (nearby != attacker && nearby != target && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_nearby_bientity_condition", attacker, nearby)) && Services.CONDITION.checkBiEntity(data, targetName + "_nearby_bientity_condition", target, nearby)) {

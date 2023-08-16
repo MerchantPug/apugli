@@ -3,7 +3,6 @@ package net.merchantpug.apugli.power;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
-import net.merchantpug.apugli.power.factory.DamageNearbyOnHitPowerFactory;
 import net.merchantpug.apugli.power.factory.DamageNearbyWhenHitPowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class DamageNearbyWhenHitPower extends AbstractCooldownPower<DamageNearbyWhenHitPower.Instance> implements DamageNearbyWhenHitPowerFactory<DamageNearbyWhenHitPower.Instance> {
 
     public DamageNearbyWhenHitPower() {
-        super("damage_nearby_when_hit", DamageNearbyOnHitPowerFactory.getSerializableData(),
+        super("damage_nearby_when_hit", DamageNearbyWhenHitPowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }
