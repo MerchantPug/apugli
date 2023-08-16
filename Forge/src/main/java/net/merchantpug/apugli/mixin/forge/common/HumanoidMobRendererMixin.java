@@ -27,4 +27,8 @@ public class HumanoidMobRendererMixin {
     public Vector3f apugli$getHeadSize() {
         return apugli$headSize;
     }
+
+    public void apugli$setHeadSize(Vector3f value) {
+        apugli$headSize = value;
+    }
 }
