@@ -37,6 +37,7 @@ public class ApugliPowers {
     public static final Supplier<EdibleItemPower.Factory> EDIBLE_ITEM = register(new EdibleItemPower.Factory());
     public static final Supplier<EnergySwirlPower.Factory> ENERGY_SWIRL = register(new EnergySwirlPower.Factory());
     public static final Supplier<EntityTextureOverlayPower.Factory> ENTITY_TEXTURE_OVERLAY = register(new EntityTextureOverlayPower.Factory());
+    public static final Supplier<FreezePowerFactory> FREEZE = register("freeze", FreezePowerFactory.class);
     public static final Supplier<ForceParticleRenderPower.Factory> FORCE_PARTICLE_RENDER = register(new ForceParticleRenderPower.Factory());
     public static final Supplier<HoverPower.Factory> HOVER = register(new HoverPower.Factory());
     public static final Supplier<InstantEffectImmunityPower.Factory> INSTANT_EFFECT_IMMUNITY = register(new InstantEffectImmunityPower.Factory());

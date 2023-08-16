@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.CustomDeathSoundPower;
 import net.merchantpug.apugli.power.CustomHurtSoundPower;
@@ -13,10 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -149,6 +148,29 @@ public abstract class LivingEntityMixin extends Entity {
     private void invertInstantEffects(CallbackInfoReturnable<Boolean> cir) {
         if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.INVERT_INSTANT_EFFECTS.get())) {
             cir.setReturnValue(true);
+        }
+    }
+
+    @ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;canFreeze()Z", ordinal = 1))
+    private boolean stopFreezeDamage(boolean original) {
+        if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()) && Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()).stream().anyMatch(p -> !ApugliPowers.FREEZE.get().shouldDamage(p))) {
+            return false;
+        }
+        return original;
+    }
+
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getTicksFrozen()I"))
+    private void freezeEntityFromPower(CallbackInfo ci) {
+        if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
+            this.wasInPowderSnow = this.isInPowderSnow;
+            this.isInPowderSnow = true;
+        }
+    }
+
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeFrost()V"))
+    private void unfreezeEntityFromPower(CallbackInfo ci) {
+        if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
+            this.isInPowderSnow = this.wasInPowderSnow;
         }
     }
 

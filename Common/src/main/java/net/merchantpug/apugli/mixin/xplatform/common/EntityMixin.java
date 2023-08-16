@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.merchantpug.apugli.access.EntityAccess;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.LivingEntityAccessor;
 import net.merchantpug.apugli.platform.Services;
@@ -8,7 +9,6 @@ import net.merchantpug.apugli.power.HoverPower;
 import net.merchantpug.apugli.power.StepHeightPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,7 +40,7 @@ public abstract class EntityMixin implements EntityAccess {
 
     @Shadow public abstract double getZ();
 
-    @Shadow public abstract void load(CompoundTag compound);
+    @Shadow public abstract int getTicksFrozen();
 
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
@@ -138,6 +138,35 @@ public abstract class EntityMixin implements EntityAccess {
                 }
             }
         }
+    }
+
+    @Unique
+    private int apugli$modifiedFreezeTicks;
+
+    @ModifyReturnValue(method = "getTicksRequiredToFreeze", at = @At("RETURN"))
+    private int modifyTicksRequiredToFreeze(int original) {
+        if ((Entity)(Object)this instanceof LivingEntity living) {
+            if (Services.POWER.hasPower(living, ApugliPowers.FREEZE.get())) {
+                int newValue = (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.FREEZE.get(), original);
+                apugli$modifiedFreezeTicks = newValue;
+                return newValue;
+            } else if (apugli$modifiedFreezeTicks > 0) {
+                if (this.getTicksFrozen() > 0)
+                    return apugli$modifiedFreezeTicks;
+                else
+                    apugli$modifiedFreezeTicks = 0;
+            }
+        }
+        return original;
+    }
+
+
+    @ModifyReturnValue(method = "canFreeze", at = @At(value = "RETURN"))
+    private boolean allowFreezing(boolean original) {
+        if ((Entity)(Object)this instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.FREEZE.get())) {
+            return true;
+        }
+        return original;
     }
 
 }

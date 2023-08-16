@@ -1,56 +1,8 @@
 {
-  "type": "apoli:multiple",
-  "resource": {
-    "type": "apoli:resource",
-    "min": 0,
-    "max": 20,
-    "start_value": 20
+  "type": "apugli:freeze",
+  "modifier": {
+    "operation": "multiply_base_multiplicative",
+    "value": -0.7
   },
-  "tick": {
-    "type": "apoli:action_over_time",
-    "entity_action": {
-      "type": "apoli:change_resource",
-      "resource": "*:*_resource",
-      "change": -1
-    }
-  },
-  "speed_modification": {
-    "type": "apoli:modify_attribute",
-    "attribute": "minecraft:generic.movement_speed",
-    "modifiers": [
-      {
-        "name": "Reduced movement speed from frost cloud",
-        "operation": "multiply_total_multiplicative",
-        "value": 0.0,
-        "resource": "*:*_resource",
-        "modifier": {
-          "operation": "add_base_early",
-          "value": -1
-        }
-      },
-      {
-        "operation": "multiply_total_multiplicative",
-        "value": -0.9
-      }
-    ]
-  },
-  "air_speed_modification": {
-    "type": "apoli:modify_air_speed",
-    "modifiers": [
-      {
-        "name": "Reduced air speed from frost cloud",
-        "operation": "multiply_total_multiplicative",
-        "value": 0.0,
-        "resource": "*:*_resource",
-        "modifier": {
-          "operation": "add_base_early",
-          "value": -1
-        }
-      },
-      {
-        "operation": "multiply_total_multiplicative",
-        "value": -0.9
-      }
-    ]
-  }
+  "should_damage": false
 }
