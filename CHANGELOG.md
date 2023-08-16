@@ -1,11 +1,2 @@
-### Power Types
-- Added `action_when_lightning_struck` power type.
-- Added `damage_nearby_on_hit` and `damage_nearby_when_hit` power types.
-- Added `freeze` power type.
-
-### Config
-- Removed `performVersionCheck` config setting and its related code from the mod.
-  - It was causing more issues than it was solving.
-
 ### Bugfixes
-- Fix Elytras outside of powers not rendering on Forge. - #50
+- Fix `freeze` power not applying speed modifiers whilst not on the ground.
