@@ -1,2 +1,2 @@
 ### Bugfixes
-- Fixed `freeze` power not applying speed modifiers whilst not on the ground.
+- Fixed memory leaks found within mixins and related classes.
