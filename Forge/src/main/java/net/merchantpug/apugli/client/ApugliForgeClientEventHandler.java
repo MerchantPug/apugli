@@ -154,6 +154,7 @@ public class ApugliForgeClientEventHandler {
 
                 if (entityRenderer instanceof HumanoidMobRenderer<?, ?> humanoidMobRenderer) {
                     humanoidMobRenderer.addLayer(new PowerCustomHeadLayer(humanoidMobRenderer, event.getEntityModels(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().x(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().y(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().z(), itemInHandRenderer));
+                    ((HumanoidMobRendererAccess)humanoidMobRenderer).setHeadSize(null);
                 } else if (livingEntityRenderer.getModel() instanceof HeadedModel) {
                     livingEntityRenderer.addLayer(new PowerCustomHeadLayer(livingEntityRenderer, event.getEntityModels(), itemInHandRenderer));
                 }

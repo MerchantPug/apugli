@@ -27,7 +27,14 @@ public abstract class LivingEntityMixin {
     // We cannot use a ModifyExpressionValue from MixinExtras here because that does not seem to like non remapped methods.
     @ModifyExpressionValue(method = "addEatEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
     private boolean isEdibleWithPower(boolean original) {
-        return original || CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity);
+        if (CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity)) {
+            this.apugli$capturedStack = null;
+            this.apugli$capturedEntity = null;
+            return true;
+        }
+        this.apugli$capturedStack = null;
+        this.apugli$capturedEntity = null;
+        return original;
     }
 
 }
