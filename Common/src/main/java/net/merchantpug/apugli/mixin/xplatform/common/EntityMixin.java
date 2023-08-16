@@ -32,7 +32,8 @@ import java.util.List;
 public abstract class EntityMixin implements EntityAccess {
     @Shadow public abstract AABB getBoundingBox();
 
-    @Shadow public Level level;
+    @Shadow
+    private Level level;
 
     @Shadow public abstract double getX();
 

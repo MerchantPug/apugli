@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -27,7 +28,9 @@ public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
         super(type, syncId, playerInventory, context);
     }
 
+    @Unique
     private Enchantment apugli$capturedEnchantment;
+    @Unique
     private ItemStack apugli$capturedItemStack;
 
     @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/Enchantment;canEnchant(Lnet/minecraft/world/item/ItemStack;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
@@ -43,8 +46,12 @@ public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
     @ModifyVariable(method = "createResult", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/enchantment/Enchantment;canEnchant(Lnet/minecraft/world/item/ItemStack;)Z"), ordinal = 3)
     private boolean allowEnchantingThroughAnvil(boolean bl4) {
         if(Services.POWER.getPowers(this.player, ApugliPowers.ALLOW_ANVIL_ENCHANT.get()).stream().anyMatch(p -> p.doesApply(apugli$capturedEnchantment, apugli$capturedItemStack, this.inputSlots.getItem(1)))) {
+            this.apugli$capturedEnchantment = null;
+            this.apugli$capturedItemStack = null;
             return bl4 = true;
         }
+        this.apugli$capturedEnchantment = null;
+        this.apugli$capturedItemStack = null;
         return bl4;
     }
 

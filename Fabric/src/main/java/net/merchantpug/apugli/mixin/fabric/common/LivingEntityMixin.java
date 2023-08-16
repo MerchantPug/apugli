@@ -50,8 +50,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract void push(Entity pEntity);
 
-    @Shadow public abstract ItemStack getItemBySlot(EquipmentSlot slot);
-
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }

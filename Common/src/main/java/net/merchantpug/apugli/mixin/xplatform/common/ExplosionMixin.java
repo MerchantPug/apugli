@@ -1,7 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
-import net.merchantpug.apugli.access.ExplosionAccess;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,7 +32,9 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float changeDamage(float amount) {
         if (this.apugli$explosionDamageModifiers != null) {
-            return amount = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionDamageModifiers, amount);
+            float returnValue = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionDamageModifiers, amount);
+            this.apugli$explosionDamageModifiers = null;
+            return returnValue;
         }
         return amount;
     }
@@ -57,7 +59,9 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"), index = 2)
     private double modifyOtherEntitiesKnockbackZ(double z) {
         if (this.apugli$explosionKnockbackModifiers != null) {
-            return z = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionKnockbackModifiers, z);
+            double returnValue = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionKnockbackModifiers, z);
+            this.apugli$explosionKnockbackModifiers = null;
+            return returnValue;
         }
         return z;
     }
@@ -65,7 +69,9 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 5)
     private float reduceVolumeOfRocketJump(float volume) {
         if (this.apugli$explosionVolumeModifiers != null) {
-            return volume = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionVolumeModifiers, volume);
+            float returnValue = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionVolumeModifiers, volume);
+            this.apugli$explosionVolumeModifiers = null;
+            return returnValue;
         }
         return volume;
     }
@@ -73,7 +79,9 @@ public abstract class ExplosionMixin {
     @ModifyArg(method = "finalizeExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"), index = 6)
     private float increasePitchOfRocketJump(float pitch) {
         if (this.apugli$explosionPitchModifiers != null) {
-            return pitch = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionPitchModifiers, pitch);
+            float returnValue = (float) Services.PLATFORM.applyModifiers(this.getSourceMob(), apugli$explosionPitchModifiers, pitch);
+            this.apugli$explosionPitchModifiers = null;
+            return returnValue;
         }
         return pitch;
     }

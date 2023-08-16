@@ -91,6 +91,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private ResourceLocation modifyEntityLayerTranslucent(ResourceLocation location) {
         if(Services.POWER.hasPower(apugli$capturedPlayer, ApugliPowers.SET_TEXTURE.get())) {
             SetTexturePower texturePower = Services.POWER.getPowers(apugli$capturedPlayer, ApugliPowers.SET_TEXTURE.get()).get(0);
+            this.apugli$capturedPlayer = null;
             if (texturePower.getTextureLocation() != null) {
                 return texturePower.getTextureLocation();
             }

@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -45,7 +44,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @WrapWithCondition(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
     private boolean wrapRenderOriginalModel(EntityModel<T> entityModel, PoseStack matrixStack, VertexConsumer vertexConsumer, int i, int p, float red, float green, float blue, float alpha) {
-        return Services.POWER.getPowers(apugli$capturedEntity, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get()).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient);
+        boolean returnValue = Services.POWER.getPowers(apugli$capturedEntity, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get()).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient);
+        this.apugli$capturedEntity = null;
+        return returnValue;
     }
 
     @ModifyVariable(method = "getRenderType", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;getTextureLocation(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/resources/ResourceLocation;"))

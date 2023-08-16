@@ -2,7 +2,6 @@ package net.merchantpug.apugli.mixin.fabric.common;
 
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.PreventBreedingPower;
-import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -71,7 +70,10 @@ public abstract class AnimalEntityMixin extends AgeableMob {
 
     @ModifyArg(method = "spawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 1))
     private int modifyOtherAnimalBreed(int age) {
-        return (int)Services.PLATFORM.applyModifiers(apugli$serverPlayerEntity, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, apugli$serverPlayerEntity, apugli$otherAnimalEntity));
+        int returnValue = (int)Services.PLATFORM.applyModifiers(apugli$serverPlayerEntity, ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, apugli$serverPlayerEntity, apugli$otherAnimalEntity));
+        this.apugli$serverPlayerEntity = null;
+        this.apugli$otherAnimalEntity = null;
+        return returnValue;
     }
 
 }

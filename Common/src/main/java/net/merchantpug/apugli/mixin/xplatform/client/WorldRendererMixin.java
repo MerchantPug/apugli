@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LevelRenderer.class)
@@ -39,6 +42,7 @@ public class WorldRendererMixin {
     @ModifyArg(method = "addParticleInternal(Lnet/minecraft/core/particles/ParticleOptions;ZZDDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;calculateParticleLevel(Z)Lnet/minecraft/client/ParticleStatus;"))
     private boolean forceParticleSpawn(boolean canSpawnOnMinimal) {
         if(this.minecraft.getCameraEntity() instanceof LivingEntity living && Services.POWER.getPowers(living, ApugliPowers.FORCE_PARTICLE_RENDER.get()).stream().anyMatch(power -> power.doesApply(particleParameters) && minecraft.gameRenderer.getMainCamera().getPosition().distanceToSqr(particleX, particleY, particleZ) <= 1024.0D)) {
+            this.particleParameters = null;
             return true;
         }
         return canSpawnOnMinimal;
