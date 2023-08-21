@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.entity.CustomProjectile;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -47,7 +46,6 @@ public class CustomProjectileRenderer<T extends CustomProjectile> extends Entity
         } else if (entity.getTextureLocation() != null) {
             return entity.getTextureLocation();
         }
-        Apugli.LOG.warn("Could not find texture source for apugli:custom_projectile entity. Will display as a missing texture.");
         return TextureManager.INTENTIONAL_MISSING_TEXTURE;
     }
 
