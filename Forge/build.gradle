@@ -35,6 +35,9 @@ repositories {
     maven {
         name = "JitPack"
         url = 'https://jitpack.io'
+        content {
+            excludeGroup "io.github.edwinmindcraft"
+        }
     }
 }
 
