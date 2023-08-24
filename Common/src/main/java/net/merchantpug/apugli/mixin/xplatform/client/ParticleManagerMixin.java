@@ -27,7 +27,9 @@ public class ParticleManagerMixin {
 
     @ModifyReturnValue(method = "makeParticle", at = @At(value = "RETURN", ordinal = 1))
     private <T extends ParticleOptions> Particle linkParticleEffectToParticleClass(Particle particle) {
-        ((ParticleAccess)particle).setParticleEffect(apugli$particleData);
+        if (particle != null) {
+            ((ParticleAccess)particle).setParticleEffect(apugli$particleData);
+        }
         this.apugli$particleData = null;
         return particle;
     }
