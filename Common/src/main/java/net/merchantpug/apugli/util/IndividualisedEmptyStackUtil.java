@@ -23,7 +23,7 @@ public class IndividualisedEmptyStackUtil {
     }
 
     public static void addEntityToStack(LivingEntity entity) {
-        if (entity.isRemoved()) {
+        if (entity.isRemoved() && ENTITY_EMPTY_STACK_MAP.containsKey(entity)) {
             ENTITY_EMPTY_STACK_MAP.remove(entity);
             return;
         }
