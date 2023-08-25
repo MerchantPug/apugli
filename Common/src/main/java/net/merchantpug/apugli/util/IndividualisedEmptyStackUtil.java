@@ -23,10 +23,15 @@ public class IndividualisedEmptyStackUtil {
     }
 
     public static void addEntityToStack(LivingEntity entity) {
+        if (entity.isRemoved()) {
+            ENTITY_EMPTY_STACK_MAP.remove(entity);
+            return;
+        }
+
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stack = entity.getItemBySlot(slot);
             if (Services.PLATFORM.getEntityFromItemStack(stack) == null) {
-                if (stack.isEmpty()) {
+                if (stack == ItemStack.EMPTY) {
                     ItemStack newStack = getEntityLinkedEmptyStack(entity);
                     entity.setItemSlot(slot, newStack);
                 } else
