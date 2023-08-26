@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.util;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -34,7 +33,7 @@ public class IndividualisedEmptyStackUtil {
             ItemStack stack = entity.getItemBySlot(slot);
 
             // Fix for Better Combat https://github.com/ZsoltMolnarrr/BetterCombat/issues/268.
-            if (FabricLoader.getInstance().isModLoaded("bettercombat") && slot == EquipmentSlot.OFFHAND && entity instanceof Player player) {
+            if (Services.PLATFORM.isModLoaded("bettercombat") && slot == EquipmentSlot.OFFHAND && entity instanceof Player player) {
                 stack = player.getInventory().offhand.get(0);
             }
 
