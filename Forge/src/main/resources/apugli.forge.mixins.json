@@ -14,10 +14,10 @@
   ],
   "client": [
     "client.ElytraFeatureRendererMixin",
+    "client.HumanoidMobRendererMixin",
     "client.LocalPlayerMixin",
     "client.accessor.EntityRenderersEventAddLayersAccessor",
-    "client.accessor.PlayerModelAccessor",
-    "common.HumanoidMobRendererMixin"
+    "client.accessor.PlayerModelAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
