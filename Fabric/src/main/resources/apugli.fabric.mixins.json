@@ -33,6 +33,7 @@
     "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.LivingEntityRendererMixin",
+    "client.ParticleManagerMixin",
     "client.PlayerEntityRendererMixin",
     "client.accessor.ApoliClientAccessor"
   ],

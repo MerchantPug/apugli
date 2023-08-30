@@ -1,2 +1,2 @@
 ### Bugfixes
-- Fix incompatibility with Better Combat 2h swords.
+- [FORGE] Fix start-up crash caused by a mixin compilation error.

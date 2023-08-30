@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.xplatform.client;
+package net.merchantpug.apugli.mixin.forge.client;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.merchantpug.apugli.access.ParticleAccess;
@@ -20,12 +20,12 @@ public class ParticleManagerMixin {
     @Unique
     private ParticleOptions apugli$particleData;
 
-    @Inject(method = "makeParticle", at = @At(value = "RETURN", ordinal = 1, shift = At.Shift.BEFORE))
+    @Inject(method = "makeParticle", at = @At(value = "RETURN", ordinal = 0))
     private <T extends ParticleOptions> void captureParticleEffect(T particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, CallbackInfoReturnable<Particle> cir) {
         this.apugli$particleData = particleData;
     }
 
-    @ModifyReturnValue(method = "makeParticle", at = @At(value = "RETURN", ordinal = 1))
+    @ModifyReturnValue(method = "makeParticle", at = @At(value = "RETURN", ordinal = 0))
     private <T extends ParticleOptions> Particle linkParticleEffectToParticleClass(Particle particle) {
         if (particle != null) {
             ((ParticleAccess)particle).setParticleEffect(apugli$particleData);

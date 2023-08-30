@@ -44,7 +44,6 @@
     "client.HeldItemRendererMixin",
     "client.LivingEntityRendererMixin",
     "client.MinecraftClientMixin",
-    "client.ParticleManagerMixin",
     "client.ParticleMixin",
     "client.PlayerEntityRendererMixin",
     "client.PositionedSoundInstanceMixin",
