@@ -22,40 +22,19 @@ Versions 1.9.2+1.19 and later have/will be uploaded to the MerchantPug maven.
 
 ```groovy
 repositories {
+    ...
     maven {
         name = "Pug's Maven"
         url = 'https://maven.merchantpug.net/releases/'
     }
     maven {
-        name = "Ladysnake Libs"
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-    }
-    maven {
         name = "JitPack"
         url = 'https://jitpack.io'
-    }
-    maven {
-        url = 'https://maven.cafeteria.dev'
-        content {
-            includeGroup 'net.adriantodt.fabricmc'
-        }
-    }
-    maven {
-        url "https://maven.shedaniel.me/"
-    }
-    maven {
-        url "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
     }
 }
 
 dependencies {
+    ...
     compileOnly "net.merchantpug:Apugli:${project.apugli_version}-common"
 }
 ```
@@ -68,6 +47,7 @@ dependencies {
 
 ```groovy
 repositories {
+    ...
     maven {
         name = "Pug's Maven"
         url = 'https://maven.merchantpug.net/releases/'
@@ -104,6 +84,7 @@ repositories {
 }
 
 dependencies {
+    ...
     modImplementation(include("net.merchantpug:Apugli:${project.apugli_version}-fabric"))
 }
 ```
@@ -117,6 +98,7 @@ You are able to remove the `include` block if you don't wish to include Apugli i
 
 ```groovy
 repositories {
+    ...
     maven { 
         url 'https://maven.theillusivec4.top'
     }
@@ -127,6 +109,7 @@ repositories {
 }
 
 dependencies {
+    ...
     implementation(jarJar(fg.deobf("net.merchantpug:Apugli:${project.apugli_version}-forge"))) {
         jarJar.ranged(it, "[${project.apugli_version},)")
     }
