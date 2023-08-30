@@ -1,10 +1,8 @@
 package net.merchantpug.apugli.action.factory.entity;
 
-import net.merchantpug.apugli.action.factory.IActionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -27,7 +25,7 @@ public class ZombifyVillagerAction implements IActionFactory<Entity> {
             zombieVillagerEntity.setVillagerXp(villagerEntity.getVillagerXp());
         }
         if(villagerEntity.getLastHurtByMob() != null) villagerEntity.hurt(entity.damageSources().mobAttack(villagerEntity.getLastHurtByMob()), Float.MAX_VALUE);
-        else villagerEntity.hurt(entity.damageSources().source(DamageTypes.GENERIC), Float.MAX_VALUE);
+        else villagerEntity.hurt(entity.damageSources().generic(), Float.MAX_VALUE);
         entity.level().levelEvent(null, LevelEvent.SOUND_ZOMBIE_INFECTED, entity.blockPosition(), 0);
     }
 
