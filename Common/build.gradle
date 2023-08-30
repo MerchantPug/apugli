@@ -14,41 +14,8 @@ repositories {
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
     maven {
-        name = "Ladysnake Libs"
-        url = 'https://maven.ladysnake.org/releases'
-    }
-    maven {
         name = "JitPack"
         url = 'https://jitpack.io'
-    }
-    maven {
-        name = "Cafeteria"
-        url = 'https://maven.cafeteria.dev'
-        content {
-            includeGroup 'net.adriantodt.fabricmc'
-        }
-    }
-    maven {
-        name = "Jamie's White Shirt"
-        url "https://maven.jamieswhiteshirt.com/libs-release"
-        content {
-            includeGroup "com.jamieswhiteshirt"
-        }
-    }
-    maven {
-        name = "Shedaniel"
-        url "https://maven.shedaniel.me/"
-    }
-    maven {
-        name = "TerraformersMC"
-        url "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
     }
     maven {
         name = 'ParchmentMC'
@@ -69,10 +36,11 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.19.3:${parchment_version}@zip")
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
     }
     //Apoli
-    modCompileOnly "com.github.apace100:apoli:${apoli_fabric_version}"
+    modCompileOnly("com.github.apace100:calio:${calio_fabric_version}") { transitive false }
+    modCompileOnly("com.github.apace100:apoli:${apoli_fabric_version}") { transitive false }
     //MixinExtras
     annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
     //JSR305
