@@ -15,19 +15,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 public record SyncKeyPressCapabilityPacket(int entityId,
-                                           Set<IActivePower.Key> keysToCheck,
+                                           Set<IActivePower.Key> previouslyUsedKeys,
                                            Set<IActivePower.Key> currentlyUsedKeys) implements ApugliPacketS2C {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
 
-        buf.writeInt(keysToCheck.size());
-        for (IActivePower.Key key : keysToCheck) {
+        buf.writeInt(previouslyUsedKeys.size());
+        for (IActivePower.Key key : previouslyUsedKeys) {
             IActivePower.Key.CODEC.encodeStart(NbtOps.INSTANCE, key)
                     .resultOrPartial(msg -> {
                         buf.writeBoolean(false);
-                        Apugli.LOG.error("Failed to encode added active power key. {}", key);
+                        Apugli.LOG.error("Failed to encode previously used active power key for syncing. {}", key);
                     })
                     .ifPresent(tag -> {
                         buf.writeBoolean(true);
@@ -40,7 +40,7 @@ public record SyncKeyPressCapabilityPacket(int entityId,
             IActivePower.Key.CODEC.encodeStart(NbtOps.INSTANCE, key)
                     .resultOrPartial(msg -> {
                         buf.writeBoolean(false);
-                        Apugli.LOG.error("Failed to encode added active power key. {}", key);
+                        Apugli.LOG.error("Failed to encode currently used active power key for syncing. {}", key);
                     })
                     .ifPresent(tag -> {
                         buf.writeBoolean(true);
@@ -52,27 +52,27 @@ public record SyncKeyPressCapabilityPacket(int entityId,
     public static SyncKeyPressCapabilityPacket decode(FriendlyByteBuf buf) {
         int entityId = buf.readInt();
 
-        Set<IActivePower.Key> keysToCheck = new HashSet<>();
-        int keysToCheckSize = buf.readInt();
-        for (int i = 0; i < keysToCheckSize; ++i) {
+        Set<IActivePower.Key> previouslyUsedKeys = new HashSet<>();
+        int previouslyUsedKeySize = buf.readInt();
+        for (int i = 0; i < previouslyUsedKeySize; ++i) {
             if (!buf.readBoolean()) continue;
             CompoundTag tag = buf.readNbt();
             IActivePower.Key.CODEC.parse(NbtOps.INSTANCE, tag)
-                    .resultOrPartial(msg -> Apugli.LOG.error("Failed to decode active power key. {}", msg))
-                    .ifPresent(keysToCheck::add);
+                    .resultOrPartial(msg -> Apugli.LOG.error("Failed to decode active power key while syncing. {}", msg))
+                    .ifPresent(previouslyUsedKeys::add);
         }
 
         Set<IActivePower.Key> currentlyUsedKeys = new HashSet<>();
-        int addedKeySize = buf.readInt();
-        for (int i = 0; i < addedKeySize; ++i) {
+        int currentlyUsedKeySize = buf.readInt();
+        for (int i = 0; i < currentlyUsedKeySize; ++i) {
             if (!buf.readBoolean()) continue;
             CompoundTag tag = buf.readNbt();
             IActivePower.Key.CODEC.parse(NbtOps.INSTANCE, tag)
-                    .resultOrPartial(msg -> Apugli.LOG.error("Failed to decode active power key. {}", msg))
+                    .resultOrPartial(msg -> Apugli.LOG.error("Failed to decode active power key while syncing. {}", msg))
                     .ifPresent(currentlyUsedKeys::add);
         }
 
-        return new SyncKeyPressCapabilityPacket(entityId, keysToCheck, currentlyUsedKeys);
+        return new SyncKeyPressCapabilityPacket(entityId, previouslyUsedKeys, currentlyUsedKeys);
     }
 
     @Override
@@ -92,13 +92,11 @@ public record SyncKeyPressCapabilityPacket(int entityId,
                     return;
                 }
                 player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
-
-                    for (IActivePower.Key key : keysToCheck) {
-                        capability.addKeyToCheck(key);
-                    }
-
                     for (IActivePower.Key key : currentlyUsedKeys) {
                         capability.addKey(key);
+                    }
+                    for (IActivePower.Key key : previouslyUsedKeys) {
+                        capability.addPreviousKey(key);
                     }
                 });
             }

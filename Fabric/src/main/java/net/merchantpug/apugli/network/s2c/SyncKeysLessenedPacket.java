@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public record SyncKeysLessenedPacket(int entityId,
-                                     Set<Active.Key> keysToCheck,
                                      Set<Active.Key> addedKeys,
                                      Set<Active.Key> removedKeys) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("sync_keys_lessened");
@@ -23,11 +22,6 @@ public record SyncKeysLessenedPacket(int entityId,
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
-
-        buf.writeInt(keysToCheck.size());
-        for (Active.Key key : keysToCheck) {
-            ApoliDataTypes.KEY.send(buf, key);
-        }
 
         buf.writeInt(addedKeys.size());
         for (Active.Key key : addedKeys) {
@@ -43,12 +37,6 @@ public record SyncKeysLessenedPacket(int entityId,
     public static SyncKeysLessenedPacket decode(FriendlyByteBuf buf) {
         int entityId = buf.readInt();
 
-        Set<Active.Key> keysToCheck = new HashSet<>();
-        int keysToCheckSize = buf.readInt();
-        for (int i = 0; i < keysToCheckSize; ++i) {
-            keysToCheck.add(ApoliDataTypes.KEY.receive(buf));
-        }
-
         Set<Active.Key> addedKeys = new HashSet<>();
         int keysToAddSize = buf.readInt();
         for (int i = 0; i < keysToAddSize; ++i) {
@@ -61,7 +49,7 @@ public record SyncKeysLessenedPacket(int entityId,
             removedKeys.add(ApoliDataTypes.KEY.receive(buf));
         }
 
-        return new SyncKeysLessenedPacket(entityId, keysToCheck, addedKeys, removedKeys);
+        return new SyncKeysLessenedPacket(entityId, addedKeys, removedKeys);
     }
 
     @Override
@@ -78,10 +66,6 @@ public record SyncKeysLessenedPacket(int entityId,
                 return;
             }
             KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
-
-            for (Active.Key key : keysToCheck) {
-                component.addKeyToCheck(key);
-            }
 
             for (Active.Key key : addedKeys) {
                 component.addKey(key);

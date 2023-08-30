@@ -1,14 +1,10 @@
 package net.merchantpug.apugli.network;
 
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
-import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetCapabilityPacket;
-import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
-import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
-import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
+import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,6 +38,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, SyncHitsOnTargetLessenedPacket.class, SyncHitsOnTargetLessenedPacket::encode, SyncHitsOnTargetLessenedPacket::decode, ApugliPacketHandler.createS2CHandler(SyncHitsOnTargetLessenedPacket::handle));
         INSTANCE.registerMessage(i++, SyncKeyPressCapabilityPacket.class, SyncKeyPressCapabilityPacket::encode, SyncKeyPressCapabilityPacket::decode, ApugliPacketHandler.createS2CHandler(SyncKeyPressCapabilityPacket::handle));
         INSTANCE.registerMessage(i++, SyncKeysLessenedPacket.class, SyncKeysLessenedPacket::encode, SyncKeysLessenedPacket::decode, ApugliPacketHandler.createS2CHandler(SyncKeysLessenedPacket::handle));
+        INSTANCE.registerMessage(i++, AddKeyToCheckPacket.class, AddKeyToCheckPacket::encode, AddKeyToCheckPacket::decode, ApugliPacketHandler.createS2CHandler(AddKeyToCheckPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteEntityActionClientPacket.class, ExecuteEntityActionClientPacket::encode, ExecuteEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteEntityActionClientPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteEntityActionServerPacket.class, ExecuteEntityActionServerPacket::encode, ExecuteEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionClientPacket.class, ExecuteBiEntityActionClientPacket::encode, ExecuteBiEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteBiEntityActionClientPacket::handle));

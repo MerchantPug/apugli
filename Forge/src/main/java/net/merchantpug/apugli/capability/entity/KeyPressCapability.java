@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 public class KeyPressCapability implements IKeyPressCapability, ICapabilityProvider {
     private int previousPowerSize = 0;
-    private Set<IActivePower.Key> previousKeysToCheck = new HashSet<>();
     private final Set<IActivePower.Key> keysToCheck = new HashSet<>();
 
     private Set<IActivePower.Key> previouslyUsedKeys = new HashSet<>();
@@ -39,68 +38,57 @@ public class KeyPressCapability implements IKeyPressCapability, ICapabilityProvi
 
     @Override
     public Set<IActivePower.Key> getCurrentlyUsedKeys() {
-        return currentlyUsedKeys;
+        return this.currentlyUsedKeys;
     }
 
     @Override
     public Set<IActivePower.Key> getPreviouslyUsedKeys() {
-        return previouslyUsedKeys;
+        return this.previouslyUsedKeys;
     }
 
     @Override
     public void setPreviouslyUsedKeys() {
-        this.previousKeysToCheck = this.keysToCheck;
+        this.previouslyUsedKeys = this.currentlyUsedKeys.stream().filter(IActivePower.Key::continuous).collect(Collectors.toSet());
     }
 
     @Override
     public Set<IActivePower.Key> getKeysToCheck() {
-        return keysToCheck;
-    }
-
-    @Override
-    public Set<IActivePower.Key> getPreviousKeysToCheck() {
-        return previousKeysToCheck;
-    }
-
-    @Override
-    public void setPreviousKeysToCheck() {
-        previouslyUsedKeys = currentlyUsedKeys.stream().filter(IActivePower.Key::continuous).collect(Collectors.toSet());
+        return this.keysToCheck;
     }
 
     @Override
     public void addKeyToCheck(IActivePower.Key key) {
-        keysToCheck.add(key);
-    }
-
-    @Override
-    public void changePreviousKeysToCheckToCurrent() {
-        this.previouslyUsedKeys = this.currentlyUsedKeys;
+        this.keysToCheck.add(key);
     }
 
     @Override
     public void addKey(IActivePower.Key key) {
-        currentlyUsedKeys.add(key);
+        this.currentlyUsedKeys.add(key);
+    }
+
+    @Override
+    public void addPreviousKey(IActivePower.Key key) {
+        this.previouslyUsedKeys.add(key);
     }
 
     @Override
     public void removeKey(IActivePower.Key key) {
-        currentlyUsedKeys.remove(key);
+        this.currentlyUsedKeys.remove(key);
     }
 
     public void tick() {
-        int powerSize = IPowerContainer.get(provider).resolve().isEmpty() ? 0 : IPowerContainer.get(provider).resolve().get().getPowers().size();
-        if (previousPowerSize != powerSize) {
-            previousKeysToCheck.clear();
-            keysToCheck.clear();
-            previouslyUsedKeys.clear();
-            currentlyUsedKeys.clear();
+        int powerSize = IPowerContainer.get(this.provider).resolve().isEmpty() ? 0 : IPowerContainer.get(this.provider).resolve().get().getPowers().size();
+        if (this.previousPowerSize != powerSize) {
+            this.keysToCheck.clear();
+            this.previouslyUsedKeys.clear();
+            this.currentlyUsedKeys.clear();
         }
-        previousPowerSize = powerSize;
+        this.previousPowerSize = powerSize;
     }
 
     public void sync() {
         if (provider.level.isClientSide) return;
-        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> provider), new SyncKeyPressCapabilityPacket(provider.getId(), keysToCheck, currentlyUsedKeys));
+        ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> provider), new SyncKeyPressCapabilityPacket(provider.getId(), previouslyUsedKeys, currentlyUsedKeys));
     }
 
     @Override

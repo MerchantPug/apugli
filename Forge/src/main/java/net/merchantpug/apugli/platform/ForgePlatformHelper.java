@@ -16,16 +16,15 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.capability.item.EntityLinkCapability;
-import net.merchantpug.apugli.client.ApugliForgeClientEventHandler;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import net.merchantpug.apugli.util.ActiveKeyUtil;
 import net.merchantpug.apugli.util.HudRenderUtil;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
@@ -121,13 +120,15 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public void updateKeys(SerializableData.Instance data, Player player) {
+        if (player.getLevel().isClientSide() && !(player.isLocalPlayer())) return;
+
         player.getCapability(KeyPressCapability.INSTANCE).ifPresent(cap -> {
             IActivePower.Key key = data.get("key");
             if (!cap.getKeysToCheck().contains(key)) {
                 cap.addKeyToCheck(key);
-                cap.changePreviousKeysToCheckToCurrent();
-            } else if (player.level.isClientSide && player instanceof LocalPlayer) {
-                ApugliForgeClientEventHandler.ForgeEvents.handleActiveKeys();
+                if (!player.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                    ApugliPacketHandler.sendS2C(new AddKeyToCheckPacket(serverPlayer.getId(), key), serverPlayer);
+                }
             }
         });
     }
