@@ -48,6 +48,7 @@ public class ApugliPackets {
             ClientPlayNetworking.registerReceiver(SendParticlesPacket.ID, createS2CHandler(SendParticlesPacket::decode, SendParticlesPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncHitsOnTargetLessenedPacket.ID, createS2CHandler(SyncHitsOnTargetLessenedPacket::decode, SyncHitsOnTargetLessenedPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncKeysLessenedPacket.ID, createS2CHandler(SyncKeysLessenedPacket::decode, SyncKeysLessenedPacket::handle));
+            ClientPlayNetworking.registerReceiver(AddKeyToCheckPacket.ID, createS2CHandler(AddKeyToCheckPacket::decode, AddKeyToCheckPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncExplosionPacket.ID, createS2CHandler(SyncExplosionPacket::decode, SyncExplosionPacket::handle));
             ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
             ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket::handle));

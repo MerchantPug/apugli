@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 
 @AutoService(CustomProjectilePowerFactory.class)
 public class CustomProjectilePower extends AbstractActiveCooldownPower implements CustomProjectilePowerFactory<ConfiguredPower<FabricActiveCooldownConfiguration, ?>> {
@@ -22,7 +23,7 @@ public class CustomProjectilePower extends AbstractActiveCooldownPower implement
         this.ticking();
     }
 
-    protected CustomProjectilePower.DataContainer access(ConfiguredPower<FabricActiveCooldownConfiguration, ?> configuration, IPowerContainer container) {
+    protected DataContainer access(ConfiguredPower<FabricActiveCooldownConfiguration, ?> configuration, IPowerContainer container) {
         return configuration.getPowerData(container, DataContainer::new);
     }
 
@@ -51,6 +52,18 @@ public class CustomProjectilePower extends AbstractActiveCooldownPower implement
     @Override
     public ResourceLocation getPowerId(ConfiguredPower<FabricActiveCooldownConfiguration, ?> power) {
         return power.getRegistryName();
+    }
+
+    @Override
+    protected long getLastUseTime(ConfiguredPower<FabricActiveCooldownConfiguration, ?> configuration, @Nullable IPowerContainer container) {
+        return container != null ? this.access(configuration, container).lastUseTime : Long.MAX_VALUE;
+    }
+
+    @Override
+    protected void setLastUseTime(ConfiguredPower<FabricActiveCooldownConfiguration, ?> configuration, @Nullable IPowerContainer container, long value) {
+        if (container != null) {
+            this.access(configuration, container).lastUseTime = value;
+        }
     }
 
     @Override

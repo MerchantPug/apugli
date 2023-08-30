@@ -13,7 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,14 +64,15 @@ public record UpdateKeysPressedPacket(Set<Active.Key> addedKeys,
             addedKeys.forEach(component::addKey);
             removedKeys.forEach(component::removeKey);
 
-            Set<Active.Key> keysToCheck = component.getKeysToCheck().stream().filter(key -> !component.getPreviousKeysToCheck().add(key)).collect(Collectors.toSet());
-            component.setPreviousKeysToCheck();
             Set<Active.Key> keysToAdd = component.getCurrentlyUsedKeys().stream().filter(key -> !component.getPreviouslyUsedKeys().contains(key)).collect(Collectors.toSet());
             Set<Active.Key> keysToRemove = component.getPreviouslyUsedKeys().stream().filter(key -> !component.getCurrentlyUsedKeys().contains(key)).collect(Collectors.toSet());
             component.setPreviouslyUsedKeys();
 
-            for (ServerPlayer otherPlayer : PlayerLookup.tracking(player))
-                ApugliPackets.sendS2C(new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove), otherPlayer);
+            List<ServerPlayer> players = new ArrayList<>(PlayerLookup.tracking(player));
+            players.add(player);
+
+            for (ServerPlayer otherPlayer : players)
+                ApugliPackets.sendS2C(new SyncKeysLessenedPacket(player.getId(), keysToAdd, keysToRemove), otherPlayer);
         });
     }
 }

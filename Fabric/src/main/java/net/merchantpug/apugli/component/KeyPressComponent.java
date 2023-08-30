@@ -11,11 +11,8 @@ public interface KeyPressComponent extends AutoSyncedComponent {
     void setPreviouslyUsedKeys();
 
     Set<Active.Key> getKeysToCheck();
-    Set<Active.Key> getPreviousKeysToCheck();
-    void setPreviousKeysToCheck();
 
     void addKeyToCheck(Active.Key key);
-    void changePreviousKeysToCheckToCurrent();
     void addKey(Active.Key key);
     void removeKey(Active.Key key);
 }

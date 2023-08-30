@@ -24,15 +24,11 @@ SOFTWARE.
 
 package net.merchantpug.apugli.condition.factory.entity;
 
-import net.merchantpug.apugli.condition.factory.IConditionFactory;
-import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableData;
+import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.merchantpug.apugli.platform.Services;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.HashSet;
 
 public class KeyPressedCondition implements IConditionFactory<Entity> {
     
@@ -45,7 +41,6 @@ public class KeyPressedCondition implements IConditionFactory<Entity> {
     public boolean check(SerializableData.Instance data, Entity entity) {
         if (entity instanceof Player player) {
             Services.PLATFORM.updateKeys(data, player);
-
             return Services.PLATFORM.isCurrentlyUsingKey(data, player);
         }
         return false;

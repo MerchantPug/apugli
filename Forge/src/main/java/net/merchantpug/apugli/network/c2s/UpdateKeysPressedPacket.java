@@ -85,13 +85,11 @@ public record UpdateKeysPressedPacket(Set<IActivePower.Key> addedKeys,
                 addedKeys.forEach(capability::addKey);
                 removedKeys.forEach(capability::removeKey);
 
-                Set<IActivePower.Key> keysToCheck = capability.getKeysToCheck().stream().filter(key -> !capability.getPreviousKeysToCheck().add(key)).collect(Collectors.toSet());
-                capability.setPreviousKeysToCheck();
                 Set<IActivePower.Key> keysToAdd = capability.getCurrentlyUsedKeys().stream().filter(key -> !capability.getPreviouslyUsedKeys().contains(key)).collect(Collectors.toSet());
                 Set<IActivePower.Key> keysToRemove = capability.getPreviouslyUsedKeys().stream().filter(key -> !capability.getCurrentlyUsedKeys().contains(key)).collect(Collectors.toSet());
                 capability.setPreviouslyUsedKeys();
 
-                ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new SyncKeysLessenedPacket(player.getId(), keysToCheck, keysToAdd, keysToRemove));
+                ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new SyncKeysLessenedPacket(player.getId(), keysToAdd, keysToRemove));
             });
         });
     }

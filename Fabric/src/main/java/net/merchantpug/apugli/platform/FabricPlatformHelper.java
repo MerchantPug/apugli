@@ -16,16 +16,15 @@ import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.access.ItemStackAccess;
-import net.merchantpug.apugli.client.ApugliClientFabric;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
+import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
@@ -121,13 +120,15 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public void updateKeys(SerializableData.Instance data, Player player) {
+        if (player.getLevel().isClientSide() && !(player.isLocalPlayer())) return;
+
         KeyPressComponent component = ApugliEntityComponents.KEY_PRESS_COMPONENT.get(player);
         Active.Key key = data.get("key");
         if (!component.getKeysToCheck().contains(key)) {
             component.addKeyToCheck(key);
-            component.changePreviousKeysToCheckToCurrent();
-        } else if (player.level.isClientSide && player instanceof LocalPlayer) {
-            ApugliClientFabric.handleActiveKeys();
+            if (!player.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                ApugliPackets.sendS2C(new AddKeyToCheckPacket(serverPlayer.getId(), key), serverPlayer);
+            }
         }
     }
 

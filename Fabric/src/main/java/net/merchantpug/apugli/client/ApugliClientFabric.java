@@ -29,14 +29,13 @@ import java.util.Set;
 @Environment(EnvType.CLIENT)
 public class ApugliClientFabric implements ClientModInitializer {
 	private static HashMap<String, Boolean> lastKeyBindingStates = new HashMap<>();
-	public static boolean isServerRunningApugli = false;
 
 	@Override
 	public void onInitializeClient() {
 		ApugliPackets.registerS2C();
 		ApugliClassDataClient.registerAll();
 
-		ClientTickEvents.START_CLIENT_TICK.register(tick -> ApugliClientFabric.handleActiveKeys());
+		ClientTickEvents.START_CLIENT_TICK.register(ApugliClientFabric::handleActiveKeys);
 
         EntityRendererRegistry.register(ApugliEntityTypes.CUSTOM_AREA_EFFECT_CLOUD.get(), NoopRenderer::new);
 		EntityRendererRegistry.register(ApugliEntityTypes.CUSTOM_PROJECTILE.get(), CustomProjectileRenderer::new);
@@ -47,7 +46,7 @@ public class ApugliClientFabric implements ClientModInitializer {
 		});
 	}
 
-	public static void handleActiveKeys() {
+	public static void handleActiveKeys(Minecraft minecraft) {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Set<Active.Key> addedKeys = new HashSet<>();

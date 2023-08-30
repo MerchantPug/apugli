@@ -14,11 +14,9 @@ public interface IKeyPressCapability {
     void setPreviouslyUsedKeys();
 
     Set<IActivePower.Key> getKeysToCheck();
-    Set<IActivePower.Key> getPreviousKeysToCheck();
-    void setPreviousKeysToCheck();
 
     void addKeyToCheck(IActivePower.Key key);
-    void changePreviousKeysToCheckToCurrent();
     void addKey(IActivePower.Key key);
+    void addPreviousKey(IActivePower.Key key);
     void removeKey(IActivePower.Key key);
 }

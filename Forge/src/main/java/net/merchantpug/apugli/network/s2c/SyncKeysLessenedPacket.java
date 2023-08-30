@@ -15,26 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public record SyncKeysLessenedPacket(int entityId,
-                                     Set<IActivePower.Key> keysToCheck,
                                      Set<IActivePower.Key> addedKeys,
                                      Set<IActivePower.Key> removedKeys) implements ApugliPacketS2C {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
-
-        buf.writeInt(keysToCheck.size());
-        for (IActivePower.Key key : keysToCheck) {
-            IActivePower.Key.CODEC.encodeStart(NbtOps.INSTANCE, key)
-                    .resultOrPartial(msg -> {
-                        buf.writeBoolean(false);
-                        Apugli.LOG.error("Failed to encode added active power key. {}", key);
-                    })
-                    .ifPresent(tag -> {
-                        buf.writeBoolean(true);
-                        buf.writeNbt((CompoundTag) tag);
-                    });
-        }
 
         buf.writeInt(addedKeys.size());
         for (IActivePower.Key key : addedKeys) {
@@ -66,16 +52,6 @@ public record SyncKeysLessenedPacket(int entityId,
     public static SyncKeysLessenedPacket decode(FriendlyByteBuf buf) {
         int entityId = buf.readInt();
 
-        Set<IActivePower.Key> keysToCheck = new HashSet<>();
-        int keysToCheckSize = buf.readInt();
-        for (int i = 0; i < keysToCheckSize; ++i) {
-            if (!buf.readBoolean()) continue;
-            CompoundTag tag = buf.readNbt();
-            IActivePower.Key.CODEC.parse(NbtOps.INSTANCE, tag)
-                    .resultOrPartial(msg -> Apugli.LOG.error("Failed to decode active power key. {}", msg))
-                    .ifPresent(keysToCheck::add);
-        }
-
         Set<IActivePower.Key> addedKeys = new HashSet<>();
         int addedKeySize = buf.readInt();
         for (int i = 0; i < addedKeySize; ++i) {
@@ -96,7 +72,7 @@ public record SyncKeysLessenedPacket(int entityId,
                     .ifPresent(removedKeys::add);
         }
 
-        return new SyncKeysLessenedPacket(entityId, keysToCheck, addedKeys, removedKeys);
+        return new SyncKeysLessenedPacket(entityId, addedKeys, removedKeys);
     }
 
     @Override
@@ -116,11 +92,6 @@ public record SyncKeysLessenedPacket(int entityId,
                     return;
                 }
                 player.getCapability(KeyPressCapability.INSTANCE).ifPresent(capability -> {
-
-                    for (IActivePower.Key key : keysToCheck) {
-                        capability.addKeyToCheck(key);
-                    }
-
                     for (IActivePower.Key key : addedKeys) {
                         capability.addKey(key);
                     }
