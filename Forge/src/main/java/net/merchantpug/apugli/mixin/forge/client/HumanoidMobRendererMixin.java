@@ -1,4 +1,4 @@
-package net.merchantpug.apugli.mixin.forge.common;
+package net.merchantpug.apugli.mixin.forge.client;
 
 import com.mojang.math.Vector3f;
 import net.merchantpug.apugli.access.HumanoidMobRendererAccess;
