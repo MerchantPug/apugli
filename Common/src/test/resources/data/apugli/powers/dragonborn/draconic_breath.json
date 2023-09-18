@@ -38,6 +38,552 @@
     },
     "cooldown": 60
   },
+  "swap": {
+    "type": "apoli:active_self",
+    "entity_action": {
+      "type": "apoli:if_else_list",
+      "actions": [
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "MAINHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:fireball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 1
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 1,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "MAINHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "MAIN_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "MAINHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:frostball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 2
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 2,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "MAINHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "MAIN_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "MAINHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:thunderball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 3
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 3,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "MAINHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "MAIN_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "OFFHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:fireball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 1
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 1,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "OFFHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "OFF_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "OFFHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:frostball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 2
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 2,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "OFFHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "OFF_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:and",
+            "conditions": [
+              {
+                "type": "apoli:equipped_item",
+                "equipment_slot": "OFFHAND",
+                "item_condition": {
+                  "type": "apoli:and",
+                  "conditions": [
+                    {
+                      "type": "apugli:on_cooldown",
+                      "inverted": true
+                    },
+                    {
+                      "type": "apoli:ingredient",
+                      "ingredient": {
+                        "tag": "apugli:thunderball_activators"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_resource",
+                "comparison": "!=",
+                "compare_to": 3
+              },
+              {
+                "type": "apoli:resource",
+                "resource": "*:*_fireball",
+                "comparison": "==",
+                "compare_to": 0
+              }
+            ]
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:change_resource",
+                "resource": "*:*_resource",
+                "change": 3,
+                "operation": "SET"
+              },
+              {
+                "type": "apoli:if_else",
+                "condition": {
+                  "type": "apoli:gamemode",
+                  "gamemode": "creative",
+                  "inverted": true
+                },
+                "if_action": {
+                  "type": "apoli:equipped_item_action",
+                  "equipment_slot": "OFFHAND",
+                  "action": {
+                    "type": "apoli:consume",
+                    "amount": 1
+                  }
+                }
+              },
+              {
+                "type": "apoli:swing_hand",
+                "hand": "OFF_HAND"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_fireball"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:item_cooldown",
+                "item_tags": [
+                  "apugli:fireball_activators",
+                  "apugli:frostball_activators",
+                  "apugli:thunderball_activators"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "cooldown": 1,
+    "key": {
+      "key": "key.use"
+    }
+  },
   "fireball": {
     "type": "apoli:active_self",
     "hud_render": {
@@ -53,334 +599,77 @@
     },
     "cooldown": 60,
     "entity_action": {
-      "type": "apoli:and",
+      "type": "apoli:if_else_list",
       "actions": [
         {
-          "type": "apoli:if_else",
           "condition": {
-            "type": "apoli:and",
-            "conditions": [
-              {
-                "type": "apoli:or",
-                "conditions": [
-                  {
-                    "type": "apoli:equipped_item",
-                    "equipment_slot": "MAINHAND",
-                    "item_condition": {
-                      "type": "apoli:ingredient",
-                      "ingredient": {
-                        "tag": "apugli:fire_fireball_activators"
-                      }
-                    }
-                  },
-                  {
-                    "type": "apoli:equipped_item",
-                    "equipment_slot": "OFFHAND",
-                    "item_condition": {
-                      "type": "apoli:ingredient",
-                      "ingredient": {
-                        "tag": "apugli:fire_fireball_activators"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "apoli:resource",
-                "resource": "*:*_resource",
-                "comparison": "!=",
-                "compare_to": 1
-              }
-            ]
+            "type": "apoli:resource",
+            "resource": "*:*_resource",
+            "comparison": "==",
+            "compare_to": 1
           },
-          "if_action": {
-            "type": "apoli:and",
-            "actions": [
-              {
-                "type": "apoli:change_resource",
-                "resource": "*:*_resource",
-                "change": 1,
-                "operation": "SET"
-              },
-              {
-                "type": "apoli:if_else",
-                "condition": {
-                  "type": "apoli:equipped_item",
-                  "equipment_slot": "MAINHAND",
-                  "item_condition": {
-                    "type": "apoli:ingredient",
-                    "ingredient": {
-                      "tag": "apugli:fire_fireball_activators"
-                    }
-                  }
-                },
-                "if_action": {
-                  "type": "apoli:if_else",
-                  "condition": {
-                    "type": "apoli:gamemode",
-                    "gamemode": "creative",
-                    "inverted": true
-                  },
-                  "if_action": {
-                    "type": "apoli:equipped_item_action",
-                    "equipment_slot": "MAINHAND",
-                    "action": {
-                      "type": "apoli:consume",
-                      "amount": 1
-                    }
-                  }
-                },
-                "else_action": {
-                  "type": "apoli:if_else",
-                  "condition": {
-                    "type": "apoli:gamemode",
-                    "gamemode": "creative",
-                    "inverted": true
-                  },
-                  "if_action": {
-                    "type": "apoli:equipped_item_action",
-                    "equipment_slot": "OFFHAND",
-                    "action": {
-                      "type": "apoli:consume",
-                      "amount": 1
-                    }
-                  }
+          "action": {
+            "type": "apugli:custom_projectile",
+            "entity_id": "apugli:dragonborn_fireball",
+            "texture_location": "minecraft:textures/entity/enderdragon/dragon_fireball.png",
+            "speed": 0.8,
+            "sound": "minecraft:entity.ender_dragon.shoot",
+            "tick_bientity_action": {
+              "type": "apoli:target_action",
+              "action": {
+                "type": "apoli:spawn_particles",
+                "particle": "minecraft:dragon_breath",
+                "count": 1,
+                "speed": 0.1,
+                "spread": {
+                  "x": 0.25,
+                  "y": 0.0,
+                  "z": 0.25
                 }
               }
-            ]
-          },
-          "else_action": {
-            "type": "apoli:if_else",
-            "condition": {
-              "type": "apoli:and",
-              "conditions": [
-                {
-                  "type": "apoli:or",
-                  "conditions": [
-                    {
-                      "type": "apoli:equipped_item",
-                      "equipment_slot": "MAINHAND",
-                      "item_condition": {
-                        "type": "apoli:ingredient",
-                        "ingredient": {
-                          "tag": "apugli:frost_fireball_activators"
-                        }
-                      }
-                    },
-                    {
-                      "type": "apoli:equipped_item",
-                      "equipment_slot": "OFFHAND",
-                      "item_condition": {
-                        "type": "apoli:ingredient",
-                        "ingredient": {
-                          "tag": "apugli:frost_fireball_activators"
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "apoli:resource",
-                  "resource": "*:*_resource",
-                  "comparison": "!=",
-                  "compare_to": 2
-                }
-              ]
             },
-            "if_action": {
+            "block_action_on_hit": {
+              "type": "apugli:light_up",
+              "burn_time": 140,
+              "particle": "minecraft:dragon_breath",
+              "particle_count": 15,
+              "sound": "minecraft:entity.ender_dragon.shoot"
+            },
+            "block_condition": {
+              "type": "apoli:in_tag",
+              "tag": "apugli:lightable"
+            },
+            "bientity_action_on_miss": {
+              "type": "apugli:spawn_custom_effect_cloud",
+              "entity_id": "apugli:dragonborn_fireball_cloud",
+              "radius": 1.5,
+              "radius_on_use": 0.0,
+              "wait_time": 0,
+              "radius_per_tick": 0.01,
+              "duration": 100,
+              "particle": "minecraft:dragon_breath",
+              "powers_to_apply": [
+                "apugli:dragonborn/fire_cloud_effect"
+              ],
+              "bientity_condition": {
+                "type": "apoli:invert",
+                "condition": {
+                  "type": "apugli:owner"
+                },
+                "inverted": true
+              }
+            },
+            "owner_target_bientity_action_on_hit": {
               "type": "apoli:and",
               "actions": [
                 {
-                  "type": "apoli:change_resource",
-                  "resource": "*:*_resource",
-                  "change": 2,
-                  "operation": "SET"
+                  "type": "apoli:damage",
+                  "source": {
+                    "name": "dragonbornFireball.player"
+                  },
+                  "amount": 6
                 },
                 {
-                  "type": "apoli:if_else",
-                  "condition": {
-                    "type": "apoli:equipped_item",
-                    "equipment_slot": "MAINHAND",
-                    "item_condition": {
-                      "type": "apoli:ingredient",
-                      "ingredient": {
-                        "tag": "apugli:frost_fireball_activators"
-                      }
-                    }
-                  },
-                  "if_action": {
-                    "type": "apoli:if_else",
-                    "condition": {
-                      "type": "apoli:gamemode",
-                      "gamemode": "creative",
-                      "inverted": true
-                    },
-                    "if_action": {
-                      "type": "apoli:equipped_item_action",
-                      "equipment_slot": "MAINHAND",
-                      "action": {
-                        "type": "apoli:consume",
-                        "amount": 1
-                      }
-                    }
-                  },
-                  "else_action": {
-                    "type": "apoli:if_else",
-                    "condition": {
-                      "type": "apoli:gamemode",
-                      "gamemode": "creative",
-                      "inverted": true
-                    },
-                    "if_action": {
-                      "type": "apoli:equipped_item_action",
-                      "equipment_slot": "OFFHAND",
-                      "action": {
-                        "type": "apoli:consume",
-                        "amount": 1
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "else_action": {
-              "type": "apoli:if_else",
-              "condition": {
-                "type": "apoli:and",
-                "conditions": [
-                  {
-                    "type": "apoli:or",
-                    "conditions": [
-                      {
-                        "type": "apoli:equipped_item",
-                        "equipment_slot": "MAINHAND",
-                        "item_condition": {
-                          "type": "apoli:ingredient",
-                          "ingredient": {
-                            "tag": "apugli:thunder_fireball_activators"
-                          }
-                        }
-                      },
-                      {
-                        "type": "apoli:equipped_item",
-                        "equipment_slot": "OFFHAND",
-                        "item_condition": {
-                          "type": "apoli:ingredient",
-                          "ingredient": {
-                            "tag": "apugli:thunder_fireball_activators"
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "apoli:resource",
-                    "resource": "*:*_resource",
-                    "comparison": "!=",
-                    "compare_to": 3
-                  }
-                ]
-              },
-              "if_action": {
-                "type": "apoli:and",
-                "actions": [
-                  {
-                    "type": "apoli:change_resource",
-                    "resource": "*:*_resource",
-                    "change": 3,
-                    "operation": "SET"
-                  },
-                  {
-                    "type": "apoli:if_else",
-                    "condition": {
-                      "type": "apoli:equipped_item",
-                      "equipment_slot": "MAINHAND",
-                      "item_condition": {
-                        "type": "apoli:ingredient",
-                        "ingredient": {
-                          "tag": "apugli:thunder_fireball_activators"
-                        }
-                      }
-                    },
-                    "if_action": {
-                      "type": "apoli:if_else",
-                      "condition": {
-                        "type": "apoli:gamemode",
-                        "gamemode": "creative",
-                        "inverted": true
-                      },
-                      "if_action": {
-                        "type": "apoli:equipped_item_action",
-                        "equipment_slot": "MAINHAND",
-                        "action": {
-                          "type": "apoli:consume",
-                          "amount": 1
-                        }
-                      }
-                    },
-                    "else_action": {
-                      "type": "apoli:if_else",
-                      "condition": {
-                        "type": "apoli:gamemode",
-                        "gamemode": "creative"
-                      },
-                      "if_action": {
-                        "type": "apoli:equipped_item_action",
-                        "equipment_slot": "OFFHAND",
-                        "action": {
-                          "type": "apoli:consume",
-                          "amount": 1
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        {
-          "type": "apoli:if_else_list",
-          "actions": [
-            {
-              "condition": {
-                "type": "apoli:resource",
-                "resource": "*:*_resource",
-                "comparison": "==",
-                "compare_to": 1
-              },
-              "action": {
-                "type": "apugli:custom_projectile",
-                "entity_id": "apugli:dragonborn_fireball",
-                "texture_location": "minecraft:textures/entity/enderdragon/dragon_fireball.png",
-                "speed": 0.8,
-                "sound": "minecraft:entity.ender_dragon.shoot",
-                "tick_bientity_action": {
-                  "type": "apoli:target_action",
-                  "action": {
-                    "type": "apoli:spawn_particles",
-                    "particle": "minecraft:dragon_breath",
-                    "count": 1,
-                    "speed": 0.1,
-                    "spread": {
-                      "x": 0.25,
-                      "y": 0.0,
-                      "z": 0.25
-                    }
-                  }
-                },
-                "block_action_on_hit": {
-                  "type": "apugli:light_up",
-                  "burn_time": 140,
-                  "particle": "minecraft:dragon_breath",
-                  "particle_count": 15,
-                  "sound": "minecraft:entity.ender_dragon.shoot"
-                },
-                "block_condition": {
-                  "type": "apoli:in_tag",
-                  "tag": "apugli:lightable"
-                },
-                "bientity_action_on_miss": {
                   "type": "apugli:spawn_custom_effect_cloud",
                   "entity_id": "apugli:dragonborn_fireball_cloud",
                   "radius": 1.5,
@@ -391,6 +680,180 @@
                   "particle": "minecraft:dragon_breath",
                   "powers_to_apply": [
                     "apugli:dragonborn/fire_cloud_effect"
+                  ],
+                  "bientity_condition": {
+                    "type": "apoli:invert",
+                    "condition": {
+                      "type": "apugli:owner"
+                    },
+                    "inverted": true
+                  }
+                }
+              ]
+            },
+            "bientity_condition": {
+              "type": "apoli:invert",
+              "condition": {
+                "type": "apugli:owner"
+              },
+              "inverted": true
+            },
+            "block_action_cancels_miss_action": true
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_resource",
+            "comparison": "==",
+            "compare_to": 2
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_frost_cooldown"
+              },
+              {
+                "type": "apugli:custom_projectile",
+                "entity_id": "apugli:dragonborn_frostball",
+                "texture_location": "apugli:textures/entity/dragonborn_fireball_frost.png",
+                "speed": 0.8,
+                "sound": "minecraft:entity.ender_dragon.shoot",
+                "tick_bientity_action": {
+                  "type": "apoli:target_action",
+                  "action": {
+                    "type": "apoli:and",
+                    "actions": [
+                      {
+                        "type": "apoli:spawn_particles",
+                        "particle": {
+                          "type": "minecraft:dust",
+                          "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
+                        },
+                        "count": 1,
+                        "speed": 0.1,
+                        "spread": {
+                          "x": 0.25,
+                          "y": 0.0,
+                          "z": 0.25
+                        }
+                      },
+                      {
+                        "type": "apoli:if_else",
+                        "condition": {
+                          "type": "apoli:in_block_anywhere",
+                          "block_condition": {
+                            "type": "apoli:and",
+                            "conditions": [
+                              {
+                                "type": "apoli:offset",
+                                "condition": {
+                                  "type": "apugli:air"
+                                },
+                                "y": 1
+                              },
+                              {
+                                "type": "apoli:fluid",
+                                "fluid_condition": {
+                                  "type": "apoli:and",
+                                  "conditions": [
+                                    {
+                                      "type": "apoli:still"
+                                    },
+                                    {
+                                      "type": "apoli:in_tag",
+                                      "tag": "minecraft:water"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "comparison": ">",
+                          "compare_to": 0
+                        },
+                        "if_action": {
+                          "type": "apoli:and",
+                          "actions": [
+                            {
+                              "type": "apoli:block_action_at",
+                              "block_action": {
+                                "type": "apoli:area_of_effect",
+                                "radius": 4,
+                                "shape": "SPHERE",
+                                "block_action": {
+                                  "type": "apoli:and",
+                                  "actions": [
+                                    {
+                                      "type": "apoli:set_block",
+                                      "block": "minecraft:frosted_ice"
+                                    },
+                                    {
+                                      "type": "apugli:schedule_tick",
+                                      "min": 60,
+                                      "max": 120
+                                    }
+                                  ]
+                                },
+                                "block_condition": {
+                                  "type": "apoli:and",
+                                  "conditions": [
+                                    {
+                                      "type": "apoli:offset",
+                                      "condition": {
+                                        "type": "apugli:air"
+                                      },
+                                      "y": 1
+                                    },
+                                    {
+                                      "type": "apoli:water_loggable",
+                                      "inverted": true
+                                    },
+                                    {
+                                      "type": "apoli:fluid",
+                                      "fluid_condition": {
+                                        "type": "apoli:and",
+                                        "conditions": [
+                                          {
+                                            "type": "apoli:still"
+                                          },
+                                          {
+                                            "type": "apoli:in_tag",
+                                            "tag": "minecraft:water"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "apoli:execute_command",
+                              "command": "kill @s"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "bientity_action_on_miss": {
+                  "type": "apugli:spawn_custom_effect_cloud",
+                  "entity_id": "apugli:dragonborn_frostball_cloud",
+                  "radius": 2,
+                  "radius_on_use": 0.0,
+                  "wait_time": 0,
+                  "radius_per_tick": 0.01,
+                  "duration": 150,
+                  "particle": {
+                    "type": "minecraft:dust",
+                    "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
+                  },
+                  "powers_to_apply": [
+                    "apugli:dragonborn/frost_cloud_effect"
                   ],
                   "bientity_condition": {
                     "type": "apoli:invert",
@@ -412,178 +875,6 @@
                     },
                     {
                       "type": "apugli:spawn_custom_effect_cloud",
-                      "entity_id": "apugli:dragonborn_fireball_cloud",
-                      "radius": 1.5,
-                      "radius_on_use": 0.0,
-                      "wait_time": 0,
-                      "radius_per_tick": 0.01,
-                      "duration": 100,
-                      "particle": "minecraft:dragon_breath",
-                      "powers_to_apply": [
-                        "apugli:dragonborn/fire_cloud_effect"
-                      ],
-                      "bientity_condition": {
-                        "type": "apoli:invert",
-                        "condition": {
-                          "type": "apugli:owner"
-                        },
-                        "inverted": true
-                      }
-                    }
-                  ]
-                },
-                "bientity_condition": {
-                  "type": "apoli:invert",
-                  "condition": {
-                    "type": "apugli:owner"
-                  },
-                  "inverted": true
-                },
-                "block_action_cancels_miss_action": true
-              }
-            },
-            {
-              "condition": {
-                "type": "apoli:resource",
-                "resource": "*:*_resource",
-                "comparison": "==",
-                "compare_to": 2
-              },
-              "action": {
-                "type": "apoli:and",
-                "actions": [
-                  {
-                    "type": "apoli:trigger_cooldown",
-                    "power": "*:*_frost_cooldown"
-                  },
-                  {
-                    "type": "apugli:custom_projectile",
-                    "entity_id": "apugli:dragonborn_frostball",
-                    "texture_location": "apugli:textures/entity/dragonborn_fireball_frost.png",
-                    "speed": 0.8,
-                    "sound": "minecraft:entity.ender_dragon.shoot",
-                    "tick_bientity_action": {
-                      "type": "apoli:target_action",
-                      "action": {
-                        "type": "apoli:and",
-                        "actions": [
-                          {
-                            "type": "apoli:spawn_particles",
-                            "particle": {
-                              "type": "minecraft:dust",
-                              "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
-                            },
-                            "count": 1,
-                            "speed": 0.1,
-                            "spread": {
-                              "x": 0.25,
-                              "y": 0.0,
-                              "z": 0.25
-                            }
-                          },
-                          {
-                            "type": "apoli:if_else",
-                            "condition": {
-                              "type": "apoli:in_block_anywhere",
-                              "block_condition": {
-                                "type": "apoli:and",
-                                "conditions": [
-                                  {
-                                    "type": "apoli:offset",
-                                    "condition": {
-                                      "type": "apugli:air"
-                                    },
-                                    "y": 1
-                                  },
-                                  {
-                                    "type": "apoli:fluid",
-                                    "fluid_condition": {
-                                      "type": "apoli:and",
-                                      "conditions": [
-                                        {
-                                          "type": "apoli:still"
-                                        },
-                                        {
-                                          "type": "apoli:in_tag",
-                                          "tag": "minecraft:water"
-                                        }
-                                      ]
-                                    }
-                                  }
-                                ]
-                              },
-                              "comparison": ">",
-                              "compare_to": 0
-                            },
-                            "if_action": {
-                              "type": "apoli:and",
-                              "actions": [
-                                {
-
-                                  "type": "apoli:block_action_at",
-                                  "block_action": {
-                                    "type": "apoli:area_of_effect",
-                                    "radius": 4,
-                                    "shape": "SPHERE",
-                                    "block_action": {
-                                      "type": "apoli:and",
-                                      "actions": [
-                                        {
-                                          "type": "apoli:set_block",
-                                          "block": "minecraft:frosted_ice"
-                                        },
-                                        {
-                                          "type": "apugli:schedule_tick",
-                                          "min": 60,
-                                          "max": 120
-                                        }
-                                      ]
-                                    },
-                                    "block_condition": {
-                                      "type": "apoli:and",
-                                      "conditions": [
-                                        {
-                                          "type": "apoli:offset",
-                                          "condition": {
-                                            "type": "apugli:air"
-                                          },
-                                          "y": 1
-                                        },
-                                        {
-                                          "type": "apoli:water_loggable",
-                                          "inverted": true
-                                        },
-                                        {
-                                          "type": "apoli:fluid",
-                                          "fluid_condition": {
-                                            "type": "apoli:and",
-                                            "conditions": [
-                                              {
-                                                "type": "apoli:still"
-                                              },
-                                              {
-                                                "type": "apoli:in_tag",
-                                                "tag": "minecraft:water"
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                },
-                                {
-                                  "type": "apoli:execute_command",
-                                  "command": "kill @s"
-                                }
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    "bientity_action_on_miss": {
-                      "type": "apugli:spawn_custom_effect_cloud",
                       "entity_id": "apugli:dragonborn_frostball_cloud",
                       "radius": 2,
                       "radius_on_use": 0.0,
@@ -604,135 +895,135 @@
                         },
                         "inverted": true
                       }
-                    },
-                    "owner_target_bientity_action_on_hit": {
-                      "type": "apoli:and",
-                      "actions": [
-                        {
-                          "type": "apoli:damage",
-                          "source": {
-                            "name": "dragonbornFireball.player"
-                          },
-                          "amount": 6
-                        },
-                        {
-                          "type": "apugli:spawn_custom_effect_cloud",
-                          "entity_id": "apugli:dragonborn_frostball_cloud",
-                          "radius": 2,
-                          "radius_on_use": 0.0,
-                          "wait_time": 0,
-                          "radius_per_tick": 0.01,
-                          "duration": 150,
-                          "particle": {
-                            "type": "minecraft:dust",
-                            "params": "0.30196078431 0.16862745098 0.63529411764 1.0"
-                          },
-                          "powers_to_apply": [
-                            "apugli:dragonborn/frost_cloud_effect"
-                          ],
-                          "bientity_condition": {
-                            "type": "apoli:invert",
-                            "condition": {
-                              "type": "apugli:owner"
-                            },
-                            "inverted": true
-                          }
-                        }
-                      ]
-                    },
-                    "bientity_condition": {
-                      "type": "apoli:invert",
-                      "condition": {
-                        "type": "apugli:owner"
-                      },
-                      "inverted": true
-                    },
-                    "block_action_cancels_miss_action": true
-                  }
-                ]
-              }
-            },
-            {
-              "condition": {
-                "type": "apoli:resource",
-                "resource": "*:*_resource",
-                "comparison": "==",
-                "compare_to": 3
-              },
-              "action": {
-                "type": "apoli:and",
-                "actions": [
-                  {
-                    "type": "apoli:trigger_cooldown",
-                    "power": "*:*_thunder_cooldown"
+                    }
+                  ]
+                },
+                "bientity_condition": {
+                  "type": "apoli:invert",
+                  "condition": {
+                    "type": "apugli:owner"
                   },
-                  {
-                    "type": "apugli:custom_projectile",
-                    "entity_id": "apugli:dragonborn_thunderball",
-                    "texture_location": "apugli:textures/entity/dragonborn_fireball_thunder.png",
-                    "speed": 0.8,
-                    "sound": "minecraft:entity.ender_dragon.shoot",
-                    "tick_bientity_action": {
-                      "type": "apoli:target_action",
-                      "action": {
-                        "type": "apoli:spawn_particles",
-                        "particle": {
-                          "type": "minecraft:dust",
-                          "params": "0.86666666666 0.34509803921 0.56862745098 1.0"
-                        },
-                        "count": 1,
-                        "speed": 0.1,
-                        "spread": {
-                          "x": 0.25,
-                          "y": 0.0,
-                          "z": 0.25
-                        }
-                      }
+                  "inverted": true
+                },
+                "block_action_cancels_miss_action": true
+              }
+            ]
+          }
+        },
+        {
+          "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_resource",
+            "comparison": "==",
+            "compare_to": 3
+          },
+          "action": {
+            "type": "apoli:and",
+            "actions": [
+              {
+                "type": "apoli:trigger_cooldown",
+                "power": "*:*_thunder_cooldown"
+              },
+              {
+                "type": "apugli:custom_projectile",
+                "entity_id": "apugli:dragonborn_thunderball",
+                "texture_location": "apugli:textures/entity/dragonborn_fireball_thunder.png",
+                "speed": 0.8,
+                "sound": "minecraft:entity.ender_dragon.shoot",
+                "tick_bientity_action": {
+                  "type": "apoli:target_action",
+                  "action": {
+                    "type": "apoli:spawn_particles",
+                    "particle": {
+                      "type": "minecraft:dust",
+                      "params": "0.86666666666 0.34509803921 0.56862745098 1.0"
                     },
-                    "block_action_on_hit": {
-                      "type": "apoli:if_else",
-                      "condition": {
-                        "type": "apoli:and",
-                        "conditions": [
-                          {
-                            "type": "apugli:in_rain"
-                          },
-                          {
-                            "type": "apugli:thundering"
-                          }
-                        ]
+                    "count": 1,
+                    "speed": 0.1,
+                    "spread": {
+                      "x": 0.25,
+                      "y": 0.0,
+                      "z": 0.25
+                    }
+                  }
+                },
+                "block_action_on_hit": {
+                  "type": "apoli:if_else",
+                  "condition": {
+                    "type": "apoli:and",
+                    "conditions": [
+                      {
+                        "type": "apugli:in_rain"
                       },
-                      "if_action": {
-                        "type": "apoli:execute_command",
-                        "command": "summon minecraft:lightning_bolt ~ ~ ~"
-                      },
-                      "else_action": {
-                        "type": "apoli:and",
-                        "actions": [
-                          {
-                            "type": "apoli:modify_block_state",
-                            "property": "powered",
-                            "value": true
-                          },
-                          {
-                            "type": "apugli:schedule_tick",
-                            "min": 8,
-                            "max": 8
-                          }
-                        ]
+                      {
+                        "type": "apugli:thundering"
                       }
+                    ]
+                  },
+                  "if_action": {
+                    "type": "apoli:execute_command",
+                    "command": "summon minecraft:lightning_bolt ~ ~ ~"
+                  },
+                  "else_action": {
+                    "type": "apoli:and",
+                    "actions": [
+                      {
+                        "type": "apoli:modify_block_state",
+                        "property": "powered",
+                        "value": true
+                      },
+                      {
+                        "type": "apugli:schedule_tick",
+                        "min": 8,
+                        "max": 8
+                      }
+                    ]
+                  }
+                },
+                "block_condition": {
+                  "type": "apoli:in_tag",
+                  "tag": "apugli:lightning_rods"
+                },
+                "bientity_action_on_miss": {
+                  "type": "apugli:spawn_custom_effect_cloud",
+                  "entity_id": "apugli:dragonborn_thunderball_cloud",
+                  "radius": 1.0,
+                  "radius_on_use": 0.0,
+                  "wait_time": 0,
+                  "radius_per_tick": 0.01,
+                  "duration": 80,
+                  "powers_to_apply": [
+                    "apugli:dragonborn/thunder_cloud_effect"
+                  ],
+                  "particle": {
+                    "type": "minecraft:dust",
+                    "params": "0.86666666666 0.34509803921 0.56862745098 1.0"
+                  },
+                  "bientity_condition": {
+                    "type": "apoli:invert",
+                    "condition": {
+                      "type": "apugli:owner"
                     },
-                    "block_condition": {
-                      "type": "apoli:in_tag",
-                      "tag": "apugli:lightning_rods"
+                    "inverted": true
+                  }
+                },
+                "owner_target_bientity_action_on_hit": {
+                  "type": "apoli:and",
+                  "actions": [
+                    {
+                      "type": "apoli:damage",
+                      "source": {
+                        "name": "dragonbornFireball.player"
+                      },
+                      "amount": 6
                     },
-                    "bientity_action_on_miss": {
+                    {
                       "type": "apugli:spawn_custom_effect_cloud",
                       "entity_id": "apugli:dragonborn_thunderball_cloud",
                       "radius": 1.0,
                       "radius_on_use": 0.0,
                       "wait_time": 0,
-                      "radius_per_tick": 0.01,
+                      "radius_per_tick": 0.02,
                       "duration": 80,
                       "powers_to_apply": [
                         "apugli:dragonborn/thunder_cloud_effect"
@@ -748,55 +1039,20 @@
                         },
                         "inverted": true
                       }
-                    },
-                    "owner_target_bientity_action_on_hit": {
-                      "type": "apoli:and",
-                      "actions": [
-                        {
-                          "type": "apoli:damage",
-                          "source": {
-                            "name": "dragonbornFireball.player"
-                          },
-                          "amount": 6
-                        },
-                        {
-                          "type": "apugli:spawn_custom_effect_cloud",
-                          "entity_id": "apugli:dragonborn_thunderball_cloud",
-                          "radius": 1.0,
-                          "radius_on_use": 0.0,
-                          "wait_time": 0,
-                          "radius_per_tick": 0.02,
-                          "duration": 80,
-                          "powers_to_apply": [
-                            "apugli:dragonborn/thunder_cloud_effect"
-                          ],
-                          "particle": {
-                            "type": "minecraft:dust",
-                            "params": "0.86666666666 0.34509803921 0.56862745098 1.0"
-                          },
-                          "bientity_condition": {
-                            "type": "apoli:invert",
-                            "condition": {
-                              "type": "apugli:owner"
-                            },
-                            "inverted": true
-                          }
-                        }
-                      ]
-                    },
-                    "bientity_condition": {
-                      "type": "apoli:invert",
-                      "condition": {
-                        "type": "apugli:owner"
-                      },
-                      "inverted": true
-                    },
-                    "block_action_cancels_miss_action": true
-                  }
-                ]
+                    }
+                  ]
+                },
+                "bientity_condition": {
+                  "type": "apoli:invert",
+                  "condition": {
+                    "type": "apugli:owner"
+                  },
+                  "inverted": true
+                },
+                "block_action_cancels_miss_action": true
               }
-            }
-          ]
+            ]
+          }
         }
       ]
     },
