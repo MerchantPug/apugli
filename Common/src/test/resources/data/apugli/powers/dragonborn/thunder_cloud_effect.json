@@ -1,5 +1,5 @@
 {
-  "type": "apoli:damage_nearby_when_hit",
+  "type": "apugli:damage_nearby_when_hit",
   "self_nearby_bientity_condition": {
     "type": "apoli:target_condition",
     "condition": {
