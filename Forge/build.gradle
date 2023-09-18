@@ -162,6 +162,10 @@ reobf {
 
 jar.finalizedBy('reobfJarJar')
 
+tasks.withType(AbstractPublishToMaven) {
+    dependsOn('jarJar')
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
