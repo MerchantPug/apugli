@@ -1,7 +1,9 @@
 package net.merchantpug.apugli.platform;
 
 import com.google.auto.service.AutoService;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
@@ -28,6 +30,8 @@ import net.merchantpug.apugli.util.HudRenderUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -60,12 +64,12 @@ public class ForgePlatformHelper implements IPlatformHelper {
     
     @Override
     public double getReachDistance(Entity entity) {
-        return entity instanceof IForgePlayer player ? player.getReachDistance() : 4.5;
+        return entity instanceof IForgePlayer player ? player.getBlockReach() : 4.5;
     }
     
     @Override
     public double getAttackRange(Entity entity) {
-        return entity instanceof IForgePlayer player ? player.getAttackRange() : 3;
+        return entity instanceof IForgePlayer player ? player.getEntityReach() : 3;
     }
 
     @Override
@@ -120,13 +124,13 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public void updateKeys(SerializableData.Instance data, Player player) {
-        if (player.getLevel().isClientSide() && !(player.isLocalPlayer())) return;
+        if (player.level().isClientSide() && !(player.isLocalPlayer())) return;
 
         player.getCapability(KeyPressCapability.INSTANCE).ifPresent(cap -> {
             IActivePower.Key key = data.get("key");
             if (!cap.getKeysToCheck().contains(key)) {
                 cap.addKeyToCheck(key);
-                if (!player.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+                if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
                     ApugliPacketHandler.sendS2C(new AddKeyToCheckPacket(serverPlayer.getId(), key), serverPlayer);
                 }
             }
@@ -186,6 +190,26 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public void setEntityToItemStack(ItemStack stack, Entity entity) {
         stack.getCapability(EntityLinkCapability.INSTANCE).resolve().ifPresent(cap -> cap.setEntity(entity));
+    }
+
+    @Override
+    public SerializableDataType<?> damageSourceDescriptionDataType() {
+        return ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION;
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName));
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity attacker, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName), attacker);
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName), source, attacker);
     }
 
 }

@@ -39,7 +39,7 @@ public abstract class ItemStackMixin {
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(this.getItem() instanceof BucketItem bucket) || !(Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level, stack)).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
         if (power.isPresent()) {
             ItemStack itemStack = user.getItemInHand(hand);
             if (user.canEat(power.get().getFoodComponent().canAlwaysEat())) {

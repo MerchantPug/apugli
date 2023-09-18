@@ -7,8 +7,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.ProfilePublicKey;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,8 +18,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
 
     @Shadow public Input input;
 
-    public LocalPlayerMixin(ClientLevel clientLevel, GameProfile gameProfile, @Nullable ProfilePublicKey profilePublicKey) {
-        super(clientLevel, gameProfile, profilePublicKey);
+    public LocalPlayerMixin(ClientLevel clientLevel, GameProfile gameProfile) {
+        super(clientLevel, gameProfile);
     }
 
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 0), ordinal = 6)

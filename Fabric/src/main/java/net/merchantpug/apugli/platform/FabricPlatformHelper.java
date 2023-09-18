@@ -8,6 +8,7 @@ import io.github.apace100.apoli.mixin.EyeHeightAccess;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.ModelColorPower;
 import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
@@ -27,6 +28,8 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -175,6 +178,26 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public void setEntityToItemStack(ItemStack stack, Entity entity) {
         ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
+    }
+
+    @Override
+    public SerializableDataType<?> damageSourceDescriptionDataType() {
+        return ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION;
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName));
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity attacker, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName), attacker);
+    }
+
+    @Override
+    public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
+        return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName), source, attacker);
     }
 
 }

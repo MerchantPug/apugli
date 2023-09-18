@@ -20,7 +20,7 @@ public class CoreUtil {
 
     public static int getModifiedEnchantmentLevel(int original, ItemStack stack, Enchantment enchantment) {
         if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
-            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), original, p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level, stack));
+            return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), original, p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level(), stack));
         }
         return original;
     }
@@ -32,7 +32,6 @@ public class CoreUtil {
         }
         return original;
     }
-
 
     private static ListTag serializeEnchantments(Map<Enchantment, Integer> deserialized) {
         ListTag tag = new ListTag();
@@ -46,14 +45,14 @@ public class CoreUtil {
     }
 
     public static boolean doEdibleItemPowersApply(ItemStack stack, @Nullable LivingEntity entity) {
-        return entity != null && Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(p -> p.doesApply(entity.level, stack));
+        return entity != null && Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().anyMatch(p -> p.doesApply(entity.level(), stack));
     }
 
     public static FoodProperties getEdibleItemPowerFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
         if (entity == null) {
             return stack.getItem().getFoodProperties(stack, null);
         }
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level, stack)).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(entity, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(entity.level(), stack)).findFirst();
         return power.map(EdibleItemPower::getFoodComponent).orElse(stack.getItem().getFoodProperties(stack, entity));
     }
 

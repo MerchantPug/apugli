@@ -19,6 +19,7 @@ import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -103,10 +104,10 @@ public class ApugliForgeEventHandler {
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem().copy();
         if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.getLevel(), stack)).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(event.getEntity(), stack);
-            ItemStack newStack = event.getEntity().eat(event.getEntity().getLevel(), stack);
+            ItemStack newStack = event.getEntity().eat(event.getEntity().level(), stack);
             if (event.getEntity() instanceof Player player && !player.getAbilities().instabuild) {
                 if (power.get().getReturnStack() != null) {
                     ItemStack returnStack = power.get().getReturnStack().copy();
@@ -142,7 +143,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void modifyAerialBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (!Services.POWER.hasPower(event.getEntity(), ApugliPowers.AERIAL_AFFINITY.get()) || event.getEntity().isOnGround()) return;
+        if (!Services.POWER.hasPower(event.getEntity(), ApugliPowers.AERIAL_AFFINITY.get()) || event.getEntity().onGround()) return;
         event.setNewSpeed(event.getOriginalSpeed() * 5.0F);
     }
 
@@ -159,16 +160,19 @@ public class ApugliForgeEventHandler {
             event.getEntity().fallDistance = 0.0F;
         }
 
-        if (event.getEntity().level.isClientSide)
+        if (event.getEntity().level().isClientSide)
             Services.POWER.getPowers(event.getEntity(), ApugliPowers.CLIENT_ACTION_OVER_TIME.get()).forEach(ClientActionOverTime::clientTick);
 
-        if (!event.getEntity().level.isClientSide)
+        if (!event.getEntity().level().isClientSide) {
+            event.getEntity().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(HitsOnTargetCapability::serverTick);
             ApugliPowers.BUNNY_HOP.get().onTravel(event.getEntity(), new Vec3(event.getEntity().xxa, event.getEntity().yya, event.getEntity().zza));
+
+        }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     public static void onMobTargetChange(LivingChangeTargetEvent event) {
-        if(event.getEntity().level.isClientSide()) return;
+        if(event.getEntity().level().isClientSide()) return;
 
         List<MobsIgnorePower> powers = Services.POWER.getPowers(event.getOriginalTarget(), ApugliPowers.MOBS_IGNORE.get());
         if (powers.stream().anyMatch(power -> power.shouldIgnore(event.getEntity())))
@@ -231,7 +235,7 @@ public class ApugliForgeEventHandler {
         float finalAmount = amount + extraEnchantmentDamage;
         if (extraEnchantmentDamage > 0.0F && event.getSource().getEntity() instanceof Player attacker) {
             float enchantmentDamageBonus = EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), event.getEntity().getMobType());
-            if (enchantmentDamageBonus <= 0.0F && !event.getEntity().level.isClientSide) {
+            if (enchantmentDamageBonus <= 0.0F && !event.getEntity().level().isClientSide) {
                 attacker.magicCrit(event.getEntity());
             }
         }
@@ -244,7 +248,7 @@ public class ApugliForgeEventHandler {
     private static float calculateEnchantmentDamage(LivingEntity powerHolder, DamageSource source, float amount) {
         float additionalValue = 0.0F;
 
-        if (source.getEntity() instanceof LivingEntity attacker && !source.isProjectile()) {
+        if (source.getEntity() instanceof LivingEntity attacker && !source.isIndirect()) {
             additionalValue += ApugliPowers.MODIFY_ENCHANTMENT_DAMAGE_DEALT.get().applyModifiers(attacker, source, amount, powerHolder);
         }
 

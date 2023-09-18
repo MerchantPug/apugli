@@ -1,10 +1,10 @@
 package net.merchantpug.apugli.mixin.forge.client;
 
-import com.mojang.math.Vector3f;
 import net.merchantpug.apugli.access.HumanoidMobRendererAccess;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;

@@ -87,7 +87,7 @@ public class KeyPressCapability implements IKeyPressCapability, ICapabilityProvi
     }
 
     public void sync() {
-        if (provider.level.isClientSide) return;
+        if (provider.level().isClientSide) return;
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> provider), new SyncKeyPressCapabilityPacket(provider.getId(), previouslyUsedKeys, currentlyUsedKeys));
     }
 

@@ -1,7 +1,5 @@
 package net.merchantpug.apugli.power.factory;
 
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
@@ -19,7 +17,7 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
         return CooldownPowerFactory.getSerializableData()
                 .add("damage_condition", Services.CONDITION.damageDataType(), null)
                 .add("damage_type", SerializableDataTypes.DAMAGE_TYPE, null)
-                .add("source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null)
+                .add("source", Services.PLATFORM.damageSourceDescriptionDataType(), null)
                 .add("modifier", Services.PLATFORM.getModifierDataType(), null)
                 .add("modifiers", Services.PLATFORM.getModifiersDataType(), null)
                 .add("radius", SerializableDataTypes.FLOAT, 16.0F);
@@ -40,7 +38,7 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
 
             for (LivingEntity nearby : target.level().getEntitiesOfClass(LivingEntity.class, AABB.ofSize(target.getPosition(1F), radius, radius, radius))) {
                 if (nearby != attacker && nearby != target && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_nearby_bientity_condition", attacker, nearby)) && Services.CONDITION.checkBiEntity(data, targetName + "_nearby_bientity_condition", target, nearby)) {
-                    nearby.hurt(MiscUtil.createDamageSource(attacker.damageSources(), data.get("source"), data.get("damage_type"), attacker), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
+                    nearby.hurt(Services.PLATFORM.createDamageSource(attacker.damageSources(), data, attacker, "source", "damage_type"), (float) Services.PLATFORM.applyModifiers(powerHolder, modifiers, damageAmount));
                 }
             }
             this.use(power, powerHolder);

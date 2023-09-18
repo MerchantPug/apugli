@@ -149,7 +149,7 @@ public class ApugliForgeClientEventHandler {
                 }
 
                 if (livingEntityRenderer.getModel() instanceof HumanoidModel<?> humanoidModel) {
-                    livingEntityRenderer.addLayer(new PowerHumanoidArmorLayer(livingEntityRenderer, humanoidModel, humanoidModel));
+                    livingEntityRenderer.addLayer(new PowerHumanoidArmorLayer(livingEntityRenderer, humanoidModel, humanoidModel, event.getContext().getModelManager()));
                 }
 
                 if (entityRenderer instanceof HumanoidMobRenderer<?, ?> humanoidMobRenderer) {
@@ -166,7 +166,7 @@ public class ApugliForgeClientEventHandler {
                 playerRenderer.addLayer(new EntityTextureOverlayLayer<>(playerRenderer, ((PlayerModelAccessor)playerRenderer.getModel()).isSlim(), event.getEntityModels()));
                 playerRenderer.addLayer(new PowerItemInHandLayer<>(playerRenderer, itemInHandRenderer));
                 playerRenderer.addLayer(new PowerCustomHeadLayer<>(playerRenderer, event.getEntityModels(), itemInHandRenderer));
-                playerRenderer.addLayer(new PowerHumanoidArmorLayer<>(playerRenderer, playerRenderer.getModel(), playerRenderer.getModel()));
+                playerRenderer.addLayer(new PowerHumanoidArmorLayer<>(playerRenderer, playerRenderer.getModel(), playerRenderer.getModel(), event.getContext().getModelManager()));
             });
         }
     }

@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.power.factory;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.access.ExplosionAccess;
@@ -103,7 +102,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         double verticalVelocity = isCharged && useCharged && !chargedModifiers(power, entity).isEmpty() ? Services.PLATFORM.applyModifiers(entity, chargedModifiers(power, entity), data.getDouble("vertical_velocity")) : data.getDouble("vertical_velocity");
         float e = isCharged && useCharged ? 2.0F : 1.5F;
         if((data.isPresent("damage_type") || data.isPresent("source")) && data.getFloat("amount") != 0.0F) {
-            DamageSource source = MiscUtil.createDamageSource(entity.damageSources(), data.get("source"), data.get("damage_type"));
+            DamageSource source = Services.PLATFORM.createDamageSource(entity.damageSources(), data, "source", "damage_type");
             entity.hurt(source, data.getFloat("amount"));
         }
         float f = Mth.sin(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);

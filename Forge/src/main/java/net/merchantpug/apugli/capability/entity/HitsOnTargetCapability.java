@@ -58,7 +58,7 @@ public class HitsOnTargetCapability implements IHitsOnTargetCapability, ICapabil
         Iterator<Map.Entry<Integer, Tuple<Integer, Integer>>> it = hits.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, Tuple<Integer, Integer>> entry = it.next();
-            Entity entity = provider.level.getEntity(entry.getKey());
+            Entity entity = provider.level().getEntity(entry.getKey());
             int hitAmount = entry.getValue().getA();
             int currentTime = entry.getValue().getB();
             if (entity == null || !entity.isAlive() || currentTime > ApugliConfigs.SERVER.hitsOnTargetOptions.getResetTimerTicks()) {
@@ -74,7 +74,7 @@ public class HitsOnTargetCapability implements IHitsOnTargetCapability, ICapabil
     }
 
     public void sync() {
-        if (provider.level.isClientSide) return;
+        if (provider.level().isClientSide) return;
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> provider), new SyncHitsOnTargetCapabilityPacket(provider.getId(), hits));
     }
 

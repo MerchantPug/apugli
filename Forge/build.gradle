@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'net.minecraftforge.gradle' version '5.+'
+    id 'net.minecraftforge.gradle' version '6.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'eclipse'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
@@ -112,9 +112,9 @@ dependencies {
     implementation(fg.deobf("io.github.edwinmindcraft:calio-forge:${minecraft_version}-${calio_forge_version}"))
     implementation(fg.deobf("io.github.edwinmindcraft:apoli-forge:${minecraft_version}-${apoli_forge_version}"))
     //Caelus
-    implementation(fg.deobf("top.theillusivec4.caelus:caelus-forge:${minecraft_version}-${caelus_version}"))
-    // AdditionalEntityAttributes
-    implementation(fg.deobf("com.github.EdwinMindcraft.AdditionalEntityAttributes:Forge:${aea_forge_version}") {
+    implementation(fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}+1.20"))
+    //AdditionalEntityAttributes
+    implementation(fg.deobf("de.dafuqs:additionalentityattributes-forge:${aea_forge_version}+${minecraft_version}") {
         exclude group: 'net.minecraftforge'
     })
     //MixinExtras
@@ -153,13 +153,14 @@ processTestResources {
 
 tasks.jarJar.configure {
     archiveClassifier = ""
+    dependsOn('reobfJar')
 }
 
 reobf {
     jarJar {}
 }
 
-jar.finalizedBy('reobfJar')
+jar.finalizedBy('reobfJarJar')
 
 publishing {
     publications {

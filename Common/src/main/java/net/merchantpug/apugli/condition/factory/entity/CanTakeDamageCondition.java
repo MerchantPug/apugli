@@ -1,10 +1,10 @@
 package net.merchantpug.apugli.condition.factory.entity;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.merchantpug.apugli.platform.Services;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
@@ -22,7 +22,7 @@ public class CanTakeDamageCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity instance) {
-        DamageSource source = MiscUtil.createDamageSource(instance.damageSources(), data.get("source"), data.get("damage_type"));
+        DamageSource source = Services.PLATFORM.createDamageSource(instance.damageSources(), data, "source", "damage_type");
         if (instance.isInvulnerableTo(source))
             return false;
         else if (instance instanceof LivingEntity living)
