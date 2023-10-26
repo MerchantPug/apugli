@@ -1,4 +1,4 @@
-### Breaking Change Notes
+## Breaking Change Notes
 - `apugli:sprinting` now has a new field called `requires_input`, which defaults to false. This doesn't match the behaviour in previous versions, so set this to true if you wish to have the previous logic.
 
 ### Power Types
