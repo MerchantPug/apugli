@@ -15,6 +15,7 @@ public class ApugliEntityConditions {
         register("can_have_effect", new CanHaveEffectCondition());
         register("can_take_damage", new CanTakeDamageCondition());
         register("compare_resource", new CompareResourceCondition());
+        register("crawling", new CrawlingCondition());
         register("custom_entity_id", new CustomEntityIdCondition());
         register("entity_in_radius", new EntityInRadiusCondition());
         register("grounded", new GroundedCondition());

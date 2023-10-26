@@ -6,6 +6,9 @@
 - Added `self_target_bientity_action`, `self_nearby_bientity_action`, and `target_nearby_bientity_action` to `damage_nearby_on_hit` power type. (All optional).
 - Added `attacker_target_bientity_action`, `attacker_nearby_bientity_action`, and `self_nearby_bientity_action` to `damage_nearby_when_hit` power type. (All optional).
 
+### Entity Condition Types
+- Added `crawling` entity condition type.
+
 ### Bugfixes
 - Fixed crash due to wrong locations of fields when creating damage sources inside `damage_nearby_x_hit` power types.
 - Fixed `damage_nearby_on_hit` not running at all.

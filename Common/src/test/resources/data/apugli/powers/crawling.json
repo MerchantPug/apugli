@@ -1,0 +1,11 @@
+{
+  "type": "apoli:action_over_time",
+  "entity_action": {
+    "type": "apoli:set_on_fire",
+    "duration": 1
+  },
+  "interval": 5,
+  "condition": {
+    "type": "apugli:crawling"
+  }
+}
