@@ -2,6 +2,7 @@ package net.merchantpug.apugli.mixin.fabric.client;
 
 import com.mojang.authlib.GameProfile;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.power.SprintingPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -10,7 +11,9 @@ import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LocalPlayer.class)
 public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
@@ -22,12 +25,19 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
         super(clientLevel, gameProfile);
     }
 
+    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z"))
+    private void allowPowerSprinting(CallbackInfo ci) {
+        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (!Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
+            this.setSprinting(true);
+        }
+    }
+
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 1), ordinal = 5)
     private boolean resetPowerSprinting(boolean value) {
-        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isUnderWater() && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision)) {
-            return true;
+        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get())) {
+            return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision) || this.isInWater() && !this.isUnderWater();
         }
-        return !Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && value;
+        return value;
     }
 
 }

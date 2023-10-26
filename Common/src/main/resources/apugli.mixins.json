@@ -37,7 +37,6 @@
     "client.AbstractSoundInstanceMixin",
     "client.ArmorFeatureRendererMixin",
     "client.CapeFeatureRendererMixin",
-    "client.ClientPlayerEntityMixin",
     "client.GameRendererMixin",
     "client.HeadFeatureRendererMixin",
     "client.HeldItemFeatureRendererMixin",

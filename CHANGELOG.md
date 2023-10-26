@@ -1,5 +1,8 @@
-### Forge
-- Reintroduced Forge module for 1.20.1, meant to be used with Origins Forge 1.10.0.x.
+### Breaking Change Notes
+- `apugli:sprinting` now has a new field called `requires_input`, which defaults to false. This doesn't match the behaviour in previous versions, so set this to true if you wish to have the previous logic.
 
-### Internal
-- Rewrote minor parts of the code to account for the re-enabling of the Forge module.
+### Power Types
+- Added `requires_input` boolean field to `sprinting` power type (Defaults to false).
+
+### Bugfixes
+- [FORGE] Fixed incorrect behaviour with stopping from `sprinting` power type.
