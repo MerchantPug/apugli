@@ -13,7 +13,7 @@
 - Fixed crash due to wrong locations of fields when creating damage sources inside `damage_nearby_x_hit` power types.
 - Fixed `damage_nearby_on_hit` not running at all.
 - Fixed `damage_nearby_x_hit` not considering for the `damage_condition` field.
-- Fixed `hover` power type's `step_assist` field not functioning for correcting upper blocks.
+- Fixed `hover` power type's `step_assist` field not functioning for correcting upper bounds.
 - [FABRIC] Fixed `damage_nearby_when_hit` using `damage_nearby_on_hit`'s serializable data.
 - [FABRIC] Fixed fabric.mod.json not using the new `fabric-api` mod id. #56
 - [FORGE] Fixed incorrect behaviour with stopping from `sprinting` power type.
