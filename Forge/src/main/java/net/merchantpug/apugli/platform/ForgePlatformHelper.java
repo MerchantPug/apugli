@@ -199,17 +199,17 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, String typeFieldName, String descriptionFieldName) {
-        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName));
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), Optional.ofNullable(data.get(typeFieldName)));
     }
 
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity attacker, String typeFieldName, String descriptionFieldName) {
-        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName), attacker);
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), Optional.ofNullable(data.get(typeFieldName)), attacker);
     }
 
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
-        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), data.get(typeFieldName), source, attacker);
+        return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), Optional.ofNullable(data.get(typeFieldName)), source, attacker);
     }
 
 }

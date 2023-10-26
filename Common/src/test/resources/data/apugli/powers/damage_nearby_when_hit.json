@@ -1,0 +1,11 @@
+{
+  "type": "apugli:damage_nearby_when_hit",
+  "damage_type": "minecraft:player_attack",
+  "self_nearby_bientity_action": {
+    "type": "apoli:target_action",
+    "action": {
+      "type": "apoli:set_on_fire",
+      "duration": 2
+    }
+  }
+}

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class DamageNearbyWhenHitPower extends AbstractCooldownPower<DamageNearbyWhenHitPower.Instance> implements DamageNearbyWhenHitPowerFactory<DamageNearbyWhenHitPower.Instance> {
 
     public DamageNearbyWhenHitPower() {
-        super("damage_nearby_when_hit", DamageNearbyOnHitPowerFactory.getSerializableData(),
+        super("damage_nearby_when_hit", DamageNearbyWhenHitPowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }
