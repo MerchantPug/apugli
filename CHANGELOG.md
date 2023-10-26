@@ -6,4 +6,5 @@
 
 ### Bugfixes
 - [FORGE] Fixed incorrect behaviour with stopping from `sprinting` power type.
+- [FORGE] Update pack formats.
 - [FABRIC] Fixed fabric.mod.json not using the new `fabric-api` mod id. #56
