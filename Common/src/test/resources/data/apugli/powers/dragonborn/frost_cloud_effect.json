@@ -1,8 +1,0 @@
-{
-  "type": "apugli:freeze",
-  "modifier": {
-    "operation": "multiply_base_multiplicative",
-    "value": -0.7
-  },
-  "should_damage": false
-}
