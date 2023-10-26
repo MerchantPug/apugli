@@ -115,8 +115,8 @@ public abstract class EntityMixin implements EntityAccess {
 
                     correction = 0.0;
                     while (correction <= upperCorrectionRange) {
-                        Vec3 vec3d = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, correction, movement.z), box, this.level, collisionList);
-                        Vec3 vec3d2 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, correction, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
+                        Vec3 vec3d = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, -correction, movement.z), box, this.level, collisionList);
+                        Vec3 vec3d2 = Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -correction, 0.0), box.expandTowards(movement.x, 0.0, movement.z), this.level, collisionList);
                         Vec3 vec3d3 = Entity.collideBoundingBox(thisAsLiving, new Vec3(movement.x, 0.0, movement.z), box, this.level, collisionList).add(vec3d2);
 
                         if (vec3d3.horizontalDistanceSqr() > vec3d.horizontalDistanceSqr()) {
@@ -125,9 +125,6 @@ public abstract class EntityMixin implements EntityAccess {
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
                             cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
-                            if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
-                                ((LivingEntityAccessor) thisAsLiving).setNoJumpDelay(0);
-                            }
                             break;
                         }
                         double checkAddition = lowerCorrectionRange % 1.0;
