@@ -16,15 +16,8 @@ public class Apugli {
     public static final String NAME = "Apugli";
     public static final Logger LOG = LoggerFactory.getLogger(NAME);
     public static String VERSION = "";
-    public static int[] SEMVER;
     
     public static void init() {
-        String[] splitVersion = VERSION.split("\\.");
-        SEMVER = new int[splitVersion.length];
-        for(int i = 0; i < SEMVER.length; i++) {
-            SEMVER[i] = Integer.parseInt(splitVersion[i]);
-        }
-
         Apugli.LOG.info("Apugli " + Apugli.VERSION + " has initialized. Powering up your powered up game.");
 
         ApugliBiEntityActions.registerAll();
