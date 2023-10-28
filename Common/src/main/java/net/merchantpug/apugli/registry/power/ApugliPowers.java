@@ -28,6 +28,7 @@ public class ApugliPowers {
     public static final Supplier<AllowAnvilEnchantPower.Factory> ALLOW_ANVIL_ENCHANT = register(new AllowAnvilEnchantPower.Factory());
     public static final Supplier<BunnyHopPowerFactory> BUNNY_HOP = register("bunny_hop", BunnyHopPowerFactory.class);
     public static final Supplier<ClientActionOverTime.Factory> CLIENT_ACTION_OVER_TIME = register(new ClientActionOverTime.Factory());
+    public static final Supplier<CrawlingPower.Factory> CRAWLING = register(new CrawlingPower.Factory());
     public static final Supplier<CustomProjectilePowerFactory> CUSTOM_PROJECTILE = register("custom_projectile", CustomProjectilePowerFactory.class);
     public static final Supplier<CustomDeathSoundPower.Factory> CUSTOM_DEATH_SOUND = register(new CustomDeathSoundPower.Factory());
     public static final Supplier<CustomFootstepPower.Factory> CUSTOM_FOOTSTEP = register(new CustomFootstepPower.Factory());

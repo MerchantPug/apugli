@@ -24,6 +24,7 @@ import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
+import net.merchantpug.apugli.network.s2c.ForcePlayerPosePacket;
 import net.merchantpug.apugli.platform.services.IPlatformHelper;
 import net.merchantpug.apugli.util.ActiveKeyUtil;
 import net.merchantpug.apugli.util.HudRenderUtil;
@@ -34,11 +35,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgePlayer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -210,6 +213,19 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
         return MiscUtil.createDamageSource(damageSources, Optional.ofNullable(data.get(descriptionFieldName)), Optional.ofNullable(data.get(typeFieldName)), source, attacker);
+    }
+
+    @Override
+    public boolean canSetPose(Player player) {
+        return player.getForcedPose() == null;
+    }
+
+    @Override
+    public void setForcedPlayerPose(Player player, @Nullable Pose pose) {
+        player.setForcedPose(pose);
+        if (player instanceof ServerPlayer serverPlayer) {
+            Services.PLATFORM.sendS2CTrackingAndSelf(new ForcePlayerPosePacket(serverPlayer.getId(), pose), serverPlayer);
+        }
     }
 
 }

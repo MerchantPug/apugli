@@ -153,6 +153,10 @@ public class ApugliForgeEventHandler {
 
         if (event.getEntity().isDeadOrDying()) return;
 
+        if (event.getEntity() instanceof Player player) {
+            CrawlingPower.tickOnceForge(player);
+        }
+
         IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
@@ -166,7 +170,6 @@ public class ApugliForgeEventHandler {
         if (!event.getEntity().level().isClientSide) {
             event.getEntity().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(HitsOnTargetCapability::serverTick);
             ApugliPowers.BUNNY_HOP.get().onTravel(event.getEntity(), new Vec3(event.getEntity().xxa, event.getEntity().yya, event.getEntity().zza));
-
         }
     }
 

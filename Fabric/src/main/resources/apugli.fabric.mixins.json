@@ -20,6 +20,7 @@
     "common.LightningBoltMixin",
     "common.LivingEntityMixin",
     "common.MobEntityMixin",
+    "common.PlayerEntityMixin",
     "common.ProjectileEntityMixin",
     "common.ServerPlayNetworkHandlerMixin",
     "common.accessor.BucketItemAccessor",

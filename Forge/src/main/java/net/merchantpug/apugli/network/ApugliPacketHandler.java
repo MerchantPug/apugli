@@ -43,6 +43,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteEntityActionServerPacket.class, ExecuteEntityActionServerPacket::encode, ExecuteEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionClientPacket.class, ExecuteBiEntityActionClientPacket::encode, ExecuteBiEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteBiEntityActionClientPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
+        INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

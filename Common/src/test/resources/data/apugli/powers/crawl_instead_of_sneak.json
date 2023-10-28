@@ -1,0 +1,10 @@
+{
+  "type": "apugli:crawling",
+  "condition": {
+    "type": "apugli:key_pressed",
+    "key": {
+      "key": "key.sneak",
+      "continuous": true
+    }
+  }
+}

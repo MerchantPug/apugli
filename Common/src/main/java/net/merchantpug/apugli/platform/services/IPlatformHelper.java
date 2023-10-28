@@ -14,8 +14,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -118,5 +120,13 @@ public interface IPlatformHelper {
     DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity attacker, String typeFieldName, String descriptionFieldName);
 
     DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName);
+
+    default boolean canSetPose(Player player) {
+        return true;
+    }
+
+    default void setForcedPlayerPose(Player player, @Nullable Pose pose) {
+
+    }
 
 }
