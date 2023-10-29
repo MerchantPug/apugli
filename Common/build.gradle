@@ -90,3 +90,11 @@ githubRelease {
         new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
 }
+
+tasks.remapJar {
+    enabled = false
+}
+
+tasks.remapSourcesJar {
+    enabled = false
+}
