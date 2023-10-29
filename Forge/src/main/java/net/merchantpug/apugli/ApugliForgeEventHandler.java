@@ -326,7 +326,9 @@ public class ApugliForgeEventHandler {
             ApugliPowers.MODIFY_SCALE.get().clearFromAll();
             ApugliPowers.MODIFY_SCALE.get().clearScaleTypeCache();
             ApugliPowers.MODIFY_SCALE.get().clearModifiersFromCache();
-            ApugliPacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new ClearScaleModifierCachePacket());
+            if (CalioAPI.getServer() != null) {
+                ApugliPacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new ClearScaleModifierCachePacket());
+            }
         }
         TextureUtil.getCache().clear();
     }

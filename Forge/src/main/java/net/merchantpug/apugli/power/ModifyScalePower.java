@@ -36,18 +36,21 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     @Override
-    public void tick(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, LivingEntity entity) {
-        ModifyScalePowerFactory.super.tick(power, entity);
+    public void tick(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living)
+            ModifyScalePowerFactory.super.tick(power, living);
     }
 
     @Override
-    public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, LivingEntity entity) {
-        ModifyScalePowerFactory.super.onAdded(power, entity);
+    public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living)
+            ModifyScalePowerFactory.super.onAdded(power, living);
     }
 
     @Override
-    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, LivingEntity entity) {
-        ModifyScalePowerFactory.super.onRemoved(power, entity);
+    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living)
+            ModifyScalePowerFactory.super.onRemoved(power, living);
     }
 
     @Override
