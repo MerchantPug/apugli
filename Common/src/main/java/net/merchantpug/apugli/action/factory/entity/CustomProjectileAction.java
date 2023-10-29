@@ -30,7 +30,6 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
                 .add("divergence", SerializableDataTypes.FLOAT, 1F)
                 .add("sound", SerializableDataTypes.SOUND_EVENT, null)
                 .add("tag", SerializableDataTypes.NBT, null)
-                .add("bientity_action", Services.ACTION.biEntityDataType(), null)
                 .add("entity_action_before_firing", Services.ACTION.entityDataType(), null)
                 .add("bientity_action_after_firing", Services.ACTION.biEntityDataType(), null)
                 .add("block_action_on_hit", Services.ACTION.blockDataType(), null)
