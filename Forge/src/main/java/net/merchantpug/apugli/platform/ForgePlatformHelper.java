@@ -184,7 +184,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public Entity getEntityFromItemStack(ItemStack stack) {
-        if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
+        if (stack != null && stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
             return stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get().getEntity();
         }
         return null;
