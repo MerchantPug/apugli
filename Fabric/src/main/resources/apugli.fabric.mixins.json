@@ -24,7 +24,10 @@
     "common.ProjectileEntityMixin",
     "common.ServerPlayNetworkHandlerMixin",
     "common.accessor.BucketItemAccessor",
-    "common.accessor.CooldownPowerAccessor"
+    "common.accessor.CooldownPowerAccessor",
+    "common.accessor.PowerTypeRegistryAccessor",
+    "integration.pehkui.ScaleDataMixin",
+    "integration.pehkui.ScaleModifierMixin"
   ],
   "client": [
     "client.BipedEntityRendererMixin",

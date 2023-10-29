@@ -48,6 +48,10 @@ dependencies {
     compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'
     //JSR305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    //Pehkui
+    modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}", {
+        exclude group: "net.fabricmc.fabric-api"
+    })
 }
 
 publishing {
@@ -85,12 +89,4 @@ githubRelease {
     body {
         new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     }
-}
-
-tasks.remapJar {
-    enabled = false
-}
-
-tasks.remapSourcesJar {
-    enabled = false
 }

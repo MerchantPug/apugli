@@ -1,0 +1,24 @@
+{
+  "type": "apoli:multiple",
+  "resource": {
+    "type": "apoli:resource",
+    "min": 0,
+    "max": 2
+  },
+  "scale": {
+    "type": "apugli:modify_scale",
+    "scale_types": [
+      "pehkui:width",
+      "pehkui:height"
+    ],
+    "modifiers": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0,
+      "resource": "*:*_resource",
+      "modifier": {
+        "operation": "multiply_total_multiplicative",
+        "value": -0.25
+      }
+    }
+  }
+}

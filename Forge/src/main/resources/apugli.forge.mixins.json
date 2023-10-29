@@ -10,7 +10,9 @@
     "common.LivingEntityMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.accessor.ApoliClientEventHandlerAccessor",
-    "common.accessor.FabricPowerFactoryAccessor"
+    "common.accessor.FabricPowerFactoryAccessor",
+    "integration.pehkui.ScaleDataMixin",
+    "integration.pehkui.ScaleModifierMixin"
   ],
   "client": [
     "client.ElytraFeatureRendererMixin",

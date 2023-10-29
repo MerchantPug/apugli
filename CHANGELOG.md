@@ -2,6 +2,7 @@
 - `apugli:sprinting` now has a new field called `requires_input`, which defaults to false. This doesn't match the behaviour in previous versions, so set this to true if you wish to have the previous logic.
 
 ### Power Types
+- Added `modify_scale` power type. Of which requires Pehkui to function, If Pehkui isn't loaded this power will not load.
 - Added `crawling` power type.
 - Added `requires_input` boolean field to `sprinting` power type (Defaults to false).
 - Added `self_target_bientity_action`, `self_nearby_bientity_action`, and `target_nearby_bientity_action` to `damage_nearby_on_hit` power type. (All optional).

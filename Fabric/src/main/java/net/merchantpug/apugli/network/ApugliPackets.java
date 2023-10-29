@@ -33,6 +33,9 @@ import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.*;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.ClearScaleModifierCachePacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateScaleDataPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,6 +56,9 @@ public class ApugliPackets {
             ClientPlayNetworking.registerReceiver(UpdateUrlTexturesPacket.ID, createS2CHandler(UpdateUrlTexturesPacket::decode, UpdateUrlTexturesPacket::handle));
             ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket::handle));
             ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket::handle));
+            ClientPlayNetworking.registerReceiver(SyncScalePacket.ID, createS2CHandler(SyncScalePacket::decode, SyncScalePacket::handle));
+            ClientPlayNetworking.registerReceiver(ClearScaleModifierCachePacket.ID, createS2CHandler(ClearScaleModifierCachePacket::decode, ClearScaleModifierCachePacket::handle));
+            ClientPlayNetworking.registerReceiver(UpdateScaleDataPacket.ID, createS2CHandler(UpdateScaleDataPacket::decode, UpdateScaleDataPacket::handle));
         });
     }
 

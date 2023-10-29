@@ -115,7 +115,12 @@ dependencies {
     //Service
     compileOnly group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
     annotationProcessor group:'com.google.auto.service', name:'auto-service', version:'1.0.1'
-    // LazyDFU
+    //Pehkui
+    modCompileOnly("com.github.Virtuoel:Pehkui:${pehkui_version}", {
+        exclude group: "net.fabricmc.fabric-api"
+    })
+    // modLocalRuntime "com.github.Virtuoel:Pehkui:${pehkui_version}"
+    //LazyDFU
     modLocalRuntime "maven.modrinth:lazydfu:0.1.3"
     //Relying on the Common Project for sure
     implementation project(path: ":Common", configuration: "namedElements")

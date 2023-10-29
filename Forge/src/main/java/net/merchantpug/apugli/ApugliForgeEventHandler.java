@@ -1,12 +1,15 @@
 package net.merchantpug.apugli;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.integration.PowerLoadEvent;
+import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
@@ -16,6 +19,7 @@ import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.ClearScaleModifierCachePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -50,11 +54,15 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
+import virtuoel.pehkui.api.ScaleRegistries;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = Apugli.ID)
 public class ApugliForgeEventHandler {
@@ -314,11 +322,22 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void prePowerLoad(AddReloadListenerEvent event) {
+        if (ModList.get().isLoaded("pehkui")) {
+            ApugliPowers.MODIFY_SCALE.get().clearFromAll();
+            ApugliPowers.MODIFY_SCALE.get().clearScaleTypeCache();
+            ApugliPowers.MODIFY_SCALE.get().clearModifiersFromCache();
+            ApugliPacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new ClearScaleModifierCachePacket());
+        }
         TextureUtil.getCache().clear();
     }
 
     @SubscribeEvent
     public static void postPowerLoad(PowerLoadEvent.Post event) {
+        if (event.getPower().getFactory() instanceof ModifyScalePower && !ModList.get().isLoaded("pehkui")) {
+            Apugli.LOG.error("Power '" + event.getId() + "' could not be loaded as it requires the Pehkui mod to be present. (skipping).");
+            event.setCanceled(true);
+            return;
+        }
         handleUrlPower(event.getId(), event.getPower());
     }
 

@@ -71,6 +71,8 @@ public class ApugliPowers {
     @Deprecated
     public static final Supplier<SetTexturePower.Factory> SET_TEXTURE = register(new SetTexturePower.Factory());
 
+    public static final Supplier<ModifyScalePowerFactory> MODIFY_SCALE = register("modify_scale", ModifyScalePowerFactory.class);
+
     public static <P extends Power, F extends SimplePowerFactory<P>> Supplier<F> register(F factory) {
         return Services.POWER.registerFactory(factory);
     }

@@ -1,0 +1,11 @@
+{
+  "type": "apugli:modify_scale",
+  "scale_types": [
+    "pehkui:width",
+    "pehkui:height"
+  ],
+  "modifiers": {
+    "operation": "multiply_total_multiplicative",
+    "value": -0.5
+  }
+}
