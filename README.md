@@ -99,8 +99,9 @@ You are able to remove the `include` block if you don't wish to include Apugli i
 ```groovy
 repositories {
     ...
-    maven { 
-        url 'https://maven.theillusivec4.top'
+    maven {
+        name = "Pug's Maven"
+        url = 'https://maven.merchantpug.net/releases/'
     }
     maven {
         name = "JitPack"
