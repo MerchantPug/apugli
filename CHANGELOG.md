@@ -2,7 +2,8 @@
 - `apugli:sprinting` now has a new field called `requires_input`, which defaults to false. This doesn't match the behaviour in previous versions, so set this to true if you wish to have the previous logic.
 
 ### Power Types
-- Added `modify_scale` power type. Of which requires Pehkui to function, If Pehkui isn't loaded this power will not load.
+- Added `modify_scale` power type. Requires Pehkui to function, iF Pehkui isn't loaded any powers with this power type will fail to load.
+- Added `prevent_entity_selection` power type.
 - Added `crawling` power type.
 - Added `requires_input` boolean field to `sprinting` power type (Defaults to false).
 - Added `self_target_bientity_action`, `self_nearby_bientity_action`, and `target_nearby_bientity_action` to `damage_nearby_on_hit` power type. (All optional).
@@ -12,7 +13,7 @@
 - Added `crawling` entity condition type.
 
 ### Bugfixes
-- Fixed crash due to wrong locations of fields when creating damage sources inside `damage_nearby_x_hit` power types.
+- Fixed crash due to wrong locations of fields when creating damage sources inside `damage_nearby_*_hit` power types.
 - Fixed `damage_nearby_on_hit` not running at all.
 - Fixed `damage_nearby_x_hit` not considering for the `damage_condition` field.
 - Fixed `hover` power type's `step_assist` field not functioning for correcting upper bounds.
