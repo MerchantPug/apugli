@@ -39,6 +39,10 @@ repositories {
             excludeGroup "io.github.edwinmindcraft"
         }
     }
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
 }
 
 mixin {
