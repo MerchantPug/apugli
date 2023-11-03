@@ -37,6 +37,9 @@ subprojects {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${mod_name}" }
         }
+        from(rootProject.file("ALTERNATE_LICENSES")) {
+            rename { "${it}_${mod_name}" }
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {
