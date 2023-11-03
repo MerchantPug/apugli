@@ -6,9 +6,8 @@ import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.*;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.ClearScaleModifierCachePacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateScaleDataPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateLerpedScalePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -48,8 +47,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
-        INSTANCE.registerMessage(i++, ClearScaleModifierCachePacket.class, ClearScaleModifierCachePacket::encode, ClearScaleModifierCachePacket::decode, ApugliPacketHandler.createS2CHandler(ClearScaleModifierCachePacket::handle));
-        INSTANCE.registerMessage(i++, UpdateScaleDataPacket.class, UpdateScaleDataPacket::encode, UpdateScaleDataPacket::decode, ApugliPacketHandler.createS2CHandler(UpdateScaleDataPacket::handle));
+        INSTANCE.registerMessage(i++, UpdateLerpedScalePacket.class, UpdateLerpedScalePacket::encode, UpdateLerpedScalePacket::decode, ApugliPacketHandler.createS2CHandler(UpdateLerpedScalePacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

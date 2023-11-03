@@ -1,8 +1,7 @@
 package net.merchantpug.apugli;
 
-import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.integration.ModifyValueEvent;
 import io.github.apace100.apoli.integration.PowerLoadEvent;
-import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -19,7 +18,6 @@ import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.ClearScaleModifierCachePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -57,12 +55,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
-import virtuoel.pehkui.api.ScaleRegistries;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = Apugli.ID)
 public class ApugliForgeEventHandler {
@@ -322,21 +318,13 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void prePowerLoad(AddReloadListenerEvent event) {
-        if (ModList.get().isLoaded("pehkui")) {
-            ApugliPowers.MODIFY_SCALE.get().clearFromAll();
-            ApugliPowers.MODIFY_SCALE.get().clearScaleTypeCache();
-            ApugliPowers.MODIFY_SCALE.get().clearModifiersFromCache();
-            if (CalioAPI.getServer() != null) {
-                ApugliPacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new ClearScaleModifierCachePacket());
-            }
-        }
         TextureUtil.getCache().clear();
     }
 
     @SubscribeEvent
     public static void postPowerLoad(PowerLoadEvent.Post event) {
         if (event.getPower().getFactory() instanceof ModifyScalePower && !ModList.get().isLoaded("pehkui")) {
-            Apugli.LOG.error("Power '" + event.getId() + "' could not be loaded as it requires the Pehkui mod to be present. (skipping).");
+            Apugli.LOG.error("Power '" + event.getId() + "' could not be loaded as it uses the `" + event.getPower().getRegistryName() + "' power type, which requires the Pehkui mod to be present. (skipping).");
             event.setCanceled(true);
             return;
         }

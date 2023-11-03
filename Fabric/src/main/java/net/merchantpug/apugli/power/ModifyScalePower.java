@@ -21,11 +21,9 @@ import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePower.Instance> implements ModifyScalePowerFactory<ModifyScalePower.Instance> {
-
     private static final Set<ResourceLocation> EMPTY_SET = new HashSet<>();
-    private static final Map<Instance, Set<ResourceLocation>> CACHE = new HashMap<>();
-    private static final Map<ResourceLocation, ApoliScaleModifier> MODIFIER_CACHE = new HashMap<>();
-    private static final Map<Entity, Map<Instance, Double>> VALUE_CACHE = new HashMap<>();
+    private static final Map<Entity, Map<Instance, Set<ResourceLocation>>> TYPE_CACHE = new HashMap<>();
+    private static final Map<Entity, Map<ResourceLocation, ApoliScaleModifier<Instance>>> MODIFIER_CACHE = new HashMap<>();
 
     public ModifyScalePower() {
         super("modify_scale", ModifyScalePowerFactory.getSerializableData(),
@@ -39,70 +37,53 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
     }
 
     @Override
-    @Nullable
-    public ApoliScaleModifier getModifierFromCache(ResourceLocation id) {
-        if (!MODIFIER_CACHE.containsKey(id)) {
+    public @Nullable ApoliScaleModifier getModifierFromCache(ResourceLocation id, Entity entity) {
+        if (!MODIFIER_CACHE.containsKey(entity) || !MODIFIER_CACHE.get(entity).containsKey(id)) {
             return null;
         }
-        return MODIFIER_CACHE.get(id);
+        return MODIFIER_CACHE.get(entity).get(id);
     }
 
     @Override
-    public void addModifierToCache(ResourceLocation id, ApoliScaleModifier modifier) {
-        MODIFIER_CACHE.put(id, modifier);
+    public void addModifierToCache(ResourceLocation id, Entity entity, ApoliScaleModifier modifier) {
+        MODIFIER_CACHE.computeIfAbsent(entity, entity1 -> new HashMap<>()).put(id, modifier);
     }
 
     @Override
-    public void clearModifiersFromCache() {
-        MODIFIER_CACHE.clear();
+    public void removeModifierFromCache(ResourceLocation id, Entity entity) {
+        if (MODIFIER_CACHE.containsKey(entity)) {
+            MODIFIER_CACHE.get(entity).remove(id);
+            if (MODIFIER_CACHE.get(entity).isEmpty())
+                MODIFIER_CACHE.remove(entity);
+        }
     }
 
     @Override
-    public Set<ResourceLocation> getScaleTypes(Instance power) {
+    public Set<ResourceLocation> getScaleTypeCache(Instance power, Entity entity) {
         // Just a failsafe for if this power is somehow loaded without Pehkui.
         if (!Services.PLATFORM.isModLoaded("pehkui")) {
             return EMPTY_SET;
         }
 
-        if (!CACHE.containsKey(power)) {
+        if (!TYPE_CACHE.containsKey(entity) || !TYPE_CACHE.get(entity).containsKey(power)) {
             SerializableData.Instance data = getDataFromPower(power);
             ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
             data.<ResourceLocation>ifPresent("scale_type", builder::add);
             data.<List<ResourceLocation>>ifPresent("scale_types", builder::addAll);
 
-            CACHE.put(power, builder.build());
+            TYPE_CACHE.computeIfAbsent(entity, e -> new HashMap<>()).put(power, builder.build());
         }
-        return CACHE.get(power);
+        return TYPE_CACHE.get(entity).get(power);
     }
 
     @Override
-    public void clearScaleTypeCache() {
-        CACHE.clear();
-    }
-
-    @Override
-    public double getCachedEntityScale(Instance power, Entity entity) {
-        return VALUE_CACHE.getOrDefault(entity, new HashMap<>()).getOrDefault(power, 1.0D);
-    }
-
-    @Override
-    public void setCachedEntityScale(Instance power, Entity entity, double value) {
-        VALUE_CACHE.computeIfAbsent(entity, entity1 -> new HashMap<>()).put(power, value);
-    }
-
-    @Override
-    public void removeCachedEntityScale(Instance power, Entity entity) {
-        if (VALUE_CACHE.containsKey(entity)) {
-            VALUE_CACHE.get(entity).remove(power);
-            if (VALUE_CACHE.get(entity).isEmpty())
-                VALUE_CACHE.remove(entity);
+    public void removeScaleTypesFromCache(Instance power, Entity entity) {
+        if (TYPE_CACHE.containsKey(entity)) {
+            TYPE_CACHE.get(entity).remove(power);
+            if (TYPE_CACHE.get(entity).isEmpty())
+                TYPE_CACHE.remove(entity);
         }
-    }
-
-    @Override
-    public Set<Entity> getEntitiesWithPower() {
-        return VALUE_CACHE.keySet();
     }
 
     @Override
@@ -131,5 +112,4 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
             ApugliPowers.MODIFY_SCALE.get().onRemoved(this, this.entity);
         }
     }
-    
 }

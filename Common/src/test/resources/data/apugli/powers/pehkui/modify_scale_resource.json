@@ -7,6 +7,7 @@
   },
   "scale": {
     "type": "apugli:modify_scale",
+    "delay": 40,
     "scale_types": [
       "pehkui:width",
       "pehkui:height"
