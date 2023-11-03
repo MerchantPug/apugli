@@ -1,0 +1,7 @@
+{
+  "type": "apugli:prevent_entity_selection",
+  "entity_condition": {
+    "type": "apoli:entity_type",
+    "entity_type": "minecraft:ocelot"
+  }
+}
