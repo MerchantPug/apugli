@@ -83,7 +83,7 @@ public record UpdateLerpedScalePacket(int entityId,
                     return;
                 }
                 if (previousScale().isPresent()) {
-                    previousScale().get().ifPresentOrElse(lerpedApoliModifier::setPreviousScaleMultiplier, lerpedApoliModifier::removePreviousScaleMultiplier);
+                    previousScale().get().ifPresentOrElse(lerpedApoliModifier::setPreviousScale, lerpedApoliModifier::removePreviousScale);
                 }
                 lerpedApoliModifier.setTicks(lerpTicks());
             }

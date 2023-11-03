@@ -21,14 +21,14 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     private int ticks = 0;
     private boolean hasReachedMaxDelta = false;
     private int maxTicks;
-    private Optional<Float> previousScaleMultiplier;
-    private float capturedModifiedScale;
+    private Optional<Float> previousScale;
+    protected float cachedBaseMaxScale = 1.0F;
     boolean hasLoggedWarn = false;
 
     public LerpedApoliScaleModifier(P power, List<?> modifiers, ResourceLocation id, int maxTicks, Optional<Float> previousScale) {
         super(power, modifiers, id);
         this.maxTicks = maxTicks;
-        this.previousScaleMultiplier = previousScale;
+        this.previousScale = previousScale;
     }
     public void setTicks(int value) {
         if (!this.isMax(value))
@@ -41,12 +41,12 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         return value >= this.maxTicks + 1;
     }
 
-    public void setPreviousScaleMultiplier(float value) {
-        this.previousScaleMultiplier = Optional.of(value);
+    public void setPreviousScale(float value) {
+        this.previousScale = Optional.of(value);
     }
 
-    public void removePreviousScaleMultiplier() {
-        this.previousScaleMultiplier = Optional.empty();
+    public void removePreviousScale() {
+        this.previousScale = Optional.empty();
     }
 
     @Override
@@ -59,20 +59,21 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
                 ScaleData scaleData = scaleType.getScaleData(living);
 
-                float maxScale = Services.POWER.isActive(power, living) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, capturedModifiedScale) : capturedModifiedScale;
+                float maxScale = Services.POWER.isActive(power, living) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, scaleData.getBaseScale()) : scaleData.getBaseScale();
 
-                if (maxScale != this.cachedMaxScale) {
+                if (maxScale != this.cachedBaseMaxScale) {
                     if (!scaleData.getBaseValueModifiers().contains(this)) {
                         scaleData.getBaseValueModifiers().add(this);
                         if (!hasSentPacket) {
-                            Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, Services.POWER.getPowerId(this.power), ApugliPowers.MODIFY_SCALE.get().getModifiers(this.power, living), Optional.of(this.maxTicks), previousScaleMultiplier), living);
+                            Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, Services.POWER.getPowerId(this.power), ApugliPowers.MODIFY_SCALE.get().getModifiers(this.power, living), Optional.of(this.maxTicks), previousScale), living);
                         }
                     }
+                    this.cachedBaseMaxScale = maxScale;
                     scaleData.onUpdate();
                 }
 
-                if ((this.isMax(this.ticks) && (!Services.POWER.isActive(power, living) || cachedMaxScale == 1.0F) && scaleData.getBaseValueModifiers().contains(this))) {
-                    this.previousScaleMultiplier = Optional.empty();
+                if ((this.isMax(this.ticks) && (!Services.POWER.isActive(power, living) || cachedBaseMaxScale == scaleData.getBaseScale()) && scaleData.getBaseValueModifiers().contains(this))) {
+                    this.previousScale = Optional.empty();
                     ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
                     scaleData.getBaseValueModifiers().remove(this);
                     if (!hasSentPacket) {
@@ -85,10 +86,10 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                     if (Services.POWER.isActive(power, living) && !scaleData.getBaseValueModifiers().contains(this)) {
                         scaleData.getBaseValueModifiers().add(this);
                         if (!hasSentPacket) {
-                            Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, Services.POWER.getPowerId(this.power), ApugliPowers.MODIFY_SCALE.get().getModifiers(this.power, living), Optional.of(this.maxTicks), previousScaleMultiplier), living);
+                            Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, Services.POWER.getPowerId(this.power), ApugliPowers.MODIFY_SCALE.get().getModifiers(this.power, living), Optional.of(this.maxTicks), previousScale), living);
                         }
                     } else if (!hasSentPacket) {
-                        Services.PLATFORM.sendS2CTrackingAndSelf(new UpdateLerpedScalePacket(living.getId(), this.getId(), this.ticks, Optional.of(previousScaleMultiplier)), living);
+                        Services.PLATFORM.sendS2CTrackingAndSelf(new UpdateLerpedScalePacket(living.getId(), this.getId(), this.ticks, Optional.of(previousScale)), living);
                     }
                     scaleData.onUpdate();
                 }
@@ -103,13 +104,12 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             this.hasLoggedWarn = true;
             return modifiedScale;
         }
-        this.capturedModifiedScale = modifiedScale;
         float maxScale = Services.POWER.isActive(power, living) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale) : modifiedScale;
-        float initialScale = Mth.clampedLerp(this.previousScaleMultiplier.map(f -> f * modifiedScale).orElse(modifiedScale), maxScale, Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
+        float initialScale = Mth.clampedLerp(this.previousScale.orElse(modifiedScale), maxScale, Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
 
         if (maxScale != this.cachedMaxScale) {
-            float previousScaleMultiplier = !Services.POWER.isActive(power, living) ? this.cachedMaxScale : Mth.clampedLerp(this.previousScaleMultiplier.map(f -> f * modifiedScale).orElse(modifiedScale), this.cachedMaxScale, Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
-            this.setPreviousScaleMultiplier(previousScaleMultiplier);
+            float previousScale = !Services.POWER.isActive(power, living) ? this.cachedMaxScale : Mth.clampedLerp(this.previousScale.orElse(modifiedScale), this.cachedMaxScale, Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
+            this.setPreviousScale(previousScale);
             if (!Services.POWER.isActive(power, living))
                 this.setTicks(this.maxTicks - this.ticks);
             else
@@ -136,6 +136,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     }
 
     public float modifyPrevScale(final ScaleData scaleData, final float modifiedScale) {
-        return Mth.clampedLerp(this.previousScaleMultiplier.map(f -> f * modifiedScale).orElse(modifiedScale), (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale), Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
+        return Mth.clampedLerp(this.previousScale.orElse(modifiedScale), (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale), Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
     }
 }
