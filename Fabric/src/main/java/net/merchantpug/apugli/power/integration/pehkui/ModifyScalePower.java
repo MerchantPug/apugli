@@ -57,6 +57,11 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
         }
 
         @Override
+        public void onRemoved() {
+            PehkuiUtil.onRemovedScalePower(this, this.entity);
+        }
+
+        @Override
         public Tag toTag() {
             CompoundTag tag = new CompoundTag();
             PehkuiUtil.scalePowerToTag(this, this.entity, tag);
@@ -67,11 +72,6 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
         public void fromTag(Tag tag) {
             if (!(tag instanceof CompoundTag compoundTag)) return;
             PehkuiUtil.scalePowerFromTag(this, this.entity, compoundTag);
-        }
-
-        @Override
-        public void onRemoved() {
-            PehkuiUtil.onRemovedScalePower(this, this.entity);
         }
     }
 }
