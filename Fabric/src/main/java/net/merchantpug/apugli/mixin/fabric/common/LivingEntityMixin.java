@@ -1,8 +1,10 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;

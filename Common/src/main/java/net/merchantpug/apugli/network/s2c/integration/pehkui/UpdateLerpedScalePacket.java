@@ -3,20 +3,14 @@ package net.merchantpug.apugli.network.s2c.integration.pehkui;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.integration.pehkui.ApoliScaleModifier;
 import net.merchantpug.apugli.integration.pehkui.LerpedApoliScaleModifier;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.Services;
-import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import org.apache.commons.compress.utils.Lists;
-import virtuoel.pehkui.api.ScaleData;
-import virtuoel.pehkui.api.ScaleRegistries;
-import virtuoel.pehkui.api.ScaleType;
 
-import java.util.List;
 import java.util.Optional;
 
 public record UpdateLerpedScalePacket(int entityId,
@@ -76,9 +70,9 @@ public record UpdateLerpedScalePacket(int entityId,
                     return;
                 }
 
-                ApoliScaleModifier apoliModifier = ApugliPowers.MODIFY_SCALE.get().getModifierFromCache(mappedScaleModifierId(), entity);
+                ApoliScaleModifier<?> apoliModifier = PehkuiUtil.getModifierFromCache(mappedScaleModifierId(), entity);
 
-                if (!(apoliModifier instanceof LerpedApoliScaleModifier lerpedApoliModifier)) {
+                if (!(apoliModifier instanceof LerpedApoliScaleModifier<?> lerpedApoliModifier)) {
                     Apugli.LOG.warn("Tried updating non-existent or non LerpedApoliScaleModifier.");
                     return;
                 }

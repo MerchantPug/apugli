@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.merchantpug.apugli.mixin.xplatform",
+  "plugin": "net.merchantpug.apugli.ApugliMixinConfigPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.AnvilScreenHandlerMixin",
@@ -29,7 +30,8 @@
     "common.accessor.LivingEntityAccessor",
     "common.accessor.ProjectileEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
-    "common.accessor.TridentEntityAccessor"
+    "common.accessor.TridentEntityAccessor",
+    "integration.pehkui.ServerEntityMixin"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",

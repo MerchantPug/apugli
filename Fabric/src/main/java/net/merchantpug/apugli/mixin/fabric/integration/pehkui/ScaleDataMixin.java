@@ -3,7 +3,7 @@ package net.merchantpug.apugli.mixin.fabric.integration.pehkui;
 import com.google.common.collect.Sets;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.integration.pehkui.ApoliScaleModifier;
-import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -40,8 +40,8 @@ public abstract class ScaleDataMixin implements ScaleDataAccess {
     @Inject(method = "readNbt", at = @At(value = "INVOKE", target = "Ljava/util/SortedSet;addAll(Ljava/util/Collection;)Z"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     private void addAllApoliScaleModifiers(CompoundTag tag, CallbackInfo ci, ScaleType type, SortedSet<ScaleModifier> baseValueModifiers) {
         apugli$apoliScaleModifiers.forEach(location -> {
-            if (ApugliPowers.MODIFY_SCALE.get().getModifierFromCache(location, getEntity()) != null)
-                baseValueModifiers.add(ApugliPowers.MODIFY_SCALE.get().getModifierFromCache(location, getEntity()));
+            if (PehkuiUtil.getModifierFromCache(location, getEntity()) != null)
+                baseValueModifiers.add(PehkuiUtil.getModifierFromCache(location, getEntity()));
         });
     }
 

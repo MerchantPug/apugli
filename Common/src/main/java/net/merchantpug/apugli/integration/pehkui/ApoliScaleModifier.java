@@ -32,30 +32,28 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     }
 
     public void tick(LivingEntity living) {
-        if (!living.level().isClientSide()) {
-            boolean hasSentPacket = false;
-            List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getScaleTypeCache(power, living).stream().toList();
+        boolean hasSentPacket = false;
+        List<ResourceLocation> scaleTypeIds = PehkuiUtil.getTypesFromCache(power, living).stream().toList();
 
-            for (ResourceLocation scaleTypeId : scaleTypeIds) {
-                ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
-                ScaleData scaleData = scaleType.getScaleData(living);
-                SortedSet<ScaleModifier> modifiers = scaleData.getBaseValueModifiers();
+        for (ResourceLocation scaleTypeId : scaleTypeIds) {
+            ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
+            ScaleData scaleData = scaleType.getScaleData(living);
+            SortedSet<ScaleModifier> modifiers = scaleData.getBaseValueModifiers();
 
-                if (!modifiers.contains(this) && Services.POWER.isActive(power, living)) {
-                    ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
-                    scaleData.getBaseValueModifiers().add(this);
-                    if (!hasSentPacket) {
-                        Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), ApugliPowers.MODIFY_SCALE.get().getModifiers(power, living), Optional.empty(), Optional.empty()), living);
-                    }
-                    scaleData.onUpdate();
-                } else if (modifiers.contains(this) && !Services.POWER.isActive(power, living)) {
-                    ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
-                    scaleData.getBaseValueModifiers().remove(this);
-                    if (!hasSentPacket) {
-                        Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), false), living);
-                    }
-                    scaleData.onUpdate();
+            if (!modifiers.contains(this) && Services.POWER.isActive(power, living)) {
+                ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
+                scaleData.getBaseValueModifiers().add(this);
+                if (!hasSentPacket && !living.level().isClientSide()) {
+                    Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), ApugliPowers.MODIFY_SCALE.get().getModifiers(power, living), Optional.empty(), Optional.empty()), living);
                 }
+                scaleData.onUpdate();
+            } else if (modifiers.contains(this) && !Services.POWER.isActive(power, living)) {
+                ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
+                scaleData.getBaseValueModifiers().remove(this);
+                if (!hasSentPacket && !living.level().isClientSide()) {
+                    Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), false), living);
+                }
+                scaleData.onUpdate();
             }
         }
     }

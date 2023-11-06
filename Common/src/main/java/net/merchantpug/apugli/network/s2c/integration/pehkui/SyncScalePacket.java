@@ -4,6 +4,7 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.integration.pehkui.ApoliScaleModifier;
 import net.merchantpug.apugli.integration.pehkui.LerpedApoliScaleModifier;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -30,17 +31,17 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> types,
     public static final ResourceLocation ID = Apugli.asResource("sync_scale");
 
     public SyncScalePacket(int entityId, List<ResourceLocation> types,
-                           ResourceLocation mappedScaleModifierId,
+                           ResourceLocation powerId,
                            List<?> modifiers,
                            Optional<Integer> lerpTickMax,
                            Optional<Float> previousScale) {
-        this(entityId, types, mappedScaleModifierId, modifiers, lerpTickMax, previousScale, false, false);
+        this(entityId, types, powerId, modifiers, lerpTickMax, previousScale, false, false);
     }
 
     public SyncScalePacket(int entityId, List<ResourceLocation> types,
-                           ResourceLocation mappedScaleModifierId,
+                           ResourceLocation powerId,
                            boolean removeFromCache) {
-        this(entityId, types, mappedScaleModifierId, List.of(), Optional.empty(), Optional.empty(), true, removeFromCache);
+        this(entityId, types, powerId, List.of(), Optional.empty(), Optional.empty(), true, removeFromCache);
     }
 
     @Override
@@ -118,14 +119,13 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> types,
                 }
                 ResourceLocation mappedScaleModifierId = ApugliPowers.MODIFY_SCALE.get().getMappedScaleModifierId(power.get());
 
-                if (ApugliPowers.MODIFY_SCALE.get().getModifierFromCache(mappedScaleModifierId, entity) == null) {
+                if (PehkuiUtil.getModifierFromCache(mappedScaleModifierId, entity) == null) {
                     if (lerpTickMax().isPresent()) {
-                        ApugliPowers.MODIFY_SCALE.get().addModifierToCache(mappedScaleModifierId, entity, new LerpedApoliScaleModifier<>(power.get(), modifiers(), mappedScaleModifierId, lerpTickMax().get(), previousScale()));
+                        PehkuiUtil.addModifierToCache(mappedScaleModifierId, entity, new LerpedApoliScaleModifier<>(power.get(), modifiers(), mappedScaleModifierId, lerpTickMax().get(), previousScale()));
                     } else {
-                        ApugliPowers.MODIFY_SCALE.get().addModifierToCache(mappedScaleModifierId, entity, new ApoliScaleModifier<>(power.get(), modifiers(), mappedScaleModifierId));
+                        PehkuiUtil.addModifierToCache(mappedScaleModifierId, entity, new ApoliScaleModifier<>(power.get(), modifiers(), mappedScaleModifierId));
                     }
                 }
-                ApoliScaleModifier<?> apoliModifier = ApugliPowers.MODIFY_SCALE.get().getModifierFromCache(mappedScaleModifierId, entity);
 
                 for (ResourceLocation scaleTypeId : types()) {
                     ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
@@ -137,8 +137,8 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> types,
                 }
 
                 if (removeFromCache()) {
-                    ApugliPowers.MODIFY_SCALE.get().removeModifierFromCache(mappedScaleModifierId, entity);
-                    ApugliPowers.MODIFY_SCALE.get().removeScaleTypesFromCache(power.get(), entity);
+                    PehkuiUtil.removeModifierFromCache(mappedScaleModifierId, entity);
+                    PehkuiUtil.removeTypesFromCache(power.get(), entity);
                 }
             }
         });

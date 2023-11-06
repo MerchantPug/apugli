@@ -1,6 +1,5 @@
 package net.merchantpug.apugli;
 
-import io.github.apace100.apoli.integration.ModifyValueEvent;
 import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
@@ -8,13 +7,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
-import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.capability.item.EntityLinkCapability;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
@@ -27,6 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,6 +43,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -54,7 +55,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.Optional;
@@ -272,10 +272,10 @@ public class ApugliForgeEventHandler {
             DamageSource source = event.getSource();
             Entity attacker = source.getEntity();
             LivingEntity target = event.getEntity();
-            LivingEntity kilLCredit = event.getEntity().getKillCredit();
+            LivingEntity killCredit = event.getEntity().getKillCredit();
 
-            if (kilLCredit != null && (attacker == null || attacker != kilLCredit)) {
-                ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(kilLCredit, target, event.getSource(), x, true);
+            if (killCredit != null && (attacker == null || attacker != killCredit)) {
+                ApugliPowers.ACTION_ON_TARGET_DEATH.get().onTargetDeath(killCredit, target, event.getSource(), x, true);
                 return;
             }
 
@@ -288,6 +288,8 @@ public class ApugliForgeEventHandler {
     public static void onStartPlayerTrack(PlayerEvent.StartTracking event) {
         event.getTarget().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::sync);
         event.getTarget().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(HitsOnTargetCapability::sync);
+        if (!ModList.get().isLoaded("pehkui") || !(event.getTarget() instanceof LivingEntity living) || !(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        // PehkuiUtil.onStartTracking(living, serverPlayer);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
@@ -323,11 +325,6 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void postPowerLoad(PowerLoadEvent.Post event) {
-        if (event.getPower().getFactory() instanceof ModifyScalePower && !ModList.get().isLoaded("pehkui")) {
-            Apugli.LOG.error("Power '" + event.getId() + "' could not be loaded as it uses the `" + event.getPower().getRegistryName() + "' power type, which requires the Pehkui mod to be present. (skipping).");
-            event.setCanceled(true);
-            return;
-        }
         handleUrlPower(event.getId(), event.getPower());
     }
 

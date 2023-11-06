@@ -5,8 +5,12 @@ import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.PowerTypeRegistryAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
@@ -15,6 +19,9 @@ import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.TextureUtil;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class ApugliFabric implements ModInitializer {
 
@@ -33,8 +40,16 @@ public class ApugliFabric implements ModInitializer {
 
         Apugli.init();
         ApugliPackets.registerC2S();
+        registerEvents();
 
+        NamespaceAlias.addAlias("ope", Apugli.ID);
+
+        MidnightConfig.init(Apugli.ID, ApugliConfig.class);
+    }
+
+    public static void registerEvents() {
         ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, serverResourceManager) -> TextureUtil.getCache().clear());
+        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), player));
 
         PostPowerLoadCallback.EVENT.register((powerId, factoryId, isSubPower, json, powerType) -> {
             if (!FabricLoader.getInstance().isModLoaded("pehkui") && factoryId.equals(Apugli.asResource("modify_scale"))) {
@@ -50,11 +65,5 @@ public class ApugliFabric implements ModInitializer {
                 ApugliPowers.CUSTOM_PROJECTILE.get().cacheTextureUrl(powerId, projectilePower);
             }
         });
-
-        ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), player));
-
-        NamespaceAlias.addAlias("ope", Apugli.ID);
-
-        MidnightConfig.init(Apugli.ID, ApugliConfig.class);
     }
 }
