@@ -314,6 +314,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void prePowerLoad(AddReloadListenerEvent event) {
+        Apugli.clearErrorLoggedDataSet();
         TextureUtil.getCache().clear();
     }
 

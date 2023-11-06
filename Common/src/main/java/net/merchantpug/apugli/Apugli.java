@@ -51,6 +51,10 @@ public class Apugli {
         ERROR_LOGGED_DATA.add(data);
     }
 
+    public static void clearErrorLoggedDataSet() {
+        ERROR_LOGGED_DATA.clear();
+    }
+
     public static ResourceLocation asResource(String name) {
         return new ResourceLocation(ID, name);
     }
