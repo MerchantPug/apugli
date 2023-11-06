@@ -162,10 +162,12 @@ public class PehkuiUtil {
             if (modifier != null)
                 modifier.tick(entity);
         } else if (PehkuiUtil.getModifierFromCache(mappedScaleModifierId, entity) instanceof LerpedApoliScaleModifier<?> modifier) {
-            modifier.setTicks(tag.getInt("Delay"));
+            modifier.setTicks(tag.getInt("Delay") - 1);
             if (tag.contains("PreviousScale", Tag.TAG_FLOAT)) {
                 modifier.setPreviousScale(tag.getFloat("PreviousScale"));
             }
+
+            modifier.tick(entity);
         }
     }
 
