@@ -11,6 +11,7 @@
 
 ### Entity Condition Types
 - Added `crawling` entity condition type.
+- Added `modify_scale` power type. Requires Pehkui to function. If Pehkui isn't loaded, any powers with this power type will fail to load.
 
 ### Bugfixes
 - Fixed crash due to wrong locations of fields when creating damage sources inside `damage_nearby_*_hit` power types.

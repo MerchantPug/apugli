@@ -77,19 +77,6 @@ public class PehkuiUtil {
         }
     }
 
-    public static void clearForEntity(Entity entity) {
-        if (MODIFIER_CACHE.containsKey(entity)) {
-            MODIFIER_CACHE.get(entity).clear();
-            for (Map.Entry<Object, Set<ResourceLocation>> entry : TYPE_CACHE.get(entity).entrySet()) {
-                for (ScaleType scaleType : entry.getValue().stream().map(id -> ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id)).toList()) {
-                    ScaleData scaleData = scaleType.getScaleData(entity);
-                    ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(ApugliPowers.MODIFY_SCALE.get().getMappedScaleModifierId(entry.getKey()));
-                }
-            }
-            TYPE_CACHE.clear();
-        }
-    }
-
     public static ScaleType getScaleType(ResourceLocation id) {
         return ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id);
     }
@@ -174,32 +161,17 @@ public class PehkuiUtil {
 
             if (modifier != null)
                 modifier.tick(entity);
-        }
-    }
-
-    /*
-    @SuppressWarnings("unchecked")
-    public static void onStartTracking(LivingEntity powerHolder, ServerPlayer tracker) {
-        // Failsafe to make sure that this won't run without Pehkui.
-        if (!Services.PLATFORM.isModLoaded("pehkui")) return;
-
-        List<ScalePowerData> scalePowerDataList = getScalePowerData(powerHolder);
-        if (!scalePowerDataList.isEmpty()) {
-            Services.PLATFORM.sendS2C(SyncAllScalesPacket.addPacket(powerHolder, scalePowerDataList), tracker);
-            Set<ScaleType> scaleTypes = new HashSet<>();
-            for (Object power : Services.POWER.getPowers(powerHolder, ApugliPowers.MODIFY_SCALE.get(), true)) {
-                scaleTypes.addAll(getTypesFromCache(power, powerHolder).stream().map(id -> ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id)).toList());
+        } else if (PehkuiUtil.getModifierFromCache(mappedScaleModifierId, entity) instanceof LerpedApoliScaleModifier<?> modifier) {
+            modifier.setTicks(tag.getInt("Delay"));
+            if (tag.contains("PreviousScale", Tag.TAG_FLOAT)) {
+                modifier.setPreviousScale(tag.getFloat("PreviousScale"));
             }
-            scaleTypes.forEach(scaleType -> scaleType.getScaleData(powerHolder).onUpdate());
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void onStopTracking(LivingEntity powerHolder, ServerPlayer tracker) {
-        if (Services.POWER.hasPower(powerHolder, ApugliPowers.MODIFY_SCALE.get()))
-            Services.PLATFORM.sendS2C(SyncAllScalesPacket.removePacket(powerHolder), tracker);
+    public static float getScale(Entity entity, ResourceLocation scaleTypeId) {
+        return ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId).getScaleData(entity).getScale();
     }
-     */
 
     public static List<ScalePowerData> getScalePowerData(LivingEntity entity) {
         List<ScalePowerData> scalePowerDataList = new ArrayList<>();

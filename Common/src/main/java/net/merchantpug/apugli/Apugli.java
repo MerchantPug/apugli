@@ -1,5 +1,7 @@
 package net.merchantpug.apugli;
 
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import net.merchantpug.apugli.registry.ApugliEntityTypes;
 import net.merchantpug.apugli.registry.action.ApugliBiEntityActions;
 import net.merchantpug.apugli.registry.action.ApugliBlockActions;
@@ -11,10 +13,15 @@ import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Apugli {
     public static final String ID = "apugli";
     public static final String NAME = "Apugli";
     public static final Logger LOG = LoggerFactory.getLogger(NAME);
+
+    private static final Set<SerializableData.Instance> ERROR_LOGGED_DATA = new HashSet<>();
     public static String VERSION = "";
     
     public static void init() {
@@ -34,6 +41,14 @@ public class Apugli {
         ApugliPowers.registerAll();
 
         ApugliEntityTypes.registerAll();
+    }
+
+    public static boolean hasDataBeenErrorLogged(SerializableData.Instance data) {
+        return ERROR_LOGGED_DATA.contains(data);
+    }
+
+    public static void addToErrorLoggedData(SerializableData.Instance data) {
+        ERROR_LOGGED_DATA.add(data);
     }
 
     public static ResourceLocation asResource(String name) {

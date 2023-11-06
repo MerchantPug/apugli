@@ -2,6 +2,7 @@ package net.merchantpug.apugli.registry.condition;
 
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
 import net.merchantpug.apugli.condition.factory.entity.*;
+import net.merchantpug.apugli.condition.factory.entity.integration.pehkui.ScaleCondition;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 
@@ -28,6 +29,7 @@ public class ApugliEntityConditions {
         register("player_model_type", new PlayerModelTypeCondition());
         register("raining", new RainingCondition());
         register("raycast", new RaycastCondition());
+        register("scale", new ScaleCondition());
         register("status_effect_tag", new StatusEffectTagCondition());
         register("structure", new StructureCondition());
         register("trident_enchantment", new TridentEnchantmentCondition());
