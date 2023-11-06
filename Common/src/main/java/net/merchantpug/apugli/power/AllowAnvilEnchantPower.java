@@ -54,7 +54,7 @@ public class AllowAnvilEnchantPower extends Power {
                     .add("enchantment", SerializableDataTypes.ENCHANTMENT, null)
                     .add("enchantments", SerializableDataType.list(SerializableDataTypes.ENCHANTMENT), null)
                     .add("compare_to", SerializableDataTypes.INT, 0)
-                    .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN)
+                    .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN_OR_EQUAL)
                     .add("item_condition", Services.CONDITION.itemDataType()),
                 data -> (type, player) -> {
                     AllowAnvilEnchantPower power = new AllowAnvilEnchantPower(type, player,
