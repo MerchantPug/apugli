@@ -30,8 +30,7 @@
     "common.accessor.LivingEntityAccessor",
     "common.accessor.ProjectileEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
-    "common.accessor.TridentEntityAccessor",
-    "integration.pehkui.ServerEntityMixin"
+    "common.accessor.TridentEntityAccessor"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",

@@ -288,8 +288,6 @@ public class ApugliForgeEventHandler {
     public static void onStartPlayerTrack(PlayerEvent.StartTracking event) {
         event.getTarget().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::sync);
         event.getTarget().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(HitsOnTargetCapability::sync);
-        if (!ModList.get().isLoaded("pehkui") || !(event.getTarget() instanceof LivingEntity living) || !(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
-        // PehkuiUtil.onStartTracking(living, serverPlayer);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

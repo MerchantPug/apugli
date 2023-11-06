@@ -28,8 +28,7 @@
     "common.accessor.CooldownPowerAccessor",
     "common.accessor.PowerTypeRegistryAccessor",
     "integration.pehkui.ScaleDataMixin",
-    "integration.pehkui.ScaleModifierMixin",
-    "integration.pehkui.ServerEntityMixin"
+    "integration.pehkui.ScaleModifierMixin"
   ],
   "client": [
     "client.BipedEntityRendererMixin",
