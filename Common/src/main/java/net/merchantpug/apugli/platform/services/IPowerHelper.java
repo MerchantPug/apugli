@@ -41,6 +41,8 @@ public interface IPowerHelper<T> {
     <P> boolean isActive(P power, LivingEntity entity);
 
     void syncPower(LivingEntity entity, PowerType<?> factory);
+
+    <P> void syncPower(LivingEntity entity, P power);
     
     OptionalInt getResource(LivingEntity entity, T powerType);
     

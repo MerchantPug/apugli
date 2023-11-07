@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.integration.pehkui;
 
+import com.google.common.collect.Maps;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.merchantpug.apugli.platform.Services;
@@ -12,7 +13,7 @@ import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.SortedSet;
 
 public class ApoliScaleModifier<P> extends ScaleModifier {
@@ -20,38 +21,34 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     protected final P power;
 
     protected final List<?> modifiers;
-    private final ResourceLocation id;
-    protected float cachedMaxScale = 1.0F;
-    protected float cachedPrevMaxScale = 1.0F;
+    protected Map<ScaleType, Float> cachedMaxScales = Maps.newHashMap();
+    protected Map<ScaleType, Float> cachedPrevMaxScales = Maps.newHashMap();
 
-    public ApoliScaleModifier(P power, List<?> modifiers, ResourceLocation id) {
-        super();
+    public ApoliScaleModifier(P power, List<?> modifiers) {
         this.power = power;
         this.modifiers = modifiers;
-        this.id = id;
     }
 
-    public void tick(LivingEntity living) {
-        boolean hasSentPacket = false;
-        List<ResourceLocation> scaleTypeIds = PehkuiUtil.getTypesFromCache(power, living).stream().toList();
+    public void tick(LivingEntity entity, boolean calledFromNbt) {
+        List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList();
 
         for (ResourceLocation scaleTypeId : scaleTypeIds) {
             ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
-            ScaleData scaleData = scaleType.getScaleData(living);
+            ScaleData scaleData = scaleType.getScaleData(entity);
             SortedSet<ScaleModifier> modifiers = scaleData.getBaseValueModifiers();
 
-            if (!modifiers.contains(this) && Services.POWER.isActive(power, living)) {
+            if (!modifiers.contains(this) && Services.POWER.isActive(power, entity)) {
                 ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
                 scaleData.getBaseValueModifiers().add(this);
-                if (!hasSentPacket && !living.level().isClientSide()) {
-                    Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), ApugliPowers.MODIFY_SCALE.get().getModifiers(power, living), Optional.empty(), Optional.empty()), living);
+                if (!calledFromNbt && !entity.level().isClientSide()) {
+                    Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.addScaleToClient(entity.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
                 }
                 scaleData.onUpdate();
-            } else if (modifiers.contains(this) && !Services.POWER.isActive(power, living)) {
+            } else if (modifiers.contains(this) && !Services.POWER.isActive(power, entity)) {
                 ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
                 scaleData.getBaseValueModifiers().remove(this);
-                if (!hasSentPacket && !living.level().isClientSide()) {
-                    Services.PLATFORM.sendS2CTrackingAndSelf(new SyncScalePacket(living.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power), false), living);
+                if (!calledFromNbt && !entity.level().isClientSide()) {
+                    Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), scaleTypeIds, ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
                 }
                 scaleData.onUpdate();
             }
@@ -68,30 +65,30 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         final int c = Float.compare(o.getPriority(), getPriority());
 
         return c != 0 ? c :
-                this.id.compareTo(ao.id);
+                this.getId().compareTo(ao.getId());
     }
 
     public ResourceLocation getId() {
-        return id;
+        return ApugliPowers.MODIFY_SCALE.get().getPowerId(this.power);
     }
 
     public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
         float maxScale = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
 
-        if (maxScale != this.cachedMaxScale) {
-            this.cachedMaxScale = maxScale;
+        if (!this.cachedMaxScales.containsKey(scaleData.getScaleType()) || maxScale != this.cachedMaxScales.get(scaleData.getScaleType())) {
+            this.cachedMaxScales.put(scaleData.getScaleType(), maxScale);
         }
 
-        return this.cachedMaxScale;
+        return this.cachedMaxScales.get(scaleData.getScaleType());
     }
 
     public float modifyPrevScale(final ScaleData scaleData, final float modifiedScale) {
         float maxScale = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
 
-        if (maxScale != this.cachedPrevMaxScale) {
-            this.cachedPrevMaxScale = maxScale;
+        if (!this.cachedPrevMaxScales.containsKey(scaleData.getScaleType()) || maxScale != this.cachedPrevMaxScales.get(scaleData.getScaleType())) {
+            this.cachedPrevMaxScales.put(scaleData.getScaleType(), maxScale);
         }
 
-        return this.cachedPrevMaxScale;
+        return this.cachedPrevMaxScales.get(scaleData.getScaleType());
     }
 }

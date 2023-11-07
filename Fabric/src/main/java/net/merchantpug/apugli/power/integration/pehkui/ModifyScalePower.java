@@ -3,21 +3,21 @@ package net.merchantpug.apugli.power.integration.pehkui;
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
+import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.power.AbstractValueModifyingPower;
 import net.merchantpug.apugli.power.factory.ModifyScalePowerFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePower.Instance> implements ModifyScalePowerFactory<ModifyScalePower.Instance> {
-    private static final Set<ResourceLocation> EMPTY_SET = new HashSet<>();
-
     public ModifyScalePower() {
         super("modify_scale", ModifyScalePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
@@ -34,26 +34,35 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
         return power.getType().getIdentifier();
     }
 
+    @Override
+    public Object getApoliScaleModifier(Instance power, Entity entity) {
+        return power.apoliScaleModifier;
+    }
+
+    @Override
+    public Set<ResourceLocation> getCachedScaleIds(Instance power, Entity entity) {
+        return power.cachedScaleIds;
+    }
+
     public static class Instance extends AbstractValueModifyingPower.Instance {
+        private final Object apoliScaleModifier;
+        private final Set<ResourceLocation> cachedScaleIds;
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
             setTicking(true);
+            if (FabricLoader.getInstance().isModLoaded("pehkui")) {
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, entity);
+                this.cachedScaleIds = PehkuiUtil.getTypesFromCache(this);
+            } else {
+                this.apoliScaleModifier = null;
+                this.cachedScaleIds = Set.of();
+            }
         }
 
         @Override
         public void tick() {
             PehkuiUtil.tickScalePower(this, this.entity);
-        }
-
-        @Override
-        public void onAdded() {
-            PehkuiUtil.onAddedScalePower(this, this.entity);
-        }
-
-        @Override
-        public void onRespawn() {
-            PehkuiUtil.onAddedScalePower(this, this.entity);
         }
 
         @Override
@@ -63,15 +72,13 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
 
         @Override
         public Tag toTag() {
-            CompoundTag tag = new CompoundTag();
-            PehkuiUtil.scalePowerToTag(this, this.entity, tag);
-            return tag;
+            return PehkuiUtil.serializeScalePower(this, this.entity, new CompoundTag());
         }
 
         @Override
         public void fromTag(Tag tag) {
             if (!(tag instanceof CompoundTag compoundTag)) return;
-            PehkuiUtil.scalePowerFromTag(this, this.entity, compoundTag);
+            PehkuiUtil.deserializeScalePower(this, this.entity, compoundTag);
         }
     }
 }

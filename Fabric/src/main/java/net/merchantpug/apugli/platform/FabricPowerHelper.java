@@ -116,6 +116,11 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
+    public <P> void syncPower(LivingEntity entity, P power) {
+        PowerHolderComponent.syncPower(entity, ((Power)power).getType());
+    }
+
+    @Override
     public OptionalInt getResource(LivingEntity entity, PowerTypeReference powerType) {
         Power power = powerType.get(entity);
         if(power instanceof VariableIntPower vip) {

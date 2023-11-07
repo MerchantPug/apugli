@@ -7,6 +7,7 @@ import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.client.renderer.*;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.forge.client.accessor.EntityRenderersEventAddLayersAccessor;
 import net.merchantpug.apugli.mixin.forge.client.accessor.PlayerModelAccessor;
 import net.merchantpug.apugli.mixin.forge.common.accessor.ApoliClientEventHandlerAccessor;
@@ -38,6 +39,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;
@@ -121,6 +123,7 @@ public class ApugliForgeClientEventHandler {
             CachedBlockInRadiusCondition.clearCache();
             if (event.getConnection() == null) return;
             TextureUtilClient.clear();
+
         }
 
     }

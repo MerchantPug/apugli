@@ -17,8 +17,8 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.MarkLerpedScaleReadyPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateLerpedScalePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -58,7 +58,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
-        INSTANCE.registerMessage(i++, UpdateLerpedScalePacket.class, UpdateLerpedScalePacket::encode, UpdateLerpedScalePacket::decode, ApugliPacketHandler.createS2CHandler(UpdateLerpedScalePacket::handle));
+        INSTANCE.registerMessage(i++, MarkLerpedScaleReadyPacket.class, MarkLerpedScaleReadyPacket::encode, MarkLerpedScaleReadyPacket::decode, ApugliPacketHandler.createS2CHandler(MarkLerpedScaleReadyPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

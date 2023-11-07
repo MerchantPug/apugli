@@ -107,6 +107,11 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
+    public <P> void syncPower(LivingEntity entity, P power) {
+        ApoliAPI.synchronizePowerContainer(entity);
+    }
+
+    @Override
     public OptionalInt getResource(LivingEntity entity, Holder<ConfiguredPower<?,?>> holder) {
         var powerId = holder.unwrapKey();
         if(holder.isBound()) {

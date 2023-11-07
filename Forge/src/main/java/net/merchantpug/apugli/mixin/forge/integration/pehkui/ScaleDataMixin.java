@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.integration.pehkui.ApoliScaleModifier;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -34,25 +35,26 @@ public abstract class ScaleDataMixin implements ScaleDataAccess {
 
     @Inject(method = "invalidateCachedModifiers", at = @At("TAIL"), remap = false)
     private void dontCacheIfApoliScaleModifier(CallbackInfo ci) {
-        differingModifierCache.removeIf(modifier -> modifier instanceof ApoliScaleModifier);
+        this.differingModifierCache.removeIf(modifier -> modifier instanceof ApoliScaleModifier);
     }
 
     @Inject(method = "readNbt", at = @At(value = "INVOKE", target = "Ljava/util/SortedSet;addAll(Ljava/util/Collection;)Z"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     private void addAllApoliScaleModifiers(CompoundTag tag, CallbackInfo ci, ScaleType type, SortedSet<ScaleModifier> baseValueModifiers) {
-        apugli$apoliScaleModifiers.forEach(location -> {
-            if (PehkuiUtil.getModifierFromCache(location, getEntity()) != null)
-                baseValueModifiers.add(PehkuiUtil.getModifierFromCache(location, getEntity()));
+        this.apugli$apoliScaleModifiers.forEach(location -> {
+            Object apoliModifier = ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(location, this.getEntity());
+            if (apoliModifier instanceof ScaleModifier scaleModifier)
+                baseValueModifiers.add(scaleModifier);
         });
     }
 
     @Override
     public void apugli$addToApoliScaleModifiers(ResourceLocation value) {
-        apugli$apoliScaleModifiers.add(value);
+        this.apugli$apoliScaleModifiers.add(value);
     }
 
     @Override
     public void apugli$removeFromApoliScaleModifiers(ResourceLocation value) {
-        apugli$apoliScaleModifiers.remove(value);
+        this.apugli$apoliScaleModifiers.remove(value);
     }
 }
 
