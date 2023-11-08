@@ -56,7 +56,7 @@ public class ApugliFabric implements ModInitializer {
 
         PostPowerLoadCallback.EVENT.register((powerId, factoryId, isSubPower, json, powerType) -> {
             if (!FabricLoader.getInstance().isModLoaded("pehkui") && factoryId.equals(Apugli.asResource("modify_scale"))) {
-                Apugli.LOG.error("Power '" + powerId + "' could not be loaded as it uses the `" + factoryId + "' power type, which requires the Pehkui mod to be present. (skipping).");
+                Apugli.LOG.warn("Power '" + powerId + "' could not be loaded as it uses the `" + factoryId + "' power type, which requires the Pehkui mod to be present. (skipping).");
                 PowerTypeRegistryAccessor.invokeRemove(powerId);
                 return;
             }
