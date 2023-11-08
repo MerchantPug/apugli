@@ -70,6 +70,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     @Override
     public void tick(LivingEntity entity, boolean calledFromNbt) {
         boolean hasSentPacket = false;
+        boolean hasUpdatedTicks = false;
         List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList();
 
         for (ResourceLocation scaleTypeId : scaleTypeIds) {
@@ -95,13 +96,14 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             float maxScale = Services.POWER.isActive(power, entity) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, scaleData.getBaseScale()) : scaleData.getBaseScale();
 
             if (calledFromNbt) {
-                this.cachedMaxScales.put(scaleType, maxScale);
-                this.maxDeltaReachedScales.remove(scaleType);
-                if (!entity.level().isClientSide) {
-                    this.scalesToUpdate.add(scaleType);
+                if (!this.readyScales.contains(scaleType)) {
+                    this.cachedMaxScales.put(scaleType, maxScale);
+                    if (!entity.level().isClientSide) {
+                        this.scalesToUpdate.add(scaleType);
+                    }
                 }
+                this.maxDeltaReachedScales.remove(scaleType);
                 this.readyScales.add(scaleType);
-                continue;
             }
 
             if (this.readyScales.contains(scaleType) && (!this.cachedMaxScales.containsKey(scaleData.getScaleType()) || maxScale != this.cachedMaxScales.get(scaleType))) {
@@ -110,6 +112,9 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
                 scaleData.getBaseValueModifiers().add(this);
                 scaleData.onUpdate();
+                if (calledFromNbt) {
+                    continue;
+                }
             }
 
             if ((this.isMax(this.ticks) && (!Services.POWER.isActive(power, entity) || this.cachedMaxScales.containsKey(scaleType) && this.cachedMaxScales.get(scaleType) == scaleData.getBaseScale()) && scaleData.getBaseValueModifiers().contains(this))) {
@@ -123,25 +128,22 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 }
                 scaleData.onUpdate();
             } else if (this.ticks <= this.maxTicks) {
-                this.setTicks(Math.max(this.ticks, 0) + 1);
+                if (!hasUpdatedTicks) {
+                    this.setTicks(Math.max(this.ticks, 0) + 1);
+                    Services.POWER.syncPower(entity, power);
+                    hasUpdatedTicks = true;
+                }
                 if (Services.POWER.isActive(power, entity) && !scaleData.getBaseValueModifiers().contains(this)) {
-                    ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
-                    scaleData.getBaseValueModifiers().remove(this);
                     ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
                     scaleData.getBaseValueModifiers().add(this);
                     if (!hasSentPacket && !entity.level().isClientSide()) {
                         Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.addScaleToClient(entity.getId(), scaleTypeIds, this.getId()), entity);
-                        Services.POWER.syncPower(entity, power);
                         hasSentPacket = true;
                     }
-                } else if (!hasSentPacket && !entity.level().isClientSide()) {
-                    Services.POWER.syncPower(entity, power);
-                    hasSentPacket = true;
                 }
                 scaleData.onUpdate();
             }
         }
-
     }
 
     public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {

@@ -1,0 +1,15 @@
+{
+  "type": "apugli:modify_scale",
+  "delay": 1,
+  "scale_types": [
+    "pehkui:visibility",
+    "pehkui:width",
+    "pehkui:height",
+    "pehkui:step_height",
+    "pehkui:drops"
+  ],
+  "modifier": {
+    "operation": "multiply_base_additive",
+    "value": 1.0
+  }
+}
