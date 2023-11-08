@@ -10,7 +10,6 @@ import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import virtuoel.pehkui.api.ScaleData;
@@ -58,7 +57,7 @@ public class PehkuiUtil {
             return new ApoliScaleModifier<>(power, List.of());
         }
         ApoliScaleModifier<P> modifier;
-        if (data.isPresent("delay")) {
+        if (data.getFloat("delay") > 0) {
             modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), Optional.empty());
         } else {
             modifier = new ApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity));
