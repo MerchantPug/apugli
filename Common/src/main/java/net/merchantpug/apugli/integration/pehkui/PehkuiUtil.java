@@ -10,6 +10,7 @@ import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import virtuoel.pehkui.api.ScaleData;
@@ -76,7 +77,9 @@ public class PehkuiUtil {
 
             ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(ApugliPowers.MODIFY_SCALE.get().getPowerId(power));
             scaleData.getBaseValueModifiers().remove(modifier);
-            Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
+            if (!(entity instanceof ServerPlayer serverPlayer) || serverPlayer.connection != null)
+                Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
+            scaleData.onUpdate();
         }
     }
 
