@@ -1,6 +1,9 @@
 ## Breaking Change Notes
 - `apugli:sprinting` now has a new field called `requires_input`, which defaults to false. This doesn't match the behaviour in previous versions, so set this to true if you wish to have the previous logic.
 
+## Known Issues
+- [FORGE] Modify Scale does not properly sync with resource values on the client. This is an Origins Forge bug that I'll go and fix next update.
+
 ### Power Types
 - Added `modify_scale` power type. Requires Pehkui to function. If Pehkui isn't loaded, any powers with this power type will fail to load.
 - Added `prevent_entity_selection` power type.
