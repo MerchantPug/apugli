@@ -34,6 +34,8 @@ public abstract class EnchantmentHelperMixin {
         return returnValue;
     }
 
+
+
     @Unique
     private static ItemStack apugli$itemEnchantmentLevelStack;
 

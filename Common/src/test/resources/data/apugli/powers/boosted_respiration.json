@@ -1,0 +1,13 @@
+{
+  "type": "apugli:modify_enchantment_level",
+  "enchantment": "minecraft:respiration",
+  "condition": {
+    "type": "apoli:air",
+    "comparison": ">",
+    "compare_to": 1
+  },
+  "modifier": {
+    "operation": "add_base_early",
+    "value": 10
+  }
+}

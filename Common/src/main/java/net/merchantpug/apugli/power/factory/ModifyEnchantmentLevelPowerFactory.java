@@ -2,6 +2,7 @@ package net.merchantpug.apugli.power.factory;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.network.s2c.ModifyEnchantmentLevelPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.util.ComparableItemStack;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,6 +34,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         getEntityItemEnchants().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>());
         ConcurrentHashMap<P, Tuple<Integer, Boolean>> cache = getPowerModifierCache().computeIfAbsent(living, (_living) -> new ConcurrentHashMap<>());
         cache.compute(power, (p, _val) -> new Tuple<>(0, false));
+        if (entity.level().isClientSide()) return;
+        Services.PLATFORM.sendS2CTrackingAndSelf(new ModifyEnchantmentLevelPacket(entity.getId(), Services.POWER.getPowerId(power), false), entity);
     }
 
     default void onRemoved(P power, Entity entity) {
@@ -41,6 +44,8 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         if (Services.POWER.getPowers(living, this).size() - 1 <= 0) {
             getEntityItemEnchants().remove(living);
         }
+        if (entity.level().isClientSide()) return;
+        Services.PLATFORM.sendS2CTrackingAndSelf(new ModifyEnchantmentLevelPacket(entity.getId(), Services.POWER.getPowerId(power), true), entity);
     }
 
     default boolean doesApply(P power, Enchantment enchantment, Level level, ItemStack self) {

@@ -26,8 +26,7 @@ public interface ModifyDurabilityChangePowerFactory<P> extends ValueModifyingPow
     }
 
     default boolean checkComparisons(SerializableData.Instance data, int durabilityChange) {
-
-        for (Map.Entry<Comparison, Integer> entry : ((Map<Comparison, Integer>)data.get("comparisons")).entrySet()) {
+        for (Map.Entry<Comparison, Integer> entry : ((Map<Comparison, Integer>) data.get("comparisons")).entrySet()) {
             if (!entry.getKey().compare(durabilityChange, entry.getValue())) {
                 return false;
             }
