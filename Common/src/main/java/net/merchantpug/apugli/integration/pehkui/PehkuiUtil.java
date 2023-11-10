@@ -8,6 +8,7 @@ import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -17,7 +18,7 @@ import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,8 +27,7 @@ import java.util.Set;
  */
 public class PehkuiUtil {
 
-    public static <P> Set<ResourceLocation> getTypesFromCache(P power) {
-        SerializableData.Instance data = ApugliPowers.MODIFY_SCALE.get().getDataFromPower(power);
+    public static <P> Set<ResourceLocation> getTypesFromCache(SerializableData.Instance data) {
         ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
         data.<ResourceLocation>ifPresent("scale_type", builder::add);
@@ -49,16 +49,14 @@ public class PehkuiUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <P> Object createApoliScaleModifier(P power, Entity entity) {
-        SerializableData.Instance data = ApugliPowers.MODIFY_SCALE.get().getDataFromPower(power);
-
+    public static <P> Object createApoliScaleModifier(P power, LivingEntity entity, SerializableData.Instance data) {
         if (!data.isPresent("modifier") && !data.isPresent("modifiers")) {
             Apugli.LOG.error("Could not create scale power modifier as the 'modifier' and 'modifiers' fields are both not specified.");
             return new ApoliScaleModifier<>(power, List.of());
         }
         ApoliScaleModifier<P> modifier;
-        if (data.getFloat("delay") > 0) {
-            modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), Optional.empty());
+        if (data.isPresent("delay") && data.getInt("delay") > 0) {
+            modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), getTypesFromCache(data), Services.POWER.isActive(power, entity));
         } else {
             modifier = new ApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity));
         }
@@ -83,29 +81,13 @@ public class PehkuiUtil {
 
     public static <P> CompoundTag serializeScalePower(P power, LivingEntity entity, CompoundTag tag) {
         ApoliScaleModifier<P> modifier = (ApoliScaleModifier<P>) ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity);
-
-        if (modifier instanceof LerpedApoliScaleModifier<P> lerpedModifier) {
-            tag.putInt("Delay", lerpedModifier.getTicks());
-            if (lerpedModifier.getPreviousScale().isPresent()) {
-                tag.putFloat("PreviousScale", lerpedModifier.getPreviousScale().get());
-            }
-        }
-
-        return tag;
+        return modifier.serialize(tag);
     }
 
     public static <P> void deserializeScalePower(P power, LivingEntity entity, CompoundTag tag) {
         ApoliScaleModifier<P> modifier = (ApoliScaleModifier<P>) ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity);
-        if (modifier instanceof LerpedApoliScaleModifier<?> lerpedModifier) {
-            int delay = tag.getInt("Delay");
-            lerpedModifier.setTicks(delay);
-            if (tag.contains("PreviousScale", Tag.TAG_FLOAT)) {
-                float previousScale = tag.getFloat("PreviousScale");
-                lerpedModifier.setPreviousScale(previousScale);
-            }
-        }
-        if (modifier != null)
-            modifier.tick(entity, true);
+        modifier.deserialize(tag);
+        modifier.tick(entity, true);
     }
 
     public static float getScale(Entity entity, ResourceLocation scaleTypeId) {

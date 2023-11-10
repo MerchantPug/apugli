@@ -15,33 +15,20 @@ import virtuoel.pehkui.api.ScaleRegistries;
 import java.util.Map;
 
 public record MarkLerpedScaleReadyPacket(int entityId,
-                                         ResourceLocation powerId,
-                                         Map<ResourceLocation, Float> cachedMaxScales) implements ApugliPacketS2C {
+                                         ResourceLocation powerId) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("mark_lerped_scale_ready");
 
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeInt(this.entityId());
         buf.writeResourceLocation(this.powerId());
-        buf.writeInt(this.cachedMaxScales().size());
-        for (Map.Entry<ResourceLocation, Float> entry : cachedMaxScales().entrySet()) {
-            buf.writeResourceLocation(entry.getKey());
-            buf.writeFloat(entry.getValue());
-        }
     }
 
     public static MarkLerpedScaleReadyPacket decode(FriendlyByteBuf buf) {
         int entityId = buf.readInt();
         ResourceLocation powerId = buf.readResourceLocation();
 
-        Map<ResourceLocation, Float> cachedMaxScales = Maps.newHashMap();
-        int cachedMaxScalesSize = buf.readInt();
-
-        for (int i = 0; i < cachedMaxScalesSize; ++i) {
-            cachedMaxScales.put(buf.readResourceLocation(), buf.readFloat());
-        }
-
-        return new MarkLerpedScaleReadyPacket(entityId, powerId, cachedMaxScales);
+        return new MarkLerpedScaleReadyPacket(entityId, powerId);
     }
 
     @Override
@@ -69,9 +56,8 @@ public record MarkLerpedScaleReadyPacket(int entityId,
                     return;
                 }
 
-                for (Map.Entry<ResourceLocation, Float> entry : cachedMaxScales().entrySet()) {
-                    lerpedApoliModifier.setCachedMaxScale(ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, entry.getKey()), entry.getValue());
-                    lerpedApoliModifier.setReady(ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, entry.getKey()));
+                for (ResourceLocation id : lerpedApoliModifier.getCachedScaleIds()) {
+                    lerpedApoliModifier.setReady(id);
                 }
             }
         });

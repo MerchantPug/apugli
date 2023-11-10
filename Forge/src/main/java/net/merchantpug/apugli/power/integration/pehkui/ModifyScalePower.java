@@ -91,9 +91,9 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
         private final Set<ResourceLocation> cachedScaleIds;
 
         public PowerData(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
-            if (ModList.get().isLoaded("pehkui")) {
-                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(power, entity);
-                this.cachedScaleIds = PehkuiUtil.getTypesFromCache(power);
+            if (ModList.get().isLoaded("pehkui") && entity instanceof LivingEntity living) {
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(power, living, power.getConfiguration().data());
+                this.cachedScaleIds = PehkuiUtil.getTypesFromCache(power.getConfiguration().data());
             } else {
                 this.apoliScaleModifier = null;
                 this.cachedScaleIds = Set.of();

@@ -52,8 +52,8 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
             super(type, entity, data);
             setTicking(true);
             if (FabricLoader.getInstance().isModLoaded("pehkui")) {
-                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, entity);
-                this.cachedScaleIds = PehkuiUtil.getTypesFromCache(this);
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, entity, data);
+                this.cachedScaleIds = PehkuiUtil.getTypesFromCache(data);
             } else {
                 this.apoliScaleModifier = null;
                 this.cachedScaleIds = Set.of();

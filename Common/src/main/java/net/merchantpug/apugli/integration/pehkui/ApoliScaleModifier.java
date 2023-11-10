@@ -5,6 +5,7 @@ import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import virtuoel.pehkui.api.ScaleData;
@@ -21,12 +22,24 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     protected final P power;
 
     protected final List<?> modifiers;
-    protected Map<ScaleType, Float> cachedMaxScales = Maps.newHashMap();
-    protected Map<ScaleType, Float> cachedPrevMaxScales = Maps.newHashMap();
+    protected Map<ResourceLocation, Float> cachedMaxScales = Maps.newHashMap();
+    protected Map<ResourceLocation, Float> cachedPreviousMaxScales = Maps.newHashMap();
 
     public ApoliScaleModifier(P power, List<?> modifiers) {
         this.power = power;
         this.modifiers = modifiers;
+    }
+
+    protected ResourceLocation getResourceLocationFromScaleData(ScaleData data) {
+        return ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, data.getScaleType());
+    }
+
+    public CompoundTag serialize(CompoundTag tag) {
+        return tag;
+    }
+
+    public void deserialize(CompoundTag tag) {
+
     }
 
     public void tick(LivingEntity entity, boolean calledFromNbt) {
@@ -73,22 +86,26 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     }
 
     public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
-        float maxScale = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
+        ResourceLocation id = getResourceLocationFromScaleData(scaleData);
 
-        if (!this.cachedMaxScales.containsKey(scaleData.getScaleType()) || maxScale != this.cachedMaxScales.get(scaleData.getScaleType())) {
-            this.cachedMaxScales.put(scaleData.getScaleType(), maxScale);
+        if (this.cachedMaxScales.containsKey(id)) {
+            return this.cachedMaxScales.get(id);
         }
 
-        return this.cachedMaxScales.get(scaleData.getScaleType());
+        float value = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
+        this.cachedMaxScales.put(id, value);
+        return value;
     }
 
     public float modifyPrevScale(final ScaleData scaleData, final float modifiedScale) {
-        float maxScale = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
+        ResourceLocation id = getResourceLocationFromScaleData(scaleData);
 
-        if (!this.cachedPrevMaxScales.containsKey(scaleData.getScaleType()) || maxScale != this.cachedPrevMaxScales.get(scaleData.getScaleType())) {
-            this.cachedPrevMaxScales.put(scaleData.getScaleType(), maxScale);
+        if (this.cachedPreviousMaxScales.containsKey(id)) {
+            return this.cachedPreviousMaxScales.get(id);
         }
 
-        return this.cachedPrevMaxScales.get(scaleData.getScaleType());
+        float value = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale);
+        this.cachedPreviousMaxScales.put(id, value);
+        return value;
     }
 }
