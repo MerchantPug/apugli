@@ -1,6 +1,5 @@
 package net.merchantpug.apugli.integration.pehkui;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
@@ -27,32 +26,25 @@ import java.util.Optional;
 import java.util.Set;
 
 public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
-    private int ticks = 0;
-    private int previousTicks = 0;
+    private int ticks;
     private final int maxTicks;
     private boolean shouldUpdatePreviousScale = false;
     private final Map<ResourceLocation, Float> capturedModifiedScales = Maps.newHashMap();
-    private final Map<ResourceLocation, Float> capturedDeltas = Maps.newHashMap();
     private final Map<ResourceLocation, Float> capturedPreviousModifiedScales = Maps.newHashMap();
     private final Set<ResourceLocation> cachedScaleIds;
     private final Map<ResourceLocation, Map<Integer, Map<Float, Float>>> deltaReachedScales = Maps.newHashMap();
     private final Map<ResourceLocation, Map<Integer, Float>> reachedPreviousScales = Maps.newHashMap();
     private final Map<ResourceLocation, Float> previousScales = Maps.newHashMap();
     private final Map<ResourceLocation, Float> previousPreviousScales = Maps.newHashMap();
-    private final Map<ResourceLocation, Float> activePreviousScales = Maps.newHashMap();
-    private final Map<ResourceLocation, Float> activePreviousPreviousScales = Maps.newHashMap();
     private final Set<ResourceLocation> readyScales = Sets.newHashSet();
-    private final Map<ResourceLocation, Boolean> previousConditionStates = Maps.newHashMap();
-    private Set<ResourceLocation> cachesToClear = Sets.newHashSet();
+    private final Set<ResourceLocation> cachesToClear = Sets.newHashSet();
     private boolean hasLoggedWarn = false;
 
     public LerpedApoliScaleModifier(P power, List<?> modifiers, int maxTicks, Set<ResourceLocation> cachedScaleIds, boolean conditionState) {
         super(power, modifiers);
         this.maxTicks = maxTicks;
+        this.ticks = !conditionState ? this.maxTicks : 0;
         this.cachedScaleIds = cachedScaleIds;
-        for (ResourceLocation id : cachedScaleIds) {
-            previousConditionStates.put(id, conditionState);
-        }
     }
 
     public Set<ResourceLocation> getCachedScaleIds() {
@@ -62,16 +54,15 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     public int getTicks() {
         return this.ticks;
     }
+    public int getClampedTicks() {
+        return Mth.clamp(this.ticks, 0 , this.maxTicks);
+    }
 
     public void setTicks(int value) {
         this.ticks = Mth.clamp(value, 0, this.maxTicks + 1);
 
         if (!this.isMax())
             this.deltaReachedScales.clear();
-    }
-
-    public void setPreviousTicks() {
-        this.previousTicks = this.ticks;
     }
 
     protected boolean isMax() {
@@ -98,8 +89,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                if (this.activePreviousScales.containsKey(entry.getKey()))
-                    entryTag.putFloat("ActiveValue", this.activePreviousScales.get(entry.getKey()));
                 previousScales.add(entryTag);
             }
             tag.put("PreviousScales", previousScales);
@@ -108,8 +97,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                if (this.activePreviousPreviousScales.containsKey(entry.getKey()))
-                    entryTag.putFloat("ActiveValue", this.activePreviousPreviousScales.get(entry.getKey()));
                 previousPreviousScales.add(entryTag);
             }
             tag.put("PreviousPreviousScales", previousPreviousScales);
@@ -122,7 +109,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     public void deserialize(CompoundTag tag) {
         int ticks = tag.getInt("Ticks");
         this.setTicks(ticks);
-        this.setPreviousTicks();
         if (tag.contains("CachesToClear", Tag.TAG_LIST)) {
             ListTag list = tag.getList("CachesToClear", Tag.TAG_STRING);
             for (int i = 0; i < list.size(); ++i) {
@@ -136,9 +122,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 CompoundTag previousScaleTag = previousScalesTag.getCompound(i);
                 ResourceLocation scaleType = ResourceLocation.of(previousScaleTag.getString("Type"), ':');
                 this.previousScales.put(scaleType, previousScaleTag.getFloat("Value"));
-                if (previousScaleTag.contains("ActiveValue", Tag.TAG_FLOAT)) {
-                    this.activePreviousScales.put(scaleType, previousScaleTag.getFloat("ActiveValue"));
-                }
             }
         }
         if (tag.contains("PreviousPreviousScales", Tag.TAG_LIST)) {
@@ -147,9 +130,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 CompoundTag previousScaleTag = previousScalesTag.getCompound(i);
                 ResourceLocation scaleType = ResourceLocation.of(previousScaleTag.getString("Type"), ':');
                 this.previousPreviousScales.put(scaleType, previousScaleTag.getFloat("Value"));
-                if (previousScaleTag.contains("ActiveValue", Tag.TAG_FLOAT)) {
-                    this.activePreviousPreviousScales.put(scaleType, previousScaleTag.getFloat("ActiveValue"));
-                }
             }
         }
     }
@@ -166,44 +146,39 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.deltaReachedScales.put(scaleTypeId, new HashMap<>());
             }
 
-            if (this.activePreviousScales.containsKey(scaleTypeId) && this.isMax() && !Services.POWER.isActive(power, entity)) {
-                this.activePreviousScales.remove(scaleTypeId);
-            }
-
             float modifiedScale = this.capturedModifiedScales.getOrDefault(scaleTypeId, scaleData.getBaseScale());
+            float previousModifiedScale = this.capturedPreviousModifiedScales.getOrDefault(scaleTypeId, scaleData.getBaseScale());
             float maxScale = Services.POWER.isActive(power, entity) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale) : modifiedScale;
+            float praviousMaxScale = Services.POWER.isActive(power, entity) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, previousModifiedScale) : previousModifiedScale;
 
             if (!entity.level().isClientSide() && !this.cachedMaxScales.containsKey(scaleTypeId)) {
                 this.cachedMaxScales.put(scaleTypeId, maxScale);
             }
+            if (!entity.level().isClientSide() && !this.cachedPreviousMaxScales.containsKey(scaleTypeId)) {
+                this.cachedPreviousMaxScales.put(scaleTypeId, praviousMaxScale);
+            }
 
-            if (!entity.level().isClientSide() && this.readyScales.contains(scaleTypeId) && maxScale != this.cachedMaxScales.get(scaleTypeId)) {
-                boolean condition = Services.POWER.isActive(power, entity);
-                if (!hasResetScale) {
-                    this.cachedScaleIds.forEach(id -> {
-                        float previousScale = !condition ? this.cachedMaxScales.get(scaleTypeId) : this.activePreviousScales.getOrDefault(scaleTypeId, this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(Mth.clamp(this.ticks, 0, this.maxTicks)) ? this.deltaReachedScales.get(scaleTypeId).get(Mth.clamp(this.ticks, 0, this.maxTicks)).get(this.capturedDeltas.getOrDefault(scaleTypeId, 1.0F)) : modifiedScale);
-                        float previousPreviousScale = !condition ? this.cachedPreviousMaxScales.get(scaleTypeId) : this.activePreviousPreviousScales.getOrDefault(scaleTypeId, this.reachedPreviousScales.containsKey(scaleTypeId) ? this.reachedPreviousScales.get(scaleTypeId).get(Mth.clamp(this.ticks, 0, this.maxTicks)) : capturedPreviousModifiedScales.getOrDefault(scaleTypeId, scaleData.getBaseScale()));
+            if (!entity.level().isClientSide() && !hasResetScale && this.readyScales.contains(scaleTypeId) && maxScale != this.cachedMaxScales.get(scaleTypeId)) {
+                this.cachedScaleIds.forEach(id -> {
+                    float previousScale = this.cachedMaxScales.getOrDefault(id, modifiedScale);
+                    float previousPreviousScale = this.cachedPreviousMaxScales.getOrDefault(id, previousModifiedScale);
 
-                        this.previousScales.put(id, previousScale);
-                        this.previousPreviousScales.put(id, previousPreviousScale);
-                        this.cachesToClear.add(id);
-                    });
-                    this.setTicks(0);
-                    this.shouldUpdatePreviousScale = true;
-                    Services.POWER.syncPower(entity, power);
-                    hasResetScale = true;
-                }
-                if (condition != this.previousConditionStates.getOrDefault(scaleTypeId, false) || this.activePreviousScales.containsKey(scaleTypeId)) {
-                    this.activePreviousScales.put(scaleTypeId, this.previousScales.getOrDefault(scaleTypeId, modifiedScale));
-                    this.activePreviousPreviousScales.put(scaleTypeId, this.previousPreviousScales.getOrDefault(scaleTypeId, modifiedScale));
-                    this.previousConditionStates.put(scaleTypeId, condition);
-                }
-                this.cachedMaxScales.put(scaleTypeId, maxScale);
+                    this.previousScales.put(id, previousScale);
+                    this.previousPreviousScales.put(id, previousPreviousScale);
+                    this.cachedMaxScales.put(id, maxScale);
+                    this.cachedPreviousMaxScales.put(id, praviousMaxScale);
+                    this.cachesToClear.add(id);
+                });
+                this.setTicks(this.maxTicks - this.getClampedTicks());
+
+                this.shouldUpdatePreviousScale = true;
+                hasResetScale = true;
+                Services.POWER.syncPower(entity, power);
             }
 
             if (cachesToClear.contains(scaleTypeId)) {
-                this.deltaReachedScales.clear();
-                this.reachedPreviousScales.clear();
+                this.deltaReachedScales.remove(scaleTypeId);
+                this.reachedPreviousScales.remove(scaleTypeId);
                 this.cachesToClear.remove(scaleTypeId);
                 scaleData.onUpdate();
             }
@@ -224,7 +199,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 Services.PLATFORM.sendS2CTrackingAndSelf(new MarkLerpedScaleReadyPacket(entity.getId(), this.getId()), entity);
             }
 
-            if (this.ticks <= this.maxTicks) {
+            if (this.readyScales.contains(scaleTypeId) && this.ticks <= this.maxTicks) {
                 if (!hasSentPacket && !entity.level().isClientSide()) {
                     this.setTicks(Math.max(this.ticks, 0) + 1);
                     Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.addScaleToClient(entity.getId(), cachedScaleIds.stream().toList(), this.getId()), entity);
@@ -245,12 +220,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         }
         ResourceLocation scaleTypeId = getResourceLocationFromScaleData(scaleData);
 
-        capturedDeltas.put(scaleTypeId, delta);
-        if (this.ticks != this.previousTicks) {
-            this.capturedModifiedScales.put(scaleTypeId, modifiedScale);
-            this.previousTicks = this.ticks;
-        }
-
         if (this.isMax() && this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.maxTicks) && this.deltaReachedScales.get(scaleTypeId).get(this.maxTicks).containsKey(1.0F)) {
             return this.deltaReachedScales.get(scaleTypeId).get(this.maxTicks).get(1.0F);
         } else if (this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(this.ticks).containsKey(delta)) {
@@ -258,7 +227,8 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         }
 
         float maxScale = Services.POWER.isActive(power, entity) ? (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale) : modifiedScale;
-        float initialScale = Mth.clampedLerp(this.previousScales.getOrDefault(scaleTypeId, modifiedScale), maxScale, Mth.clampedLerp(0.0F, 1.0F, (float) Mth.clamp(this.ticks, 0, this.maxTicks) / (float) this.maxTicks));
+        double lerp = Mth.clampedLerp(0.0D, 1.0D, (double) this.getClampedTicks() / (double) this.maxTicks);
+        float initialScale = Mth.clampedLerp(this.previousScales.getOrDefault(scaleTypeId, modifiedScale), maxScale, (float) lerp);
 
         Float2FloatFunction easing = Optional.ofNullable(scaleData.getEasing()).orElseGet(scaleData.getScaleType()::getDefaultEasing);
 
@@ -269,7 +239,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
 
         float modified = (initialScale + (perTick * range));
 
-        this.deltaReachedScales.computeIfAbsent(scaleTypeId, location -> new HashMap<>()).computeIfAbsent(Mth.clamp(this.ticks, 0, this.maxTicks), i -> new HashMap<>()).put(delta, modified);
+        this.deltaReachedScales.computeIfAbsent(scaleTypeId, location -> new HashMap<>()).computeIfAbsent(this.getClampedTicks(), i -> new HashMap<>()).put(delta, modified);
         return modified;
     }
 
@@ -282,7 +252,8 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             return this.reachedPreviousScales.get(id).get(this.ticks);
         }
 
-        float value = (float) Mth.clampedLerp(this.previousPreviousScales.getOrDefault(getResourceLocationFromScaleData(scaleData), modifiedScale), (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale), Mth.clampedLerp(0.0F, 1.0F, Mth.clamp(this.ticks, 0, this.maxTicks) / (double) this.maxTicks));
+        double lerp = Mth.clampedLerp(0.0D, 1.0D, ((double) this.getClampedTicks() / (double) this.maxTicks));
+        float value = Mth.clampedLerp(this.previousPreviousScales.getOrDefault(getResourceLocationFromScaleData(scaleData), modifiedScale), (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), modifiers, modifiedScale), (float) lerp);
         this.reachedPreviousScales.computeIfAbsent(id, location -> new HashMap<>()).put(this.ticks, value);
         return value;
     }
