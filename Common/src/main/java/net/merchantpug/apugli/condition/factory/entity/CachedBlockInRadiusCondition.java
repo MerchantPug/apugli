@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+// TODO: Rewrite this from the ground up.
 public class CachedBlockInRadiusCondition implements IConditionFactory<Entity> {
 
     private static final Map<BlockPos, Map<SerializableData.Instance, Boolean>> CHECKED_BLOCK_POS_CACHE = new ConcurrentHashMap<>();
