@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientLevelMixin {
     // This is injected here so it is run at the same time as Cardinal Components API.
     @Inject(method = "tickNonPassenger", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;tick()V", shift = At.Shift.AFTER))
-    private void tickClientActions(Entity entity, CallbackInfo ci) {
+    private void apugli$tickClientActions(Entity entity, CallbackInfo ci) {
         if (!(entity instanceof LivingEntity living)) return;
         Services.POWER.getPowers(living, ApugliPowers.CLIENT_ACTION_OVER_TIME.get()).forEach(ClientActionOverTime::clientTick);
     }

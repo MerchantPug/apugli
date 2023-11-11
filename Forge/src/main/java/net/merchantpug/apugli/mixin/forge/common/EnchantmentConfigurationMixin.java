@@ -15,12 +15,12 @@ import java.util.Map;
 public class EnchantmentConfigurationMixin {
 
     @Redirect(method = "lambda$applyCheck$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getEnchantments(Lnet/minecraft/world/item/ItemStack;)Ljava/util/Map;"))
-    private static Map<Enchantment, Integer> useModifiedEnchantmentLevel(ItemStack stack) {
+    private static Map<Enchantment, Integer> apugli$useModifiedEnchantmentLevel(ItemStack stack) {
         return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, stack.getEnchantmentTags()));
     }
 
     @Redirect(method = "lambda$applyCheck$2", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getItemEnchantmentLevel(Lnet/minecraft/world/item/enchantment/Enchantment;Lnet/minecraft/world/item/ItemStack;)I"))
-    private int useModifiedEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
+    private int apugli$useModifiedEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
         return ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getItemEnchantmentLevel(enchantment, stack);
     }
 

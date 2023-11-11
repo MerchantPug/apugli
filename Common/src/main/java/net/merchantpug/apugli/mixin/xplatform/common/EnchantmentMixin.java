@@ -23,12 +23,12 @@ public class EnchantmentMixin {
     private ItemStack apugli$capturedItem;
 
     @Inject(method = "getSlotItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void captureSlotItem(LivingEntity pEntity, CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir, Map map, EquipmentSlot[] var3, int var4, int var5, EquipmentSlot equipmentslot, ItemStack stack) {
+    private void apugli$captureSlotItem(LivingEntity pEntity, CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir, Map map, EquipmentSlot[] var3, int var4, int var5, EquipmentSlot equipmentslot, ItemStack stack) {
         this.apugli$capturedItem = stack;
     }
 
     @ModifyExpressionValue(method = "getSlotItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
-    private boolean allowEmptySlotItemIfModified(boolean original) {
+    private boolean apugli$allowEmptySlotItemIfModified(boolean original) {
         if (this.apugli$capturedItem != null && this.apugli$capturedItem.isEmpty() && Services.PLATFORM.getEntityFromItemStack(apugli$capturedItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
             this.apugli$capturedItem = null;
             return false;

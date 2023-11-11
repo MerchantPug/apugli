@@ -25,7 +25,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Shadow protected abstract boolean addLayer(RenderLayer<T, M> renderLayer);
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void construct(EntityRendererProvider.Context ctx, M model, float shadowRadius, CallbackInfo ci) {
+    private void apugli$addLayersLivingEntity(EntityRendererProvider.Context ctx, M model, float shadowRadius, CallbackInfo ci) {
         // Check PlayerEntityRendererMixin for implementation on players, that is separate due to mods that get a specific render layer.
         if (!((LivingEntityRenderer<T, M>)(Object)this instanceof PlayerRenderer)) {
             this.addLayer(new EnergySwirlLayer<>((RenderLayerParent<T, M>)this));

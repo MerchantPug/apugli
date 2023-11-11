@@ -33,7 +33,7 @@ public class BlockItemMixin extends Item {
     }
 
     @Inject(method = "placeBlock", at = @At("HEAD"), cancellable = true)
-    private void onPlaced(BlockPlaceContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$onPlaced(BlockPlaceContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
         Player player = context.getPlayer();
         ItemStack heldItem = context.getItemInHand();
         BlockPos pos = context.getClickedPos();
@@ -65,7 +65,7 @@ public class BlockItemMixin extends Item {
     }
 
     @Inject(method = "place", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/context/BlockPlaceContext;getClickedPos()Lnet/minecraft/core/BlockPos;"))
-    private void executeActionAfterPlaced(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    private void apugli$executeActionAfterPlaced(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         if(this.pair == null) return;
         this.pair.getA().executeAction(Optional.of(context.getClickedPos()));
         this.pair = null;

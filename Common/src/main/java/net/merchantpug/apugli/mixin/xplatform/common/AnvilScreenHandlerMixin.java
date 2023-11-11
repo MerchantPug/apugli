@@ -34,7 +34,7 @@ public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
     private ItemStack apugli$capturedItemStack;
 
     @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/Enchantment;canEnchant(Lnet/minecraft/world/item/ItemStack;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void captureFields(CallbackInfo ci, ItemStack itemStack, int i, int j, int k, ItemStack itemStack2, ItemStack itemStack3, Map map, boolean bl, Map map2, boolean bl2, boolean bl3, Iterator var12, Enchantment enchantment, int q, int r) {
+    private void apugli$captureFieldsInAnvil(CallbackInfo ci, ItemStack itemStack, int i, int j, int k, ItemStack itemStack2, ItemStack itemStack3, Map map, boolean bl, Map map2, boolean bl2, boolean bl3, Iterator var12, Enchantment enchantment, int q, int r) {
         apugli$capturedEnchantment = enchantment;
         apugli$capturedItemStack = itemStack;
     }
@@ -44,7 +44,7 @@ public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
     entire anvil system in an event.
      */
     @ModifyVariable(method = "createResult", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/enchantment/Enchantment;canEnchant(Lnet/minecraft/world/item/ItemStack;)Z"), ordinal = 3)
-    private boolean allowEnchantingThroughAnvil(boolean bl4) {
+    private boolean apugli$allowEnchantingThroughAnvil(boolean bl4) {
         if(Services.POWER.getPowers(this.player, ApugliPowers.ALLOW_ANVIL_ENCHANT.get()).stream().anyMatch(p -> p.doesApply(apugli$capturedEnchantment, apugli$capturedItemStack, this.inputSlots.getItem(1)))) {
             this.apugli$capturedEnchantment = null;
             this.apugli$capturedItemStack = null;

@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AreaEffectCloud.class)
 public interface AreaEffectCloudEntityAccessor {
     @Accessor("reapplicationDelay")
-    int getReapplicationDelay();
+    int apugli$getReapplicationDelay();
 
     @Accessor("reapplicationDelay")
-    void setReapplicationDelay(int value);
+    void apugli$setReapplicationDelay(int value);
 
     @Accessor("owner")
-    @Nullable LivingEntity getOwner();
+    @Nullable LivingEntity apugli$getOwner();
 }

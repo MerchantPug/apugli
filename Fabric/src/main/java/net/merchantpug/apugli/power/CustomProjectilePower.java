@@ -38,7 +38,7 @@ public class CustomProjectilePower extends AbstractActiveCooldownPower<CustomPro
 
     @Override
     public long getLastUseTime(Instance power, Entity entity) {
-        return ((CooldownPowerAccessor)power).getLastUseTime();
+        return ((CooldownPowerAccessor)power).apugli$getLastUseTime();
     }
 
     @Override

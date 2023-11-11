@@ -11,7 +11,7 @@ import java.util.HashMap;
 public interface ApoliClientEventHandlerAccessor {
 
     @Accessor(value = "idToKeyBindingMap", remap = false)
-    static HashMap<String, KeyMapping> getIdToKeyBindingMap() {
+    static HashMap<String, KeyMapping> apugli$getIdToKeybindingMap() {
         throw new RuntimeException("");
     }
 

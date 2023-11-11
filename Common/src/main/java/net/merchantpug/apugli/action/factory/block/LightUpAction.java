@@ -43,9 +43,9 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
         ) {
             level.setBlock(pos, state.setValue(LIT, true), 2);
             int burnTime = data.getInt("burn_time");
-            if(furnace.getLitTime() < burnTime) {
-                furnace.setLitTime(burnTime);
-                furnace.setLitDuration(burnTime);
+            if(furnace.apugli$getLitTime() < burnTime) {
+                furnace.apugli$setLitTime(burnTime);
+                furnace.apugli$setLitDuration(burnTime);
             }
         //Campfire
         } else if (
@@ -58,8 +58,8 @@ public class LightUpAction implements IActionFactory<Triple<Level, BlockPos, Dir
             data.isPresent("brew_time") &&
             level.getBlockEntity(pos) instanceof BrewingStandBlockEntityAccessor brewingStand
         ) {
-            if(brewingStand.getFuel() < data.getInt("brew_time")) {
-                brewingStand.setFuel(data.getInt("brew_time"));
+            if(brewingStand.apugli$getFuel() < data.getInt("brew_time")) {
+                brewingStand.apugli$setFuel(data.getInt("brew_time"));
             }
         } else return;
         //Play Sound

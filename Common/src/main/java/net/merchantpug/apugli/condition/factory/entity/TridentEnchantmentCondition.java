@@ -23,7 +23,7 @@ public class TridentEnchantmentCondition implements IConditionFactory<Entity> {
     public boolean check(SerializableData.Instance data, Entity instance) {
         int value = 0;
         if (instance instanceof ThrownTrident trident) {
-            value = EnchantmentHelper.getItemEnchantmentLevel(data.get("enchantment"), ((TridentEntityAccessor) trident).getTridentStack());
+            value = EnchantmentHelper.getItemEnchantmentLevel(data.get("enchantment"), ((TridentEntityAccessor) trident).apugli$getTridentStack());
         }
         return ((Comparison)data.get("comparison")).compare(value, data.getInt("compare_to"));
     }

@@ -62,7 +62,7 @@ public class TextureUtilClient {
             }
             TextureManager manager = Minecraft.getInstance().getTextureManager();
             DynamicTexture nativeImageBacked;
-            if (!refresh && ((TextureManagerAccessor)manager).getTextures().containsKey(textureId) && ((TextureManagerAccessor)manager).getTextures().get(textureId) instanceof DynamicTexture existingTexture) {
+            if (!refresh && ((TextureManagerAccessor)manager).apugli$getTextures().containsKey(textureId) && ((TextureManagerAccessor)manager).apugli$getTextures().get(textureId) instanceof DynamicTexture existingTexture) {
                 existingTexture.setPixels(texture);
                 existingTexture.upload();
                 nativeImageBacked = existingTexture;
@@ -81,7 +81,7 @@ public class TextureUtilClient {
     }
 
     public static boolean doesTextureExist(ResourceLocation id) {
-        return ((TextureManagerAccessor)Minecraft.getInstance().getTextureManager()).getTextures().containsKey(id);
+        return ((TextureManagerAccessor)Minecraft.getInstance().getTextureManager()).apugli$getTextures().containsKey(id);
     }
 
     public static void update() {

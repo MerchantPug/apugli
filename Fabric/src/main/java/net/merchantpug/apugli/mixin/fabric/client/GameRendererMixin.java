@@ -28,14 +28,14 @@ public class GameRendererMixin {
 
 
     @Inject(method = "getFov", at = @At("HEAD"))
-    private void captureFovValues(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir) {
+    private void apugli$captureFovValues(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir) {
         this.apugli$capturedActiveRenderInfo = activeRenderInfo;
         this.apugli$capturedPartialTicks = partialTicks;
         this.apugli$capturedUseFOVSetting = useFOVSetting;
     }
 
     @ModifyReturnValue(method = "getFov", at = @At(value = "RETURN", ordinal = 1))
-    private double modifyFov(double original) {
+    private double apugli$modifyFov(double original) {
         if (this.apugli$capturedUseFOVSetting && this.apugli$capturedActiveRenderInfo.getEntity() instanceof LivingEntity living) {
             double fov = FOVUtil.undoModifications(original, this.apugli$capturedActiveRenderInfo, this.apugli$capturedPartialTicks);
             double retVal = ApugliPowers.MODIFY_FOV.get().getFov(fov, this.apugli$capturedActiveRenderInfo, living);
@@ -46,7 +46,7 @@ public class GameRendererMixin {
     }
 
     @ModifyExpressionValue(method = "method_18144", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isPickable()Z"))
-    private static boolean preventPickingOfPreventedEntities(boolean original, Entity entity) {
+    private static boolean apugli$preventPickingOfPreventedEntities(boolean original, Entity entity) {
         return original && Services.POWER.getPowers(Minecraft.getInstance().player, ApugliPowers.PREVENT_ENTITY_SELECTION.get()).stream().noneMatch(p -> p.shouldPrevent(entity));
     }
 }

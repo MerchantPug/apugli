@@ -26,7 +26,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     }
 
     @Inject(method = "renderArmorPiece", at = @At("HEAD"), cancellable = true)
-    private void preventArmorRender(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
+    private void apugli$preventArmorRender(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         List<ModifyEquippedItemRenderPower> modifyEquippedItemRenderPowers = Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
         if(modifyEquippedItemRenderPowers.stream().anyMatch(power -> power.shouldOverride() && power.getSlot() == armorSlot)) {
             ci.cancel();

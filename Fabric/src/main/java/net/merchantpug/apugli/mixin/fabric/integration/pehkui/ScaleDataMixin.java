@@ -35,12 +35,12 @@ public abstract class ScaleDataMixin implements ScaleDataAccess {
     private final Set<ResourceLocation> apugli$apoliScaleModifiers = Sets.newHashSet();
 
     @Inject(method = "invalidateCachedModifiers", at = @At("TAIL"), remap = false)
-    private void dontCacheIfApoliScaleModifier(CallbackInfo ci) {
+    private void apugli$dontCacheIfApoliScaleModifier(CallbackInfo ci) {
         differingModifierCache.removeIf(modifier -> modifier instanceof ApoliScaleModifier);
     }
 
     @Inject(method = "readNbt", at = @At(value = "INVOKE", target = "Ljava/util/SortedSet;addAll(Ljava/util/Collection;)Z"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
-    private void addAllApoliScaleModifiers(CompoundTag tag, CallbackInfo ci, ScaleType type, SortedSet<ScaleModifier> baseValueModifiers) {
+    private void apugli$addAllApoliScaleModifiers(CompoundTag tag, CallbackInfo ci, ScaleType type, SortedSet<ScaleModifier> baseValueModifiers) {
         this.apugli$apoliScaleModifiers.forEach(location -> {
             Object apoliModifier = ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(location, this.getEntity());
             if (apoliModifier instanceof ScaleModifier scaleModifier)

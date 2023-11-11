@@ -16,18 +16,18 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(HumanoidArmorLayer.class)
 public interface ArmorFeatureRendererAccessor<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> {
     @Invoker("setPartVisibility")
-    void invokeSetVisible(A bipedModel, EquipmentSlot slot);
+    void apugli$invokeSetVisible(A bipedModel, EquipmentSlot slot);
 
     @Invoker("renderModel")
-    void invokeRenderArmorParts(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, A model, boolean legs, float red, float green, float blue, @Nullable String overlay);
+    void apugli$invokeRenderArmorParts(PoseStack matrices, MultiBufferSource vertexConsumers, int light, ArmorItem item, A model, boolean legs, float red, float green, float blue, @Nullable String overlay);
 
-    @Invoker
-    void invokeRenderTrim(ArmorMaterial armorMaterial, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, ArmorTrim armorTrim, A humanoidModel, boolean bl);
+    @Invoker("renderTrim")
+    void apugli$invokeRenderTrim(ArmorMaterial armorMaterial, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, ArmorTrim armorTrim, A humanoidModel, boolean bl);
 
-    @Invoker
-    void invokeRenderGlint(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, A humanoidModel);
+    @Invoker("renderGlint")
+    void apugli$invokeRenderGlint(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, A humanoidModel);
 
-    @Invoker
-    A invokeGetArmorModel(EquipmentSlot slot);
+    @Invoker("getArmorModel")
+    A apugli$invokeGetArmorModel(EquipmentSlot slot);
 
 }

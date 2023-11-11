@@ -19,7 +19,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 
     @ModifyArg(method = "updatePlayerPose", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setPose(Lnet/minecraft/world/entity/Pose;)V"))
-    private Pose setPlayerToCrawl(Pose pose) {
+    private Pose apugli$setPlayerToCrawl(Pose pose) {
         if (Services.POWER.hasPower(this, ApugliPowers.CRAWLING.get()) && (pose == Pose.STANDING || pose == Pose.CROUCHING)) {
             return Pose.SWIMMING;
         }

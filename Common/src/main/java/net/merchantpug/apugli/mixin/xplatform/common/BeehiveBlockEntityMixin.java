@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class BeehiveBlockEntityMixin {
 
     @Inject(method = "emptyAllLivingFromHive", at = @At(value = "HEAD", shift = At.Shift.AFTER), cancellable = true)
-    private void dontAngerBees(Player player, BlockState state, BeehiveBlockEntity.BeeReleaseStatus beeState, CallbackInfo ci) {
+    private void apugli$dontAngerBees(Player player, BlockState state, BeehiveBlockEntity.BeeReleaseStatus beeState, CallbackInfo ci) {
         if(Services.POWER.hasPower(player, ApugliPowers.PREVENT_BEE_ANGER.get())) {
             ci.cancel();
         }

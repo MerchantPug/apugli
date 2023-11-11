@@ -12,6 +12,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface FabricPowerFactoryAccessor<P extends Power> {
     
     @Invoker(value = "getPower", remap = false)
-    P invokeGetPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity);
+    P apugli$invokeGetPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity);
     
 }

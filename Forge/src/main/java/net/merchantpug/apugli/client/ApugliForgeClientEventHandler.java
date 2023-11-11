@@ -64,11 +64,11 @@ public class ApugliForgeClientEventHandler {
                         ApoliClientEventHandlerAccessor.setInitializedKeyBindingMap(true);
                         Minecraft client = Minecraft.getInstance();
                         for (int i = 0; i < client.options.keyMappings.length; i++) {
-                            ApoliClientEventHandlerAccessor.getIdToKeyBindingMap().put(client.options.keyMappings[i].getName(), client.options.keyMappings[i]);
+                            ApoliClientEventHandlerAccessor.apugli$getIdToKeybindingMap().put(client.options.keyMappings[i].getName(), client.options.keyMappings[i]);
                         }
                     }
                     capability.getKeysToCheck().forEach(key -> {
-                        KeyMapping keyBinding = ApoliClientEventHandlerAccessor.getIdToKeyBindingMap().get(key.key());
+                        KeyMapping keyBinding = ApoliClientEventHandlerAccessor.apugli$getIdToKeybindingMap().get(key.key());
                         if (keyBinding != null) {
                             if (!currentKeyBindingStates.containsKey(key.key())) {
                                 currentKeyBindingStates.put(key.key(), keyBinding.isDown());
@@ -141,7 +141,7 @@ public class ApugliForgeClientEventHandler {
         @SubscribeEvent
         public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
             ItemInHandRenderer itemInHandRenderer = Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
-            ((EntityRenderersEventAddLayersAccessor)event).getRenderers().forEach((entityType, entityRenderer) -> {
+            ((EntityRenderersEventAddLayersAccessor)event).apugli$getRenderers().forEach((entityType, entityRenderer) -> {
                 if (!(entityRenderer instanceof LivingEntityRenderer<?, ?> livingEntityRenderer)) return;
                 livingEntityRenderer.addLayer(new EntityTextureOverlayLayer(livingEntityRenderer, false, event.getEntityModels()));
 
@@ -166,7 +166,7 @@ public class ApugliForgeClientEventHandler {
             event.getSkins().forEach(s -> {
                 PlayerRenderer playerRenderer = event.getSkin(s);
                 playerRenderer.addLayer(new EnergySwirlLayer<>(playerRenderer));
-                playerRenderer.addLayer(new EntityTextureOverlayLayer<>(playerRenderer, ((PlayerModelAccessor)playerRenderer.getModel()).isSlim(), event.getEntityModels()));
+                playerRenderer.addLayer(new EntityTextureOverlayLayer<>(playerRenderer, ((PlayerModelAccessor)playerRenderer.getModel()).apugli$isSlim(), event.getEntityModels()));
                 playerRenderer.addLayer(new PowerItemInHandLayer<>(playerRenderer, itemInHandRenderer));
                 playerRenderer.addLayer(new PowerCustomHeadLayer<>(playerRenderer, event.getEntityModels(), itemInHandRenderer));
                 playerRenderer.addLayer(new PowerHumanoidArmorLayer<>(playerRenderer, playerRenderer.getModel(), playerRenderer.getModel(), event.getContext().getModelManager()));

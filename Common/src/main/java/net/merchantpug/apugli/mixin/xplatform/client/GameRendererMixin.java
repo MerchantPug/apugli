@@ -19,7 +19,7 @@ public abstract class GameRendererMixin implements ResourceManagerReloadListener
     Minecraft minecraft;
 
     @ModifyVariable(method = "tickFov", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/player/AbstractClientPlayer;getFieldOfViewModifier()F"))
-    private float modifyF(float f) {
+    private float apugli$modifyFoV(float f) {
         if (this.minecraft.getCameraEntity() instanceof LivingEntity living) {
             if(Services.POWER.hasPower(living, ApugliPowers.BUNNY_HOP.get())) {
                 f += ApugliPowers.BUNNY_HOP.get().getDataFromPower(Services.POWER.getPowers(living, ApugliPowers.BUNNY_HOP.get()).get(0)).getFloat("increase_per_tick") * ApugliPowers.BUNNY_HOP.get().getValue(Services.POWER.getPowers(living, ApugliPowers.BUNNY_HOP.get()).get(0), living) * 20;

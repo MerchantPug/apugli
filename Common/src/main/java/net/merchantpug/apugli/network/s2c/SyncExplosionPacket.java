@@ -111,11 +111,11 @@ public record SyncExplosionPacket<BI, B>(int userId,
                 Entity entity = level.getEntity(userId);
                 Explosion explosion = new Explosion(level, entity,
                         null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
-                ((ExplosionAccess) explosion).setExplosionDamageModifiers(damageModifiers());
-                ((ExplosionAccess) explosion).setExplosionKnockbackModifiers(knockbackModifiers());
-                ((ExplosionAccess) explosion).setExplosionVolumeModifiers(volumeModifiers());
-                ((ExplosionAccess) explosion).setExplosionPitchModifiers(pitchModifiers());
-                ((ExplosionAccess) explosion).setBiEntityPredicate(biEntityConditions());
+                ((ExplosionAccess) explosion).apugli$setExplosionDamageModifiers(damageModifiers());
+                ((ExplosionAccess) explosion).apugli$setExplosionKnockbackModifiers(knockbackModifiers());
+                ((ExplosionAccess) explosion).apugli$setExplosionVolumeModifiers(volumeModifiers());
+                ((ExplosionAccess) explosion).apugli$setExplosionPitchModifiers(pitchModifiers());
+                ((ExplosionAccess) explosion).apugli$setBiEntityPredicate(biEntityConditions());
                 explosion.explode();
                 explosion.finalizeExplosion(true);
             }

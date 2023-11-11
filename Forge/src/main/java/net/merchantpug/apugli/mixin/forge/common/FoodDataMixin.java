@@ -20,14 +20,14 @@ public class FoodDataMixin {
     LivingEntity apugli$capturedEntity;
 
     @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At("HEAD"), remap = false)
-    private void captureEatLocals(Item pItem, ItemStack pStack, LivingEntity entity, CallbackInfo ci) {
+    private void apugli$captureEatLocals(Item pItem, ItemStack pStack, LivingEntity entity, CallbackInfo ci) {
         apugli$capturedStack = pStack;
         apugli$capturedEntity = entity;
     }
 
     // We cannot use a ModifyExpressionValue from MixinExtras here because the original method does not seem to like it when the food is only on Forge's end.
     @ModifyExpressionValue(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
-    private boolean isEdibleWithPower(boolean original) {
+    private boolean apugli$isEdibleWithPower(boolean original) {
         if (CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity)) {
             this.apugli$capturedStack = null;
             this.apugli$capturedEntity = null;

@@ -57,17 +57,17 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "jumpFromGround", at = @At("TAIL"))
-    private void handleGroundJump(CallbackInfo ci) {
+    private void apugli$handleGroundJump(CallbackInfo ci) {
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void setItemStackEntities(CallbackInfo ci) {
+    private void apugli$setItemStackEntities(CallbackInfo ci) {
         IndividualisedEmptyStackUtil.addEntityToStack((LivingEntity)(Object)this);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))
-    private void runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$runDamageFunctions(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) return;
 
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
@@ -97,12 +97,12 @@ public abstract class LivingEntityMixin extends Entity {
     private float apugli$damageAmountOnDeath;
 
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;die(Lnet/minecraft/world/damagesource/DamageSource;)V"))
-    private void captureDamageAmount(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$captureDamageAmount(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         apugli$damageAmountOnDeath = amount;
     }
 
     @Inject(method = "die", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/DamageSource;getEntity()Lnet/minecraft/world/entity/Entity;"))
-    private void runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
+    private void apugli$runActionsOnTargetDeath(DamageSource source, CallbackInfo ci) {
         if (this.level().isClientSide) return;
 
         if (source.getEntity() != null && !source.getEntity().equals(this.getKillCredit()) && this.getKillCredit() != null) {
@@ -118,7 +118,7 @@ public abstract class LivingEntityMixin extends Entity {
     private boolean apugli$hasModifiedDamage;
 
     @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true)
-    private float modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
+    private float apugli$modifyDamageBasedOnEnchantment(float originalValue, DamageSource source, float amount) {
         float additionalValue = 0.0F;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
 
@@ -143,14 +143,14 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSleeping()Z"), cancellable = true)
-    private void preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (apugli$hasModifiedDamage && amount == 0.0F) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
-    private void runDamageFunctionsBeforeDamaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$runDamageFunctionsBeforeDamaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (amount == 0.0F) return;
         if ((source.getEntity() instanceof LivingEntity living)) {
             Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_HARM.get()).forEach(p -> ApugliPowers.ACTION_ON_HARM.get().execute(p, living, source, amount, (LivingEntity)(Object)this));
@@ -162,7 +162,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "eat", at = @At("HEAD"))
-    private void eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+    private void apugli$eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
@@ -178,7 +178,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "baseTick", at = @At("HEAD"))
-    private void tick(CallbackInfo ci) {
+    private void apugli$tickLivingEntity(CallbackInfo ci) {
         if (!this.isAlive()) return;
         if (Services.POWER.hasPower((LivingEntity) (Object) this, ApugliPowers.HOVER.get())) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.0, 1.0));
@@ -187,7 +187,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "travel", at = @At("HEAD"))
-    private void travel(Vec3 movementInput, CallbackInfo ci) {
+    private void apugli$travelLivingEntity(Vec3 movementInput, CallbackInfo ci) {
         if (this.isDeadOrDying() || this.level().isClientSide) return;
         ApugliPowers.BUNNY_HOP.get().onTravel((LivingEntity)(Object)this, movementInput);
     }

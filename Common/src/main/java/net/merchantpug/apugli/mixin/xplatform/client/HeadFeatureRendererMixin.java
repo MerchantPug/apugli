@@ -29,7 +29,7 @@ public abstract class HeadFeatureRendererMixin<T extends LivingEntity, M extends
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
-    private void preventHeadRender(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    private void apugli$preventHeadRender(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         List<ModifyEquippedItemRenderPower> powers = Services.POWER.getPowers(livingEntity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
         if(powers.stream().anyMatch(p -> p.shouldOverride() && p.getSlot() == EquipmentSlot.HEAD)) {
             ci.cancel();

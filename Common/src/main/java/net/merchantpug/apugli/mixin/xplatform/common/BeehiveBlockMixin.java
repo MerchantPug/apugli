@@ -19,7 +19,7 @@ import java.util.List;
 public class BeehiveBlockMixin {
 
     @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void dontAngerBees(Level world, BlockPos pos, CallbackInfo ci, List<Bee> list, List<Player> list2) {
+    private void apugli$dontAngerBees(Level world, BlockPos pos, CallbackInfo ci, List<Bee> list, List<Player> list2) {
         if (list2.stream().anyMatch(player -> Services.POWER.hasPower(player, ApugliPowers.PREVENT_BEE_ANGER.get()))) {
             ci.cancel();
         }

@@ -17,12 +17,12 @@ public class ItemPredicateMixin {
     private ItemStack apugli$itemStack;
 
     @Inject(method = "matches", at = @At("HEAD"))
-    private void captureItemStack(ItemStack itemStack, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$captureItemStack(ItemStack itemStack, CallbackInfoReturnable<Boolean> cir) {
         apugli$itemStack = itemStack;
     }
 
     @ModifyArg(method = "matches", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;deserializeEnchantments(Lnet/minecraft/nbt/ListTag;)Ljava/util/Map;"))
-    private ListTag getEnchantmentsForEachEnchantment(ListTag original) {
+    private ListTag apugli$getEnchantmentsForEachEnchantment(ListTag original) {
         ListTag returnValue = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemStack, original);
         apugli$itemStack = null;
         return returnValue;

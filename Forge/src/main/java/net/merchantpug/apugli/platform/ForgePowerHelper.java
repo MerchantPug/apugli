@@ -57,7 +57,7 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped())).orElseGet(ImmutableList::of)
                 .stream()
-                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).apugli$invokeGetPower(holder.get(), entity))
                 .collect(Collectors.toList());
     }
 
@@ -65,7 +65,7 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     public <P extends Power> List<P> getPowers(LivingEntity entity, SimplePowerFactory<P> factory, boolean includeInactive) {
         return IPowerContainer.get(entity).map(x -> x.getPowers((FabricPowerFactory<P>) factory.getWrapped(), includeInactive)).orElseGet(ImmutableList::of)
                 .stream()
-                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).invokeGetPower(holder.get(), entity))
+                .map(holder -> ((FabricPowerFactoryAccessor<P>)holder.get().getFactory()).apugli$invokeGetPower(holder.get(), entity))
                 .collect(Collectors.toList());
     }
 

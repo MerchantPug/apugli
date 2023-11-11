@@ -49,7 +49,7 @@ public class CustomProjectile extends ThrowableProjectile {
     protected boolean canHitEntity(Entity target) {
         if (!target.isSpectator() && target.isAlive() && target.isPickable()) {
             Entity entity = this.getOwner();
-            return (entity == null || ((ProjectileEntityAccessor)this).getLeftOwner() || !entity.isPassengerOfSameVehicle(target)) && entity != null && Services.CONDITION.checkBiEntity(biEntityCondition, this, target) && Services.CONDITION.checkBiEntity(ownerBiEntityCondition, entity, target);
+            return (entity == null || ((ProjectileEntityAccessor)this).apugli$getLeftOwner() || !entity.isPassengerOfSameVehicle(target)) && entity != null && Services.CONDITION.checkBiEntity(biEntityCondition, this, target) && Services.CONDITION.checkBiEntity(ownerBiEntityCondition, entity, target);
         } else {
             return false;
         }
@@ -58,11 +58,11 @@ public class CustomProjectile extends ThrowableProjectile {
     @Override
     public Entity getOwner() {
         ProjectileEntityAccessor accessor = (ProjectileEntityAccessor)this;
-        if (accessor.getCachedOwner() != null && !isOwnerRemovedOrDiscarded()) {
-            return accessor.getCachedOwner();
-        } else if (accessor.getOwnerUUID() != null && this.level() instanceof ServerLevel serverLevel) {
-            accessor.setCachedOwner(serverLevel.getEntity(accessor.getOwnerUUID()));
-            return accessor.getCachedOwner();
+        if (accessor.apugli$getCachedOwner() != null && !isOwnerRemovedOrDiscarded()) {
+            return accessor.apugli$getCachedOwner();
+        } else if (accessor.apugli$getOwnerUUID() != null && this.level() instanceof ServerLevel serverLevel) {
+            accessor.apugli$setCachedOwner(serverLevel.getEntity(accessor.apugli$getOwnerUUID()));
+            return accessor.apugli$getCachedOwner();
         } else {
             return null;
         }
@@ -70,10 +70,10 @@ public class CustomProjectile extends ThrowableProjectile {
 
     private boolean isOwnerRemovedOrDiscarded() {
         ProjectileEntityAccessor accessor = (ProjectileEntityAccessor)this;
-        if (accessor.getCachedOwner() == null) {
+        if (accessor.apugli$getCachedOwner() == null) {
             return false;
         }
-        return accessor.getCachedOwner().getRemovalReason() == RemovalReason.KILLED || accessor.getCachedOwner().getRemovalReason() == RemovalReason.DISCARDED;
+        return accessor.apugli$getCachedOwner().getRemovalReason() == RemovalReason.KILLED || accessor.apugli$getCachedOwner().getRemovalReason() == RemovalReason.DISCARDED;
     }
 
     @Override

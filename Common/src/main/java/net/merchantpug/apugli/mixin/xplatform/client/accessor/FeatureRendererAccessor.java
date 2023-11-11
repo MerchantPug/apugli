@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(RenderLayer.class)
 public interface FeatureRendererAccessor<T extends Entity, M extends EntityModel<T>> {
 
-    @Accessor
-    RenderLayerParent<T, M> getRenderer();
+    @Accessor("renderer")
+    RenderLayerParent<T, M> apugli$getRenderer();
 
 }

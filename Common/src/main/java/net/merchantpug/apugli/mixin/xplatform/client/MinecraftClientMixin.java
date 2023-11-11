@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(Minecraft.class)
 public class MinecraftClientMixin {
     @Inject(method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", at = @At("RETURN"))
-    private void reloadUrlTextures(boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    private void apugli$reloadUrlTextures(boolean force, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
         for (Map.Entry<ResourceLocation, String> entry : TextureUtilClient.getUrls().entrySet()) {
             ResourceLocation textureLocation = entry.getKey();
             String url = entry.getValue();

@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface GameRendererAccessor {
 
     @Accessor("oldFov")
-    float getOldFov();
+    float apugli$getOldFov();
 
     @Accessor("fov")
-    float getFov();
+    float apugli$getFov();
 
 }

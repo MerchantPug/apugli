@@ -17,7 +17,7 @@ public abstract class ProjectileEntityMixin {
     @Shadow @Nullable public abstract Entity getOwner();
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;tick()V"))
-    private void handlePowerTick(CallbackInfo ci) {
+    private void apugli$handlePowerTick(CallbackInfo ci) {
         if (!(this.getOwner() instanceof LivingEntity living)) return;
         Services.POWER.getPowers(living, ApugliPowers.PROJECTILE_ACTION_OVER_TIME.get()).forEach(power -> power.projectileTick((Projectile)(Object)this));
     }

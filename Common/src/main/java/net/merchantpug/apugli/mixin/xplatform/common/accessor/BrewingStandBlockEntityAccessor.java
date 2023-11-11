@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(BrewingStandBlockEntity.class)
 public interface BrewingStandBlockEntityAccessor {
     
-    @Accessor
-    int getFuel();
+    @Accessor("fuel")
+    int apugli$getFuel();
 
-    @Accessor
-    void setFuel(int value);
+    @Accessor("fuel")
+    void apugli$setFuel(int value);
     
 }

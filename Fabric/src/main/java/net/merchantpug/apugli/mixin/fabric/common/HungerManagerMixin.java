@@ -21,7 +21,7 @@ public abstract class HungerManagerMixin {
     public abstract void eat(int food, float saturationModifier);
 
     @Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    private void eat(Item item, ItemStack stack, CallbackInfo ci) {
+    private void apugli$eat(Item item, ItemStack stack, CallbackInfo ci) {
         if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
             power.ifPresent(p -> {

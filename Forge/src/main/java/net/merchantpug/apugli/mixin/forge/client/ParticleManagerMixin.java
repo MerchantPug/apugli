@@ -21,14 +21,14 @@ public class ParticleManagerMixin {
     private ParticleOptions apugli$particleData;
 
     @Inject(method = "makeParticle", at = @At(value = "RETURN", ordinal = 0))
-    private <T extends ParticleOptions> void captureParticleEffect(T particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, CallbackInfoReturnable<Particle> cir) {
+    private <T extends ParticleOptions> void apugli$captureParticleEffect(T particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, CallbackInfoReturnable<Particle> cir) {
         this.apugli$particleData = particleData;
     }
 
     @ModifyReturnValue(method = "makeParticle", at = @At(value = "RETURN", ordinal = 0))
-    private <T extends ParticleOptions> Particle linkParticleEffectToParticleClass(Particle particle) {
+    private <T extends ParticleOptions> Particle apugli$linkParticleEffectToParticleClass(Particle particle) {
         if (particle != null) {
-            ((ParticleAccess)particle).setParticleEffect(apugli$particleData);
+            ((ParticleAccess)particle).apugli$setParticleEffect(apugli$particleData);
         }
         this.apugli$particleData = null;
         return particle;

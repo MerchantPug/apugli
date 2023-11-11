@@ -11,6 +11,6 @@ import java.util.Queue;
 
 @Mixin(ParticleEngine.class)
 public interface ParticleEngineAccessor {
-    @Accessor
-    Map<ParticleRenderType, Queue<Particle>> getParticles();
+    @Accessor("particles")
+    Map<ParticleRenderType, Queue<Particle>> apugli$getParticles();
 }

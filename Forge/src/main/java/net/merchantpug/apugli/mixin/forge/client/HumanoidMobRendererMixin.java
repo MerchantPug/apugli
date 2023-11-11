@@ -20,7 +20,7 @@ public class HumanoidMobRendererMixin {
     public Vector3f apugli$headSize;
 
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererProvider$Context;Lnet/minecraft/client/model/HumanoidModel;FFFF)V", at = @At("TAIL"))
-    private void captureHeadSize(EntityRendererProvider.Context pContext, HumanoidModel pModel, float pShadowRadius, float pScaleX, float pScaleY, float pScaleZ, CallbackInfo ci) {
+    private void apugli$captureHeadSize(EntityRendererProvider.Context pContext, HumanoidModel pModel, float pShadowRadius, float pScaleX, float pScaleY, float pScaleZ, CallbackInfo ci) {
         apugli$headSize = new Vector3f(pScaleX, pScaleY, pScaleZ);
     }
 

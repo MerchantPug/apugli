@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EntityRendererMixin<T extends Entity> {
 
     @Inject(method = "renderNameTag", at = @At("HEAD"), cancellable = true)
-    private void cancelLabelRender(T entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
+    private void apugli$cancelLabelRender(T entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
         if(!(entity instanceof Player player)) return;
 
         Player localPlayer = Minecraft.getInstance().player;

@@ -44,7 +44,7 @@ public class PowerCustomHeadLayer<T extends LivingEntity, M extends EntityModel<
     public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         List<ModifyEquippedItemRenderPower> powers = Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get());
         powers.forEach(power -> {
-            if(power.getSlot() == EquipmentSlot.HEAD) renderIndividualStackOnHead(matrices, vertexConsumers, light, entity, limbAngle, power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleX(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleY(), power.getScale() * ((HeadFeatureRendererAccessor)this).getScaleZ(), power.getStack(), ((HeadFeatureRendererAccessor)this).getItemInHandRenderer());
+            if(power.getSlot() == EquipmentSlot.HEAD) renderIndividualStackOnHead(matrices, vertexConsumers, light, entity, limbAngle, power.getScale() * ((HeadFeatureRendererAccessor)this).apugli$getScaleX(), power.getScale() * ((HeadFeatureRendererAccessor)this).apugli$getScaleY(), power.getScale() * ((HeadFeatureRendererAccessor)this).apugli$getScaleZ(), power.getStack(), ((HeadFeatureRendererAccessor)this).apugli$getItemInHandRenderer());
         });
     }
 
@@ -73,7 +73,7 @@ public class PowerCustomHeadLayer<T extends LivingEntity, M extends EntityModel<
                 }
                 matrixStack.translate(-0.5D, 0.0D, -0.5D);
                 SkullBlock.Type skullType = ((AbstractSkullBlock) ((BlockItem) item).getBlock()).getType();
-                SkullModelBase skullBlockEntityModel = ((HeadFeatureRendererAccessor)this).getHeadModels().get(skullType);
+                SkullModelBase skullBlockEntityModel = ((HeadFeatureRendererAccessor)this).apugli$getHeadModels().get(skullType);
                 RenderType renderLayer = SkullBlockRenderer.getRenderType(skullType, gameProfile);
                 SkullBlockRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
             } else if(!(item instanceof ArmorItem) || ((ArmorItem) item).getEquipmentSlot() != EquipmentSlot.HEAD) {

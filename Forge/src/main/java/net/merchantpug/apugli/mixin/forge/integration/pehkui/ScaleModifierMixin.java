@@ -12,7 +12,7 @@ import virtuoel.pehkui.api.ScaleModifier;
 @Mixin(ScaleModifier.class)
 public class ScaleModifierMixin {
     @Inject(method = "compareTo(Lvirtuoel/pehkui/api/ScaleModifier;)I", at = @At("HEAD"), cancellable = true, remap = false)
-    private void cancelCompareTo(ScaleModifier o, CallbackInfoReturnable<Integer> cir) {
+    private void apugli$cancelCompareTo(ScaleModifier o, CallbackInfoReturnable<Integer> cir) {
         if (o instanceof ApoliScaleModifier)
             cir.setReturnValue(-1);
     }

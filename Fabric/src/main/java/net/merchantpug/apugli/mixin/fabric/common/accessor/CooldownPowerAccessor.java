@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface CooldownPowerAccessor {
 
     @Accessor(value = "lastUseTime", remap = false)
-    long getLastUseTime();
+    long apugli$getLastUseTime();
 
 }

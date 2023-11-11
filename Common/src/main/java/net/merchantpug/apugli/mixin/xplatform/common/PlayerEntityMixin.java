@@ -23,14 +23,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Inject(method = "setItemSlot", at = @At(value = "TAIL"))
-    public void equipStack(EquipmentSlot slot, ItemStack stack, CallbackInfo ci) {
+    public void apugli$equipStack(EquipmentSlot slot, ItemStack stack, CallbackInfo ci) {
         if(slot.getType() != EquipmentSlot.Type.ARMOR && !slot.equals(EquipmentSlot.OFFHAND)) return;
 
         Services.POWER.getPowers((Player)(Object)this, ApugliPowers.ACTION_ON_EQUIP.get()).forEach(power -> power.executeAction(slot, stack));
     }
 
     @Inject(method = "isModelPartShown", at = @At("RETURN"), cancellable = true)
-    private void setPartsToInvisibleWithPower(PlayerModelPart modelPart, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$setPartsToInvisibleWithPower(PlayerModelPart modelPart, CallbackInfoReturnable<Boolean> cir) {
         if (Services.POWER.getPowers((Player)(Object)this, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get()).stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
             cir.setReturnValue(false);
         }

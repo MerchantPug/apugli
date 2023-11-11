@@ -26,14 +26,14 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
     }
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z"))
-    private void allowPowerSprinting(CallbackInfo ci) {
+    private void apugli$allowPowerSprinting(CallbackInfo ci) {
         if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (!Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
             this.setSprinting(true);
         }
     }
 
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 1), ordinal = 5)
-    private boolean resetPowerSprinting(boolean value) {
+    private boolean apugli$resetPowerSprinting(boolean value) {
         if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get())) {
             return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision) || this.isInWater() && !this.isUnderWater();
         }

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CapeLayer.class)
 public class CapeFeatureRendererMixin {
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At(value = "HEAD"), cancellable = true)
-    private void preventCapeRendering(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, AbstractClientPlayer abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
+    private void apugli$preventCapeRendering(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, AbstractClientPlayer abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         if(Services.POWER.getPowers(abstractClientPlayerEntity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().anyMatch(power -> power.getStack().getItem() == Items.ELYTRA && power.getSlot() == EquipmentSlot.CHEST)) {
             ci.cancel();
         }

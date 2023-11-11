@@ -46,7 +46,7 @@ public class PowerItemInHandLayer<T extends LivingEntity, M extends EntityModel<
             }
             if(!leftHandStack.isEmpty() || !rightHandStack.isEmpty()) {
                 matrices.pushPose();
-                if(((FeatureRendererAccessor)this).getRenderer().getModel().young) {
+                if(((FeatureRendererAccessor)this).apugli$getRenderer().getModel().young) {
                     matrices.translate(0.0D, 0.75D, 0.0D);
                     matrices.scale(0.5F, 0.5F, 0.5F);
                 }

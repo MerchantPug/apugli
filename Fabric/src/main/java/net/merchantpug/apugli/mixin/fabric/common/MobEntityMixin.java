@@ -21,7 +21,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     }
 
     @ModifyVariable(method = "setTarget", at = @At("HEAD"), argsOnly = true)
-    private LivingEntity modifyTarget(LivingEntity target) {
+    private LivingEntity apugli$modifyTarget(LivingEntity target) {
         if(level().isClientSide() || !(target instanceof Player)) {
             return target;
         }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Item.class)
 public interface ItemAccessor {
     @Invoker("getPlayerPOVHitResult")
-    static BlockHitResult callRaycast(Level world, Player playerEntity, ClipContext.Fluid fluidHandling) {
+    static BlockHitResult apugli$callRaycast(Level world, Player playerEntity, ClipContext.Fluid fluidHandling) {
         throw new IllegalStateException();
     }
 }

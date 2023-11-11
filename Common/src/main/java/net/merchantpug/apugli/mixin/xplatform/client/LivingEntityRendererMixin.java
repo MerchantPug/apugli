@@ -38,19 +38,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
-    private void captureEntity(T livingEntity, float f, float g, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, CallbackInfo ci) {
+    private void apugli$captureEntity(T livingEntity, float f, float g, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, CallbackInfo ci) {
         apugli$capturedEntity = livingEntity;
     }
 
     @WrapWithCondition(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
-    private boolean wrapRenderOriginalModel(EntityModel<T> entityModel, PoseStack matrixStack, VertexConsumer vertexConsumer, int i, int p, float red, float green, float blue, float alpha) {
+    private boolean apugli$wrapRenderOriginalModel(EntityModel<T> entityModel, PoseStack matrixStack, VertexConsumer vertexConsumer, int i, int p, float red, float green, float blue, float alpha) {
         boolean returnValue = Services.POWER.getPowers(apugli$capturedEntity, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get()).stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient);
         this.apugli$capturedEntity = null;
         return returnValue;
     }
 
     @ModifyVariable(method = "getRenderType", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;getTextureLocation(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/resources/ResourceLocation;"))
-    private ResourceLocation changeTexture(ResourceLocation identifier, T entity) {
+    private ResourceLocation apugli$changeTexture(ResourceLocation identifier, T entity) {
         if(Services.POWER.hasPower(entity, ApugliPowers.SET_TEXTURE.get())) {
             SetTexturePower texturePower = Services.POWER.getPowers(entity, ApugliPowers.SET_TEXTURE.get()).get(0);
             if(texturePower.getTextureLocation() != null) {

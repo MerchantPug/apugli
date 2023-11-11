@@ -19,12 +19,12 @@ public abstract class EnchantmentHelperMixin {
     private static ItemStack apugli$common$runIterationOnItem;
 
     @Inject(method = "runIterationOnItem", at = @At(value = "HEAD"))
-    private static void getEnchantmentItemStack(EnchantmentHelper.EnchantmentVisitor enchantmentVisitor, ItemStack itemStack, CallbackInfo ci) {
+    private static void apugli$getEnchantmentItemStack(EnchantmentHelper.EnchantmentVisitor enchantmentVisitor, ItemStack itemStack, CallbackInfo ci) {
         apugli$common$runIterationOnItem = itemStack;
     }
 
     @ModifyExpressionValue(method = "runIterationOnItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
-    private static boolean forEachIsEmpty(boolean original) {
+    private static boolean apugli$forEachIsEmpty(boolean original) {
         if (apugli$common$runIterationOnItem != null && Services.PLATFORM.getEntityFromItemStack(apugli$common$runIterationOnItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
             apugli$common$runIterationOnItem = null;
             return false;

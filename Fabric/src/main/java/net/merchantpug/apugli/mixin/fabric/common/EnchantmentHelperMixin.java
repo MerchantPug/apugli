@@ -23,12 +23,12 @@ public abstract class EnchantmentHelperMixin {
     private static ItemStack apugli$runIterationOnItem;
 
     @Inject(method = "runIterationOnItem", at = @At(value = "HEAD"))
-    private static void getEnchantmentItemStack(EnchantmentHelper.EnchantmentVisitor enchantmentVisitor, ItemStack itemStack, CallbackInfo ci) {
+    private static void apugli$getEnchantmentItemStack(EnchantmentHelper.EnchantmentVisitor enchantmentVisitor, ItemStack itemStack, CallbackInfo ci) {
         apugli$runIterationOnItem = itemStack;
     }
 
     @ModifyVariable(method = "runIterationOnItem", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
-    private static ListTag getEnchantmentsForEachEnchantment(ListTag original) {
+    private static ListTag apugli$getEnchantmentsForEachEnchantment(ListTag original) {
         ListTag returnValue = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$runIterationOnItem, original);
         apugli$runIterationOnItem = null;
         return returnValue;
@@ -40,12 +40,12 @@ public abstract class EnchantmentHelperMixin {
     private static ItemStack apugli$itemEnchantmentLevelStack;
 
     @Inject(method = "getItemEnchantmentLevel", at = @At("HEAD"))
-    private static void getEnchantmentItemStack(Enchantment enchantment, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+    private static void apugli$getEnchantmentItemStack(Enchantment enchantment, ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
         apugli$itemEnchantmentLevelStack = itemStack;
     }
 
     @ModifyExpressionValue(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
-    private static boolean getLevelIsEmpty(boolean original) {
+    private static boolean apugli$getLevelIsEmpty(boolean original) {
         if (apugli$itemEnchantmentLevelStack != null && apugli$itemEnchantmentLevelStack.isEmpty()  && ((ItemStackAccess) (Object) apugli$itemEnchantmentLevelStack).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
             return false;
         }
@@ -53,7 +53,7 @@ public abstract class EnchantmentHelperMixin {
     }
 
     @ModifyVariable(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;getEnchantmentTags()Lnet/minecraft/nbt/ListTag;"))
-    private static ListTag getEnchantmentsGetLevel(ListTag original) {
+    private static ListTag apugli$getEnchantmentsGetLevel(ListTag original) {
         ListTag returnValue = ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(apugli$itemEnchantmentLevelStack, original);
         apugli$itemEnchantmentLevelStack = null;
         return returnValue;

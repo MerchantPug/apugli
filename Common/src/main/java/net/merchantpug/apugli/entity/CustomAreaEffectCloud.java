@@ -142,10 +142,10 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
 
     private boolean isOwnerRemovedOrDiscarded() {
         AreaEffectCloudEntityAccessor accessor = (AreaEffectCloudEntityAccessor)this;
-        if (accessor.getOwner() == null) {
+        if (accessor.apugli$getOwner() == null) {
             return false;
         }
-        return accessor.getOwner().getRemovalReason() == RemovalReason.KILLED || accessor.getOwner().getRemovalReason() == RemovalReason.DISCARDED;
+        return accessor.apugli$getOwner().getRemovalReason() == RemovalReason.KILLED || accessor.apugli$getOwner().getRemovalReason() == RemovalReason.DISCARDED;
     }
 
     public void tick() {
@@ -263,7 +263,7 @@ public class CustomAreaEffectCloud extends AreaEffectCloud {
                             s = q * q + r * r;
                         } while (!(s <= (double) (f * f)));
 
-                        this.victims.put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).getReapplicationDelay());
+                        this.victims.put(livingEntity, this.tickCount + ((AreaEffectCloudEntityAccessor) this).apugli$getReapplicationDelay());
 
                         for (ResourceLocation power : powersToApply) {
                             if (!Services.POWER.hasPowerType(power, getEntityId(), livingEntity)) {

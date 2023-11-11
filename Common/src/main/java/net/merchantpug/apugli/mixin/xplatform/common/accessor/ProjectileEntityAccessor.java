@@ -11,14 +11,14 @@ import java.util.UUID;
 public interface ProjectileEntityAccessor {
 
     @Accessor("leftOwner")
-    boolean getLeftOwner();
+    boolean apugli$getLeftOwner();
 
     @Accessor("ownerUUID")
-    UUID getOwnerUUID();
+    UUID apugli$getOwnerUUID();
 
     @Accessor("cachedOwner")
-    Entity getCachedOwner();
+    Entity apugli$getCachedOwner();
 
     @Accessor("cachedOwner")
-    void setCachedOwner(Entity value);
+    void apugli$setCachedOwner(Entity value);
 }

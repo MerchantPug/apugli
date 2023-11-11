@@ -30,13 +30,13 @@ public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
 
     @Inject(method = "isEdible", at = @At(value = "RETURN"), cancellable = true)
-    private void setEdibleWithPower(CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$setEdibleWithPower(CallbackInfoReturnable<Boolean> cir) {
         if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living && CoreUtil.doEdibleItemPowersApply((ItemStack)(Object)this, living))
             cir.setReturnValue(true);
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
-    private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
+    private void apugli$use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(this.getItem() instanceof BucketItem bucket) || !(Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
@@ -45,7 +45,7 @@ public abstract class ItemStackMixin {
             if (user.canEat(power.get().getFoodComponent().canAlwaysEat())) {
                 user.startUsingItem(hand);
                 if (this.getItem() instanceof BucketItem) {
-                    BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, bucket.getFluid() == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
+                    BlockHitResult blockHitResult = ItemAccessor.apugli$callRaycast(world, user, bucket.getFluid() == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
                     if (blockHitResult.getType() == HitResult.Type.BLOCK) return;
                 }
                 cir.setReturnValue(InteractionResultHolder.consume(itemStack));

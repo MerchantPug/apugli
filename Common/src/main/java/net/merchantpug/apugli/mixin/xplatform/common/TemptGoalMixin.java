@@ -21,7 +21,7 @@ public abstract class TemptGoalMixin extends Goal {
     @Shadow @Final protected PathfinderMob mob;
 
     @Inject(method = "canUse", at = @At(value = "RETURN", opcode = 1), cancellable = true)
-    private void stopStartingIfTargetCannotBreed(CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$stopStartingIfTargetCannotBreed(CallbackInfoReturnable<Boolean> cir) {
         if(Services.POWER.getPowers(this.player, ApugliPowers.PREVENT_BREEDING.get()).stream().anyMatch(power -> power.doesApply(this.mob) && power.preventFollow) && !((TemptGoal)(Object)this instanceof Cat.CatTemptGoal)) {
             cir.setReturnValue(false);
         }

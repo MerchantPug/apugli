@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ElytraFeatureRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
 
     @Inject(method = "shouldRender", at = @At(value = "RETURN"), cancellable = true, remap = false)
-    private void allowPowerRendering(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$allowPowerRendering(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().anyMatch(power -> power.getStack().getItem() == Items.ELYTRA && power.getSlot() == EquipmentSlot.CHEST))
             cir.setReturnValue(true);
         if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get()).stream().anyMatch(power -> power.getSlot() == EquipmentSlot.CHEST && power.shouldOverride() && !power.getStack().is(Items.ELYTRA)))

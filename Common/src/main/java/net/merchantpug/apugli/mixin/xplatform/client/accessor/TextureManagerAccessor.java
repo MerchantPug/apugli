@@ -12,5 +12,5 @@ import java.util.Map;
 @Mixin(TextureManager.class)
 public interface TextureManagerAccessor {
     @Accessor("byPath") @Final
-    Map<ResourceLocation, AbstractTexture> getTextures();
+    Map<ResourceLocation, AbstractTexture> apugli$getTextures();
 }

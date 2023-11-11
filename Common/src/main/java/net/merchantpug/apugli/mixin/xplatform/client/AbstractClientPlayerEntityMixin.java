@@ -25,7 +25,7 @@ public abstract class AbstractClientPlayerEntityMixin extends Player {
     }
 
     @Inject(method = "getModelName", at = @At("HEAD"), cancellable = true)
-    private void getModel(CallbackInfoReturnable<String> cir) {
+    private void apugli$getModel(CallbackInfoReturnable<String> cir) {
         List<PlayerModelTypePower> playerModelTypePowers = Services.POWER.getPowers(this, ApugliPowers.PLAYER_MODEL_TYPE.get());
         List<SetTexturePower> setTexturePowers = Services.POWER.getPowers(this, ApugliPowers.SET_TEXTURE.get()).stream().filter(p -> p.getModel() != null).toList();
         if(playerModelTypePowers.size() + setTexturePowers.size() > 1) {

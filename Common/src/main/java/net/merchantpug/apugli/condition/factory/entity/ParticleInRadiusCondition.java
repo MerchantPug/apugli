@@ -57,9 +57,9 @@ public class ParticleInRadiusCondition implements IConditionFactory<Entity> {
         int count = 0;
         AABB aabb = entity.getBoundingBox().inflate(data.getDouble("radius"));
         ParticleEngineAccessor particleEngine = (ParticleEngineAccessor) Minecraft.getInstance().particleEngine;
-        for(Queue<Particle> particleQueue : particleEngine.getParticles().values()) {
+        for(Queue<Particle> particleQueue : particleEngine.apugli$getParticles().values()) {
             for(Particle particle : particleQueue) {
-                if(particleFilter.test(((ParticleAccess)particle).getParticleEffect()) &&
+                if(particleFilter.test(((ParticleAccess)particle).apugli$getParticleEffect()) &&
                     aabb.intersects(particle.getBoundingBox())
                 ) {
                     count++;

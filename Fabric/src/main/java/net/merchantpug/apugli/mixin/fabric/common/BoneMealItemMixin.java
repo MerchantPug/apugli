@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BoneMealItem.class)
 public class BoneMealItemMixin {
     @Inject(method = "useOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/InteractionResult;sidedSuccess(Z)Lnet/minecraft/world/InteractionResult;"))
-    private void executeBoneMealAction(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    private void apugli$executeBoneMealAction(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         Services.POWER.getPowers(context.getPlayer(), ApugliPowers.ACTION_ON_BONEMEAL.get())
                 .stream()
                 .filter(p -> p.doesApply(new BlockInWorld(context.getLevel(), context.getClickedPos(), true)))

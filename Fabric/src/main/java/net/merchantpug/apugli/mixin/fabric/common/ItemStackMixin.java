@@ -46,7 +46,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
-    private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
+    private void apugliuseEdibleItem(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         Optional<EdibleItemPower> power = PowerHolderComponent.getPowers(((ItemStackAccess)(Object)stack).apugli$getEntity(), EdibleItemPower.class).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
@@ -54,7 +54,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
             if (user.canEat(power.get().getFoodComponent().canAlwaysEat())) {
                 user.startUsingItem(hand);
                 if (this.getItem() instanceof BucketItem) {
-                    BlockHitResult blockHitResult = ItemAccessor.callRaycast(world, user, ((BucketItemAccessor)this.getItem()).getContent() == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
+                    BlockHitResult blockHitResult = ItemAccessor.apugli$callRaycast(world, user, ((BucketItemAccessor)this.getItem()).apugli$getContent() == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
                     if (blockHitResult.getType() == HitResult.Type.BLOCK) return;
                 }
                 cir.setReturnValue(InteractionResultHolder.consume(itemStack));
@@ -64,7 +64,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
     }
 
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
-    private void finishUsing(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+    private void apugli$finishUsingEdibleItem(Level world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(((ItemStackAccess)(Object)stack).apugli$getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();

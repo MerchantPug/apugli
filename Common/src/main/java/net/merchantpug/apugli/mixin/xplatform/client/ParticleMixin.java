@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(Particle.class)
-@Implements(@Interface(iface = ParticleAccess.class, prefix = "apugli$"))
-public class ParticleMixin {
+public class ParticleMixin implements ParticleAccess {
     @Unique private ParticleOptions apugli$particleEffect;
 
     public ParticleOptions apugli$getParticleEffect() {

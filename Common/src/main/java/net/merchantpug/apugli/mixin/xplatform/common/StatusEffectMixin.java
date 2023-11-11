@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MobEffect.class)
 public class StatusEffectMixin {
     @Inject(method = "applyInstantenousEffect", at = @At("HEAD"), cancellable = true)
-    private void cancelInstantEffectWhenBlacklisted(Entity source, Entity attacker, LivingEntity target, int amplifier, double proximity, CallbackInfo ci) {
+    private void apugli$cancelInstantEffectWhenBlacklisted(Entity source, Entity attacker, LivingEntity target, int amplifier, double proximity, CallbackInfo ci) {
         if (Services.POWER.getPowers(target, ApugliPowers.INSTANT_EFFECT_IMMUNITY.get()).stream().anyMatch(p -> p.doesApply((MobEffect)(Object)this))) {
             ci.cancel();
         }

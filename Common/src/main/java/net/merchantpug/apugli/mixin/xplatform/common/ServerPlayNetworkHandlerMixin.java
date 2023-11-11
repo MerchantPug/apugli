@@ -25,27 +25,27 @@ public class ServerPlayNetworkHandlerMixin {
     @Shadow @Final private MinecraftServer server;
 
     @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;clientIsFloating:Z", ordinal = 0))
-    private boolean doNotKickIfUsingHoverPower(boolean original) {
+    private boolean apugli$doNotKickIfUsingHoverPower(boolean original) {
         return original && !Services.POWER.hasPower(this.player, ApugliPowers.HOVER.get());
     }
 
     @ModifyExpressionValue(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;isChangingDimension()Z", ordinal = 0))
-    private boolean cancelMovedTooQuicklyCheck(boolean original) {
+    private boolean apugli$cancelMovedTooQuicklyCheck(boolean original) {
         return original || Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get());
     }
 
     @ModifyExpressionValue(method = "handleMovePlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;isChangingDimension()Z", ordinal = 1))
-    private boolean cancelMovedWronglyCheck(boolean original) {
+    private boolean apugli$cancelMovedWronglyCheck(boolean original) {
         return original || Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get());
     }
 
     @ModifyExpressionValue(method = "handleMoveVehicle", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;isSingleplayerOwner()Z"))
-    private boolean cancelVehicleMovedTooQuicklyCheck(boolean original) {
+    private boolean apugli$cancelVehicleMovedTooQuicklyCheck(boolean original) {
         return original || Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get());
     }
 
     @ModifyConstant(method = "handleMoveVehicle", constant = @Constant(doubleValue = 0.0625))
-    private double cancelVehicleMovedWronglyCheck(double original) {
+    private double apugli$cancelVehicleMovedWronglyCheck(double original) {
         if (Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get())) {
             return Double.MAX_VALUE;
         }
@@ -53,7 +53,7 @@ public class ServerPlayNetworkHandlerMixin {
     }
 
     @Inject(method = "handleResourcePackResponse", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket;getAction()Lnet/minecraft/network/protocol/game/ServerboundResourcePackPacket$Action;"))
-    private void sendUrlTexturesToPlayerAfterResourceLoad(ServerboundResourcePackPacket packet, CallbackInfo ci) {
+    private void apugli$sendUrlTexturesToPlayerAfterResourceLoad(ServerboundResourcePackPacket packet, CallbackInfo ci) {
         if (packet.getAction() == ServerboundResourcePackPacket.Action.DECLINED && this.server.isResourcePackRequired()) return;
         Services.PLATFORM.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), player);
     }

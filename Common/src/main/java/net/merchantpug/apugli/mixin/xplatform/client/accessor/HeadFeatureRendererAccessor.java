@@ -13,19 +13,19 @@ import net.minecraft.world.level.block.SkullBlock;
 public interface HeadFeatureRendererAccessor {
 
     @Accessor("skullModels")
-    Map<SkullBlock.Type, SkullModelBase> getHeadModels();
+    Map<SkullBlock.Type, SkullModelBase> apugli$getHeadModels();
 
-    @Accessor
-    float getScaleX();
+    @Accessor("scaleX")
+    float apugli$getScaleX();
 
-    @Accessor
-    float getScaleY();
+    @Accessor("scaleY")
+    float apugli$getScaleY();
 
 
-    @Accessor
-    float getScaleZ();
+    @Accessor("scaleZ")
+    float apugli$getScaleZ();
 
-    @Accessor
-    ItemInHandRenderer getItemInHandRenderer();
+    @Accessor("itemInHandRenderer")
+    ItemInHandRenderer apugli$getItemInHandRenderer();
 
 }

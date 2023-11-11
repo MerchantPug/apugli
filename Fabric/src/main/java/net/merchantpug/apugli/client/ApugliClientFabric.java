@@ -61,11 +61,11 @@ public class ApugliClientFabric implements ClientModInitializer {
 				ApoliClientAccessor.setInitializedKeyBindingMap(true);
 				Minecraft client = Minecraft.getInstance();
 				for (int i = 0; i < client.options.keyMappings.length; i++) {
-					ApoliClientAccessor.getIdToKeyBindingMap().put(client.options.keyMappings[i].getName(), client.options.keyMappings[i]);
+					ApoliClientAccessor.apugli$getIdToKeybindingMap().put(client.options.keyMappings[i].getName(), client.options.keyMappings[i]);
 				}
 			}
 			component.getKeysToCheck().forEach(key -> {
-				KeyMapping keyBinding = ApoliClientAccessor.getIdToKeyBindingMap().get(key.key);
+				KeyMapping keyBinding = ApoliClientAccessor.apugli$getIdToKeybindingMap().get(key.key);
 				if (keyBinding != null) {
 					if (!currentKeyBindingStates.containsKey(key.key)) {
 						currentKeyBindingStates.put(key.key, keyBinding.isDown());

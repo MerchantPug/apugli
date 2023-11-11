@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(PowerTypeRegistry.class)
 public interface PowerTypeRegistryAccessor {
     @Invoker("remove")
-    static void invokeRemove(ResourceLocation id) {
+    static void apugli$invokeRemove(ResourceLocation id) {
         throw new AssertionError();
     }
 }

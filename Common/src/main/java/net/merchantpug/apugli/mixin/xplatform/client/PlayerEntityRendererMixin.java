@@ -40,7 +40,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "renderHand", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/geom/ModelPart;xRot:F", ordinal = 0), cancellable = true)
-    private void renderOverlayWithCancel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+    private void apugli$renderOverlayWithCancel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         List<EntityTextureOverlayPower> powers = Services.POWER.getPowers(player, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get());
         if (powers.stream().anyMatch(p -> !p.shouldRenderOriginalModelClient())) {
             arm.xRot = 0.0f;
@@ -51,7 +51,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "renderHand", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/geom/ModelPart;xRot:F", ordinal = 1), cancellable = true)
-    private void renderOverlayWithCancelSleeve(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+    private void apugli$renderOverlayWithCancelSleeve(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         List<EntityTextureOverlayPower> powers = Services.POWER.getPowers(player, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get());
         if (powers.stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient) && powers.stream().anyMatch(p -> !p.shouldRenderPlayerOuterLayer())) {
             arm.xRot = 0.0f;
@@ -62,7 +62,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "renderHand", at = @At(value = "TAIL"))
-    private void renderOverlayOnArm(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+    private void apugli$renderOverlayOnArm(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         List<EntityTextureOverlayPower> powers = Services.POWER.getPowers(player, ApugliPowers.ENTITY_TEXTURE_OVERLAY.get());
         if (powers.stream().allMatch(EntityTextureOverlayPower::shouldRenderOriginalModelClient)) return;
         powers.forEach(power -> apugli$renderArmOverlay(power, player, matrices, vertexConsumers, light, arm, sleeve));
@@ -72,7 +72,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     private AbstractClientPlayer apugli$capturedPlayer;
 
     @Inject(method = "renderHand", at = @At("HEAD"))
-    private void capturePlayer(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
+    private void apugli$capturePlayer(PoseStack matrices, MultiBufferSource vertexConsumers, int light, AbstractClientPlayer player, ModelPart arm, ModelPart sleeve, CallbackInfo ci) {
         apugli$capturedPlayer = player;
     }
 
@@ -88,7 +88,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @ModifyArg(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderType;entityTranslucent(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"), index = 0)
-    private ResourceLocation modifyEntityLayerTranslucent(ResourceLocation location) {
+    private ResourceLocation apugli$modifyEntityLayerTranslucent(ResourceLocation location) {
         if(Services.POWER.hasPower(apugli$capturedPlayer, ApugliPowers.SET_TEXTURE.get())) {
             SetTexturePower texturePower = Services.POWER.getPowers(apugli$capturedPlayer, ApugliPowers.SET_TEXTURE.get()).get(0);
             this.apugli$capturedPlayer = null;
@@ -100,7 +100,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)
-    private static void setArmPoseWhenModifiedItem(AbstractClientPlayer player, InteractionHand hand, CallbackInfoReturnable<HumanoidModel.ArmPose> cir) {
+    private static void apugli$setArmPoseWhenModifiedItem(AbstractClientPlayer player, InteractionHand hand, CallbackInfoReturnable<HumanoidModel.ArmPose> cir) {
         if(Services.POWER.getPowers(player, ApugliPowers.MODIFY_EQUIPPED_ITEM_RENDER.get())
                 .stream()
                 .anyMatch(power -> power.shouldOverride() && (power.getSlot() == EquipmentSlot.MAINHAND && hand == InteractionHand.MAIN_HAND && power.shouldOverride() && !power.getStack().isEmpty() || power.getSlot() == EquipmentSlot.OFFHAND && hand == InteractionHand.OFF_HAND && power.shouldOverride() && !power.getStack().isEmpty()))) {

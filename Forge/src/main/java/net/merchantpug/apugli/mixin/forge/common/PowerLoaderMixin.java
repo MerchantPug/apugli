@@ -23,12 +23,12 @@ import java.util.stream.Stream;
 @Mixin(PowerLoader.class)
 public class PowerLoaderMixin {
     @Inject(method = "lambda$accept$3(Lnet/minecraft/resources/ResourceLocation;Lcom/google/gson/JsonElement;)Ljava/util/stream/Stream;", at = @At("HEAD"), remap = false)
-    private static void capturePowerId(ResourceLocation resourceLocation, JsonElement x, CallbackInfoReturnable<Stream> cir, @Share("powerId") LocalRef<ResourceLocation> ref) {
+    private static void apugli$capturePowerId(ResourceLocation resourceLocation, JsonElement x, CallbackInfoReturnable<Stream> cir, @Share("powerId") LocalRef<ResourceLocation> ref) {
         ref.set(resourceLocation);
     }
 
     @ModifyExpressionValue(method = "lambda$accept$3(Lnet/minecraft/resources/ResourceLocation;Lcom/google/gson/JsonElement;)Ljava/util/stream/Stream;", at = @At(value = "INVOKE", target = "Ljava/util/Optional;isPresent()Z"), remap = false)
-    private static boolean stopErrorsFromBeingLogged(boolean original, @Local Optional<ConfiguredPower<?, ?>> powerDefinition) {
+    private static boolean apugli$stopErrorsFromBeingLogged(boolean original, @Local Optional<ConfiguredPower<?, ?>> powerDefinition) {
         if (powerDefinition.isPresent() && powerDefinition.get().getFactory() instanceof ModifyScalePower && !ModList.get().isLoaded("pehkui")) {
             return false;
         }
@@ -36,7 +36,7 @@ public class PowerLoaderMixin {
     }
 
     @ModifyVariable(method = "lambda$accept$3(Lnet/minecraft/resources/ResourceLocation;Lcom/google/gson/JsonElement;)Ljava/util/stream/Stream;", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/mojang/serialization/DataResult;resultOrPartial(Ljava/util/function/Consumer;)Ljava/util/Optional;"), remap = false)
-    private static Optional<ConfiguredPower<?, ?>> preventLoadingOfIntegrationPowers(Optional<ConfiguredPower<?, ?>> power, @Share("powerId") LocalRef<ResourceLocation> ref) {
+    private static Optional<ConfiguredPower<?, ?>> apugli$preventLoadingOfIntegrationPowers(Optional<ConfiguredPower<?, ?>> power, @Share("powerId") LocalRef<ResourceLocation> ref) {
         if (power.isPresent() && power.get().getFactory() instanceof ModifyScalePower && !ModList.get().isLoaded("pehkui")) {
             Apugli.LOG.warn("Power '" + ref.get() + "' could not be loaded as it uses the 'apugli:modify_scale' power type, which requires the Pehkui mod to be present. (skipping).");
             return Optional.empty();

@@ -324,7 +324,7 @@ public class ApugliForgeEventHandler {
     }
 
     private static void handleUrlPower(ResourceLocation id, ConfiguredPower<?, ?> power) {
-        if (power.getFactory() instanceof FabricPowerFactory<?> && ((FabricPowerFactoryAccessor)power.getFactory()).invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower && texturePower.getTextureUrl() != null) {
+        if (power.getFactory() instanceof FabricPowerFactory<?> && ((FabricPowerFactoryAccessor)power.getFactory()).apugli$invokeGetPower(power, null) instanceof TextureOrUrlPower texturePower && texturePower.getTextureUrl() != null) {
             TextureUtil.cachePower(id, texturePower);
         } else if (power.getFactory() instanceof CustomProjectilePower projectilePower && ApugliPowers.CUSTOM_PROJECTILE.get().getDataFromPower(power).isPresent("texture_url")) {
             ApugliPowers.CUSTOM_PROJECTILE.get().cacheTextureUrl(id, projectilePower);

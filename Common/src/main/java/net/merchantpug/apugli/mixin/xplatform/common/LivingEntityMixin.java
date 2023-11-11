@@ -46,7 +46,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(method = "handleEntityEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V", ordinal = 1))
-    private void playHurtSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+    private void apugli$playHurtSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
         List<CustomHurtSoundPower> powers = Services.POWER.getPowers(instance, ApugliPowers.CUSTOM_HURT_SOUND.get());
         if (!powers.isEmpty()) {
             if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) return;
@@ -57,7 +57,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(method = "handleEntityEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V", ordinal = 2))
-    private void playDeathSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+    private void apugli$playDeathSoundsStatus(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
         List<CustomDeathSoundPower> powers = Services.POWER.getPowers(instance, ApugliPowers.CUSTOM_DEATH_SOUND.get());
         if (!powers.isEmpty()) {
             if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) return;
@@ -68,7 +68,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;playSound(Lnet/minecraft/sounds/SoundEvent;FF)V"))
-    private void playDeathSounds(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
+    private void apugli$playDeathSounds(LivingEntity instance, SoundEvent soundEvent, float v, float p) {
         List<CustomDeathSoundPower> powers = Services.POWER.getPowers(instance, ApugliPowers.CUSTOM_DEATH_SOUND.get());
         if (!powers.isEmpty()) {
             if (powers.stream().anyMatch(CustomDeathSoundPower::isMuted)) return;
@@ -79,7 +79,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "playHurtSound", at = @At("HEAD"), cancellable = true)
-    private void playHurtSounds(DamageSource source, CallbackInfo ci) {
+    private void apugli$playHurtSounds(DamageSource source, CallbackInfo ci) {
         List<CustomHurtSoundPower> powers = Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.CUSTOM_HURT_SOUND.get());
         if (powers.isEmpty()) return;
         if (powers.stream().anyMatch(CustomHurtSoundPower::isMuted)) ci.cancel();
@@ -88,7 +88,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "canSpawnSoulSpeedParticle", at = @At("HEAD"), cancellable = true)
-    private void modifyShouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$modifyShouldDisplaySoulSpeedEffects(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
         if (Services.POWER.hasPower(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get())) {
             int soulSpeedValue = (int) Services.PLATFORM.applyModifiers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get(), EnchantmentHelper.getEnchantmentLevel(Enchantments.SOUL_SPEED, (LivingEntity) (Object) this));
@@ -103,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "onSoulSpeedBlock", at = @At("HEAD"), cancellable = true)
-    private void modifyIsOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$modifyIsOnSoulSpeedBlock(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
         if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().filter(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition")).toList().size() > 0) {
             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get()).stream().anyMatch(power -> ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power).isPresent("block_condition") && Services.CONDITION.checkBlock(ApugliPowers.MODIFY_SOUL_SPEED.get().getDataFromPower(power), "block_condition", this.level(), this.getBlockPosBelowThatAffectsMyMovement()))) {
@@ -115,7 +115,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyVariable(method = "tryAddSoulSpeed", at = @At("STORE"), ordinal = 0)
-    private int replaceLevelOfSoulSpeed(int i) {
+    private int apugli$replaceLevelOfSoulSpeed(int i) {
         int baseValue = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) ? i : 0;
         if (!this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).is(BlockTags.SOUL_SPEED_BLOCKS) || i < baseValue) {
             return i = (int) Services.PLATFORM.applyModifiers((LivingEntity)(Object)this, ApugliPowers.MODIFY_SOUL_SPEED.get(), baseValue);
@@ -124,7 +124,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "getBlockSpeedFactor", at = @At("HEAD"), cancellable = true)
-    private void modifyVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
+    private void apugli$modifyVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
         LivingEntity thisAsLiving = (LivingEntity)(Object)this;
         if (Services.POWER.hasPower(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get())) {
             int soulSpeedValue = (int) Services.PLATFORM.applyModifiers(thisAsLiving, ApugliPowers.MODIFY_SOUL_SPEED.get(), EnchantmentHelper.getEnchantmentLevel(Enchantments.SOUL_SPEED, thisAsLiving));
@@ -137,7 +137,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "tryAddSoulSpeed", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    private void itemStack(CallbackInfo ci, int i) {
+    private void apugli$addModifiedSoulSpeed(CallbackInfo ci, int i) {
         int baseValue = (int) Services.PLATFORM.applyModifiers((LivingEntity)(Object)this, ApugliPowers.MODIFY_SOUL_SPEED.get(), 0);
         if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.MODIFY_SOUL_SPEED.get()) && i == baseValue) {
             ci.cancel();
@@ -145,14 +145,14 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "isInvertedHealAndHarm", at = @At("HEAD"), cancellable = true)
-    private void invertInstantEffects(CallbackInfoReturnable<Boolean> cir) {
+    private void apugli$invertInstantEffects(CallbackInfoReturnable<Boolean> cir) {
         if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.INVERT_INSTANT_EFFECTS.get())) {
             cir.setReturnValue(true);
         }
     }
 
     @ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;canFreeze()Z", ordinal = 1))
-    private boolean stopFreezeDamage(boolean original) {
+    private boolean apugli$stopFreezeDamage(boolean original) {
         if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()) && Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()).stream().anyMatch(p -> !ApugliPowers.FREEZE.get().shouldDamage(p))) {
             return false;
         }
@@ -160,7 +160,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyExpressionValue(method = "tryAddFrost", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isAir()Z"))
-    private boolean addFrostWithPower(boolean original) {
+    private boolean apugli$addFrostWithPower(boolean original) {
         if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
             return false;
         }
@@ -168,7 +168,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getTicksFrozen()I"))
-    private void freezeEntityFromPower(CallbackInfo ci) {
+    private void apugli$freezeEntityFromPower(CallbackInfo ci) {
         if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
             this.wasInPowderSnow = this.isInPowderSnow;
             this.isInPowderSnow = true;
@@ -176,7 +176,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeFrost()V"))
-    private void unfreezeEntityFromPower(CallbackInfo ci) {
+    private void apugli$unfreezeEntityFromPower(CallbackInfo ci) {
         if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
             this.isInPowderSnow = this.wasInPowderSnow;
         }

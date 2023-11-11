@@ -15,7 +15,7 @@ public class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
 
     @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;clientVehicleIsFloating:Z", ordinal = 0))
-    private boolean doNotKickIfVehicleUsingHoverPower(boolean original) {
+    private boolean apugli$doNotKickIfVehicleUsingHoverPower(boolean original) {
         if (!(this.player.getRootVehicle() instanceof LivingEntity livingVehicle)) {
             return original;
         }

@@ -49,7 +49,7 @@ public class CustomEffectCloudBaseAction {
         cloud.setParticle(data.get("particle"));
         cloud.setBiEntityCondition(data, "bientity_condition");
         cloud.setOwnerTargetBiEntityCondition(data, "owner_target_bientity_condition");
-        ((AreaEffectCloudEntityAccessor)cloud).setReapplicationDelay(data.getInt("reapplication_delay"));
+        ((AreaEffectCloudEntityAccessor)cloud).apugli$setReapplicationDelay(data.getInt("reapplication_delay"));
         if (data.isPresent("powers_to_apply")) {
             data.<List<?>>get("powers_to_apply").forEach(cloud::addPowerToApply);
         }

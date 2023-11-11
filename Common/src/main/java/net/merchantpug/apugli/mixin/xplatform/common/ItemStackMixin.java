@@ -34,14 +34,14 @@ public abstract class ItemStackMixin {
     private int apugli$previousDamage;
 
     @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
+    private void apugli$copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
         if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) != null) {
             Services.PLATFORM.setEntityToItemStack(itemStack, Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this));
         }
     }
 
     @ModifyVariable(method = "setDamageValue", at = @At(value = "HEAD"), argsOnly = true)
-    private int captureDamageValue(int newDamage) {
+    private int apugli$captureDamageValue(int newDamage) {
         if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living) {
             CompoundTag tag = this.getOrCreateTag();
             apugli$previousDamage = tag.contains("Damage", Tag.TAG_INT) ? tag.getInt("Damage") : 0;
@@ -57,7 +57,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "setDamageValue", at = @At(value = "TAIL"))
-    private void executeDurabilityChangeActions(int newDamage, CallbackInfo ci) {
+    private void apugli$executeDurabilityChangeActions(int newDamage, CallbackInfo ci) {
         if (!(Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living)) return;
         int addedDamage = newDamage - apugli$previousDamage;
         Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(power -> {
@@ -72,7 +72,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
-    private void getUseAction(CallbackInfoReturnable<UseAnim> cir) {
+    private void apugli$getUseAction(CallbackInfoReturnable<UseAnim> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
@@ -80,7 +80,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
-    private void getMaxUseTime(CallbackInfoReturnable<Integer> cir) {
+    private void apugli$getMaxUseTime(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
@@ -88,7 +88,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "getDrinkingSound", at = @At("HEAD"), cancellable = true)
-    private void getDrinkSound(CallbackInfoReturnable<SoundEvent> cir) {
+    private void apugli$getDrinkSound(CallbackInfoReturnable<SoundEvent> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();
@@ -96,7 +96,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "getEatingSound", at = @At("HEAD"), cancellable = true)
-    private void getEatSound(CallbackInfoReturnable<SoundEvent> cir) {
+    private void apugli$getEatSound(CallbackInfoReturnable<SoundEvent> cir) {
         ItemStack stack = (ItemStack)(Object)this;
         if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();

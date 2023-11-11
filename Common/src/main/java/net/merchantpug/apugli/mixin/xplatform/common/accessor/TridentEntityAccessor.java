@@ -8,5 +8,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ThrownTrident.class)
 public interface TridentEntityAccessor {
     @Accessor("tridentItem")
-    ItemStack getTridentStack();
+    ItemStack apugli$getTridentStack();
 }

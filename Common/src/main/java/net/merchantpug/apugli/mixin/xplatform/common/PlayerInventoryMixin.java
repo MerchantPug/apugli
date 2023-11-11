@@ -24,13 +24,8 @@ public class PlayerInventoryMixin {
 
     @Shadow @Final public Player player;
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
-    private boolean isEmpty(ItemStack self) {
-        return false;
-    }
-
     @Inject(method = "setItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;set(ILjava/lang/Object;)Ljava/lang/Object;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void setStack(int slot, ItemStack stack, CallbackInfo ci, NonNullList<ItemStack> defaultedList) {
+    private void apugli$setStack(int slot, ItemStack stack, CallbackInfo ci, NonNullList<ItemStack> defaultedList) {
         ItemStack currentItem = defaultedList.get(slot);
 
         if(this.player == null || currentItem.getItem().equals(stack.getItem()) && this.player.containerMenu.getCarried().isEmpty()) return;

@@ -19,7 +19,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void addFeatures(EntityRendererProvider.Context ctx, boolean slim, CallbackInfo ci) {
+    private void apugli$addLayersPlayer(EntityRendererProvider.Context ctx, boolean slim, CallbackInfo ci) {
         // This is separated from LivingEntityRendererMixin as it breaks certain mods if it's part of that.
         this.addLayer(new EnergySwirlLayer<>(this));
         this.addLayer(new EntityTextureOverlayLayer<>(this, slim, ctx.getModelSet()));

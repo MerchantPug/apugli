@@ -106,11 +106,11 @@ public class ExplodeAction implements IActionFactory<Entity> {
         if(calculator != null) {
             Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
                     null, calculator, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
-            ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionPitchModifiers(getModifiers(data, "pitch_modifier", "pitch_modifiers"));
-            ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("damage_bientity_condition"));
+            ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionPitchModifiers(getModifiers(data, "pitch_modifier", "pitch_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setBiEntityPredicate(data.get("damage_bientity_condition"));
             explosion.explode();
             explosion.finalizeExplosion(false);
             Services.PLATFORM.sendS2CTrackingAndSelf(new SyncExplosionPacket<>(
@@ -133,11 +133,11 @@ public class ExplodeAction implements IActionFactory<Entity> {
         } else {
             Explosion explosion = new Explosion(entity.level(), entity,
                     null, null, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
-            ((ExplosionAccess)explosion).setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
-            ((ExplosionAccess)explosion).setExplosionPitchModifiers(getModifiers(data, "pitch_modifier", "pitch_modifiers"));
-            ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("damage_bientity_condition"));
+            ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setExplosionPitchModifiers(getModifiers(data, "pitch_modifier", "pitch_modifiers"));
+            ((ExplosionAccess)explosion).apugli$setBiEntityPredicate(data.get("damage_bientity_condition"));
             explosion.explode();
             explosion.finalizeExplosion(false);
 

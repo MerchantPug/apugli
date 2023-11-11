@@ -7,13 +7,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractFurnaceBlockEntity.class)
 public interface AbstractFurnaceBlockEntityAccessor {
 
-    @Accessor
-    int getLitTime();
+    @Accessor("litTime")
+    int apugli$getLitTime();
 
-    @Accessor
-    void setLitTime(int value);
+    @Accessor("litTime")
+    void apugli$setLitTime(int value);
 
-    @Accessor
-    void setLitDuration(int value);
+    @Accessor("litDuration")
+    void apugli$setLitDuration(int value);
 
 }

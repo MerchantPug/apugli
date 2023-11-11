@@ -19,7 +19,7 @@ public interface ModifyFovPowerFactory<P> extends ValueModifyingPowerFactory<P> 
     }
 
     default double getFov(double originalFov, Camera activeRenderInfo, LivingEntity living) {
-        double d = Mth.lerp(Minecraft.getInstance().getFrameTime(), ((GameRendererAccessor)Minecraft.getInstance().gameRenderer).getOldFov(), ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getFov());
+        double d = Mth.lerp(Minecraft.getInstance().getFrameTime(), ((GameRendererAccessor)Minecraft.getInstance().gameRenderer).apugli$getOldFov(), ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).apugli$getFov());
         if (Services.POWER.hasPower(living, this)) {
             if (!Minecraft.getInstance().isPaused()) {
                 float changeDivisor = Services.POWER.getPowers(living, this).stream().map(p -> this.getDataFromPower(p).getFloat("change_divisor")).reduce((a, b) -> a * b).get();

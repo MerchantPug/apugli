@@ -19,14 +19,14 @@ public abstract class LivingEntityMixin {
     LivingEntity apugli$capturedEntity;
 
     @Inject(method = "addEatEffect", at = @At("HEAD"))
-    private void captureEatLocals(ItemStack pFood, Level pLevel, LivingEntity pLivingEntity, CallbackInfo ci) {
+    private void apugli$captureEatLocals(ItemStack pFood, Level pLevel, LivingEntity pLivingEntity, CallbackInfo ci) {
         apugli$capturedStack = pFood;
         apugli$capturedEntity = pLivingEntity;
     }
 
     // We cannot use a ModifyExpressionValue from MixinExtras here because that does not seem to like non remapped methods.
     @ModifyExpressionValue(method = "addEatEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;isEdible()Z"))
-    private boolean isEdibleWithPower(boolean original) {
+    private boolean apugli$isEdibleWithPower(boolean original) {
         if (CoreUtil.doEdibleItemPowersApply(apugli$capturedStack, apugli$capturedEntity)) {
             this.apugli$capturedStack = null;
             this.apugli$capturedEntity = null;

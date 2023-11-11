@@ -44,7 +44,7 @@ public abstract class AnimalEntityMixin extends AgeableMob {
     }
 
     @Inject(method = "mobInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;", shift = At.Shift.BY, by = 2), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void preventMobBreeding(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir, ItemStack itemStack) {
+    private void apugli$preventMobBreeding(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir, ItemStack itemStack) {
         List<PreventBreedingPower> preventBreedingPowerList = Services.POWER.getPowers(player, ApugliPowers.PREVENT_BREEDING.get()).stream().filter(power -> power.doesApply(this)).collect(Collectors.toList());
         if(!preventBreedingPowerList.isEmpty() && this.isFood(itemStack)) {
             int i = this.getAge();
@@ -61,12 +61,12 @@ public abstract class AnimalEntityMixin extends AgeableMob {
     }
 
     @Inject(method = "finalizeSpawnChildFromBreeding", at = @At(value = "HEAD"))
-    private void captureBreedLocals(ServerLevel serverLevel, Animal animal, AgeableMob ageableMob, CallbackInfo ci) {
+    private void apugli$captureBreedLocals(ServerLevel serverLevel, Animal animal, AgeableMob ageableMob, CallbackInfo ci) {
         this.apugli$otherAnimalEntity = animal;
     }
 
     @ModifyArg(method = "finalizeSpawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 0))
-    private int modifyThisAnimalBreed(int age) {
+    private int apugli$modifyThisAnimalBreed(int age) {
         if (this.getLoveCause() != null) {
             return (int)Services.PLATFORM.applyModifiers(this.getLoveCause(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, this.getLoveCause(), this));
         }
@@ -74,7 +74,7 @@ public abstract class AnimalEntityMixin extends AgeableMob {
     }
 
     @ModifyArg(method = "finalizeSpawnChildFromBreeding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/animal/Animal;setAge(I)V", ordinal = 1))
-    private int modifyOtherAnimalBreed(int age) {
+    private int apugli$modifyOtherAnimalBreed(int age) {
         if (this.getLoveCause() != null) {
             int returnValue = (int) Services.PLATFORM.applyModifiers(this.getLoveCause(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), age, p -> ApugliPowers.MODIFY_BREEDING_COOLDOWN.get().doesApply(p, this.getLoveCause(), apugli$otherAnimalEntity));
             this.apugli$otherAnimalEntity = null;

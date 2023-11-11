@@ -24,7 +24,7 @@ public class ActionTypeMixin<T> {
     @Shadow @Final private String actionTypeName;
 
     @Inject(method = "read(Lcom/google/gson/JsonElement;)Lio/github/apace100/apoli/power/factory/action/ActionFactory$Instance;", at = @At(value = "RETURN"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
-    private void handleActions(JsonElement jsonElement, CallbackInfoReturnable<ActionFactory<T>.Instance> cir, JsonObject jsonObject, String typeIdentifier, ResourceLocation type) {
+    private void apugli$handleActions(JsonElement jsonElement, CallbackInfoReturnable<ActionFactory<T>.Instance> cir, JsonObject jsonObject, String typeIdentifier, ResourceLocation type) {
         if (this.actionTypeName.equals("EntityAction") && (type.equals(Apugli.asResource("custom_projectile")) || NamespaceAlias.hasAlias(type) && NamespaceAlias.resolveAlias(type).equals(Apugli.asResource("custom_projectile")))) {
             if (jsonObject.has("texture_url")) {
                 String url = GsonHelper.getAsString(jsonObject, "texture_url");

@@ -44,7 +44,7 @@ public abstract class EntityMixin implements EntityAccess {
     @Shadow public abstract int getTicksFrozen();
 
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
-    private void modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
+    private void apugli$modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if(!((Entity)(Object)this instanceof LivingEntity living)) return;
         List<CustomFootstepPower> powers = Services.POWER.getPowers(living, ApugliPowers.CUSTOM_FOOTSTEP.get());
         if(powers.isEmpty()) return;
@@ -58,12 +58,12 @@ public abstract class EntityMixin implements EntityAccess {
     private boolean apugli$moving;
 
     @Inject(method = "baseTick", at = @At(value = "HEAD", shift = At.Shift.BY, by = 2))
-    private void setApugliMovingFalse(CallbackInfo ci) {
+    private void apugli$setApugliMovingFalse(CallbackInfo ci) {
         apugli$moving = false;
     }
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setPos(DDD)V"))
-    private void setApugliMovingTrue(MoverType movementType, Vec3 movement, CallbackInfo ci) {
+    private void apugli$setApugliMovingTrue(MoverType movementType, Vec3 movement, CallbackInfo ci) {
         if (movement != Vec3.ZERO) {
             apugli$moving = true;
         }
@@ -74,7 +74,7 @@ public abstract class EntityMixin implements EntityAccess {
     }
 
     @Inject(method = "collide", at = @At(value = "HEAD"), cancellable = true)
-    private void handleHoverCorrection(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
+    private void apugli$handleHoverCorrection(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
         if ((Entity)(Object)this instanceof LivingEntity thisAsLiving) {
             double lowerCorrectionRange = StepHeightPower.getLowerCorrectionRange(thisAsLiving)
                     .orElse(HoverPower.getCorrectionRange(thisAsLiving).orElse(0.0));
@@ -99,7 +99,7 @@ public abstract class EntityMixin implements EntityAccess {
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
                             cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
                             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
-                                ((LivingEntityAccessor) thisAsLiving).setNoJumpDelay(0);
+                                ((LivingEntityAccessor) thisAsLiving).apugli$setNoJumpDelay(0);
                             }
                             handledLowerRange = true;
                             break;
@@ -142,7 +142,7 @@ public abstract class EntityMixin implements EntityAccess {
     private int apugli$modifiedFreezeTicks;
 
     @ModifyReturnValue(method = "getTicksRequiredToFreeze", at = @At("RETURN"))
-    private int modifyTicksRequiredToFreeze(int original) {
+    private int apugli$modifyTicksRequiredToFreeze(int original) {
         if ((Entity)(Object)this instanceof LivingEntity living) {
             if (Services.POWER.hasPower(living, ApugliPowers.FREEZE.get())) {
                 int newValue = (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.FREEZE.get(), original);
@@ -160,7 +160,7 @@ public abstract class EntityMixin implements EntityAccess {
 
 
     @ModifyReturnValue(method = "canFreeze", at = @At(value = "RETURN"))
-    private boolean allowFreezing(boolean original) {
+    private boolean apugli$allowFreezing(boolean original) {
         if ((Entity)(Object)this instanceof LivingEntity living && Services.POWER.hasPower(living, ApugliPowers.FREEZE.get())) {
             return true;
         }

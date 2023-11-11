@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SoundEngine.class)
 public class SoundSystemMixin {
     @Inject(method = "play", at = @At("HEAD"), cancellable = true)
-    private void cancelSound(SoundInstance sound, CallbackInfo ci) {
-        if(sound instanceof AbstractSoundInstance abstractSound && Services.POWER.getPowers(Minecraft.getInstance().player, ApugliPowers.PREVENT_SOUND.get()).stream().anyMatch(power -> (power.doesApplyToCategory(sound.getSource()) || power.doesApplyToSound(((AbstractSoundInstanceAccess)abstractSound).getSoundEvent())) && power.isSoundNotWhitelisted(((AbstractSoundInstanceAccess)abstractSound).getSoundEvent()))) {
+    private void apugli$cancelSound(SoundInstance sound, CallbackInfo ci) {
+        if(sound instanceof AbstractSoundInstance abstractSound && Services.POWER.getPowers(Minecraft.getInstance().player, ApugliPowers.PREVENT_SOUND.get()).stream().anyMatch(power -> (power.doesApplyToCategory(sound.getSource()) || power.doesApplyToSound(((AbstractSoundInstanceAccess)abstractSound).apugli$getSoundEvent())) && power.isSoundNotWhitelisted(((AbstractSoundInstanceAccess)abstractSound).apugli$getSoundEvent()))) {
             ci.cancel();
         }
     }

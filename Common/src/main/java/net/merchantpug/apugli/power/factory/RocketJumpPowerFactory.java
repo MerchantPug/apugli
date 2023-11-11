@@ -110,11 +110,11 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
         Explosion explosion = new Explosion(entity.level(), entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
-        ((ExplosionAccess)explosion).setExplosionDamageModifiers(damageModifiers(power, entity));
-        ((ExplosionAccess)explosion).setExplosionKnockbackModifiers(knockbackModifiers());
-        ((ExplosionAccess)explosion).setExplosionVolumeModifiers(volumeModifiers());
-        ((ExplosionAccess)explosion).setExplosionPitchModifiers(pitchModifiers());
-        ((ExplosionAccess)explosion).setBiEntityPredicate(data.get("damage_bientity_condition"));
+        ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(damageModifiers(power, entity));
+        ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(knockbackModifiers());
+        ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(volumeModifiers());
+        ((ExplosionAccess)explosion).apugli$setExplosionPitchModifiers(pitchModifiers());
+        ((ExplosionAccess)explosion).apugli$setBiEntityPredicate(data.get("damage_bientity_condition"));
         explosion.explode();
         explosion.finalizeExplosion(false);
 
