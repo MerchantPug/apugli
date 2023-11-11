@@ -29,12 +29,13 @@ public class ApugliEntityConditions {
         register("player_model_type", new PlayerModelTypeCondition());
         register("raining", new RainingCondition());
         register("raycast", new RaycastCondition());
-        register("scale", new ScaleCondition());
         register("status_effect_tag", new StatusEffectTagCondition());
         register("structure", new StructureCondition());
         register("trident_enchantment", new TridentEnchantmentCondition());
         register("thundering", new ThunderingCondition());
         register("velocity", new VelocityCondition());
+
+        register("scale", new ScaleCondition());
     }
     
     private static void register(String name, IConditionFactory<Entity> action) {
