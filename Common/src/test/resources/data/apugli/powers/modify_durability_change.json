@@ -1,0 +1,8 @@
+{
+  "type":"apugli:modify_durability_change",
+  "modifier":{
+    "operation": "multiply_base_additive",
+    "value": -0.8
+  },
+  "function": "ceiling"
+}

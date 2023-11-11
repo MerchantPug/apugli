@@ -9,6 +9,7 @@
 - Added `prevent_entity_selection` power type.
 - Added `crawling` power type.
 - Added `requires_input` boolean field to `sprinting` power type (Defaults to false).
+- Added `function` field to `modify_durability_change` power type. Can be `floor`, `round`, or `ceiling`. Defaults to `floor`.
 - Added `self_target_bientity_action`, `self_nearby_bientity_action`, and `target_nearby_bientity_action` to `damage_nearby_on_hit` power type. (All optional).
 - Added `attacker_target_bientity_action`, `attacker_nearby_bientity_action`, and `self_nearby_bientity_action` to `damage_nearby_when_hit` power type. (All optional).
 

@@ -45,8 +45,13 @@ public abstract class ItemStackMixin {
         if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living) {
             CompoundTag tag = this.getOrCreateTag();
             apugli$previousDamage = tag.contains("Damage", Tag.TAG_INT) ? tag.getInt("Damage") : 0;
-            int addedDurability = apugli$previousDamage - newDamage;
-            return apugli$previousDamage - (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_DURABILITY_CHANGE.get(), addedDurability, p -> ApugliPowers.MODIFY_DURABILITY_CHANGE.get().doesApply(p, living.level(), (ItemStack)(Object)this, addedDurability));
+            int removedDurability = apugli$previousDamage - newDamage;
+            for (Object power : Services.POWER.getPowers(living, ApugliPowers.MODIFY_DURABILITY_CHANGE.get())) {
+                if (ApugliPowers.MODIFY_DURABILITY_CHANGE.get().doesApply(power, living.level(), (ItemStack)(Object)this, removedDurability)) {
+                    removedDurability = ApugliPowers.MODIFY_DURABILITY_CHANGE.get().postFunction(power, Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_DURABILITY_CHANGE.get(), removedDurability));
+                }
+            }
+            return apugli$previousDamage - removedDurability;
         }
         return newDamage;
     }
