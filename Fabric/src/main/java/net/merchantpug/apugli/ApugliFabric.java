@@ -48,10 +48,7 @@ public class ApugliFabric implements ModInitializer {
     }
 
     public static void registerEvents() {
-        ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, serverResourceManager) -> {
-            Apugli.clearErrorLoggedDataSet();
-            TextureUtil.getCache().clear();
-        });
+        ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((server, serverResourceManager) -> TextureUtil.getCache().clear());
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ApugliPackets.sendS2C(new UpdateUrlTexturesPacket(TextureUtil.getCache()), player));
 
         PostPowerLoadCallback.EVENT.register((powerId, factoryId, isSubPower, json, powerType) -> {

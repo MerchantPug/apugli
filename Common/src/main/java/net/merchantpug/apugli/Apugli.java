@@ -21,7 +21,6 @@ public class Apugli {
     public static final String NAME = "Apugli";
     public static final Logger LOG = LoggerFactory.getLogger(NAME);
 
-    private static final Set<SerializableData.Instance> ERROR_LOGGED_DATA = new HashSet<>();
     public static String VERSION = "";
     
     public static void init() {
@@ -41,18 +40,6 @@ public class Apugli {
         ApugliPowers.registerAll();
 
         ApugliEntityTypes.registerAll();
-    }
-
-    public static boolean hasDataBeenErrorLogged(SerializableData.Instance data) {
-        return ERROR_LOGGED_DATA.contains(data);
-    }
-
-    public static void addToErrorLoggedData(SerializableData.Instance data) {
-        ERROR_LOGGED_DATA.add(data);
-    }
-
-    public static void clearErrorLoggedDataSet() {
-        ERROR_LOGGED_DATA.clear();
     }
 
     public static ResourceLocation asResource(String name) {

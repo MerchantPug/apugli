@@ -27,20 +27,16 @@ public class ScaleCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity entity) {
+        Comparison comparison = data.get("comparison");
+        float compareTo = data.getFloat("compare_to");
+
         if (!Services.PLATFORM.isModLoaded("pehkui")) {
-            if (!Apugli.hasDataBeenErrorLogged(data)) {
-                Apugli.LOG.warn("Attempted to load 'apugli:scale' data type.");
-                Apugli.addToErrorLoggedData(data);
-            }
-            return false;
+            return comparison.compare(1.0F, compareTo);
         }
 
         Set<ResourceLocation> scaleTypeSet = new HashSet<>();
         data.ifPresent("scale_type", scaleTypeSet::add);
         data.<List<ResourceLocation>>ifPresent("scale_type", scaleTypeSet::addAll);
-
-        Comparison comparison = data.get("comparison");
-        float compareTo = data.getFloat("compare_to");
 
         return scaleTypeSet.stream().allMatch(id -> comparison.compare(PehkuiUtil.getScale(entity, id), compareTo));
     }
