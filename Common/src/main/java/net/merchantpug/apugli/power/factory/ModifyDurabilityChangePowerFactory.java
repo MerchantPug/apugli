@@ -28,10 +28,12 @@ public interface ModifyDurabilityChangePowerFactory<P> extends ValueModifyingPow
 
         int retVal;
         switch ((Function)data.get("function")) {
-            case CEILING -> retVal = value >= 0 ? Mth.ceil(value) : Mth.floor(value);
-            case ROUND -> retVal = (int) Math.round(value);
-            default -> retVal = value >= 0 ? Mth.floor(value) : Mth.ceil(value);
+            case CEILING -> retVal = Mth.abs(Mth.ceil(value));
+            case ROUND -> retVal = (int) Mth.abs(Math.round(value));
+            default -> retVal = Mth.abs(Mth.floor(value));
         }
+        if (value < 0)
+            retVal = -retVal;
 
         return retVal;
     }
