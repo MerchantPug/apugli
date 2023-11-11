@@ -23,9 +23,13 @@
 - Fixed `damage_nearby_*_hit` not considering for the `damage_condition` field.
 - Fixed `hover` power type's `step_assist` field not functioning for correcting upper bounds.
 - Fixed `allow_anvil_enchant`'s `comparison` field not defaulting to `>=`.
-- Fixed `modify_enchantment_level` not syncing its initial values to clients.
+- Fixed `modify_enchantment_level` not syncing its initial values to clients. #58
 - [FABRIC] Fixed `damage_nearby_when_hit` using `damage_nearby_on_hit`'s serializable data.
 - [FABRIC] Fixed fabric.mod.json not using the new `fabric-api` mod id. #56
 - [FORGE] Fixed incorrect behaviour with stopping from `sprinting` power type.
 - [FORGE] Update pack formats.
 - [FORGE] Fixed Forge specific damage source creation method referencing an invalid method.
+
+### Internal
+- Prefixed every mixin method. #59
+- [FABRIC] Changed `fabric` dependency in fabric.mod.json to `fabric-api`. #56
