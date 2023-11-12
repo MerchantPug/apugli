@@ -22,7 +22,7 @@ public class CanTakeDamageCondition implements IConditionFactory<Entity> {
 
     @Override
     public boolean check(SerializableData.Instance data, Entity instance) {
-        DamageSource source = Services.PLATFORM.createDamageSource(instance.damageSources(), data, "source", "damage_type");
+        DamageSource source = Services.PLATFORM.createDamageSource(instance.damageSources(), data, "damage_type", "source");
         if (instance.isInvulnerableTo(source))
             return false;
         else if (instance instanceof LivingEntity living)
