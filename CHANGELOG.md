@@ -13,6 +13,9 @@
 - Added `self_target_bientity_action`, `self_nearby_bientity_action`, and `target_nearby_bientity_action` to `damage_nearby_on_hit` power type. (All optional).
 - Added `attacker_target_bientity_action`, `attacker_nearby_bientity_action`, and `self_nearby_bientity_action` to `damage_nearby_when_hit` power type. (All optional).
 
+### Bi-entity Condition Types
+- Added `compare_scale` entity condition type. If Pehkui isn't loaded, this condition will return true.
+
 ### Entity Condition Types
 - Added `crawling` entity condition type.
 - Added `scale` entity condition type. If Pehkui isn't loaded, this condition will always compare to 1.0.
