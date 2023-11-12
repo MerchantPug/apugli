@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.registry.condition;
 
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.merchantpug.apugli.condition.factory.bientity.CompareDimensionsCondition;
 import net.merchantpug.apugli.condition.factory.entity.*;
 import net.merchantpug.apugli.condition.factory.entity.integration.pehkui.ScaleCondition;
 import net.merchantpug.apugli.platform.Services;
@@ -16,6 +17,7 @@ public class ApugliEntityConditions {
         register("can_have_effect", new CanHaveEffectCondition());
         register("can_take_damage", new CanTakeDamageCondition());
         register("compare_resource", new CompareResourceCondition());
+        register("dimensions", new DimensionsCondition());
         register("crawling", new CrawlingCondition());
         register("custom_entity_id", new CustomEntityIdCondition());
         register("entity_in_radius", new EntityInRadiusCondition());

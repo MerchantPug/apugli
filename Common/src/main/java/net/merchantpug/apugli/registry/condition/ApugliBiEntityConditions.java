@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.registry.condition;
 
 import net.merchantpug.apugli.condition.factory.IConditionFactory;
+import net.merchantpug.apugli.condition.factory.bientity.CompareDimensionsCondition;
 import net.merchantpug.apugli.condition.factory.bientity.HitsOnTargetCondition;
 import net.merchantpug.apugli.condition.factory.bientity.OwnerCondition;
 import net.merchantpug.apugli.condition.factory.bientity.PrimeAdversaryCondition;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 public class ApugliBiEntityConditions {
     
     public static void registerAll() {
+        register("compare_dimensions", new CompareDimensionsCondition());
         register("hits_on_target",  new HitsOnTargetCondition());
         register("owner", new OwnerCondition());
         register("prime_adversary", new PrimeAdversaryCondition());
