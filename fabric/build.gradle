@@ -18,8 +18,8 @@ loom {
 
     mods {
         register(mod_id) {
-            sourceSet(project(":Common").sourceSets.main)
-            sourceSet(project(":Common").sourceSets.test)
+            sourceSet(project(":common").sourceSets.main)
+            sourceSet(project(":common").sourceSets.test)
             sourceSet(sourceSets.main)
             sourceSet(sourceSets.test)
         }
@@ -123,11 +123,11 @@ dependencies {
     //LazyDFU
     modLocalRuntime "maven.modrinth:lazydfu:0.1.3"
     //Relying on the Common Project for sure
-    implementation project(path: ":Common", configuration: "namedElements")
+    implementation project(path: ":common", configuration: "namedElements")
 }
 
 processResources {
-    from project(":Common").sourceSets.main.resources
+    from project(":common").sourceSets.main.resources
     exclude "apugli.common.accesswidener"
 
     inputs.property "version", project.version
@@ -139,11 +139,11 @@ processResources {
 
 processTestResources {
     outputs.upToDateWhen { false }
-    from project(":Common").sourceSets.test.resources
+    from project(":common").sourceSets.test.resources
 }
 
 tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
+    source(project(":common").sourceSets.main.allSource)
 }
 
 publishing {
