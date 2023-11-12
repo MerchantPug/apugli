@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "apugli",
+  "id": "${mod_id}",
   "version": "${version}",
 
-  "name": "Apugli",
+  "name": "${mod_name}",
   "description": "Pug's extension to A Power Library.",
   "authors": [
     "MerchantPug",

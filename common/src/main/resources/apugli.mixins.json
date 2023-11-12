@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "net.merchantpug.apugli.mixin.xplatform",
   "plugin": "net.merchantpug.apugli.ApugliMixinConfigPlugin",
+  "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.AnvilScreenHandlerMixin",
@@ -58,6 +59,5 @@
   "injectors": {
     "defaultRequire": 1,
     "maxShiftBy": 5
-  },
-  "refmap": "apugli.refmap.json"
+  }
 }
