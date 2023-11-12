@@ -1,8 +1,10 @@
 package net.merchantpug.apugli;
 
 import eu.midnightdust.lib.config.MidnightConfig;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.util.IdentifierAlias;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -42,7 +44,9 @@ public class ApugliFabric implements ModInitializer {
         ApugliPackets.registerC2S();
         registerEvents();
 
-        NamespaceAlias.addAlias("ope", Apugli.ID);
+        IdentifierAlias.addNamespaceAlias("ope", Apugli.ID);
+        IdentifierAlias.addAlias(Apugli.asResource("edible_item"), Apoli.identifier("edible_item"));
+        IdentifierAlias.addAlias(Apugli.asResource("modify_enchantment_level"), Apoli.identifier("modify_enchantment_level"));
 
         MidnightConfig.init(Apugli.ID, ApugliConfig.class);
     }

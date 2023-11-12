@@ -35,7 +35,6 @@ public class ApugliPowers {
     public static final Supplier<CustomHurtSoundPower.Factory> CUSTOM_HURT_SOUND = register(new CustomHurtSoundPower.Factory());
     public static final Supplier<DamageNearbyOnHitPowerFactory> DAMAGE_NEARBY_ON_HIT = register("damage_nearby_on_hit", DamageNearbyOnHitPowerFactory.class);
     public static final Supplier<DamageNearbyWhenHitPowerFactory> DAMAGE_NEARBY_WHEN_HIT = register("damage_nearby_when_hit", DamageNearbyWhenHitPowerFactory.class);
-    public static final Supplier<EdibleItemPower.Factory> EDIBLE_ITEM = register(new EdibleItemPower.Factory());
     public static final Supplier<EnergySwirlPower.Factory> ENERGY_SWIRL = register(new EnergySwirlPower.Factory());
     public static final Supplier<EntityTextureOverlayPower.Factory> ENTITY_TEXTURE_OVERLAY = register(new EntityTextureOverlayPower.Factory());
     public static final Supplier<FreezePowerFactory> FREEZE = register("freeze", FreezePowerFactory.class);
@@ -49,7 +48,6 @@ public class ApugliPowers {
     public static final Supplier<ModifyDurabilityChangePowerFactory> MODIFY_DURABILITY_CHANGE = register("modify_durability_change", ModifyDurabilityChangePowerFactory.class);
     public static final Supplier<ModifyEnchantmentDamageDealtPowerFactory> MODIFY_ENCHANTMENT_DAMAGE_DEALT = register("modify_enchantment_damage_dealt", ModifyEnchantmentDamageDealtPowerFactory.class);
     public static final Supplier<ModifyEnchantmentDamageTakenPowerFactory> MODIFY_ENCHANTMENT_DAMAGE_TAKEN = register("modify_enchantment_damage_taken", ModifyEnchantmentDamageTakenPowerFactory.class);
-    public static final Supplier<ModifyEnchantmentLevelPowerFactory> MODIFY_ENCHANTMENT_LEVEL = register("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.class);
     public static final Supplier<ModifyEquippedItemRenderPower.Factory> MODIFY_EQUIPPED_ITEM_RENDER = register(new ModifyEquippedItemRenderPower.Factory());
     public static final Supplier<ModifyFovPowerFactory> MODIFY_FOV = register("modify_fov", ModifyFovPowerFactory.class);
     public static final Supplier<ModifySoulSpeedPowerFactory> MODIFY_SOUL_SPEED = register("modify_soul_speed", ModifySoulSpeedPowerFactory.class);

@@ -8,8 +8,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.util.NamespaceAlias;
-import net.merchantpug.apugli.access.FactoryInstanceAccess;
+import io.github.apace100.apoli.util.IdentifierAlias;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -24,8 +23,8 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
         }
         ResourceLocation factoryLocation = ResourceLocation.tryParse(GsonHelper.getAsString(jsonObject, "type"));
 
-        if (factoryLocation != null && NamespaceAlias.hasAlias(factoryLocation)) {
-            factoryLocation = NamespaceAlias.resolveAlias(factoryLocation);
+        if (factoryLocation != null && IdentifierAlias.hasAlias(factoryLocation)) {
+            factoryLocation = IdentifierAlias.resolveAlias(factoryLocation);
         }
 
         ConditionFactory<T> factory = registry.get(factoryLocation);
@@ -35,13 +34,12 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
         }
 
         ConditionFactory<T>.Instance instance = factory.read(jsonObject);
-        ((FactoryInstanceAccess)instance).apugli$setJson(json);
         return DataResult.success(Pair.of(instance, ops.empty()));
     }
 
     @Override
     public <A> DataResult<A> encode(ConditionFactory<T>.Instance input, DynamicOps<A> ops, A prefix) {
-        JsonElement json = ((FactoryInstanceAccess)input).apugli$getJson();
+        JsonElement json = input.toJson();
         if (json == null) {
             return DataResult.error(() -> "Could not find JSON associated with ConditionFactory.");
         }

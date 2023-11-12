@@ -1,20 +1,15 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
-import com.mojang.datafixers.util.Pair;
-import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
-import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnJumpPower;
-import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -33,9 +28,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
-import java.util.Optional;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -159,22 +151,6 @@ public abstract class LivingEntityMixin extends Entity {
 
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_WHEN_HARMED.get()).forEach(p -> ApugliPowers.ACTION_WHEN_HARMED.get().execute(p, (LivingEntity)(Object)this, source, amount));
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get()).forEach(p -> ApugliPowers.DAMAGE_NEARBY_WHEN_HIT.get().execute(p, (LivingEntity)(Object)this, source, amount));
-    }
-
-    @Inject(method = "eat", at = @At("HEAD"))
-    private void apugli$eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
-            Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
-            power.ifPresent(p -> {
-                world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
-                List<Pair<MobEffectInstance, Float>> list = p.getFoodComponent().getEffects();
-                for (com.mojang.datafixers.util.Pair<MobEffectInstance, Float> pair : list) {
-                    if (world.isClientSide || pair.getFirst() == null || !(world.random.nextFloat() < pair.getSecond()))
-                        continue;
-                    this.addEffect(new MobEffectInstance(pair.getFirst()));
-                }
-            });
-        }
     }
 
     @Inject(method = "baseTick", at = @At("HEAD"))

@@ -103,7 +103,7 @@ public interface IConditionHelper {
 
     SerializableDataType<?> itemDataType();
     
-    void registerItem(String name, IConditionFactory<ItemStack> condition);
+    void registerItem(String name, IConditionFactory<Tuple<Level, ItemStack>> condition);
 
     boolean checkItem(SerializableData.Instance data, String fieldName, Level level, ItemStack stack);
 

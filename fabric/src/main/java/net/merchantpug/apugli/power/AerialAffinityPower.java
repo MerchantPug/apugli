@@ -16,13 +16,12 @@ public class AerialAffinityPower extends PowerFactory<ModifyBreakSpeedPower> imp
     public AerialAffinityPower() {
         super(Apugli.asResource("aerial_affinity"), AerialAffinityPowerFactory.getSerializableData(),
             data -> (type, entity) -> {
-                ModifyBreakSpeedPower power = new ModifyBreakSpeedPower(type, entity, blockInWorld -> true);
-
                 SerializableData.Instance modifierData = ModifierOperation.DATA.new Instance();
                 modifierData.set("value", 4.0);
                 modifierData.set("resource", null);
                 modifierData.set("modifier", null);
-                power.addModifier(new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData));
+
+                ModifyBreakSpeedPower power = new ModifyBreakSpeedPower(type, entity, blockInWorld -> true, new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData), null);
                 power.addCondition(e -> !e.onGround());
 
                 return power;

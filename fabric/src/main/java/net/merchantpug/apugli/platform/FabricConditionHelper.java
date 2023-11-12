@@ -277,7 +277,7 @@ public class FabricConditionHelper implements IConditionHelper {
     }
     
     @Override
-    public void registerItem(String name, IConditionFactory<ItemStack> condition) {
+    public void registerItem(String name, IConditionFactory<Tuple<Level, ItemStack>> condition) {
         ResourceLocation id = Apugli.asResource(name);
         Registry.register(ApoliRegistries.ITEM_CONDITION, id, new ConditionFactory<>(id, condition.getSerializableData(), condition::check));
     }
