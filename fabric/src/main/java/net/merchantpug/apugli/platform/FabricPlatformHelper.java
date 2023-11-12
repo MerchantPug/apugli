@@ -2,6 +2,7 @@ package net.merchantpug.apugli.platform;
 
 import com.google.auto.service.AutoService;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
+import io.github.apace100.apoli.access.EntityLinkedItemStack;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.mixin.EyeHeightAccess;
@@ -16,7 +17,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
@@ -174,12 +174,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public Entity getEntityFromItemStack(ItemStack stack) {
-        return stack == null ? null : ((ItemStackAccess)(Object)stack).apugli$getEntity();
-    }
-
-    @Override
-    public void setEntityToItemStack(ItemStack stack, Entity entity) {
-        ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
+        return stack == null ? null : ((EntityLinkedItemStack)(Object)stack).apoli$getEntity();
     }
 
     @Override

@@ -7,6 +7,7 @@ import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,8 +19,8 @@ import java.util.List;
 @Mixin(BeehiveBlock.class)
 public class BeehiveBlockMixin {
 
-    @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void apugli$dontAngerBees(Level world, BlockPos pos, CallbackInfo ci, List<Bee> list, List<Player> list2) {
+    @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    private void apugli$dontAngerBees(Level level, BlockPos pos, CallbackInfo ci, AABB aABB, List<Bee> list, List<Player> list2) {
         if (list2.stream().anyMatch(player -> Services.POWER.hasPower(player, ApugliPowers.PREVENT_BEE_ANGER.get()))) {
             ci.cancel();
         }

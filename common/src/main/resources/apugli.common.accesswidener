@@ -1,4 +1,5 @@
 accessWidener   v1  named
+accessible class net/minecraft/client/Minecraft$GameLoadCookie
 accessible class net/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection
 accessible class net/minecraft/world/entity/animal/Cat$CatTemptGoal
 accessible class net/minecraft/world/item/enchantment/EnchantmentHelper$EnchantmentVisitor

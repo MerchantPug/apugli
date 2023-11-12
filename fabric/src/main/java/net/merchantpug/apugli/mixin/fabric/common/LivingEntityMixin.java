@@ -7,7 +7,6 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Tuple;
@@ -51,11 +50,6 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "jumpFromGround", at = @At("TAIL"))
     private void apugli$handleGroundJump(CallbackInfo ci) {
         Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.ACTION_ON_JUMP.get()).forEach(ActionOnJumpPower::executeAction);
-    }
-
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void apugli$setItemStackEntities(CallbackInfo ci) {
-        IndividualisedEmptyStackUtil.addEntityToStack((LivingEntity)(Object)this);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))

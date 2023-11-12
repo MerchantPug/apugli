@@ -51,7 +51,7 @@ public class PowerHumanoidArmorLayer<T extends LivingEntity, M extends HumanoidM
                     ((ArmorFeatureRendererAccessor)this).apugli$invokeRenderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, null);
                 }
 
-                ArmorTrim.getTrim(entity.level().registryAccess(), stack).ifPresent((armorTrim) -> {
+                ArmorTrim.getTrim(entity.level().registryAccess(), stack, true).ifPresent((armorTrim) -> {
                     ((ArmorFeatureRendererAccessor)(this)).apugli$invokeRenderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, model, bl);
                 });
                 if (stack.hasFoil()) {

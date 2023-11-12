@@ -6,12 +6,11 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "client.AbstractClientPlayerMixin",
     "common.AnvilScreenHandlerMixin",
     "common.BeehiveBlockEntityMixin",
     "common.BeehiveBlockMixin",
     "common.BlockItemMixin",
-    "common.EnchantmentHelperMixin",
-    "common.EnchantmentMixin",
     "common.EntityMixin",
     "common.ExplosionMixin",
     "common.ItemStackMixin",
@@ -34,7 +33,6 @@
     "common.accessor.TridentEntityAccessor"
   ],
   "client": [
-    "client.AbstractClientPlayerEntityMixin",
     "client.AbstractSoundInstanceMixin",
     "client.ArmorFeatureRendererMixin",
     "client.CapeFeatureRendererMixin",
@@ -46,6 +44,7 @@
     "client.MinecraftClientMixin",
     "client.ParticleMixin",
     "client.PlayerEntityRendererMixin",
+    "client.PlayerSkinMixin",
     "client.PositionedSoundInstanceMixin",
     "client.SoundSystemMixin",
     "client.WorldRendererMixin",

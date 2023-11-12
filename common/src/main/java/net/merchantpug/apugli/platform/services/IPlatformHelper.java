@@ -115,8 +115,6 @@ public interface IPlatformHelper {
 
     Entity getEntityFromItemStack(ItemStack stack);
 
-    void setEntityToItemStack(ItemStack stack, Entity entity);
-
     SerializableDataType<?> damageSourceDescriptionDataType();
 
     DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, String typeFieldName, String descriptionFieldName);
