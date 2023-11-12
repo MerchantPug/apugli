@@ -153,7 +153,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;canFreeze()Z", ordinal = 1))
     private boolean apugli$stopFreezeDamage(boolean original) {
-        if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()) && Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()).stream().anyMatch(p -> !ApugliPowers.FREEZE.get().shouldDamage(p))) {
+        if (Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()) && Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.FREEZE.get()).stream().anyMatch(p -> !ApugliPowers.FREEZE.get().shouldDamage(p, (LivingEntity)(Object)this))) {
             return false;
         }
         return original;
