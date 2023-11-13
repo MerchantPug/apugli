@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
@@ -77,18 +78,10 @@ public abstract class ExplosionMixin implements ExplosionAccess {
         return pitch;
     }
 
-    @Unique
-    private Entity apugli$affectedEntity;
-
-    @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void apugli$collectAffectedEntity(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2, Entity entity) {
-        this.apugli$affectedEntity = entity;
-    }
 
     @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
-    private boolean apugli$cancelDamagedEntity(boolean original) {
-        if (this.getDirectSourceEntity() != null && ((ExplosionAccess) this).apugli$getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).apugli$getBiEntityPredicate(), this.getDirectSourceEntity(), this.apugli$affectedEntity))  {
-            this.apugli$affectedEntity = null;
+    private boolean apugli$cancelDamagedEntity(boolean original, @Local(index = 13) Entity entity) {
+        if (this.getDirectSourceEntity() != null && ((ExplosionAccess) this).apugli$getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).apugli$getBiEntityPredicate(), this.getDirectSourceEntity(), entity))  {
             return true;
         }
         return original;
