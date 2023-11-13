@@ -17,7 +17,6 @@ import virtuoel.pehkui.api.ScaleModifier;
 import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
-import java.net.IDN;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +33,7 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     private final Set<ResourceLocation> scalesToUpdate = Sets.newHashSet();
     protected final Set<ResourceLocation> cachedScaleIds;
     protected boolean hasLoggedWarn = false;
-    protected boolean addedScales = false;
+    private boolean addedScales = false;
 
     public ApoliScaleModifier(P power, List<?> modifiers, Set<ResourceLocation> cachedScaleIds) {
         this(-128.0F, power, modifiers, cachedScaleIds);
@@ -114,8 +113,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     public void tick(LivingEntity entity, boolean calledFromNbt) {
         boolean updatedScale = false;
         List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList();
-
-        addScales(entity, scaleTypeIds);
 
         for (ResourceLocation scaleTypeId : scaleTypeIds) {
             ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);

@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.merchantpug.apugli.Apugli;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.MarkLerpedScaleReadyPacket;
 import net.merchantpug.apugli.network.c2s.integration.pehkui.ResetScaleCheckPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.nbt.CompoundTag;
@@ -78,8 +77,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         super.serialize(tag);
         tag.putInt("Ticks", this.getTicks());
         tag.putBoolean("ShouldTickDown", this.shouldTickDown);
-        if (!Float.isNaN(this.scaleCheckValue))
-            tag.putFloat("ScaleCheckValue", this.scaleCheckValue);
         if (!this.lowerBoundScales.isEmpty()) {
             ListTag cachedMaxScaleTag = new ListTag();
             for (Map.Entry<ResourceLocation, Float> entry : this.lowerBoundScales.entrySet()) {
@@ -108,8 +105,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         super.deserialize(tag);
         this.setTicks(tag.getInt("Ticks"));
         this.shouldTickDown = tag.getBoolean("ShouldTickDown");
-        if (tag.contains("ScaleCheckValue", Tag.TAG_FLOAT))
-            this.scaleCheckValue = tag.getFloat("ScaleCheckValue");
         if (tag.contains("LowerBoundScales", Tag.TAG_LIST)) {
             ListTag lowerBoundScalesTag = tag.getList("LowerBoundScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < lowerBoundScalesTag.size(); ++i) {
@@ -132,8 +127,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         boolean hasResetScale = false;
 
         boolean isActive = Services.POWER.isActive(power, entity);
-
-        addScales(entity, this.cachedScaleIds.stream().toList());
 
         for (ResourceLocation scaleTypeId : this.cachedScaleIds) {
             ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
@@ -176,13 +169,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
 
             if (hasResetScale || calledFromNbt) continue;
 
-            if (!entity.level().isClientSide() && !this.readyScales.contains(scaleTypeId)) {
-                this.readyScales.add(scaleTypeId);
-                if (!hasSentReadyPacket) {
-                    Services.PLATFORM.sendS2CTrackingAndSelf(new MarkLerpedScaleReadyPacket(entity.getId(), this.getId()), entity);
-                    hasSentReadyPacket = true;
-                }
-            }
+            this.readyScales.add(scaleTypeId);
         }
 
         if (!this.readyScales.isEmpty() && !entity.level().isClientSide()) {
