@@ -65,7 +65,8 @@ minecraft {
             workingDirectory project.file('run')
             ideaModule "${rootProject.name}.${project.name}.test"
             taskName 'Client'
-            jvmArgs "-Dmixin.debug=true"
+            jvmArgs "-Dmixin.debug.verbose=true"
+            jvmArgs "-Dmixin.debug.export=true"
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
                 create(mod_id) {
@@ -81,7 +82,8 @@ minecraft {
             workingDirectory project.file('run')
             ideaModule "${rootProject.name}.${project.name}.test"
             taskName 'Server'
-            jvmArgs "-Dmixin.debug=true"
+            jvmArgs "-Dmixin.debug.verbose=true"
+            jvmArgs "-Dmixin.debug.export=true"
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
                 create(mod_id) {
@@ -98,7 +100,8 @@ minecraft {
             ideaModule "${rootProject.name}.${project.name}.main"
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
             taskName 'Data'
-            jvmArgs "-Dmixin.debug=true"
+            jvmArgs "-Dmixin.debug.verbose=true"
+            jvmArgs "-Dmixin.debug.export=true"
             args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
             mods {
                 create(mod_id) {
