@@ -1,7 +1,9 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.platform.Services;
@@ -45,6 +47,12 @@ public abstract class LivingEntityMixin extends Entity {
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void apugli$tickModifyScale(CallbackInfo ci) {
+        if (FabricLoader.getInstance().isModLoaded("pehkui") && !Services.POWER.getPowers((LivingEntity) (Object) this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
+            PehkuiUtil.tickScalePowers((LivingEntity)(Object)this);
     }
 
     @Inject(method = "jumpFromGround", at = @At("TAIL"))

@@ -13,6 +13,7 @@ import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.capability.item.EntityLinkCapability;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
@@ -50,6 +51,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
@@ -158,6 +160,8 @@ public class ApugliForgeEventHandler {
         }
 
         IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
+        if (ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
+            PehkuiUtil.tickScalePowers(event.getEntity());
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().multiply(1.0, 0.0, 1.0));

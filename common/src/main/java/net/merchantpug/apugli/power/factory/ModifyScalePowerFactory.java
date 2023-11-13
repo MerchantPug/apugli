@@ -4,6 +4,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +30,18 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
         if (!(entity instanceof LivingEntity living)) {
             return null;
         }
-        Optional<P> power = Services.POWER.getPowers(living, this, true).stream().filter(p -> this.getPowerId(p).equals(powerId)).findFirst();
-        return power.map(p -> getApoliScaleModifier(p, living)).orElse(null);
+        P power = (P) Services.POWER.getPowerFromId(powerId, ApugliPowers.MODIFY_SCALE.get(), living, true);
+        if (power == null) {
+            return null;
+        }
+
+        return getApoliScaleModifier(power, living);
     }
 
     Set<ResourceLocation> getCachedScaleIds(P power, Entity entity);
+
+    int getLatestNumericalId(Entity entity);
+
+    void resetNumericalId(Entity entity);
 
 }

@@ -38,24 +38,30 @@ public class PehkuiUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static <P> void tickScalePower(P power, LivingEntity entity) {
-        ApoliScaleModifier<P> modifier = (ApoliScaleModifier<P>) ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity);
+    public static <P> void tickScalePowers(LivingEntity entity) {
+        for (P power : (List<P>)Services.POWER.getPowers(entity, ApugliPowers.MODIFY_SCALE.get(), true).stream().sorted((p1, p2) -> {
+            int firstPowerDelay = ApugliPowers.MODIFY_SCALE.get().getDataFromPower(p1).getInt("delay");
+            int secondPowerDelay = ApugliPowers.MODIFY_SCALE.get().getDataFromPower(p2).getInt("delay");
+            return Integer.compare(firstPowerDelay, secondPowerDelay);
+        }).toList()) {
+            ApoliScaleModifier<P> modifier = (ApoliScaleModifier<P>) ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity);
 
-        if (modifier != null)
-            modifier.tick(entity, false);
+            if (modifier != null)
+                modifier.tick(entity, false);
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static <P> Object createApoliScaleModifier(P power, LivingEntity entity, SerializableData.Instance data) {
         if (!data.isPresent("modifier") && !data.isPresent("modifiers")) {
             Apugli.LOG.error("Could not create scale power modifier as the 'modifier' and 'modifiers' fields are both not specified.");
-            return new ApoliScaleModifier<>(power, List.of());
+            return new ApoliScaleModifier<>(power, List.of(), Set.of());
         }
         ApoliScaleModifier<P> modifier;
         if (data.getInt("delay") > 0) {
-            modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), getTypesFromCache(data), Services.POWER.isActive(power, entity));
+            modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), getTypesFromCache(data), ApugliPowers.MODIFY_SCALE.get().getLatestNumericalId(entity));
         } else {
-            modifier = new ApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity));
+            modifier = new ApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), getTypesFromCache(data));
         }
 
         return modifier;
@@ -69,10 +75,16 @@ public class PehkuiUtil {
             ScaleType scaleType = PehkuiUtil.getScaleType(scaleTypeId);
             ScaleData scaleData = scaleType.getScaleData(entity);
 
-            ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(ApugliPowers.MODIFY_SCALE.get().getPowerId(power));
-            scaleData.getBaseValueModifiers().remove(modifier);
-            Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
-            scaleData.onUpdate();
+            if (scaleData.getBaseValueModifiers().contains(modifier)) {
+                ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(ApugliPowers.MODIFY_SCALE.get().getPowerId(power));
+                scaleData.getBaseValueModifiers().remove(modifier);
+                Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
+                scaleData.onUpdate();
+            }
+        }
+
+        if (Services.POWER.getPowers(entity, ApugliPowers.MODIFY_SCALE.get(), true).size() - 1 <= 0) {
+            ApugliPowers.MODIFY_SCALE.get().resetNumericalId(entity);
         }
     }
 

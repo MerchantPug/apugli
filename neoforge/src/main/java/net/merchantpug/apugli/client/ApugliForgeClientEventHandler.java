@@ -156,8 +156,8 @@ public class ApugliForgeClientEventHandler {
                 }
 
                 if (entityRenderer instanceof HumanoidMobRenderer<?, ?> humanoidMobRenderer) {
-                    humanoidMobRenderer.addLayer(new PowerCustomHeadLayer(humanoidMobRenderer, event.getEntityModels(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().x(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().y(), ((HumanoidMobRendererAccess)humanoidMobRenderer).getHeadSize().z(), itemInHandRenderer));
-                    ((HumanoidMobRendererAccess)humanoidMobRenderer).setHeadSize(null);
+                    humanoidMobRenderer.addLayer(new PowerCustomHeadLayer(humanoidMobRenderer, event.getEntityModels(), ((HumanoidMobRendererAccess)humanoidMobRenderer).apugli$getHeadSize().x(), ((HumanoidMobRendererAccess)humanoidMobRenderer).apugli$getHeadSize().y(), ((HumanoidMobRendererAccess)humanoidMobRenderer).apugli$getHeadSize().z(), itemInHandRenderer));
+                    ((HumanoidMobRendererAccess)humanoidMobRenderer).apugli$setHeadSize(null);
                 } else if (livingEntityRenderer.getModel() instanceof HeadedModel) {
                     livingEntityRenderer.addLayer(new PowerCustomHeadLayer(livingEntityRenderer, event.getEntityModels(), itemInHandRenderer));
                 }

@@ -10,7 +10,9 @@ import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
@@ -59,6 +61,17 @@ public interface IPowerHelper<T> {
     <P> ResourceLocation getPowerFromParameter(P power);
 
     <P> ResourceLocation getPowerId(P power);
+
+    default <P extends Power> P getPowerFromId(ResourceLocation powerId, SimplePowerFactory<P> factory, LivingEntity living, boolean includeInactive) {
+        Optional<P> optional = getPowers(living, factory, includeInactive).stream().filter(p -> this.getPowerId(p).equals(powerId)).findFirst();
+        return optional.orElse(null);
+    }
+
+    @Nullable
+    default <P> P getPowerFromId(ResourceLocation powerId, SpecialPowerFactory<P> factory, LivingEntity living, boolean includeInactive) {
+        Optional<P> optional = getPowers(living, factory, includeInactive).stream().filter(p -> this.getPowerId(p).equals(powerId)).findFirst();
+        return optional.orElse(null);
+    }
 
     void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
 
