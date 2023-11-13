@@ -51,7 +51,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void apugli$tickModifyScale(CallbackInfo ci) {
-        if (!this.level().isClientSide() && FabricLoader.getInstance().isModLoaded("pehkui") && !Services.POWER.getPowers((LivingEntity) (Object) this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
+        if (FabricLoader.getInstance().isModLoaded("pehkui") && !Services.POWER.getPowers((LivingEntity) (Object) this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
             PehkuiUtil.tickScalePowers((LivingEntity)(Object)this);
     }
 
