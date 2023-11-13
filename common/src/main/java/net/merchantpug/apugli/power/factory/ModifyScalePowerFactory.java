@@ -3,7 +3,6 @@ package net.merchantpug.apugli.power.factory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +18,7 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("scale_type", SerializableDataTypes.IDENTIFIER, null)
                 .add("scale_types", SerializableDataType.list(SerializableDataTypes.IDENTIFIER), new ArrayList<>())
-                .add("delay", SerializableDataTypes.INT, null);
+                .add("delay", SerializableDataTypes.INT, 0);
     }
 
     ResourceLocation getPowerId(P power);
