@@ -48,7 +48,7 @@ public class PehkuiUtil {
 
             modifier.addScales(entity, ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList());
 
-            if (!entity.level().isClientSide()) continue;
+            if (entity.level().isClientSide()) continue;
 
             modifier.tick(entity, false);
         }
