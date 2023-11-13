@@ -214,7 +214,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
         if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
             if (!this.hasLoggedWarn)
-                Apugli.LOG.warn("Attempted to use LerpedApoliScaleModifier on non-entity entity. This should not be possible.");
+                Apugli.LOG.warn("Attempted to use LerpedApoliScaleModifier on a non-living entity. This should not be possible.");
             this.hasLoggedWarn = true;
             return modifiedScale;
         }
