@@ -43,15 +43,7 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     protected PowerData access(ConfiguredPower<FabricValueModifyingConfiguration, ?> configuration, IPowerContainer container) {
-        if (!ModList.get().isLoaded("pehkui")) {
-            return null;
-        }
         return configuration.getPowerData(container, () -> new PowerData(configuration, container.getOwner()));
-    }
-
-    @Override
-    public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
-        this.access(power, ApoliAPI.getPowerContainer(entity));
     }
 
     @Override

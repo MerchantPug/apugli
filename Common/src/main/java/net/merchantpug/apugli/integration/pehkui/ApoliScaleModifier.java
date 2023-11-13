@@ -115,8 +115,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         boolean updatedScale = false;
         List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList();
 
-        addScales(entity, scaleTypeIds);
-
         for (ResourceLocation scaleTypeId : scaleTypeIds) {
             ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
             ScaleData scaleData = scaleType.getScaleData(entity);

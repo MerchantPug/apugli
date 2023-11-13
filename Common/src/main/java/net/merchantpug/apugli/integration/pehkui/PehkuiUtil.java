@@ -46,8 +46,11 @@ public class PehkuiUtil {
         }).toList()) {
             ApoliScaleModifier<P> modifier = (ApoliScaleModifier<P>) ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity);
 
-            if (modifier != null)
-                modifier.tick(entity, false);
+            modifier.addScales(entity, ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList());
+
+            if (!entity.level().isClientSide()) continue;
+
+            modifier.tick(entity, false);
         }
     }
 

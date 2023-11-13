@@ -133,8 +133,6 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
 
         boolean isActive = Services.POWER.isActive(power, entity);
 
-        addScales(entity, this.cachedScaleIds.stream().toList());
-
         for (ResourceLocation scaleTypeId : this.cachedScaleIds) {
             ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
             ScaleData scaleData = scaleType.getScaleData(entity);
