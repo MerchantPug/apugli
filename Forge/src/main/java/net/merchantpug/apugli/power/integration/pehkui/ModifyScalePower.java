@@ -2,6 +2,7 @@ package net.merchantpug.apugli.power.integration.pehkui;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower implements ModifyScalePowerFactory<ConfiguredPower<FabricValueModifyingConfiguration, ?>> {
+    public static final Map<Entity, Integer> SCALE_NUMERICAL_ID_MAP = Maps.newHashMap();
 
     public ModifyScalePower() {
         super(ModifyScalePowerFactory.getSerializableData().xmap(
@@ -48,9 +50,8 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     @Override
-    public void tick(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
-        if (entity instanceof LivingEntity living)
-            PehkuiUtil.tickScalePower(power, living);
+    public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        this.access(power, ApoliAPI.getPowerContainer(entity));
     }
 
     @Override
@@ -86,8 +87,18 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
         return this.access(power, ApoliAPI.getPowerContainer(entity)).cachedScaleIds;
     }
 
+    @Override
+    public int getLatestNumericalId(Entity entity) {
+        return SCALE_NUMERICAL_ID_MAP.compute(entity, (entity1, integer) -> integer != null ? integer + 1 : 0);
+    }
+
+    @Override
+    public void resetNumericalId(Entity entity) {
+        SCALE_NUMERICAL_ID_MAP.remove(entity);
+    }
+
     public static class PowerData {
-        private final Object apoliScaleModifier;
+        private Object apoliScaleModifier;
         private final Set<ResourceLocation> cachedScaleIds;
 
         public PowerData(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {

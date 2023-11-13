@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.power.integration.pehkui;
 
 import com.google.auto.service.AutoService;
+import com.google.common.collect.Maps;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.loader.api.FabricLoader;
@@ -14,10 +15,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePower.Instance> implements ModifyScalePowerFactory<ModifyScalePower.Instance> {
+    public static final Map<Entity, Integer> SCALE_NUMERICAL_ID_MAP = Maps.newHashMap();
     public ModifyScalePower() {
         super("modify_scale", ModifyScalePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
@@ -44,6 +47,16 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
         return power.cachedScaleIds;
     }
 
+    @Override
+    public int getLatestNumericalId(Entity entity) {
+        return SCALE_NUMERICAL_ID_MAP.compute(entity, (entity1, integer) -> integer != null ? integer + 1 : 0);
+    }
+
+    @Override
+    public void resetNumericalId(Entity entity) {
+        SCALE_NUMERICAL_ID_MAP.remove(entity);
+    }
+
     public static class Instance extends AbstractValueModifyingPower.Instance {
         private final Object apoliScaleModifier;
         private final Set<ResourceLocation> cachedScaleIds;
@@ -58,11 +71,6 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
                 this.apoliScaleModifier = null;
                 this.cachedScaleIds = Set.of();
             }
-        }
-
-        @Override
-        public void tick() {
-            PehkuiUtil.tickScalePower(this, this.entity);
         }
 
         @Override

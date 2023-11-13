@@ -32,6 +32,7 @@ import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.network.c2s.integration.pehkui.ResetScaleCheckPacket;
 import net.merchantpug.apugli.network.s2c.*;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.MarkLerpedScaleReadyPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
@@ -79,6 +80,7 @@ public class ApugliPackets {
         ServerPlayNetworking.registerGlobalReceiver(UpdateKeysPressedPacket.ID, createC2SHandler(UpdateKeysPressedPacket::decode, UpdateKeysPressedPacket::handle));
         ServerPlayNetworking.registerGlobalReceiver(ExecuteEntityActionServerPacket.ID, createC2SHandler(ExecuteEntityActionServerPacket::decode, ExecuteEntityActionServerPacket::handle));
         ServerPlayNetworking.registerGlobalReceiver(ExecuteBiEntityActionServerPacket.ID, createC2SHandler(ExecuteBiEntityActionServerPacket::decode, ExecuteBiEntityActionServerPacket::handle));
+        ServerPlayNetworking.registerGlobalReceiver(ResetScaleCheckPacket.ID, createC2SHandler(ResetScaleCheckPacket::decode, ResetScaleCheckPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

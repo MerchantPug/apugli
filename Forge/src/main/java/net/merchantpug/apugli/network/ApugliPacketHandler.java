@@ -5,6 +5,7 @@ import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
+import net.merchantpug.apugli.network.c2s.integration.pehkui.ResetScaleCheckPacket;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.ExecuteBiEntityActionClientPacket;
@@ -61,6 +62,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, MarkLerpedScaleReadyPacket.class, MarkLerpedScaleReadyPacket::encode, MarkLerpedScaleReadyPacket::decode, ApugliPacketHandler.createS2CHandler(MarkLerpedScaleReadyPacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
+        INSTANCE.registerMessage(i++, ResetScaleCheckPacket.class, ResetScaleCheckPacket::encode, ResetScaleCheckPacket::decode, ApugliPacketHandler.createC2SHandler(ResetScaleCheckPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

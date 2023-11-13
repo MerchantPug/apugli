@@ -85,6 +85,10 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> scaleTypes,
 
                 Entity entity = Minecraft.getInstance().level.getEntity(entityId());
 
+                if (entity == null) {
+                    return;
+                }
+
                 for (ResourceLocation scaleTypeId : scaleTypes()) {
                     ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
                     ScaleData scaleData = scaleType.getScaleData(entity);
