@@ -160,7 +160,7 @@ public class ApugliForgeEventHandler {
         }
 
         IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
-        if (ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
+        if (!event.getEntity().level().isClientSide() && ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
             PehkuiUtil.tickScalePowers(event.getEntity());
 
         if (Services.POWER.hasPower(event.getEntity(), ApugliPowers.HOVER.get())) {
