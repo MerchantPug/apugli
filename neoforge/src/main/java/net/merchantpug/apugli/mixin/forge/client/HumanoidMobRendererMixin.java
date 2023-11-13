@@ -14,14 +14,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidMobRenderer.class)
-@Implements(@Interface(iface = HumanoidMobRendererAccess.class, prefix = "apugli$"))
-public class HumanoidMobRendererMixin {
+public class HumanoidMobRendererMixin implements HumanoidMobRendererAccess {
     @Unique
     public Vector3f apugli$headSize;
 
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererProvider$Context;Lnet/minecraft/client/model/HumanoidModel;FFFF)V", at = @At("TAIL"))
     private void apugli$captureHeadSize(EntityRendererProvider.Context pContext, HumanoidModel pModel, float pShadowRadius, float pScaleX, float pScaleY, float pScaleZ, CallbackInfo ci) {
-        apugli$headSize = new Vector3f(pScaleX, pScaleY, pScaleZ);
+        this.apugli$setHeadSize(new Vector3f(pScaleX, pScaleY, pScaleZ));
     }
 
     public Vector3f apugli$getHeadSize() {
