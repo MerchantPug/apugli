@@ -8,8 +8,6 @@ import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +16,6 @@ import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,7 +52,7 @@ public class PehkuiUtil {
             return new ApoliScaleModifier<>(power, List.of());
         }
         ApoliScaleModifier<P> modifier;
-        if (data.isPresent("delay") && data.getInt("delay") > 0) {
+        if (data.getInt("delay") > 0) {
             modifier = new LerpedApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), data.getInt("delay"), getTypesFromCache(data), Services.POWER.isActive(power, entity));
         } else {
             modifier = new ApoliScaleModifier<>(power, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity));
