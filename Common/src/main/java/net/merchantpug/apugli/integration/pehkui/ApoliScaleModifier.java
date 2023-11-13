@@ -130,7 +130,7 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 updatedScale = true;
             }
         }
-        if (updatedScale) {
+        if (!calledFromNbt && updatedScale) {
             Services.POWER.syncPower(entity, this.power);
             this.cachedScaleIds.forEach(id -> ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id).getScaleData(entity).onUpdate());
         }
