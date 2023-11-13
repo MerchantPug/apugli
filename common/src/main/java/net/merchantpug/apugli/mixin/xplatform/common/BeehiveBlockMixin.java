@@ -19,9 +19,9 @@ import java.util.List;
 @Mixin(BeehiveBlock.class)
 public class BeehiveBlockMixin {
 
-    @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    @Inject(method = "angerNearbyBees", at = @At(value = "INVOKE", target = "Ljava/util/List;isEmpty()Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     private void apugli$dontAngerBees(Level level, BlockPos pos, CallbackInfo ci, AABB aABB, List<Bee> list, List<Player> list2) {
-        if (list2.stream().anyMatch(player -> Services.POWER.hasPower(player, ApugliPowers.PREVENT_BEE_ANGER.get()))) {
+        if (!list2.isEmpty() && list2.stream().anyMatch(player -> Services.POWER.hasPower(player, ApugliPowers.PREVENT_BEE_ANGER.get()))) {
             ci.cancel();
         }
     }

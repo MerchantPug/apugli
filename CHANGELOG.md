@@ -4,3 +4,4 @@
 - Fixed flickering with `modify_scale` powers.
 - Fixed modify scale not stacking with a `delay` field higher than 0 and conditional. #61
 - Fixed a crash relating to explosions. #62
+- Fixed a crash relating to `prevent_bee_anger` and beehive blocks. #62 (part 2)
