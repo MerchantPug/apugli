@@ -24,7 +24,7 @@ import java.util.Set;
  */
 public class PehkuiUtil {
 
-    public static <P> Set<ResourceLocation> getTypesFromCache(SerializableData.Instance data) {
+    public static Set<ResourceLocation> getTypesFromCache(SerializableData.Instance data) {
         ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
 
         data.<ResourceLocation>ifPresent("scale_type", builder::add);
