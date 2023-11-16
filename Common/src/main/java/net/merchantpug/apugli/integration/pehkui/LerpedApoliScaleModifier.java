@@ -233,7 +233,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
 
         if (this.shouldUpdateModifiers.contains(scaleTypeId) || !this.checkModifiedScales.containsKey(scaleTypeId) || this.checkModifiedScales.get(scaleTypeId) != modifiedScale) {
             boolean isActive = Services.POWER.isActive(power, entity);
-            updateScaleCache(scaleTypeId, modifiedScale, !isActive ? modifiedScale : (float)Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale), scaleData.getBaseScale(), isActive);
+            updateScaleCache(scaleTypeId, modifiedScale, !isActive ? modifiedScale : (float)Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale), isActive);
             this.checkModifiedScales.put(scaleTypeId, modifiedScale);
             this.shouldUpdateModifiers.remove(scaleTypeId);
         }
@@ -272,7 +272,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         return modified;
     }
 
-    private void updateScaleCache(ResourceLocation scaleTypeId, float modifiedScale, float targetScale, float baseScale, boolean isActive) {
+    private void updateScaleCache(ResourceLocation scaleTypeId, float modifiedScale, float targetScale, boolean isActive) {
         boolean boundsChanged = false;
 
         float previousLowerBoundScale = this.lowerBoundScales.getOrDefault(scaleTypeId, modifiedScale);
@@ -324,7 +324,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
 
         if (this.shouldUpdatePreviousModifiers.contains(scaleTypeId) || !checkPreviousModifiedScales.containsKey(scaleTypeId) || this.checkPreviousModifiedScales.get(scaleTypeId) != modifiedScale) {
             boolean isActive = Services.POWER.isActive(power, entity);
-            updatePreviousScaleCache(scaleTypeId, modifiedScale, !isActive ? modifiedScale : (float)Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale), scaleData.getBaseScale(), isActive);
+            updatePreviousScaleCache(scaleTypeId, modifiedScale, !isActive ? modifiedScale : (float)Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale), isActive);
             this.checkPreviousModifiedScales.put(scaleTypeId, modifiedScale);
             this.shouldUpdatePreviousModifiers.remove(scaleTypeId);
         }
@@ -348,7 +348,7 @@ public class LerpedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         return value;
     }
 
-    private void updatePreviousScaleCache(ResourceLocation scaleTypeId, float modifiedScale, float targetScale, float baseScale, boolean isActive) {
+    private void updatePreviousScaleCache(ResourceLocation scaleTypeId, float modifiedScale, float targetScale, boolean isActive) {
         boolean boundsChanged = false;
 
         Optional<Float> currentScale = this.isMin() ? Optional.of(this.lowerBoundPreviousScales.getOrDefault(scaleTypeId, modifiedScale)) : this.isMax() ? Optional.of(this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale)) : this.reachedPreviousScales.containsKey(scaleTypeId) && this.reachedPreviousScales.get(scaleTypeId).containsKey(this.getTicks()) && this.reachedPreviousScales.get(scaleTypeId).containsKey(this.getTicks()) ? Optional.of(this.reachedPreviousScales.get(scaleTypeId).get(this.getTicks())) : Optional.empty();
