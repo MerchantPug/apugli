@@ -1,6 +1,12 @@
+## Power Types
+- Added `easing` and `priority` fields to `modify_scale`.
+
 ## Bugfixes
-- Fixed `can_take_damage` entity condition causing a crash.
-- Fixed priority on `modify_scale` Scale Modifiers being the same as a regular scale modifier.
-- Fixed flickering with `modify_scale` powers.
-- Fixed modify scale not stacking with a `delay` field higher than 0 and conditional. #61
-- Fixed a crash relating to explosions. #62
+- Fixed `modify_scale` not forcing an update for scales that don't update frequently.
+- Fixed a crash upon having an invalid scale type in the `scale_type` or `scale_types` fields in the `modify_scale` power.
+- Fixed `modify_scale` not being removed when it should be.
+- Fixed `modify_scale`s with `delay` fields not getting exact scale values when changing into a non divisible value.
+- Made `modify_scale` `delay` smoothing far more stable.
+
+## Miscellaneous
+- Rewrote `modify_scale`'s scale modifiers.

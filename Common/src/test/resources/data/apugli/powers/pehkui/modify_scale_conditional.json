@@ -7,9 +7,10 @@
   ],
   "modifiers": {
     "operation": "multiply_total_multiplicative",
-    "value": 0.5
+    "value": 1.0
   },
   "condition": {
     "type": "apoli:sneaking"
-  }
+  },
+  "easing": "pehkui:circular_in_out"
 }

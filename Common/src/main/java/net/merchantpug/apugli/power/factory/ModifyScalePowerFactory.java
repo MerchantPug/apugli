@@ -19,7 +19,9 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("scale_type", SerializableDataTypes.IDENTIFIER, null)
                 .add("scale_types", SerializableDataType.list(SerializableDataTypes.IDENTIFIER), new ArrayList<>())
-                .add("delay", SerializableDataTypes.INT, 0);
+                .add("delay", SerializableDataTypes.INT, 0)
+                .add("easing", SerializableDataTypes.IDENTIFIER, null)
+                .add("priority", SerializableDataTypes.INT, 0);
     }
 
     ResourceLocation getPowerId(P power);
@@ -40,8 +42,6 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
 
     Set<ResourceLocation> getCachedScaleIds(P power, Entity entity);
 
-    int getLatestNumericalId(Entity entity);
-
-    void resetNumericalId(Entity entity);
+    boolean hasScaleModifier(P power, LivingEntity entity);
 
 }

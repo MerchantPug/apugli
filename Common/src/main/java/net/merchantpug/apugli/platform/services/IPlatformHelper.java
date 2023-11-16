@@ -20,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public interface IPlatformHelper {

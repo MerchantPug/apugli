@@ -1,7 +1,6 @@
 package net.merchantpug.apugli.integration.pehkui;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
@@ -24,38 +23,50 @@ import java.util.Set;
 public class ApoliScaleModifier<P> extends ScaleModifier {
 
     protected final P power;
+    private final int powerPriority;
+    private int numericalId;
 
     protected final List<?> modifiers;
     protected final Map<ResourceLocation, Float> cachedMaxScales = Maps.newHashMap();
     protected final Map<ResourceLocation, Float> cachedPreviousMaxScales = Maps.newHashMap();
-    protected final Map<ResourceLocation, Float> capturedModifiedScales = Maps.newHashMap();
-    protected final Map<ResourceLocation, Float> capturedPreviousModifiedScales = Maps.newHashMap();
-    private final Set<ResourceLocation> scalesToUpdate = Sets.newHashSet();
+    protected final Map<ResourceLocation, Float> checkModifiedScales = Maps.newHashMap();
+    protected final Map<ResourceLocation, Float> checkPreviousModifiedScales = Maps.newHashMap();
+    protected final Map<ResourceLocation, Float> checkMaxScale = Maps.newHashMap();
     protected final Set<ResourceLocation> cachedScaleIds;
     protected boolean hasLoggedWarn = false;
     private boolean addedScales = false;
 
-    public ApoliScaleModifier(P power, List<?> modifiers, Set<ResourceLocation> cachedScaleIds) {
-        this(-128.0F, power, modifiers, cachedScaleIds);
-    }
-
-    public ApoliScaleModifier(float priority, P power, List<?> modifiers, Set<ResourceLocation> cachedScaleIds) {
-        super(priority);
+    public ApoliScaleModifier(P power, List<?> modifiers, Set<ResourceLocation> cachedScaleIds, int powerPriority) {
+        super(0.0F);
         this.power = power;
         this.modifiers = modifiers;
         this.cachedScaleIds = cachedScaleIds;
+        this.powerPriority = powerPriority;
+    }
+
+    @Override
+    public int compareTo(ScaleModifier o) {
+        if (!(o instanceof ApoliScaleModifier<?> ao)) {
+            return -1;
+        }
+
+        int c = this.getId().compareTo(ao.getId());
+        c = c != 0 ? c :
+                Integer.compare(this.powerPriority, ao.powerPriority);
+
+        return c;
     }
 
     public Set<ResourceLocation> getCachedScaleIds() {
         return this.cachedScaleIds;
     }
 
-
     protected ResourceLocation getResourceLocationFromScaleData(ScaleData data) {
         return ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, data.getScaleType());
     }
 
     public CompoundTag serialize(CompoundTag tag) {
+        tag.putInt("NumericalId", this.numericalId);
         if (!this.cachedMaxScales.isEmpty()) {
             ListTag cachedMaxScaleTag = new ListTag();
             for (Map.Entry<ResourceLocation, Float> entry : this.cachedMaxScales.entrySet()) {
@@ -80,6 +91,7 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     }
 
     public void deserialize(CompoundTag tag) {
+        this.numericalId = tag.getInt("NumericalId");
         if (tag.contains("MaxScales", Tag.TAG_LIST)) {
             ListTag cachedMaxScaleTag = tag.getList("MaxScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
@@ -103,47 +115,47 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 ScaleData scaleData = scaleType.getScaleData(entity);
                 ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
                 scaleData.getBaseValueModifiers().add(this);
-                scaleData.onUpdate();
             }
             Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.addScaleToClient(entity.getId(), scaleTypeIds, this.getId()), entity);
+            for (ResourceLocation scaleTypeId : scaleTypeIds) {
+                ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
+                ScaleData scaleData = scaleType.getScaleData(entity);
+                scaleData.onUpdate();
+                scaleData.getScale();
+                scaleData.getPrevScale();
+            }
             this.addedScales = true;
         }
     }
 
     public void tick(LivingEntity entity, boolean calledFromNbt) {
         boolean updatedScale = false;
-        List<ResourceLocation> scaleTypeIds = ApugliPowers.MODIFY_SCALE.get().getCachedScaleIds(power, entity).stream().toList();
 
-        for (ResourceLocation scaleTypeId : scaleTypeIds) {
-            ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
-            ScaleData scaleData = scaleType.getScaleData(entity);
+        for (ResourceLocation typeId : getCachedScaleIds()) {
+            ScaleData data = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, typeId).getScaleData(entity);
 
-            float value = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, this.capturedModifiedScales.getOrDefault(scaleTypeId, scaleData.getBaseScale()));
-            if (!this.scalesToUpdate.contains(scaleTypeId)) {
-                float previousValue = (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, this.capturedPreviousModifiedScales.getOrDefault(scaleTypeId, scaleData.getBaseScale()));
-                this.cachedMaxScales.put(scaleTypeId, value);
-                this.cachedPreviousMaxScales.put(scaleTypeId, previousValue);
-                this.scalesToUpdate.add(scaleTypeId);
+            float value = (float)Services.PLATFORM.applyModifiers(data.getEntity(), this.modifiers, data.getBaseScale());
+            if (!this.checkMaxScale.containsKey(typeId) || value != this.checkMaxScale.get(typeId)) {
+                if (value != this.checkMaxScale.getOrDefault(typeId, value)) {
+                    PehkuiUtil.sendToBack(this);
+                }
+                this.checkMaxScale.put(typeId, value);
                 updatedScale = true;
             }
         }
-        if (!calledFromNbt && updatedScale) {
-            Services.POWER.syncPower(entity, this.power);
-            this.cachedScaleIds.forEach(id -> ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id).getScaleData(entity).onUpdate());
+
+        if (updatedScale) {
+            this.updateAllScales(entity);
         }
     }
 
-    @Override
-    public int compareTo(ScaleModifier o)
-    {
-        if (!(o instanceof ApoliScaleModifier<?> ao)) {
-            return -1;
-        }
-
-        final int c = Float.compare(o.getPriority(), getPriority());
-
-        return c != 0 ? c :
-                this.getId().compareTo(ao.getId());
+    public void updateAllScales(LivingEntity entity) {
+        PehkuiUtil.getAllAffectedScaleTypes(entity).forEach(id -> {
+            ScaleData data = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id).getScaleData(entity);
+            data.onUpdate();
+            data.getScale();
+            data.getPrevScale();
+        });
     }
 
     public ResourceLocation getId() {
@@ -163,8 +175,10 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         }
 
         ResourceLocation id = getResourceLocationFromScaleData(scaleData);
-        if (!capturedModifiedScales.containsKey(id) || this.capturedModifiedScales.getOrDefault(id, modifiedScale) != modifiedScale)
-            this.capturedModifiedScales.put(id, modifiedScale);
+        if (!checkModifiedScales.containsKey(id) || this.checkModifiedScales.get(id) != modifiedScale) {
+            this.checkModifiedScales.put(id, modifiedScale);
+            this.cachedMaxScales.put(id, (float)Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
+        }
 
         return this.cachedMaxScales.getOrDefault(id, modifiedScale);
     }
@@ -182,8 +196,10 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         }
 
         ResourceLocation id = getResourceLocationFromScaleData(scaleData);
-        if (!capturedPreviousModifiedScales.containsKey(id) || this.capturedPreviousModifiedScales.getOrDefault(id, modifiedScale) != modifiedScale)
-            this.capturedPreviousModifiedScales.put(id, modifiedScale);
+        if (!checkModifiedScales.containsKey(id) || this.checkModifiedScales.get(id) != modifiedScale) {
+            this.checkModifiedScales.put(id, modifiedScale);
+            this.cachedPreviousMaxScales.put(id, (float)Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale));
+        }
 
         if (this.cachedPreviousMaxScales.containsKey(id))
             return this.cachedPreviousMaxScales.get(id);

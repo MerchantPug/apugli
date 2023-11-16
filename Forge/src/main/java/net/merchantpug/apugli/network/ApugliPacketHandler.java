@@ -5,7 +5,6 @@ import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
-import net.merchantpug.apugli.network.c2s.integration.pehkui.ResetScaleCheckPacket;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.network.s2c.ExecuteBiEntityActionClientPacket;
@@ -19,6 +18,7 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateAffectedScalesPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ApugliPacketHandler {
-    private static final String PROTOCOL_VERISON = "1";
+    private static final String PROTOCOL_VERISON = "2";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
             Apugli.asResource("main"),
             () -> PROTOCOL_VERISON,
@@ -60,7 +60,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
-        INSTANCE.registerMessage(i++, ResetScaleCheckPacket.class, ResetScaleCheckPacket::encode, ResetScaleCheckPacket::decode, ApugliPacketHandler.createC2SHandler(ResetScaleCheckPacket::handle));
+        INSTANCE.registerMessage(i++, UpdateAffectedScalesPacket.class, UpdateAffectedScalesPacket::encode, UpdateAffectedScalesPacket::decode, ApugliPacketHandler.createS2CHandler(UpdateAffectedScalesPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {
