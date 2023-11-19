@@ -7,6 +7,8 @@
 - Fixed `modify_scale` not being removed when it should be.
 - Fixed `modify_scale`s with `delay` fields not getting exact scale values when changing into a non divisible value.
 - Made `modify_scale` `delay` smoothing far more stable.
+- Fixed `compare_scales` crashing when `scale_type` is specified.
+- Fixed `compare_scales`s `scale_types` field not being counted.
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
