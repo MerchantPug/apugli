@@ -1,5 +1,6 @@
 {
   "type": "apugli:entity_texture_overlay",
+  "texture_location": "apugli:textures/entity/green.png",
   "texture_url": "https://i.imgur.com/mFZ6jin.png",
   "render_player_outer_layer": false
 }
