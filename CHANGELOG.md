@@ -1,5 +1,6 @@
 ## Power Types
-- Added `easing` and `priority` fields to `modify_scale`.
+- Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
+- Changed `modify_scale` to always take the amount of time of the `delay` field whenever changing scales.
 
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.
@@ -7,6 +8,7 @@
 - Fixed `modify_scale` not being removed when it should be.
 - Fixed `modify_scale`s with `delay` fields not getting exact scale values when changing into a non divisible value.
 - Made `modify_scale` `delay` smoothing far more stable.
+- Fixed `modify_scale` unintentionally resetting when swapping dimensions.
 - Fixed `compare_scales` crashing when `scale_type` is specified.
 - Fixed `compare_scales`s `scale_types` field not being counted.
 

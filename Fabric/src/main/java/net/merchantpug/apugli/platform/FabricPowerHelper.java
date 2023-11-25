@@ -131,6 +131,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
         Apugli.LOG.warn("Failed to get resource for power [{}], because it doesn't hold any resource!", powerType.getIdentifier());
         return OptionalInt.empty();
     }
+
     @Override
     public OptionalInt setResource(LivingEntity entity, PowerTypeReference powerType, int value) {
         Power power = powerType.get(entity);

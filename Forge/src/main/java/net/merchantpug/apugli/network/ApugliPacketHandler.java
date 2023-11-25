@@ -18,7 +18,7 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateAffectedScalesPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.RemoveModifierInOrderPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,8 +59,8 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
+        INSTANCE.registerMessage(i++, RemoveModifierInOrderPacket.class, RemoveModifierInOrderPacket::encode, RemoveModifierInOrderPacket::decode, ApugliPacketHandler.createS2CHandler(RemoveModifierInOrderPacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
-        INSTANCE.registerMessage(i++, UpdateAffectedScalesPacket.class, UpdateAffectedScalesPacket::encode, UpdateAffectedScalesPacket::decode, ApugliPacketHandler.createS2CHandler(UpdateAffectedScalesPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

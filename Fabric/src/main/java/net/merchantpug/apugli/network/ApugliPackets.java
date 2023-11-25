@@ -33,7 +33,7 @@ import net.merchantpug.apugli.network.c2s.ExecuteBiEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.*;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.UpdateAffectedScalesPacket;
+import net.merchantpug.apugli.network.s2c.integration.pehkui.RemoveModifierInOrderPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -56,8 +56,8 @@ public class ApugliPackets {
             ClientPlayNetworking.registerReceiver(ExecuteEntityActionClientPacket.ID, createS2CHandler(ExecuteEntityActionClientPacket::decode, ExecuteEntityActionClientPacket::handle));
             ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncScalePacket.ID, createS2CHandler(SyncScalePacket::decode, SyncScalePacket::handle));
+            ClientPlayNetworking.registerReceiver(RemoveModifierInOrderPacket.ID, createS2CHandler(RemoveModifierInOrderPacket::decode, RemoveModifierInOrderPacket::handle));
             ClientPlayNetworking.registerReceiver(ModifyEnchantmentLevelPacket.ID, createS2CHandler(ModifyEnchantmentLevelPacket::decode, ModifyEnchantmentLevelPacket::handle));
-            ClientPlayNetworking.registerReceiver(UpdateAffectedScalesPacket.ID, createS2CHandler(UpdateAffectedScalesPacket::decode, UpdateAffectedScalesPacket::handle));
         });
     }
 

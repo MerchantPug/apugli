@@ -13,6 +13,8 @@ import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
+import net.merchantpug.apugli.network.ApugliPacketHandler;
+import net.merchantpug.apugli.network.s2c.SyncSinglePowerPacket;
 import net.merchantpug.apugli.platform.services.IPowerHelper;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
@@ -103,12 +105,13 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
 
     @Override
     public void syncPower(LivingEntity entity, PowerType<?> factory) {
-        ApoliAPI.synchronizePowerContainer(entity);
+        ApugliPacketHandler.sendS2CTrackingAndSelf(new SyncSinglePowerPacket(entity.getId(), factory.getIdentifier(), factory.getConfiguredPower().serialize(ApoliAPI.getPowerContainer(entity))), entity);
     }
 
     @Override
     public <P> void syncPower(LivingEntity entity, P power) {
-        ApoliAPI.synchronizePowerContainer(entity);
+        ConfiguredPower<?, ?> p = (ConfiguredPower<?, ?>)power;
+        ApugliPacketHandler.sendS2CTrackingAndSelf(new SyncSinglePowerPacket(entity.getId(), p.getRegistryName(), p.serialize(ApoliAPI.getPowerContainer(entity))), entity);
     }
 
     @Override

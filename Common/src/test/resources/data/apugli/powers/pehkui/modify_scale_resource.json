@@ -20,6 +20,11 @@
         "operation": "multiply_total_multiplicative",
         "value": -0.25
       }
+    },
+    "delay_modifiers": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0,
+      "resource": "*:*_resource"
     }
   }
 }

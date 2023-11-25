@@ -113,6 +113,20 @@ public class ForgePlatformHelper implements IPlatformHelper {
     }
 
     @Override
+    public int compareModifiers(Object modifier, Object otherModifier) {
+        return 0;
+    }
+
+    private int compareModifiersInternal(ConfiguredModifier<?> modifier, ConfiguredModifier<?> otherModifier) {
+        if (modifier.getFactory() == otherModifier.getFactory())
+            return 0;
+        else if (modifier.getFactory().getPhase() == otherModifier.getFactory().getPhase())
+            return modifier.getFactory().getOrder() - otherModifier.getFactory().getOrder();
+        else
+            return modifier.getFactory().getPhase().ordinal() - otherModifier.getFactory().getPhase().ordinal();
+    }
+
+    @Override
     public float[] getColorPowerRgba(LivingEntity entity) {
         List<Holder<ConfiguredPower<ColorConfiguration, ModelColorPower>>> modelColorPowers = IPowerContainer.getPowers(entity, ApoliPowers.MODEL_COLOR.get());
         if (modelColorPowers.size() > 0) {

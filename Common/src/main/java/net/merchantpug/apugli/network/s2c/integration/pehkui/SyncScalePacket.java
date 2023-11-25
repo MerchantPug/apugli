@@ -3,8 +3,6 @@ package net.merchantpug.apugli.network.s2c.integration.pehkui;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.integration.pehkui.ApoliScaleModifier;
-import net.merchantpug.apugli.integration.pehkui.LerpedApoliScaleModifier;
-import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -12,16 +10,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.compress.utils.Lists;
 import virtuoel.pehkui.api.ScaleData;
 import virtuoel.pehkui.api.ScaleRegistries;
 import virtuoel.pehkui.api.ScaleType;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public record SyncScalePacket(int entityId, List<ResourceLocation> scaleTypes,
                               ResourceLocation powerId,
@@ -89,12 +83,20 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> scaleTypes,
                     return;
                 }
 
+                Object object = ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(powerId(), entity);
+                if (!(object instanceof ApoliScaleModifier<?> apoliModifier)) {
+                    Apugli.LOG.warn("Could not find ApoliScaleModifier for syncing removal from order list.");
+                    return;
+                }
+
                 for (ResourceLocation scaleTypeId : scaleTypes()) {
                     ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
                     ScaleData scaleData = scaleType.getScaleData(entity);
                     ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(powerId());
+                    scaleData.getBaseValueModifiers().remove(apoliModifier);
                     if (!remove()) {
                         ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(powerId());
+                        scaleData.getBaseValueModifiers().add(apoliModifier);
                     }
                 }
             }

@@ -38,6 +38,7 @@ public interface IPlatformHelper {
      * @return True if the mod is loaded, false otherwise.
      */
     boolean isModLoaded(String modId);
+
     default boolean isModLoadedEarly(String modId) {
         return isModLoaded(modId);
     }
@@ -94,6 +95,8 @@ public interface IPlatformHelper {
     void sendS2CTrackingAndSelf(ApugliPacketS2C packet, Entity entity);
 
     void sendC2S(ApugliPacketC2S packet);
+
+    int compareModifiers(Object modifier, Object otherModifier);
 
     float[] getColorPowerRgba(LivingEntity entity);
 

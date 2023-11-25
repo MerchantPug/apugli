@@ -2,6 +2,7 @@ package net.merchantpug.apugli.power.integration.pehkui;
 
 import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
@@ -13,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
@@ -23,7 +26,7 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }
-    
+
     @Override
     public Class<Instance> getPowerClass() {
         return Instance.class;
@@ -40,18 +43,20 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
     }
 
     @Override
+    public List<?> getDelayModifiers(Instance power, Entity entity) {
+        return power.delayModifiers;
+    }
+
+    @Override
     public Set<ResourceLocation> getCachedScaleIds(Instance power, Entity entity) {
         return power.cachedScaleIds;
     }
 
-    @Override
-    public boolean hasScaleModifier(Instance power, LivingEntity entity) {
-        return power.apoliScaleModifier != null;
-    }
 
     public static class Instance extends AbstractValueModifyingPower.Instance {
         private final Object apoliScaleModifier;
         private final Set<ResourceLocation> cachedScaleIds;
+        private final List<Modifier> delayModifiers = new ArrayList<>();
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
@@ -63,10 +68,17 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
                 this.cachedScaleIds = Set.of();
                 this.apoliScaleModifier = null;
             }
+            data.<Modifier>ifPresent("delay_modifier", delayModifiers::add);
+            data.<List<Modifier>>ifPresent("delay_modifiers", delayModifiers::addAll);
         }
 
         @Override
-        public void onRemoved() {
+        public void onAdded() {
+            PehkuiUtil.onAddedOrRespawnedScalePower(this, this.entity);
+        }
+
+        @Override
+        public void onLost() {
             PehkuiUtil.onRemovedScalePower(this, this.entity);
         }
 
