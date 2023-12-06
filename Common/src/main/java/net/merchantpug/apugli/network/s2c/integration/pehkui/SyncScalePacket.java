@@ -22,6 +22,7 @@ public record SyncScalePacket(int entityId, List<ResourceLocation> scaleTypes,
                               boolean remove) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("sync_scale");
 
+    @Deprecated
     public static SyncScalePacket addScaleToClient(int entityId, List<ResourceLocation> scaleTypes,
                            ResourceLocation powerId) {
         return new SyncScalePacket(entityId, scaleTypes, powerId, false);

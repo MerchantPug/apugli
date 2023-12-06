@@ -43,9 +43,21 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     @Override
-    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+    public void onRespawn(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
         if (entity instanceof LivingEntity living)
+            PehkuiUtil.onAddedOrRespawnedScalePower(power, living);
+    }
+
+    @Override
+    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living) {
             PehkuiUtil.onRemovedScalePower(power, living);
+        }
+    }
+
+    @Override
+    public void onLost(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        PehkuiUtil.resetScalePower(access(power, ApoliAPI.getPowerContainer(entity)).apoliScaleModifier);
     }
 
     @Override

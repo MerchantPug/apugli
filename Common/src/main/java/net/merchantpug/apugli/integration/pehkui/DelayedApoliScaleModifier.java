@@ -45,6 +45,7 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     private final Set<ResourceLocation> tickSettingPrevention = new HashSet<>();
     private final Set<ResourceLocation> oppositesToUpdate = new HashSet<>();
     private final Set<ResourceLocation> previousOppositesToUpdate = new HashSet<>();
+    private boolean shouldUpdateOthers = false;
 
     public DelayedApoliScaleModifier(P power, LivingEntity entity, List<?> modifiers, List<?> delayModifiers, int maxTicks, Set<ResourceLocation> cachedScaleIds, int powerPriority, Optional<ResourceLocation> easing) {
         super(power, entity, modifiers, cachedScaleIds, powerPriority);
@@ -183,6 +184,7 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             }
             tag.put("PreviousOppositesToUpdate", listTag);
         }
+        tag.putBoolean("ShouldUpdateOthers", this.shouldUpdateOthers);
         return baseTag;
     }
 
@@ -281,6 +283,7 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.previousOppositesToUpdate.add(new ResourceLocation(listTag.getString(i)));
             }
         }
+        this.shouldUpdateOthers = tag.getBoolean("ShouldUpdateOthers");
         this.initialized = initialize;
     }
 
@@ -304,6 +307,8 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                         this.maxTicks = modifiedDelay;
                         if (!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value)) {
                             this.tickTarget = 0;
+                            float progress = (float) this.ticks / this.getMaxTicks();
+                            this.ticks = (int) (this.getMaxTicks() * progress);
                             this.oppositesToUpdate.add(typeId);
                             this.previousOppositesToUpdate.add(typeId);
                         }
@@ -320,6 +325,8 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                         this.maxTicks = modifiedDelay;
                         if (!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value)) {
                             this.tickTarget = modifiedDelay;
+                            float progress = (float) this.ticks / this.getMaxTicks();
+                            this.ticks = (int) (this.getMaxTicks() * progress);
                             this.oppositesToUpdate.add(typeId);
                             this.previousOppositesToUpdate.add(typeId);
                         }
@@ -360,11 +367,13 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.setTicks(Mth.clamp(this.getClampedTicks() + 1, 0, this.tickTarget));
                 this.shouldUpdate = true;
                 this.shouldUpdatePrevious = true;
+                this.shouldUpdateOthers = false;
                 Services.POWER.syncPower(entity, this.power);
             } else if (this.tickTarget < this.getClampedTicks()) {
                 this.setTicks(Mth.clamp(this.getClampedTicks() - 1, this.tickTarget, this.getMaxTicks()));
                 this.shouldUpdate = true;
                 this.shouldUpdatePrevious = true;
+                this.shouldUpdateOthers = false;
                 Services.POWER.syncPower(entity, this.power);
             }
         }
@@ -417,16 +426,17 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         ResourceLocation scaleTypeId = getResourceLocationFromScaleData(scaleData);
 
         if (this.shouldUpdateModifiers.contains(scaleTypeId)) {
-            float currentScale = this.isMin() ? this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) : this.isMax() ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(ticks).entrySet().stream().max(Map.Entry.comparingByKey()).isPresent() ? this.deltaReachedScales.get(scaleTypeId).get(ticks).entrySet().stream().max(Map.Entry.comparingByKey()).get().getValue() : modifiedScale;
-            this.deltaReachedScales.remove(scaleTypeId);
             boolean isActive = Services.POWER.isActive(power, (LivingEntity) scaleData.getEntity());
             float appliedScale = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale);
-            float previousOppositeScale = !this.maxScalesToUpdate.contains(scaleTypeId) && this.minScalesToUpdate.contains(scaleTypeId) ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.maxScalesToUpdate.contains(scaleTypeId) && !this.minScalesToUpdate.contains(scaleTypeId) ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
+            float currentScale = this.isMin() && (isActive || this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) < modifiedScale) ? this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) : this.isMax() && (isActive || this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) > modifiedScale) ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(ticks).entrySet().stream().max(Map.Entry.comparingByKey()).isPresent() ? this.deltaReachedScales.get(scaleTypeId).get(ticks).entrySet().stream().max(Map.Entry.comparingByKey()).get().getValue() : modifiedScale;
+            this.deltaReachedScales.remove(scaleTypeId);
+            float previousOppositeScale =  this.maxScalesToUpdate.contains(scaleTypeId) && !this.minScalesToUpdate.contains(scaleTypeId) || !isActive ? this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) : !this.maxScalesToUpdate.contains(scaleTypeId) && this.minScalesToUpdate.contains(scaleTypeId) ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
             float min = this.minScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
             float max = this.maxScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
             if (!this.cachedMinScales.containsKey(scaleTypeId) || this.minScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCall.contains(scaleTypeId) && compareFloats(appliedScale, min))
+                if (this.notOriginalCall.contains(scaleTypeId)) {
                     this.tickTarget = 0;
+                }
                 if (!this.maxScalesToUpdate.contains(scaleTypeId) && this.minScalesToUpdate.contains(scaleTypeId) && this.oppositesToUpdate.contains(scaleTypeId)) {
                     this.cachedMaxScales.put(scaleTypeId, previousOppositeScale);
                     this.oppositesToUpdate.remove(scaleTypeId);
@@ -435,8 +445,10 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.minScalesToUpdate.remove(scaleTypeId);
             }
             if (!this.cachedMaxScales.containsKey(scaleTypeId) || this.maxScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCall.contains(scaleTypeId) && compareFloats(appliedScale, max))
+                if (this.notOriginalCall.contains(scaleTypeId)) {
+                    this.cachedMinScales.put(scaleTypeId, currentScale);
                     this.tickTarget = this.getMaxTicks();
+                }
                 if (this.maxScalesToUpdate.contains(scaleTypeId) && !this.minScalesToUpdate.contains(scaleTypeId) && this.oppositesToUpdate.contains(scaleTypeId)) {
                     this.cachedMinScales.put(scaleTypeId, previousOppositeScale);
                     this.oppositesToUpdate.remove(scaleTypeId);
@@ -444,6 +456,7 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.cachedMaxScales.put(scaleTypeId, max);
                 this.maxScalesToUpdate.remove(scaleTypeId);
             }
+            this.oppositesToUpdate.remove(scaleTypeId);
             if (this.tickSettingPrevention.size() == this.getCachedScaleIds().size()) {
                 if (this.initialized) {
                     float slope = this.getMaxTicks() / (this.cachedMaxScales.get(scaleTypeId) - this.cachedMinScales.get(scaleTypeId));
@@ -456,13 +469,21 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             this.shouldUpdateModifiers.remove(scaleTypeId);
         }
 
+        if (shouldUpdate) {
+            this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCall.contains(scaleTypeId));
+            this.shouldUpdate = false;
+        }
+
         if (this.isMax()) {
             this.notOriginalCall.remove(scaleTypeId);
             return this.cachedMaxScales.getOrDefault(scaleTypeId, (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
         } else if (this.isMin()) {
             this.notOriginalCall.remove(scaleTypeId);
             return this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale);
-        } else if (this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(this.ticks).containsKey(delta)) {
+        } else if (this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(this.ticks).keySet().stream().anyMatch(aFloat -> compareFloats(aFloat, 1.0F))) {
+            this.notOriginalCall.remove(scaleTypeId);
+            return this.deltaReachedScales.get(scaleTypeId).get(this.ticks).getOrDefault(1.0F, modifiedScale);
+        } else if (this.deltaReachedScales.containsKey(scaleTypeId) && this.deltaReachedScales.get(scaleTypeId).containsKey(this.ticks) && this.deltaReachedScales.get(scaleTypeId).get(this.ticks).keySet().stream().anyMatch(aFloat -> compareFloats(aFloat, delta))) {
             this.notOriginalCall.remove(scaleTypeId);
             return this.deltaReachedScales.get(scaleTypeId).get(this.ticks).getOrDefault(delta, modifiedScale);
         }
@@ -511,13 +532,14 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             float currentScale = this.isMin() ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : this.isMax() ? this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.reachedPreviousScales.containsKey(scaleTypeId) && this.reachedPreviousScales.get(scaleTypeId).containsKey(this.ticks) ? this.reachedPreviousScales.get(scaleTypeId).get(ticks) : modifiedScale;
             this.reachedPreviousScales.remove(scaleTypeId);
             boolean isActive = Services.POWER.isActive(power, (LivingEntity) scaleData.getEntity());
-            float previousOppositeScale = !this.previousMaxScalesToUpdate.contains(scaleTypeId) && this.previousMinScalesToUpdate.contains(scaleTypeId) ? this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.previousMaxScalesToUpdate.contains(scaleTypeId) && !this.previousMinScalesToUpdate.contains(scaleTypeId) ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
+            float previousOppositeScale =  this.previousMaxScalesToUpdate.contains(scaleTypeId) && !this.previousMinScalesToUpdate.contains(scaleTypeId) || !isActive ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : !this.previousMaxScalesToUpdate.contains(scaleTypeId) && this.previousMinScalesToUpdate.contains(scaleTypeId) ? this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
             float appliedScale = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale);
             float min = this.previousMinScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
             float max = this.previousMaxScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
             if (!this.cachedPreviousMinScales.containsKey(scaleTypeId) || this.previousMinScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCallPrevious.contains(scaleTypeId) && compareFloats(appliedScale, min))
-                    this.tickTarget = 0;
+                if (this.notOriginalCallPrevious.contains(scaleTypeId)) {
+                    this.tickTarget = this.getMaxTicks();
+                }
                 if (!this.previousMaxScalesToUpdate.contains(scaleTypeId) && this.previousMinScalesToUpdate.contains(scaleTypeId) && this.previousOppositesToUpdate.contains(scaleTypeId)) {
                     this.cachedPreviousMaxScales.put(scaleTypeId, previousOppositeScale);
                     this.previousOppositesToUpdate.remove(scaleTypeId);
@@ -526,8 +548,9 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.previousMinScalesToUpdate.remove(scaleTypeId);
             }
             if (!this.cachedPreviousMaxScales.containsKey(scaleTypeId) || this.previousMaxScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCallPrevious.contains(scaleTypeId) && compareFloats(appliedScale, max))
+                if (this.notOriginalCallPrevious.contains(scaleTypeId)) {
                     this.tickTarget = this.getMaxTicks();
+                }
                 if (this.previousMaxScalesToUpdate.contains(scaleTypeId) && !this.previousMinScalesToUpdate.contains(scaleTypeId) && this.previousOppositesToUpdate.contains(scaleTypeId)) {
                     this.cachedPreviousMinScales.put(scaleTypeId, previousOppositeScale);
                     this.previousOppositesToUpdate.remove(scaleTypeId);
@@ -535,6 +558,7 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
                 this.cachedPreviousMaxScales.put(scaleTypeId, max);
                 this.previousMaxScalesToUpdate.remove(scaleTypeId);
             }
+            this.previousOppositesToUpdate.remove(scaleTypeId);
             if (this.tickSettingPrevention.size() == this.getCachedScaleIds().size()) {
                 if (this.initialized) {
                     float slope = this.getMaxTicks() / (this.cachedPreviousMaxScales.get(scaleTypeId) - this.cachedPreviousMinScales.get(scaleTypeId));

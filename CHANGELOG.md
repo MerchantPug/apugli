@@ -1,6 +1,5 @@
 ## Power Types
 - Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
-- Changed `modify_scale` to always take the amount of time of the `delay` field whenever changing scales.
 
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.

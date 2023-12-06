@@ -21,6 +21,7 @@ import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
+import net.merchantpug.apugli.mixin.fabric.common.accessor.ModifierOperationAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
@@ -91,6 +92,20 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public double applyModifiers(Entity entity, List<?> modifiers, double value) {
         return ModifierUtil.applyModifiers(entity, (List<Modifier>)modifiers, value);
+    }
+
+    @Override
+    public double applyModifiersWithSpecificValue(LivingEntity entity, Object modifier, int resourceValue, double base, double current) {
+        Modifier modifier1 = ((Modifier)modifier);
+
+        double resourceDouble = resourceValue;
+
+        if (modifier1.getData().isPresent("modifier")) {
+            List<Modifier> modifiers = modifier1.getData().get("modifier");
+            resourceDouble = ModifierUtil.applyModifiers(entity, modifiers, resourceValue);
+        }
+
+        return ((ModifierOperationAccessor)modifier1.getOperation()).apugli$getFunction().apply(List.of(resourceDouble), base, current);
     }
 
     @Override

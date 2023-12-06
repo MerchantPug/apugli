@@ -3,7 +3,6 @@ package net.merchantpug.apugli.integration.pehkui;
 import com.google.common.collect.ImmutableList;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ScaleDataAccess;
-import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
@@ -303,6 +302,8 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             for (ResourceLocation scaleTypeId : this.getCachedScaleIds()) {
                 ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
                 ScaleData scaleData = scaleType.getScaleData(entity);
+                ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(this.getId());
+                scaleData.getBaseValueModifiers().remove(this);
                 ((ScaleDataAccess) scaleData).apugli$addToApoliScaleModifiers(this.getId());
                 scaleData.getBaseValueModifiers().add(this);
             }
@@ -324,6 +325,8 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 this.checkScales.put(typeId, value);
                 this.shouldUpdate = true;
                 this.shouldUpdatePrevious = true;
+                this.checkModifiedScales.clear();
+                this.checkPreviousModifiedScales.clear();
             }
         }
     }
@@ -366,8 +369,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         if (this.shouldUpdatePrevious)
             data.getPrevScale();
 
-        if (!this.notOriginalCall.contains(PehkuiUtil.getScaleTypeId(type)) && !this.notOriginalCallPrevious.contains(PehkuiUtil.getScaleTypeId(type)))
-            this.updateOthers(entity, true);
         if (updateDependencies) {
             getScaleDependencies(entity, type).forEach(scaleType -> {
                 updateScale(entity, type, false);
@@ -381,8 +382,8 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
 
     public void scheduleForUpdate(LivingEntity entity, boolean updateModifiers) {
         if (updateModifiers) {
-            this.checkModifiedScales.clear();
-            this.checkPreviousModifiedScales.clear();
+            this.shouldUpdateModifiers.addAll(this.getCachedScaleIds());
+            this.shouldUpdatePreviousModifiers.addAll(this.getCachedScaleIds());
         }
     }
 
@@ -406,9 +407,11 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             return modifiedScale;
         }
 
-        if (!this.checkModifiedScales.containsKey(id) || !compareFloats(this.checkModifiedScales.getOrDefault(id, modifiedScale), modifiedScale)) {
+        if (!this.checkModifiedScales.containsKey(id) || !compareFloats(this.checkModifiedScales.getOrDefault(id, modifiedScale), modifiedScale) || this.shouldUpdateModifiers.contains(id)) {
             this.checkModifiedScales.put(id, modifiedScale);
             this.cachedMaxScales.put(id, (float)Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
+            if (!this.notOriginalCall.contains(PehkuiUtil.getScaleTypeId(scaleData.getScaleType())))
+                this.updateOthers(entity, true);
         }
 
         this.notOriginalCall.remove(id);
@@ -431,9 +434,11 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             return modifiedScale;
         }
 
-        if (!this.shouldUpdatePreviousModifiers.contains(id)) {
+        if (!this.checkPreviousModifiedScales.containsKey(id) || !compareFloats(this.checkPreviousModifiedScales.getOrDefault(id, modifiedScale), modifiedScale) || this.shouldUpdatePreviousModifiers.contains(id)) {
             this.checkPreviousModifiedScales.put(id, modifiedScale);
             this.cachedPreviousMaxScales.put(id, (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale));
+            if (!this.notOriginalCallPrevious.contains(PehkuiUtil.getScaleTypeId(scaleData.getScaleType())))
+                this.updateOthers(entity, true);
         }
         this.notOriginalCallPrevious.remove(id);
 

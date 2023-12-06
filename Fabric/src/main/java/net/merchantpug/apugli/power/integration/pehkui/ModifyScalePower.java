@@ -63,7 +63,7 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
             setTicking(true);
             if (FabricLoader.getInstance().isModLoaded("pehkui")) {
                 this.cachedScaleIds = PehkuiUtil.getTypesFromCache(data);
-                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, entity, data);
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, this.entity, this.data);
             } else {
                 this.cachedScaleIds = Set.of();
                 this.apoliScaleModifier = null;
@@ -78,7 +78,12 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
         }
 
         @Override
-        public void onLost() {
+        public void onRespawn() {
+            PehkuiUtil.onAddedOrRespawnedScalePower(this, this.entity);
+        }
+
+        @Override
+        public void onRemoved() {
             PehkuiUtil.onRemovedScalePower(this, this.entity);
         }
 

@@ -2,6 +2,7 @@ package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.merchantpug.apugli.access.EntityAccess;
+import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.LivingEntityAccessor;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.CustomFootstepPower;
@@ -9,12 +10,16 @@ import net.merchantpug.apugli.power.HoverPower;
 import net.merchantpug.apugli.power.StepHeightPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.worldgen.DimensionTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -25,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
@@ -42,6 +48,8 @@ public abstract class EntityMixin implements EntityAccess {
     @Shadow public abstract double getZ();
 
     @Shadow public abstract int getTicksFrozen();
+
+    @Shadow public abstract Level level();
 
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void apugli$modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
