@@ -33,10 +33,10 @@ public abstract class ItemStackMixin {
     @Unique
     private int apugli$previousDamage;
 
-    @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void apugli$copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {
+    @Inject(method = "copy", at = @At(value = "RETURN"))
+    private void apugli$copyNewParams(CallbackInfoReturnable<ItemStack> cir) {
         if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) != null) {
-            Services.PLATFORM.setEntityToItemStack(itemStack, Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this));
+            Services.PLATFORM.setEntityToItemStack(cir.getReturnValue(), Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this));
         }
     }
 
