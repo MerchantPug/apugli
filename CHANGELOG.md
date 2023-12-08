@@ -10,6 +10,7 @@
 - Fixed `modify_scale` unintentionally resetting when swapping dimensions.
 - Fixed `compare_scales` crashing when `scale_type` is specified.
 - Fixed `compare_scales`s `scale_types` field not being counted.
+- [FORGE] Fixed item capabilities being broken.
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
