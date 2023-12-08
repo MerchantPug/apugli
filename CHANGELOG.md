@@ -14,3 +14,4 @@
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
+- Allow Forge versions above Forge 47.1.3 now that it has the compatibility.
