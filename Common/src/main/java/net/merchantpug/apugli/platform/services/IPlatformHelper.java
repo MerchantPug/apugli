@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public interface IPlatformHelper {
@@ -38,10 +39,6 @@ public interface IPlatformHelper {
      * @return True if the mod is loaded, false otherwise.
      */
     boolean isModLoaded(String modId);
-
-    default boolean isModLoadedEarly(String modId) {
-        return isModLoaded(modId);
-    }
 
     /**
      * Check if the game is currently in a development environment.
@@ -134,5 +131,7 @@ public interface IPlatformHelper {
     default void setForcedPlayerPose(Player player, @Nullable Pose pose) {
 
     }
+
+    void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap);
 
 }

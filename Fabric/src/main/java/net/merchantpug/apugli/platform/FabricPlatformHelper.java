@@ -21,7 +21,6 @@ import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
-import net.merchantpug.apugli.mixin.fabric.common.accessor.ModifierOperationAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
@@ -37,9 +36,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPlatformHelper.class)
@@ -92,20 +90,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public double applyModifiers(Entity entity, List<?> modifiers, double value) {
         return ModifierUtil.applyModifiers(entity, (List<Modifier>)modifiers, value);
-    }
-
-    @Override
-    public double applyModifiersWithSpecificValue(LivingEntity entity, Object modifier, int resourceValue, double base, double current) {
-        Modifier modifier1 = ((Modifier)modifier);
-
-        double resourceDouble = resourceValue;
-
-        if (modifier1.getData().isPresent("modifier")) {
-            List<Modifier> modifiers = modifier1.getData().get("modifier");
-            resourceDouble = ModifierUtil.applyModifiers(entity, modifiers, resourceValue);
-        }
-
-        return ((ModifierOperationAccessor)modifier1.getOperation()).apugli$getFunction().apply(List.of(resourceDouble), base, current);
     }
 
     @Override
@@ -235,6 +219,16 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
         return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName), source, attacker);
+    }
+
+    @Override
+    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
+        List<Modifier> modifierList = (List<Modifier>) modifiers;
+        for (int i = 0; i < modifierList.size(); ++i) {
+            modifierIdMap.put(modifierList.get(i), i);
+            if (modifierList.get(i).getData().isPresent("modifier"))
+                populateModifierIdMap(i + 1, modifierList.get(i).getData().get("modifier"), modifierIdMap);
+        }
     }
 
 }

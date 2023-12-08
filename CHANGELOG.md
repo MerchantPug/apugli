@@ -1,5 +1,6 @@
 ## Power Types
 - Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
+- `modify_scale`s with `delay` fields will now dynamically shift between scales 
 
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.
@@ -11,6 +12,7 @@
 - Fixed `compare_scales` crashing when `scale_type` is specified.
 - Fixed `compare_scales`s `scale_types` field not being counted.
 - [FORGE] Fixed item capabilities being broken.
+- [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.

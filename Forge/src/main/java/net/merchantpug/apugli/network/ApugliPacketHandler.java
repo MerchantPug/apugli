@@ -17,6 +17,7 @@ import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncHitsOnTargetLessenedPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeyPressCapabilityPacket;
 import net.merchantpug.apugli.network.s2c.SyncKeysLessenedPacket;
+import net.merchantpug.apugli.network.s2c.SyncSinglePowerPacket;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.network.s2c.integration.pehkui.SyncScalePacket;
 import net.minecraft.server.MinecraftServer;
@@ -58,6 +59,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
+        INSTANCE.registerMessage(i++, SyncSinglePowerPacket.class, SyncSinglePowerPacket::encode, SyncSinglePowerPacket::decode, ApugliPacketHandler.createS2CHandler(SyncSinglePowerPacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
     }
 

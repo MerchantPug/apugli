@@ -445,8 +445,13 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         return this.cachedPreviousMaxScales.getOrDefault(id, modifiedScale);
     }
 
-    protected boolean compareFloats(float a, float b) {
+    protected static boolean compareFloats(float a, float b) {
         float diff = Mth.abs(a - b);
+        return diff < EPSILON;
+    }
+
+    public static boolean compareDoubles(double a, double b) {
+        float diff = Mth.abs((float)(a - b));
         return diff < EPSILON;
     }
 }

@@ -101,6 +101,8 @@ public class PehkuiUtil {
     @SuppressWarnings("unchecked")
     public static <P> void onAddedOrRespawnedScalePower(P power, LivingEntity entity) {
         if (!(ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity) instanceof ApoliScaleModifier<?> scaleModifier)) return;
+        if (entity != null)
+            createModifiersInOrder(entity, scaleModifier, false);
         scaleModifier.initialized = true;
     }
 
@@ -116,8 +118,6 @@ public class PehkuiUtil {
         } else {
             modifier = new ApoliScaleModifier<>(power, entity, ApugliPowers.MODIFY_SCALE.get().getModifiers(power, entity), getTypesFromCache(data), data.getInt("priority"));
         }
-        if (entity != null)
-            createModifiersInOrder(entity, modifier, false);
 
         return modifier;
     }

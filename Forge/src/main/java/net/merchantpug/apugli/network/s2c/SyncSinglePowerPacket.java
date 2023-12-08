@@ -59,9 +59,8 @@ public record SyncSinglePowerPacket(int entityId,
                 IPowerContainer container = ApoliAPI.getPowerContainer(entity);
                 Holder<ConfiguredPower<IDynamicFeatureConfiguration, PowerFactory<IDynamicFeatureConfiguration>>> configuredPower = container.getPower(powerId());
                 if (configuredPower != null && configuredPower.isBound()) {
-                    CompoundTag tag = ((ConfiguredPower<?, ?>)configuredPower.value()).serialize(container);
-                    if (!tag.isEmpty()) {
-                        configuredPower.value().deserialize(container, tag);
+                    if (!powerDataTag().isEmpty()) {
+                        configuredPower.value().deserialize(container, powerDataTag());
                     }
                 } else {
                     Apugli.LOG.warn("Invalid power container capability for entity {}", entity.getScoreboardName());

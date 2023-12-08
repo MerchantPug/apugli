@@ -44,6 +44,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings("unchecked")
@@ -239,6 +240,16 @@ public class ForgePlatformHelper implements IPlatformHelper {
         player.setForcedPose(pose);
         if (player instanceof ServerPlayer serverPlayer) {
             Services.PLATFORM.sendS2CTrackingAndSelf(new ForcePlayerPosePacket(serverPlayer.getId(), pose), serverPlayer);
+        }
+    }
+
+    @Override
+    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
+        List<ConfiguredModifier<?>> modifierList = (List<ConfiguredModifier<?>>) modifiers;
+        for (int i = 0; i < modifierList.size(); ++i) {
+            modifierIdMap.put(modifierList.get(i), i);
+            if (!modifierList.get(i).getData().modifiers().isEmpty())
+                populateModifierIdMap(i + 1, modifierList.get(i).getData().modifiers(), modifierIdMap);
         }
     }
 
