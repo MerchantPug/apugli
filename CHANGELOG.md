@@ -1,3 +1,6 @@
+## Power Types
+- Added `stop_after` field to `action_on_projectile_hit` power type.
+
 ## Entity Condition Types
 - Added `space` field to `velocity` entity condition type.
 

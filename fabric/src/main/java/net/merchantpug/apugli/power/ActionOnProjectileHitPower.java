@@ -4,7 +4,6 @@ import com.google.auto.service.AutoService;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.calio.data.SerializableData;
 import net.merchantpug.apugli.power.factory.ActionOnProjectileHitPowerFactory;
-import net.merchantpug.apugli.power.factory.ActionOnTargetDeathPowerFactory;
 import net.merchantpug.apugli.power.factory.ProjectileHitActionPowerFactory;
 import net.minecraft.world.entity.LivingEntity;
 

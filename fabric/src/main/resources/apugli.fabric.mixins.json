@@ -9,6 +9,7 @@
     "common.ActionTypeMixin",
     "common.AnimalEntityMixin",
     "common.BoneMealItemMixin",
+    "common.EntityMixin",
     "common.LightningBoltMixin",
     "common.LivingEntityMixin",
     "common.MobEntityMixin",
