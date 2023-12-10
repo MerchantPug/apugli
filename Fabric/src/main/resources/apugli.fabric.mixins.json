@@ -14,6 +14,7 @@
     "common.ConditionFactoryMixin",
     "common.EnchantmentHelperMixin",
     "common.EntityConditionsMixin",
+    "common.EntityMixin",
     "common.HungerManagerMixin",
     "common.ItemConditionsMixin",
     "common.ItemPredicateMixin",

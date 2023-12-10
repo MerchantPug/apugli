@@ -7,7 +7,7 @@ public interface ActionWhenProjectileHitPowerFactory<P> extends ProjectileHitAct
 
     default void execute(P power, LivingEntity entity, Projectile projectile) {
         if (!(projectile.getOwner() instanceof LivingEntity living)) return;
-        this.execute(power, entity, living, entity, projectile);
+        this.execute(power, entity, living, entity, projectile, 1);
     }
 
 }
