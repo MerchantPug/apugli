@@ -34,7 +34,7 @@ public class CompareScalesCondition implements IConditionFactory<Tuple<Entity, E
 
         Set<ResourceLocation> scaleTypeSet = new HashSet<>();
         data.ifPresent("scale_type", scaleTypeSet::add);
-        data.<List<ResourceLocation>>ifPresent("scale_type", scaleTypeSet::addAll);
+        data.<List<ResourceLocation>>ifPresent("scale_types", scaleTypeSet::addAll);
 
         return scaleTypeSet.stream().allMatch(id -> comparison.compare(PehkuiUtil.getScale(pair.getA(), id), PehkuiUtil.getScale(pair.getB(), id)));
     }

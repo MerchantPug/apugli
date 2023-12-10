@@ -1,6 +1,8 @@
 ## Bugfixes
-- Fixed `can_take_damage` entity condition causing a crash.
-- Fixed priority on `modify_scale` Scale Modifiers being the same as a regular scale modifier.
-- Fixed flickering with `modify_scale` powers.
-- Fixed modify scale not stacking with a `delay` field higher than 0 and conditional. #61
-- Fixed a crash relating to explosions. #62
+- Fixed `compare_scales` crashing when `scale_type` is specified.
+- Fixed `compare_scales`s `scale_types` field not being counted.
+- Fixed Modify Enchantment Level not functioning as expected.
+- [FORGE] Fixed item capabilities being broken.
+
+## Miscellaneous
+- Allow Forge versions above Forge 47.1.3 now that it has backwards compatibility.
