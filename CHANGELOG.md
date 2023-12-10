@@ -1,3 +1,6 @@
+# Known Issues
+Modify Scale is broken, I know about it. I got frustrated trying to fix it, so I released this version early so TooManyOrigins players don't have to wait.
+
 ## Power Types
 - Added `stop_after` field to `action_on_projectile_hit` power type.
 
