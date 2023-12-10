@@ -36,7 +36,6 @@ public record ModifyEnchantmentLevelPacket(int entityId, ResourceLocation powerI
             public void run() {
                 Entity entity = Minecraft.getInstance().level.getEntity(entityId());
                 if (!(entity instanceof LivingEntity living)) {
-                    Apugli.LOG.info("Could not find entity to sync modified enchantment level with.");
                     return;
                 }
 
