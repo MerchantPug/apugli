@@ -94,6 +94,7 @@ repositories {
         url = 'https://maven.parchmentmc.org'
     }
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
