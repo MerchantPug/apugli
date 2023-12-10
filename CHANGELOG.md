@@ -1,7 +1,4 @@
 ## Bugfixes
-- Fixed `can_take_damage` entity condition causing a crash.
-- Fixed priority on `modify_scale` Scale Modifiers being the same as a regular scale modifier.
-- Fixed flickering with `modify_scale` powers.
-- Fixed modify scale not stacking with a `delay` field higher than 0 and conditional. #61
-- Fixed a crash relating to explosions. #62
-- Fixed a crash relating to `prevent_bee_anger` and beehive blocks. #62 (part 2)
+- Fixed `compare_scales` crashing when `scale_type` is specified.
+- Fixed `compare_scales`s `scale_types` field not being counted.
+- Fixed mixin conflict with Horse Buff.
