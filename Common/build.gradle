@@ -42,7 +42,7 @@ dependencies {
     modCompileOnly("com.github.apace100:calio:${calio_fabric_version}") { transitive false }
     modCompileOnly("com.github.apace100:apoli:${apoli_fabric_version}") { transitive false }
     //MixinExtras
-    annotationProcessor(compileOnly("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
+    annotationProcessor(compileOnly("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
     //Mixin
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     compileOnly group: 'org.ow2.asm', name: 'asm-tree', version: '9.4'

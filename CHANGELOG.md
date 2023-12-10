@@ -16,3 +16,4 @@ Modify Scale is broken, I know about it. I got frustrated trying to fix it, so I
 
 ## Miscellaneous
 - Allow Forge versions above Forge 47.1.3 now that it has backwards compatibility.
+- Update Mixin Extras to 0.3.1
