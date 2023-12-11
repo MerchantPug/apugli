@@ -193,15 +193,25 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onProjectileImpact(ProjectileImpactEvent event) {
-        if (event.getRayTraceResult().getType() != HitResult.Type.ENTITY) return;
-
-        if (((EntityHitResult)event.getRayTraceResult()).getEntity() instanceof LivingEntity living)
-            Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, event.getProjectile()));
-        if ((event.getProjectile().getOwner() instanceof LivingEntity living))
-            Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> {
-                event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(cap -> cap.addHitEntity(Services.POWER.getPowerId(power)));
-                ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, ((EntityHitResult)event.getRayTraceResult()).getEntity(), event.getProjectile(), event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(cap -> cap.getPowerValue(Services.POWER.getPowerId(power))).orElse(0));
-            });
+        if (event.getRayTraceResult().getType() == HitResult.Type.ENTITY) {
+            if (((EntityHitResult)event.getRayTraceResult()).getEntity() instanceof LivingEntity living)
+                Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, event.getProjectile()));
+            if ((event.getProjectile().getOwner() instanceof LivingEntity living))
+                Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> {
+                    event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(cap -> cap.addHitEntity(Services.POWER.getPowerId(power)));
+                    ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, ((EntityHitResult)event.getRayTraceResult()).getEntity(), event.getProjectile(), event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(cap -> cap.getPowerValue(Services.POWER.getPowerId(power))).orElse(0));
+                });
+        } else if (event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
+            if (event.getProjectile().getOwner() instanceof LivingEntity living) {
+                var aophPowers = Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get(), true);
+                aophPowers.forEach(power -> {
+                    if (ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().canUse(power, living) && event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(inst -> inst.apugli$powersThatHaveLanded().contains(Services.POWER.getPowerId(power))).orElse(false)) {
+                        ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().use(power, living);
+                    }
+                });
+                event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(EntitiesHitCapability::clearHitEntities);
+            }
+        }
     }
 
     // Lowest so it can execute after any damage modifications.

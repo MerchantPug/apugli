@@ -11,4 +11,6 @@ public interface IEntitiesHitCapability extends ProjectileEntityAccess {
 
     void addHitEntity(ResourceLocation value);
 
+    void clearHitEntities();
+
 }
