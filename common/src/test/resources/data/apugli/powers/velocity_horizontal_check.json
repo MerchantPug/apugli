@@ -1,0 +1,18 @@
+{
+  "type": "apoli:action_over_time",
+  "entity_action": {
+    "type": "apoli:execute_command",
+    "command": "say I am moving!"
+  },
+  "interval": 1,
+  "condition": {
+    "type": "apugli:velocity",
+    "axes": [
+      "X",
+      "Z"
+    ],
+    "compare_to": 0.0,
+    "comparison": ">",
+    "space": "velocity_horizontal"
+  }
+}
