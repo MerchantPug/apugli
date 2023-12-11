@@ -43,4 +43,9 @@ public class EntitiesHitCapability implements IEntitiesHitCapability, ICapabilit
     public void addHitEntity(ResourceLocation value) {
         this.apugli$entitiesHit.compute(value, (resourceLocation, integer) -> integer != null ? integer + 1 : 1);
     }
+
+    @Override
+    public void clearHitEntities() {
+        this.apugli$entitiesHit.clear();
+    }
 }

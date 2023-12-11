@@ -40,6 +40,19 @@ public abstract class ProjectileEntityMixin implements ProjectileEntityAccess {
             });
     }
 
+    @Inject(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/Projectile;onHitBlock(Lnet/minecraft/world/phys/BlockHitResult;)V"))
+    private void apugli$handleProjectileCooldown(HitResult hitResult, CallbackInfo ci) {
+        if (this.getOwner() instanceof LivingEntity living) {
+            var aophPowers = Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get(), true);
+            aophPowers.forEach(power -> {
+                if (ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().canUse(power, living) && this.apugli$powersThatHaveLanded().contains(Services.POWER.getPowerId(power))) {
+                    ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().use(power, living);
+                }
+            });
+            this.apugli$entitiesHit.clear();
+        }
+    }
+
     @Override
     public Set<ResourceLocation> apugli$powersThatHaveLanded() {
         return apugli$entitiesHit.keySet();
