@@ -1,6 +1,8 @@
 package net.merchantpug.apugli.data;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Comparison;
@@ -67,6 +69,12 @@ public class ApugliDataTypes {
                     return SOUND_EVENT_PITCH_VOLUME.read(jsonElement);
                 }
                 throw new RuntimeException("Expected either a string with a parameter-less sound event, or an object.");
+            },
+            sepv -> {
+                if (Float.isNaN(sepv.pitch) && Float.isNaN(sepv.volume)) {
+                    return SerializableDataTypes.SOUND_EVENT.write(sepv.soundEvent);
+                }
+                return SOUND_EVENT_PITCH_VOLUME.write(sepv);
             });
 
     public static final SerializableDataType<SoundEventWeight> SOUND_EVENT_WEIGHT =
@@ -86,7 +94,7 @@ public class ApugliDataTypes {
                     (data, sewi) -> {
                         SerializableData.Instance inst = data.new Instance();
                         inst.set("sound", null);
-                        if(sewi.soundEventList.size() > 0) {
+                        if(!sewi.soundEventList.isEmpty()) {
                             inst.set("sounds", sewi.soundEventList);
                         } else {
                             inst.set("sounds", null);
@@ -118,13 +126,18 @@ public class ApugliDataTypes {
                     SoundEventWeight sew = new SoundEventWeight();
                     sew.soundEventList.add(SOUND_EVENT_OPTIONAL_PITCH_VOLUME.read(jsonElement));
                     sew.weight = 1;
-                    if(sew.soundEventList.size() > 0) {
+                    if(!sew.soundEventList.isEmpty()) {
                         return sew;
                     }
                 } else {
                     return SOUND_EVENT_WEIGHT.read(jsonElement);
                 }
                 throw new JsonParseException("Expected either a string with a parameter-less sound event, or an object.");
+            },
+            sew -> {
+                if (sew.soundEventList.size() == 1 && Float.isNaN(sew.soundEventList.get(0).pitch) && Float.isNaN(sew.soundEventList.get(0).volume))
+                    return SerializableDataTypes.SOUND_EVENT.write(sew.soundEventList.get(0).soundEvent);
+                return SOUND_EVENT_WEIGHT.write(sew);
             });
 
     public static <V> SerializableDataType<Map<Comparison, V>> comparisonMap(SerializableDataType<V> valueDataType) {
@@ -162,6 +175,16 @@ public class ApugliDataTypes {
                 return map;
             }
             throw new JsonParseException("Expected either an array or an object.");
+        },
+        kvMap -> {
+            JsonArray jsonArray = new JsonArray();
+            kvMap.forEach((k, v) -> {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.add(keyFieldName, keyDataType.write(k));
+                jsonObject.add(keyFieldName, valueDataType.write(v));
+                jsonArray.add(jsonObject);
+            });
+            return jsonArray;
         });
     }
 
