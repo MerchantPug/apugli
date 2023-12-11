@@ -2,7 +2,8 @@
 Modify Scale is broken, I know about it. I got frustrated trying to fix it, so I released this version early so TooManyOrigins players don't have to wait.
 
 ## Power Types
-- Added `stop_after` field to `action_on_projectile_hit` power type.
+- Added `stop_after` field to the `action_on_projectile_hit` power type.
+- `action_when_projectile_hit` now functions when a non living entity is the owner of the projectile.
 
 ## Entity Condition Types
 - Added `space` field to `velocity` entity condition type.

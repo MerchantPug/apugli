@@ -40,7 +40,7 @@ public class EntitiesHitCapability implements IEntitiesHitCapability, ICapabilit
 
 
     @Override
-    public void addToPowersThatHaveLanded(ResourceLocation value) {
+    public void addHitEntity(ResourceLocation value) {
         this.apugli$entitiesHit.compute(value, (resourceLocation, integer) -> integer != null ? integer + 1 : 1);
     }
 }
