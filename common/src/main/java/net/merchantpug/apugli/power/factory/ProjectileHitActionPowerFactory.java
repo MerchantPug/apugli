@@ -18,7 +18,7 @@ public interface ProjectileHitActionPowerFactory<P> extends CooldownPowerFactory
                 .add("stop_after", SerializableDataTypes.INT, 1);
     }
 
-    default void execute(P power, LivingEntity powerHolder, LivingEntity attacker, Entity target, Projectile projectile, int amountHit) {
+    default void execute(P power, LivingEntity powerHolder, Entity attacker, Entity target, Projectile projectile, int amountHit) {
         SerializableData.Instance data = getDataFromPower(power);
         if (canUse(power, powerHolder) && Services.CONDITION.checkBiEntity(data, "bientity_condition", projectile, target) && Services.CONDITION.checkBiEntity(data, "owner_bientity_condition", attacker, target)) {
             Services.ACTION.executeBiEntity(data, "bientity_action", projectile, target);

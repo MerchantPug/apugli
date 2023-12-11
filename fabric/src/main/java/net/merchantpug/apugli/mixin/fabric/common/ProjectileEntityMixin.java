@@ -35,8 +35,8 @@ public abstract class ProjectileEntityMixin implements ProjectileEntityAccess {
             Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, (Projectile)(Object)this));
         if (hitResult instanceof EntityHitResult entityHitResult && this.getOwner() instanceof LivingEntity living)
             Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> {
-                ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, entityHitResult.getEntity(), (Projectile)(Object)this, this.apugli$entitiesHit.getOrDefault(Services.POWER.getPowerId(power), 0));
                 this.apugli$entitiesHit.compute(Services.POWER.getPowerId(power), (resourceLocation, integer) -> integer != null ? integer + 1 : 1);
+                ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, entityHitResult.getEntity(), (Projectile)(Object)this, this.apugli$entitiesHit.getOrDefault(Services.POWER.getPowerId(power), 0));
             });
     }
 

@@ -9,6 +9,6 @@ public interface IEntitiesHitCapability extends ProjectileEntityAccess {
 
     int getPowerValue(ResourceLocation value);
 
-    void addToPowersThatHaveLanded(ResourceLocation value);
+    void addHitEntity(ResourceLocation value);
 
 }

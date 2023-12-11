@@ -199,8 +199,8 @@ public class ApugliForgeEventHandler {
             Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, event.getProjectile()));
         if ((event.getProjectile().getOwner() instanceof LivingEntity living))
             Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> {
+                event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(cap -> cap.addHitEntity(Services.POWER.getPowerId(power)));
                 ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, ((EntityHitResult)event.getRayTraceResult()).getEntity(), event.getProjectile(), event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(cap -> cap.getPowerValue(Services.POWER.getPowerId(power))).orElse(0));
-                event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(cap -> cap.addToPowersThatHaveLanded(Services.POWER.getPowerId(power)));
             });
     }
 
