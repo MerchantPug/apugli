@@ -27,7 +27,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z"))
     private void apugli$allowPowerSprinting(CallbackInfo ci) {
-        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (!Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
+        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().noneMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
             this.setSprinting(true);
         }
     }
