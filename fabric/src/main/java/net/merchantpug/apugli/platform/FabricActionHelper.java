@@ -21,6 +21,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -190,27 +191,27 @@ public class FabricActionHelper implements IActionHelper {
     }
     
     @Override
-    public void registerItem(String name, IActionFactory<Tuple<Level, Mutable<ItemStack>>> action) {
+    public void registerItem(String name, IActionFactory<Tuple<Level, SlotAccess>> action) {
         ResourceLocation id = Apugli.asResource(name);
         Registry.register(ApoliRegistries.ITEM_ACTION, id, new ActionFactory<>(
             id, action.getSerializableData(),
-            (data, pair) -> action.execute(data, new Tuple<>(pair.getA(), new MutableObject<>(pair.getB())))
+            (data, pair) -> action.execute(data, new Tuple<>(pair.getA(), pair.getB()))
         ));
     }
     
     @Override
-    public void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable) {
-        if(data.isPresent(fieldName)) ((Consumer<Tuple<Level, ItemStack>>)data.get(fieldName)).accept(new Tuple<>(level, mutable.getValue()));
+    public void executeItem(SerializableData.Instance data, String fieldName, Level level, SlotAccess stack) {
+        if(data.isPresent(fieldName)) ((Consumer<Tuple<Level, SlotAccess>>)data.get(fieldName)).accept(new Tuple<>(level, stack));
     }
 
     @Override
-    public <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable) {
-        if (action != null) ((Consumer<Tuple<Level, ItemStack>>)action).accept(new Tuple<>(level, mutable.getValue()));
+    public <A> void executeEntity(A action, Level level, SlotAccess stack) {
+        if (action != null) ((Consumer<Tuple<Level, SlotAccess>>)action).accept(new Tuple<>(level, stack));
     }
 
     @Override
-    public Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName) {
-        return (data.isPresent(fieldName)) ? (levelAndStack) -> ((Consumer<Tuple<Level, ItemStack>>)data.get(fieldName)).accept(new Tuple<>(levelAndStack.getA(), levelAndStack.getB().getValue())) : null;
+    public Consumer<Tuple<Level, SlotAccess>> itemConsumer(SerializableData.Instance data, String fieldName) {
+        return (data.isPresent(fieldName)) ? (levelAndStack) -> ((Consumer<Tuple<Level, SlotAccess>>)data.get(fieldName)).accept(new Tuple<>(levelAndStack.getA(), levelAndStack.getB())) : null;
     }
     
 }

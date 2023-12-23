@@ -272,7 +272,7 @@ public class ForgeConditionHelper implements IConditionHelper {
     }
 
     @Override
-    public @Nullable Predicate<Tuple<Level, ItemStack>> itemPredicate(SerializableData.Instance data, String fieldName) {
+    public @Nullable Predicate<Tuple<Level, SlotAccess>> itemPredicate(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
             return null;
         }

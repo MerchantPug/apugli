@@ -11,11 +11,10 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,11 +26,11 @@ public class ActionOnDurabilityChangePower extends Power {
     @Nullable private final EquipmentSlot slot;
     @Nullable private final Predicate<Tuple<Level, ItemStack>> itemCondition;
     @Nullable private final Consumer<Entity> increaseAction;
-    @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemIncreaseAction;
+    @Nullable private final Consumer<Tuple<Level, SlotAccess>> itemIncreaseAction;
     @Nullable private final Consumer<Entity> decreaseAction;
-    @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemDecreaseAction;
+    @Nullable private final Consumer<Tuple<Level, SlotAccess>> itemDecreaseAction;
     @Nullable private final Consumer<Entity> breakAction;
-    @Nullable private final Consumer<Tuple<Level, Mutable<ItemStack>>> itemBreakAction;
+    @Nullable private final Consumer<Tuple<Level, SlotAccess>> itemBreakAction;
 
     Set<Either<EquipmentSlot, Integer>> operatedStacks = new HashSet<>();
 
@@ -39,11 +38,11 @@ public class ActionOnDurabilityChangePower extends Power {
                                          @Nullable EquipmentSlot slot,
                                          @Nullable Predicate<Tuple<Level, ItemStack>> itemCondition,
                                          @Nullable Consumer<Entity> increaseAction,
-                                         @Nullable Consumer<Tuple<Level, Mutable<ItemStack>>> itemIncreaseAction,
+                                         @Nullable Consumer<Tuple<Level, SlotAccess>> itemIncreaseAction,
                                          @Nullable Consumer<Entity> decreaseAction,
-                                         @Nullable Consumer<Tuple<Level, Mutable<ItemStack>>> itemDecreaseAction,
+                                         @Nullable Consumer<Tuple<Level, SlotAccess>> itemDecreaseAction,
                                          @Nullable Consumer<Entity> breakAction,
-                                         @Nullable Consumer<Tuple<Level, Mutable<ItemStack>>> itemBreakAction) {
+                                         @Nullable Consumer<Tuple<Level, SlotAccess>> itemBreakAction) {
         super(type, entity);
         this.slot = slot;
         this.itemCondition = itemCondition;
@@ -70,12 +69,12 @@ public class ActionOnDurabilityChangePower extends Power {
         return (slot == null || ItemStack.matches(entity.getItemBySlot(slot), stack)) && (this.itemCondition == null || this.itemCondition.test(new Tuple<>(entity.level(), stack)));
     }
 
-    private void executeAction(ItemStack stack,
+    private void executeAction(SlotAccess stack,
                                Consumer<Entity> entityAction,
-                               Consumer<Tuple<Level, Mutable<ItemStack>>> itemAction) {
+                               Consumer<Tuple<Level, SlotAccess>> itemAction) {
         Optional<EquipmentSlot> equipmentSlot = Optional.empty();
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (ItemStack.matches(stack, entity.getItemBySlot(slot))) {
+            if (stack.get() == entity.getItemBySlot(slot)) {
                 equipmentSlot = Optional.of(slot);
                 break;
             }
@@ -85,7 +84,7 @@ public class ActionOnDurabilityChangePower extends Power {
         Optional<Integer> playerInventoryIndex = Optional.empty();
         if (equipmentSlot.isEmpty() && entity instanceof Player player) {
             for (int i = 0; i < player.getInventory().items.size(); ++i) {
-                if (ItemStack.matches(stack, player.getInventory().items.get(i))) {
+                if (stack.get() == player.getInventory().items.get(i)) {
                     playerInventoryIndex = Optional.of(i);
                     break;
                 }
@@ -103,27 +102,19 @@ public class ActionOnDurabilityChangePower extends Power {
         }
 
         if(itemAction != null) {
-            Mutable<ItemStack> mutable = new MutableObject<>(stack.copy());
-
-            itemAction.accept(new Tuple<>(entity.level(), mutable));
-
-            if (equipmentSlot.isPresent()) {
-                entity.setItemSlot(equipmentSlot.get(), mutable.getValue());
-            } else if (entity instanceof Player player) {
-                player.getInventory().items.set(playerInventoryIndex.get(), mutable.getValue());
-            }
+            itemAction.accept(new Tuple<>(entity.level(), stack));
         }
     }
 
-    public void executeIncreaseAction(ItemStack stack) {
+    public void executeIncreaseAction(SlotAccess stack) {
         executeAction(stack, increaseAction, itemIncreaseAction);
     }
 
-    public void executeDecreaseAction(ItemStack stack) {
+    public void executeDecreaseAction(SlotAccess stack) {
         executeAction(stack, decreaseAction, itemDecreaseAction);
     }
 
-    public void executeBreakAction(ItemStack stack) {
+    public void executeBreakAction(SlotAccess stack) {
         executeAction(stack, breakAction, itemBreakAction);
     }
 

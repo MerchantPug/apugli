@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
 public class ActionOnBlockPlacedPower extends Power {
     @Nullable private final Consumer<Triple<Level, BlockPos, Direction>> blockAction;
     public final Predicate<Tuple<Level, ItemStack>> itemCondition;

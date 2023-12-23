@@ -8,6 +8,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 
 import java.util.function.Consumer;
 
-public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemStack>>> {
+public class DamageAction implements IActionFactory<Tuple<Level, SlotAccess>> {
     
     @Override
     public SerializableData getSerializableData() {
@@ -27,8 +28,8 @@ public class DamageAction implements IActionFactory<Tuple<Level, Mutable<ItemSta
     }
     
     @Override
-    public void execute(SerializableData.Instance data, Tuple<Level, Mutable<ItemStack>> levelItemStack) {
-        ItemStack stack = levelItemStack.getB().getValue();
+    public void execute(SerializableData.Instance data, Tuple<Level, SlotAccess> levelItemStack) {
+        ItemStack stack = levelItemStack.getB().get();
         if(!stack.isDamageableItem()) return;
         int amount = data.getInt("amount");
         int damage = amount;

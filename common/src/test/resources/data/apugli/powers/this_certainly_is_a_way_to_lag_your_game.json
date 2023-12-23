@@ -1,0 +1,7 @@
+{
+  "type": "apugli:action_on_durability_change",
+  "decrease_item_action": {
+    "type": "apugli:damage",
+    "amount": 999999999
+  }
+}

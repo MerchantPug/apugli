@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -62,12 +63,12 @@ public interface IActionHelper {
     
     SerializableDataType<?> itemDataType();
     
-    void registerItem(String name, IActionFactory<Tuple<Level, Mutable<ItemStack>>> action);
+    void registerItem(String name, IActionFactory<Tuple<Level, SlotAccess>> action);
     
-    void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable);
+    void executeItem(SerializableData.Instance data, String fieldName, Level level, SlotAccess stack);
 
-    <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable);
+    <A> void executeEntity(A action, Level level, SlotAccess stack);
     
-    Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName);
+    Consumer<Tuple<Level, SlotAccess>> itemConsumer(SerializableData.Instance data, String fieldName);
 
 }

@@ -15,14 +15,14 @@ import java.util.function.BiConsumer;
  * We use {@link Mutable} here to match Origins (Forge)'s implementation on {@link ItemAction}.
  */
 @ParametersAreNonnullByDefault
-public class FabricItemAction extends ItemAction<FabricActionConfiguration<Tuple<Level, Mutable<ItemStack>>>> {
+public class FabricItemAction extends ItemAction<FabricActionConfiguration<Tuple<Level, SlotAccess>>> {
     
-    public FabricItemAction(SerializableData data, BiConsumer<SerializableData.Instance, Tuple<Level, Mutable<ItemStack>>> action) {
+    public FabricItemAction(SerializableData data, BiConsumer<SerializableData.Instance, Tuple<Level, SlotAccess>> action) {
         super(FabricActionConfiguration.codec(data, action));
     }
     
     @Override
-    public void execute(FabricActionConfiguration<Tuple<Level, Mutable<ItemStack>>> config, Level level, Mutable<ItemStack> mutable) {
+    public void execute(FabricActionConfiguration<Tuple<Level, SlotAccess>> config, Level level, SlotAccess mutable) {
         config.action().accept(new Tuple<>(level, mutable));
     }
     

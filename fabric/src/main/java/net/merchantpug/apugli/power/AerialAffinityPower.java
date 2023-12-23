@@ -21,7 +21,7 @@ public class AerialAffinityPower extends PowerFactory<ModifyBreakSpeedPower> imp
                 modifierData.set("resource", null);
                 modifierData.set("modifier", null);
 
-                ModifyBreakSpeedPower power = new ModifyBreakSpeedPower(type, entity, blockInWorld -> true, new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData), null);
+                ModifyBreakSpeedPower power = new ModifyBreakSpeedPower(type, entity, blockInWorld -> true, new Modifier(ModifierOperation.MULTIPLY_BASE_MULTIPLICATIVE, modifierData), null, null, null);
                 power.addCondition(e -> !e.onGround());
 
                 return power;

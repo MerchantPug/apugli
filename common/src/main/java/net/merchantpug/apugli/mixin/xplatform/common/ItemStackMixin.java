@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import io.github.apace100.apoli.util.InventoryUtil;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
@@ -50,11 +51,11 @@ public abstract class ItemStackMixin {
         int addedDamage = newDamage - apugli$previousDamage;
         Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_DURABILITY_CHANGE.get()).stream().filter(p -> p.doesApply((ItemStack)(Object)this)).forEach(power -> {
             if (newDamage >= this.getMaxDamage()) {
-                power.executeBreakAction((ItemStack)(Object)this);
+                power.executeBreakAction(InventoryUtil.getStackReferenceFromStack(living, (ItemStack)(Object)this));
             } else if (addedDamage > 0) {
-                power.executeDecreaseAction((ItemStack)(Object)this);
+                power.executeDecreaseAction(InventoryUtil.getStackReferenceFromStack(living, (ItemStack)(Object)this));
             } else if (addedDamage < 0) {
-                power.executeIncreaseAction((ItemStack)(Object)this);
+                power.executeIncreaseAction(InventoryUtil.getStackReferenceFromStack(living, (ItemStack)(Object)this));
             }
         });
     }

@@ -173,29 +173,29 @@ public class ForgeActionHelper implements IActionHelper {
     }
     
     @Override
-    public void registerItem(String name, IActionFactory<Tuple<Level, Mutable<ItemStack>>> action) {
+    public void registerItem(String name, IActionFactory<Tuple<Level, SlotAccess>> action) {
         ApugliRegisters.ITEM_ACTIONS.register(name, () -> new FabricItemAction(action.getSerializableData(), action::execute));
     }
     
     @Override
-    public void executeItem(SerializableData.Instance data, String fieldName, Level level, Mutable<ItemStack> mutable) {
+    public void executeItem(SerializableData.Instance data, String fieldName, Level level, SlotAccess mutable) {
         if(data.isPresent(fieldName)) ((ConfiguredItemAction<?, ?>)data.get(fieldName)).execute(level, mutable);
     }
 
     @Override
-    public <A> void executeEntity(A action, Level level, Mutable<ItemStack> mutable) {
+    public <A> void executeEntity(A action, Level level, SlotAccess mutable) {
         if (action != null) ((ConfiguredItemAction<?, ?>)action).execute(level, mutable);
     }
 
     @Override
-    public Consumer<Tuple<Level, Mutable<ItemStack>>> itemConsumer(SerializableData.Instance data, String fieldName) {
+    public Consumer<Tuple<Level, SlotAccess>> itemConsumer(SerializableData.Instance data, String fieldName) {
         if(!data.isPresent(fieldName)) {
             return null;
         }
         ConfiguredItemAction<?, ?> action = data.get(fieldName);
         return (levelAndStack) -> {
             Level level = levelAndStack.getA();
-            Mutable<ItemStack> stack = levelAndStack.getB();
+            SlotAccess stack = levelAndStack.getB();
             action.execute(level, stack);
         };
     }
