@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,13 +19,19 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
     static SerializableData getSerializableData() {
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("scale_type", SerializableDataTypes.IDENTIFIER, null)
-                .add("scale_types", SerializableDataType.list(SerializableDataTypes.IDENTIFIER), new ArrayList<>())
-                .add("delay", SerializableDataTypes.INT, 0);
+                .add("scale_types", SerializableDataType.list(SerializableDataTypes.IDENTIFIER), null)
+                .add("delay", SerializableDataTypes.INT, 0)
+                .add("easing", SerializableDataTypes.IDENTIFIER, null)
+                .add("priority", SerializableDataTypes.INT, 0)
+                .add("delay_modifier", Services.PLATFORM.getModifierDataType(), null)
+                .add("delay_modifier", Services.PLATFORM.getModifiersDataType(), null);
     }
 
     ResourceLocation getPowerId(P power);
 
     Object getApoliScaleModifier(P power, Entity entity);
+
+    List<?> getDelayModifiers(P power, Entity entity);
 
     default Object getApoliScaleModifier(ResourceLocation powerId, Entity entity) {
         if (!(entity instanceof LivingEntity living)) {
@@ -39,9 +46,5 @@ public interface ModifyScalePowerFactory<P> extends ValueModifyingPowerFactory<P
     }
 
     Set<ResourceLocation> getCachedScaleIds(P power, Entity entity);
-
-    int getLatestNumericalId(Entity entity);
-
-    void resetNumericalId(Entity entity);
 
 }

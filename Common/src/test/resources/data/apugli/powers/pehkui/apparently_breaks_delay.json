@@ -3,7 +3,7 @@
   "hidden": true,
   "size": {
     "type": "apugli:modify_scale",
-    "delay": 0,
+    "delay": 1,
     "scale_types": [
       "pehkui:visibility",
       "pehkui:width",
@@ -17,7 +17,7 @@
   },
   "size_hitbox": {
     "type": "apugli:modify_scale",
-    "delay": 0,
+    "delay": 1,
     "scale_type": "pehkui:hitbox_height",
     "modifier": {
       "operation": "multiply_base_additive",

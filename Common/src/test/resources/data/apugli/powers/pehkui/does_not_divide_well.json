@@ -7,24 +7,19 @@
   },
   "scale": {
     "type": "apugli:modify_scale",
-    "delay": 0,
+    "delay": 100,
     "scale_types": [
       "pehkui:width",
       "pehkui:height"
     ],
     "modifiers": {
       "operation": "multiply_total_multiplicative",
-      "value": 0,
-      "resource": "*:*_resource",
+      "value": -0.25,
       "modifier": {
         "operation": "multiply_total_multiplicative",
-        "value": -0.25
+        "value": 0,
+        "resource": "*:*_resource"
       }
-    },
-    "delay_modifiers": {
-      "operation": "multiply_total_multiplicative",
-      "value": 0,
-      "resource": "*:*_resource"
     }
   }
 }

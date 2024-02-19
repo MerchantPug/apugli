@@ -10,6 +10,7 @@ import io.github.apace100.apoli.power.ModelColorPower;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.apoli.util.ResourceOperation;
+import io.github.apace100.apoli.util.modifier.IModifierOperation;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPlatformHelper.class)
@@ -108,6 +110,23 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public void sendC2S(ApugliPacketC2S packet) {
         ApugliPackets.sendC2S(packet);
+    }
+
+    @Override
+    public int compareModifiers(Object modifier, Object otherModifier) {
+        return Integer.compare(compareModifiersInternal((Modifier) modifier, (Modifier) otherModifier), compareModifiersInternal((Modifier) otherModifier, (Modifier) modifier));
+    }
+
+    private int compareModifiersInternal(Modifier modifier, Modifier otherModifier) {
+        IModifierOperation modifierOperation = modifier.getOperation();
+        IModifierOperation modifierOperation2 = otherModifier.getOperation();
+        if(modifierOperation == modifierOperation2) {
+            return 0;
+        } else if(modifierOperation.getPhase() == modifierOperation2.getPhase()) {
+            return modifierOperation.getOrder() - modifierOperation2.getOrder();
+        } else {
+            return modifierOperation.getPhase().ordinal() - modifierOperation2.getPhase().ordinal();
+        }
     }
 
     @Override
@@ -200,6 +219,16 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
         return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName), source, attacker);
+    }
+
+    @Override
+    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
+        List<Modifier> modifierList = (List<Modifier>) modifiers;
+        for (int i = 0; i < modifierList.size(); ++i) {
+            modifierIdMap.put(modifierList.get(i), i);
+            if (modifierList.get(i).getData().isPresent("modifier"))
+                populateModifierIdMap(i + 1, modifierList.get(i).getData().get("modifier"), modifierIdMap);
+        }
     }
 
 }

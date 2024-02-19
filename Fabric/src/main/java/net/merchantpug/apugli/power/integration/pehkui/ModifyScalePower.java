@@ -1,8 +1,8 @@
 package net.merchantpug.apugli.power.integration.pehkui;
 
 import com.google.auto.service.AutoService;
-import com.google.common.collect.Maps;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
@@ -14,19 +14,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePower.Instance> implements ModifyScalePowerFactory<ModifyScalePower.Instance> {
-    public static final Map<Entity, Integer> SCALE_NUMERICAL_ID_MAP = Maps.newHashMap();
+
     public ModifyScalePower() {
         super("modify_scale", ModifyScalePowerFactory.getSerializableData(),
             data -> (type, entity) -> new Instance(type, entity, data));
         allowCondition();
     }
-    
+
     @Override
     public Class<Instance> getPowerClass() {
         return Instance.class;
@@ -43,34 +43,43 @@ public class ModifyScalePower extends AbstractValueModifyingPower<ModifyScalePow
     }
 
     @Override
+    public List<?> getDelayModifiers(Instance power, Entity entity) {
+        return power.delayModifiers;
+    }
+
+    @Override
     public Set<ResourceLocation> getCachedScaleIds(Instance power, Entity entity) {
         return power.cachedScaleIds;
     }
 
-    @Override
-    public int getLatestNumericalId(Entity entity) {
-        return SCALE_NUMERICAL_ID_MAP.compute(entity, (entity1, integer) -> integer != null ? integer + 1 : 0);
-    }
-
-    @Override
-    public void resetNumericalId(Entity entity) {
-        SCALE_NUMERICAL_ID_MAP.remove(entity);
-    }
 
     public static class Instance extends AbstractValueModifyingPower.Instance {
         private final Object apoliScaleModifier;
         private final Set<ResourceLocation> cachedScaleIds;
+        private final List<Modifier> delayModifiers = new ArrayList<>();
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
             setTicking(true);
             if (FabricLoader.getInstance().isModLoaded("pehkui")) {
-                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, entity, data);
                 this.cachedScaleIds = PehkuiUtil.getTypesFromCache(data);
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(this, this.entity, this.data);
             } else {
-                this.apoliScaleModifier = null;
                 this.cachedScaleIds = Set.of();
+                this.apoliScaleModifier = null;
             }
+            data.<Modifier>ifPresent("delay_modifier", delayModifiers::add);
+            data.<List<Modifier>>ifPresent("delay_modifiers", delayModifiers::addAll);
+        }
+
+        @Override
+        public void onAdded() {
+            PehkuiUtil.onAddedOrRespawnedScalePower(this, this.entity);
+        }
+
+        @Override
+        public void onRespawn() {
+            PehkuiUtil.onAddedOrRespawnedScalePower(this, this.entity);
         }
 
         @Override

@@ -11,6 +11,7 @@ import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.ActionOnJumpPower;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
+import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -62,8 +63,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void apugli$setItemStackEntities(CallbackInfo ci) {
-        if (FabricLoader.getInstance().isModLoaded("pehkui") && !Services.POWER.getPowers((LivingEntity) (Object) this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
-            PehkuiUtil.tickScalePowers((LivingEntity)(Object)this);
+        IndividualisedEmptyStackUtil.addEntityToStack((LivingEntity)(Object)this);
+        if (!FabricLoader.getInstance().isModLoaded("pehkui") || Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty()) return;
+        PehkuiUtil.tickScalePowers((LivingEntity)(Object)this);
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))

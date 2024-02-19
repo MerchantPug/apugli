@@ -1,13 +1,10 @@
 package net.merchantpug.apugli.power;
 
 import com.google.auto.service.AutoService;
-import io.github.apace100.apoli.util.modifier.ModifierOperations;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.edwinmindcraft.apoli.api.power.ModifierData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliModifierOperations;
 import net.merchantpug.apugli.power.configuration.FabricActiveCooldownConfiguration;
 import net.merchantpug.apugli.power.factory.RocketJumpPowerFactory;

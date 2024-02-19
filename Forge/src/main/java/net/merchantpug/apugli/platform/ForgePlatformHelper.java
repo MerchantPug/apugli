@@ -40,12 +40,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgePlayer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.LoadingModList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings("unchecked")
@@ -112,6 +111,20 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public void sendC2S(ApugliPacketC2S packet) {
         ApugliPacketHandler.sendC2S(packet);
+    }
+
+    @Override
+    public int compareModifiers(Object modifier, Object otherModifier) {
+        return 0;
+    }
+
+    private int compareModifiersInternal(ConfiguredModifier<?> modifier, ConfiguredModifier<?> otherModifier) {
+        if (modifier.getFactory() == otherModifier.getFactory())
+            return 0;
+        else if (modifier.getFactory().getPhase() == otherModifier.getFactory().getPhase())
+            return modifier.getFactory().getOrder() - otherModifier.getFactory().getOrder();
+        else
+            return modifier.getFactory().getPhase().ordinal() - otherModifier.getFactory().getPhase().ordinal();
     }
 
     @Override
@@ -227,6 +240,16 @@ public class ForgePlatformHelper implements IPlatformHelper {
         player.setForcedPose(pose);
         if (player instanceof ServerPlayer serverPlayer) {
             Services.PLATFORM.sendS2CTrackingAndSelf(new ForcePlayerPosePacket(serverPlayer.getId(), pose), serverPlayer);
+        }
+    }
+
+    @Override
+    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
+        List<ConfiguredModifier<?>> modifierList = (List<ConfiguredModifier<?>>) modifiers;
+        for (int i = 0; i < modifierList.size(); ++i) {
+            modifierIdMap.put(modifierList.get(i), i);
+            if (!modifierList.get(i).getData().modifiers().isEmpty())
+                populateModifierIdMap(i + 1, modifierList.get(i).getData().modifiers(), modifierIdMap);
         }
     }
 
