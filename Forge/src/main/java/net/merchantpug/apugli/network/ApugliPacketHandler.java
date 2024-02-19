@@ -7,6 +7,7 @@ import net.merchantpug.apugli.network.c2s.ExecuteEntityActionServerPacket;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.network.s2c.EntityLinkedStackPacket;
 import net.merchantpug.apugli.network.s2c.ExecuteBiEntityActionClientPacket;
 import net.merchantpug.apugli.network.s2c.ExecuteEntityActionClientPacket;
 import net.merchantpug.apugli.network.s2c.ForcePlayerPosePacket;
@@ -61,6 +62,7 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, SyncSinglePowerPacket.class, SyncSinglePowerPacket::encode, SyncSinglePowerPacket::decode, ApugliPacketHandler.createS2CHandler(SyncSinglePowerPacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
+        INSTANCE.registerMessage(i++, EntityLinkedStackPacket.class, EntityLinkedStackPacket::encode, EntityLinkedStackPacket::decode, ApugliPacketHandler.createS2CHandler(EntityLinkedStackPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {
