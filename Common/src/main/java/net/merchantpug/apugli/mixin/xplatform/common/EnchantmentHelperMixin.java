@@ -25,7 +25,7 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyExpressionValue(method = "runIterationOnItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private static boolean apugli$forEachIsEmpty(boolean original) {
-        if (apugli$common$runIterationOnItem != null && Services.PLATFORM.getEntityFromItemStack(apugli$common$runIterationOnItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+        if (apugli$common$runIterationOnItem != null && Services.PLATFORM.getEntityFromItemStack(apugli$common$runIterationOnItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             apugli$common$runIterationOnItem = null;
             return false;
         }

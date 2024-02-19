@@ -10,12 +10,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @AutoService(ModifyEnchantmentLevelPowerFactory.class)
 public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<ModifyEnchantmentLevelPower.Instance> implements ModifyEnchantmentLevelPowerFactory<ModifyEnchantmentLevelPower.Instance> {
-        private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<UUID, ConcurrentHashMap<ComparableItemStack, ListTag>> ENTITY_ITEM_ENCHANTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<UUID, ConcurrentHashMap<ModifyEnchantmentLevelPower.Instance, Tuple<Integer, Boolean>>> POWER_MODIFIER_CACHE = new ConcurrentHashMap<>();
 
     public ModifyEnchantmentLevelPower() {
         super("modify_enchantment_level", ModifyEnchantmentLevelPowerFactory.getSerializableData(),
@@ -29,12 +30,12 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
     }
 
     @Override
-    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
+    public ConcurrentHashMap<UUID, ConcurrentHashMap<ComparableItemStack, ListTag>> getEntityItemEnchants() {
         return ENTITY_ITEM_ENCHANTS;
     }
 
     @Override
-    public ConcurrentHashMap<LivingEntity, ConcurrentHashMap<Instance, Tuple<Integer, Boolean>>> getPowerModifierCache() {
+    public ConcurrentHashMap<UUID, ConcurrentHashMap<Instance, Tuple<Integer, Boolean>>> getPowerModifierCache() {
         return POWER_MODIFIER_CACHE;
     }
 
@@ -42,6 +43,7 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
+            this.setTicking();
         }
 
         @Override
@@ -52,6 +54,11 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
         @Override
         public void onRemoved() {
             ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(this, entity);
+        }
+
+        @Override
+        public void tick() {
+            ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().tick(this, entity);
         }
 
     }

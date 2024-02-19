@@ -1,0 +1,35 @@
+{
+  "type": "apoli:overlay",
+  "texture": "minecraft:textures/misc/nausea.png",
+  "strength": 0.7,
+  "red": 0.1,
+  "green": 0.2,
+  "blue": 0.1,
+  "draw_mode": "nausea",
+  "draw_phase": "below_hud",
+  "visible_in_third_person": true,
+  "hide_with_hud": true,
+  "condition": {
+    "type": "apoli:or",
+    "conditions": [
+      {
+        "type": "apugli:velocity",
+        "axes": [
+          "X"
+        ],
+        "compare_to": 0.0,
+        "comparison": ">",
+        "space": "velocity_horizontal"
+      },
+      {
+        "type": "apugli:velocity",
+        "axes": [
+          "Z"
+        ],
+        "compare_to": 0.0,
+        "comparison": ">",
+        "space": "velocity_horizontal"
+      }
+    ]
+  }
+}

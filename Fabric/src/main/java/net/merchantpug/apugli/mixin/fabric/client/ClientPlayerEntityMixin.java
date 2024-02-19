@@ -27,7 +27,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z"))
     private void apugli$allowPowerSprinting(CallbackInfo ci) {
-        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (!Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
+        if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get()) && !this.isSprinting() && this.isInWater() && !this.isUnderWater() && (Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().noneMatch(SprintingPower::requiresInput) || this.input.hasForwardImpulse())) {
             this.setSprinting(true);
         }
     }
@@ -35,7 +35,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer {
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 1), ordinal = 5)
     private boolean apugli$resetPowerSprinting(boolean value) {
         if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get())) {
-            return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision) || this.isInWater() && !this.isUnderWater();
+            return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision);
         }
         return value;
     }

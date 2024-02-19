@@ -30,6 +30,7 @@
     "common.accessor.LivingEntityAccessor",
     "common.accessor.ProjectileEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
+    "common.accessor.SlotArgumentAccessor",
     "common.accessor.TridentEntityAccessor"
   ],
   "client": [

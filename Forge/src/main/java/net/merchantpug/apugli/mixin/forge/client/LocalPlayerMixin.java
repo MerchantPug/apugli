@@ -35,7 +35,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 0), ordinal = 8)
     private boolean apugli$resetPowerSprinting(boolean value) {
         if (Services.POWER.hasPower(this, ApugliPowers.SPRINTING.get())) {
-            return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision) || this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
+            return Services.POWER.getPowers(this, ApugliPowers.SPRINTING.get()).stream().allMatch(SprintingPower::requiresInput) && (!this.input.hasForwardImpulse() || this.horizontalCollision && !this.minorHorizontalCollision);
         }
         return value;
     }

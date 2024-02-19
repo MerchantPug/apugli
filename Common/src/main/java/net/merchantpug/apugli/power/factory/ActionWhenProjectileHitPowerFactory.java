@@ -6,8 +6,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 public interface ActionWhenProjectileHitPowerFactory<P> extends ProjectileHitActionPowerFactory<P> {
 
     default void execute(P power, LivingEntity entity, Projectile projectile) {
-        if (!(projectile.getOwner() instanceof LivingEntity living)) return;
-        this.execute(power, entity, living, entity, projectile);
+        this.execute(power, entity, projectile.getOwner(), entity, projectile, getDataFromPower(power).getInt("stop_after"));
     }
 
 }

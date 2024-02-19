@@ -43,6 +43,7 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+    mavenCentral()
 }
 
 mixin {
@@ -110,10 +111,11 @@ dependencies {
     //AdditionalEntityAttributes
     implementation(fg.deobf("de.dafuqs:additionalentityattributes-forge:${aea_forge_version}+${minecraft_version}") {
         exclude group: 'net.minecraftforge'
+        exclude group: 'com.github.llamalad.mixinextras'
     })
     //MixinExtras
-    implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
-    implementation(jarJar("com.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
         jarJar.ranged(it, "[${mixin_extras_version},)")
     }
     //Mixin

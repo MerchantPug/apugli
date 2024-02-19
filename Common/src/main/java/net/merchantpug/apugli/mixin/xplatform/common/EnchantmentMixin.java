@@ -29,9 +29,8 @@ public class EnchantmentMixin {
 
     @ModifyExpressionValue(method = "getSlotItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private boolean apugli$allowEmptySlotItemIfModified(boolean original) {
-        if (this.apugli$capturedItem != null && this.apugli$capturedItem.isEmpty() && Services.PLATFORM.getEntityFromItemStack(apugli$capturedItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
-            this.apugli$capturedItem = null;
-            return false;
+        if (this.apugli$capturedItem != null && this.apugli$capturedItem.isEmpty() && Services.PLATFORM.getEntityFromItemStack(apugli$capturedItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+            original = false;
         }
         this.apugli$capturedItem = null;
         return original;

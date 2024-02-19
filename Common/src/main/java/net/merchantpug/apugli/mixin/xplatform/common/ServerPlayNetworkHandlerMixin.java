@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
@@ -44,10 +45,10 @@ public class ServerPlayNetworkHandlerMixin {
         return original || Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get());
     }
 
-    @ModifyConstant(method = "handleMoveVehicle", constant = @Constant(doubleValue = 0.0625))
-    private double apugli$cancelVehicleMovedWronglyCheck(double original) {
+    @ModifyVariable(method = "handleMoveVehicle", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerLevel;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z", ordinal = 0))
+    private boolean apugli$cancelVehicleMovedWronglyCheck(boolean original) {
         if (Services.POWER.hasPower(this.player, ApugliPowers.PREVENT_MOVEMENT_CHECKS.get())) {
-            return Double.MAX_VALUE;
+            return false;
         }
         return original;
     }

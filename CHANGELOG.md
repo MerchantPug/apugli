@@ -1,19 +1,5 @@
-## Power Types
-- Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
-- `modify_scale`s with `delay` fields will now dynamically shift between scales 
+## Optimisation
+- Optimised `modify_enchantment_level` power type for compatibility.
 
 ## Bugfixes
-- Fixed `modify_scale` not forcing an update for scales that don't update frequently.
-- Fixed a crash upon having an invalid scale type in the `scale_type` or `scale_types` fields in the `modify_scale` power.
-- Fixed `modify_scale` not being removed when it should be.
-- Fixed `modify_scale`s with `delay` fields not getting exact scale values when changing into a non divisible value.
-- Made `modify_scale` `delay` smoothing far more stable.
-- Fixed `modify_scale` unintentionally resetting when swapping dimensions.
-- Fixed `compare_scales` crashing when `scale_type` is specified.
-- Fixed `compare_scales`s `scale_types` field not being counted.
-- [FORGE] Fixed item capabilities being broken.
-- [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
-
-## Miscellaneous
-- Rewrote `modify_scale`'s scale modifiers.
-- Allow Forge versions above Forge 47.1.3 now that it has the compatibility.
+- Fixed crash due to `enchantment` item condition not applying.

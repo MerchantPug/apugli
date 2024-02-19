@@ -19,14 +19,14 @@ import java.util.Optional;
 public class CoreUtil {
 
     public static int getModifiedEnchantmentLevel(int original, ItemStack stack, Enchantment enchantment) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), original, p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level(), stack));
         }
         return original;
     }
 
     public static Map<Enchantment, Integer> getModifiedEnchantments(Map<Enchantment, Integer> original, ItemStack stack) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
+        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             ListTag serializedEnchantments = serializeEnchantments(original);
             return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, serializedEnchantments));
         }

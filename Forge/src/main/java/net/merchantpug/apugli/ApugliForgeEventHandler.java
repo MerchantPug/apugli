@@ -10,7 +10,9 @@ import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
+import net.merchantpug.apugli.capability.entity.EntitiesHitCapability;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
+import net.merchantpug.apugli.capability.entity.IEntitiesHitCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
@@ -20,7 +22,6 @@ import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -67,6 +69,8 @@ public class ApugliForgeEventHandler {
             event.addCapability(KeyPressCapability.ID, new KeyPressCapability(player));
         if (event.getObject() instanceof LivingEntity living)
             event.addCapability(HitsOnTargetCapability.ID, new HitsOnTargetCapability(living));
+        if (event.getObject() instanceof Projectile)
+            event.addCapability(IEntitiesHitCapability.ID, new EntitiesHitCapability());
     }
 
     @SubscribeEvent
@@ -159,7 +163,6 @@ public class ApugliForgeEventHandler {
             CrawlingPower.tickOnceForge(player);
         }
 
-        IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
         if (ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
             PehkuiUtil.tickScalePowers(event.getEntity());
 
@@ -188,12 +191,25 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onProjectileImpact(ProjectileImpactEvent event) {
-        if (event.getRayTraceResult().getType() != HitResult.Type.ENTITY) return;
-
-        if (((EntityHitResult)event.getRayTraceResult()).getEntity() instanceof LivingEntity living)
-            Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, event.getProjectile()));
-        if ((event.getProjectile().getOwner() instanceof LivingEntity living))
-            Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, ((EntityHitResult)event.getRayTraceResult()).getEntity(), event.getProjectile()));
+        if (event.getRayTraceResult().getType() == HitResult.Type.ENTITY) {
+            if (((EntityHitResult)event.getRayTraceResult()).getEntity() instanceof LivingEntity living)
+                Services.POWER.getPowers(living, ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get()).forEach(power -> ApugliPowers.ACTION_WHEN_PROJECTILE_HIT.get().execute(power, living, event.getProjectile()));
+            if ((event.getProjectile().getOwner() instanceof LivingEntity living))
+                Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get()).forEach(power -> {
+                    event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(cap -> cap.addHitEntity(Services.POWER.getPowerId(power)));
+                    ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().execute(power, living, ((EntityHitResult)event.getRayTraceResult()).getEntity(), event.getProjectile(), event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(cap -> cap.getPowerValue(Services.POWER.getPowerId(power))).orElse(0));
+                });
+        } else if (event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
+            if (event.getProjectile().getOwner() instanceof LivingEntity living) {
+                var aophPowers = Services.POWER.getPowers(living, ApugliPowers.ACTION_ON_PROJECTILE_HIT.get(), true);
+                aophPowers.forEach(power -> {
+                    if (ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().canUse(power, living) && event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).map(inst -> inst.apugli$powersThatHaveLanded().contains(Services.POWER.getPowerId(power))).orElse(false)) {
+                        ApugliPowers.ACTION_ON_PROJECTILE_HIT.get().use(power, living);
+                    }
+                });
+                event.getProjectile().getCapability(EntitiesHitCapability.INSTANCE).ifPresent(EntitiesHitCapability::clearHitEntities);
+            }
+        }
     }
 
     // Lowest so it can execute after any damage modifications.
