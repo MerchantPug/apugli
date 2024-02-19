@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.Optional;
+
 public record ModifyEnchantmentLevelPacket(int entityId, ResourceLocation powerId, boolean remove) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("modify_enchantment_level");
 
@@ -39,11 +41,16 @@ public record ModifyEnchantmentLevelPacket(int entityId, ResourceLocation powerI
                     return;
                 }
 
-                Object power = Services.POWER.getPowers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get()).stream().filter(p -> Services.POWER.getPowerId(p) == powerId()).findFirst();
+                Optional<?> power = Services.POWER.getPowers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get()).stream().filter(p -> Services.POWER.getPowerId(p) == powerId()).findFirst();
+
+                if (!power.isPresent()) {
+                    return;
+                }
+
                 if (remove()) {
-                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(power, living);
+                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(power.get(), living);
                 } else {
-                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(power, living);
+                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(power.get(), living);
                 }
             }
         });

@@ -1,2 +1,5 @@
+## Optimisation
+- Optimised `modify_enchantment_level` power type for compatibility.
+
 ## Bugfixes
-- Fixed `sprinting` power type deactivating when an entity is touching water but is not underwater.
+- Fixed crash due to `enchantment` item condition not applying.

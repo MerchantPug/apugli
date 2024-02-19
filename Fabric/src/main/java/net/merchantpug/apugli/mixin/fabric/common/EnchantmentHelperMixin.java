@@ -34,8 +34,6 @@ public abstract class EnchantmentHelperMixin {
         return returnValue;
     }
 
-
-
     @Unique
     private static ItemStack apugli$itemEnchantmentLevelStack;
 
@@ -46,8 +44,11 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyExpressionValue(method = "getItemEnchantmentLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private static boolean apugli$getLevelIsEmpty(boolean original) {
-        if (apugli$itemEnchantmentLevelStack != null && apugli$itemEnchantmentLevelStack.isEmpty()  && ((ItemStackAccess) (Object) apugli$itemEnchantmentLevelStack).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living)) {
-            return false;
+        if (apugli$itemEnchantmentLevelStack != null && apugli$itemEnchantmentLevelStack.isEmpty()  && ((ItemStackAccess) (Object) apugli$itemEnchantmentLevelStack).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+            original = false;
+        }
+        if (original) {
+            apugli$itemEnchantmentLevelStack = null;
         }
         return original;
     }

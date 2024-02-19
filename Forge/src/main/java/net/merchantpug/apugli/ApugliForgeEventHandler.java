@@ -22,7 +22,6 @@ import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.*;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
-import net.merchantpug.apugli.util.IndividualisedEmptyStackUtil;
 import net.merchantpug.apugli.util.TextureUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -164,7 +163,6 @@ public class ApugliForgeEventHandler {
             CrawlingPower.tickOnceForge(player);
         }
 
-        IndividualisedEmptyStackUtil.addEntityToStack(event.getEntity());
         if (ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
             PehkuiUtil.tickScalePowers(event.getEntity());
 

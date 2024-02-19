@@ -2,8 +2,11 @@ package net.merchantpug.apugli.power.factory;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.mixin.xplatform.common.accessor.SlotArgumentAccessor;
+import net.merchantpug.apugli.network.s2c.EntityLinkedStackPacket;
 import net.merchantpug.apugli.network.s2c.ModifyEnchantmentLevelPacket;
 import net.merchantpug.apugli.platform.Services;
+import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.ComparableItemStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -12,11 +15,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +30,26 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPowerFactory<P> {
+    ConcurrentHashMap<UUID, ItemStack> ENTITY_EMPTY_STACK_MAP = new ConcurrentHashMap<>();
+
+    static boolean isWorkableEmptyStack(Entity entity, SlotAccess slotAccess) {
+        return slotAccess != null && slotAccess != SlotAccess.NULL && slotAccess.get().isEmpty()
+                && ENTITY_EMPTY_STACK_MAP.containsKey(entity.getUUID()) && slotAccess.get() == ENTITY_EMPTY_STACK_MAP.get(entity.getUUID());
+    }
+
+    static ItemStack getWorkableEmptyStack(@NotNull Entity entity) {
+        if (!ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(entity.getUUID())) {
+            return ItemStack.EMPTY;
+        }
+
+        if (!ENTITY_EMPTY_STACK_MAP.containsKey(entity.getUUID())) {
+            ItemStack stack = new ItemStack((Void) null);
+            Services.PLATFORM.setEntityToItemStack(stack, entity);
+            ENTITY_EMPTY_STACK_MAP.put(entity.getUUID(), stack);
+        }
+        return ENTITY_EMPTY_STACK_MAP.get(entity.getUUID());
+    }
+
     static SerializableData getSerializableData() {
         return ValueModifyingPowerFactory.getSerializableData()
                 .add("enchantment", SerializableDataTypes.ENCHANTMENT)
@@ -39,12 +65,45 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         Services.PLATFORM.sendS2CTrackingAndSelf(new ModifyEnchantmentLevelPacket(entity.getId(), Services.POWER.getPowerId(power), false), entity);
     }
 
+    default void tick(P power, Entity entity) {
+        List<Integer> intList = new ArrayList<>();
+
+        for (int slot : SlotArgumentAccessor.apugli$getSlots().values()) {
+
+            SlotAccess slotAccess = entity.getSlot(slot);
+            if (slotAccess == SlotAccess.NULL || Services.PLATFORM.getEntityFromItemStack(slotAccess.get()) != null) {
+                continue;
+            }
+
+            ItemStack stack = slotAccess.get();
+            if (stack.isEmpty() && !isWorkableEmptyStack(entity, slotAccess)) {
+                slotAccess.set(getWorkableEmptyStack(entity));
+            } else {
+                Services.PLATFORM.setEntityToItemStack(stack, entity);
+            }
+            intList.add(slot);
+        }
+
+        if (!intList.isEmpty())
+            Services.PLATFORM.sendS2CTrackingAndSelf(new EntityLinkedStackPacket(entity.getId(), intList), entity);
+    }
+
     default void onRemoved(P power, Entity entity) {
         if (!(entity instanceof LivingEntity living)) return;
         getPowerModifierCache().computeIfAbsent(living.getUUID(), (_living) -> new ConcurrentHashMap<>()).remove(power);
-        if (Services.POWER.getPowers(living, this).size() - 1 <= 0) {
+
+        if (Services.POWER.getPowers(living, this).size() - 1 == 0) {
+            for (int slot : SlotArgumentAccessor.apugli$getSlots().values()) {
+                SlotAccess slotAccess = entity.getSlot(slot);
+                if (slotAccess != SlotAccess.NULL && isWorkableEmptyStack(entity, slotAccess)) {
+                    slotAccess.set(ItemStack.EMPTY);
+                } else {
+                    Services.PLATFORM.setEntityToItemStack(slotAccess.get(), null);
+                }
+            }
             getEntityItemEnchants().remove(living.getUUID());
         }
+
         if (entity.level().isClientSide()) return;
         Services.PLATFORM.sendS2CTrackingAndSelf(new ModifyEnchantmentLevelPacket(entity.getId(), Services.POWER.getPowerId(power), true), entity);
     }

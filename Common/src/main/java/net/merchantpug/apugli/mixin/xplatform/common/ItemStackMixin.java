@@ -1,11 +1,14 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
+import net.merchantpug.apugli.power.factory.ModifyEnchantmentLevelPowerFactory;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,11 +35,17 @@ public abstract class ItemStackMixin {
     @Unique
     private int apugli$previousDamage;
 
-    @Inject(method = "copy", at = @At("RETURN"))
-    private void apugli$copyNewParams(CallbackInfoReturnable<ItemStack> cir) {
-        if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) != null) {
-            Services.PLATFORM.setEntityToItemStack(cir.getReturnValue(), Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this));
+    @ModifyReturnValue(method = "copy", at = @At("RETURN"))
+    private ItemStack apugli$copyNewParams(ItemStack original) {
+        Entity holder = Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this);
+        if (holder != null) {
+            if (original.isEmpty()) {
+                original = ModifyEnchantmentLevelPowerFactory.getWorkableEmptyStack(holder);
+            } else {
+                Services.PLATFORM.setEntityToItemStack(original, holder);
+            }
         }
+        return original;
     }
 
     @ModifyVariable(method = "setDamageValue", at = @At(value = "HEAD"), argsOnly = true)

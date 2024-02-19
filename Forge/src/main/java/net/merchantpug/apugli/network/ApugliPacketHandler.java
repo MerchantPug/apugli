@@ -8,6 +8,7 @@ import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
 import net.merchantpug.apugli.network.c2s.integration.pehkui.ResetScaleCheckPacket;
 import net.merchantpug.apugli.network.s2c.AddKeyToCheckPacket;
 import net.merchantpug.apugli.network.s2c.ApugliPacketS2C;
+import net.merchantpug.apugli.network.s2c.EntityLinkedStackPacket;
 import net.merchantpug.apugli.network.s2c.ExecuteBiEntityActionClientPacket;
 import net.merchantpug.apugli.network.s2c.ExecuteEntityActionClientPacket;
 import net.merchantpug.apugli.network.s2c.ForcePlayerPosePacket;
@@ -58,8 +59,9 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionClientPacket.class, ExecuteBiEntityActionClientPacket::encode, ExecuteBiEntityActionClientPacket::decode, ApugliPacketHandler.createS2CHandler(ExecuteBiEntityActionClientPacket::handle));
         INSTANCE.registerMessage(i++, ExecuteBiEntityActionServerPacket.class, ExecuteBiEntityActionServerPacket::encode, ExecuteBiEntityActionServerPacket::decode, ApugliPacketHandler.createC2SHandler(ExecuteBiEntityActionServerPacket::handle));
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
-        INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
+        INSTANCE.registerMessage(i++, EntityLinkedStackPacket.class, EntityLinkedStackPacket::encode, EntityLinkedStackPacket::decode, ApugliPacketHandler.createS2CHandler(EntityLinkedStackPacket::handle));
+        INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, ResetScaleCheckPacket.class, ResetScaleCheckPacket::encode, ResetScaleCheckPacket::decode, ApugliPacketHandler.createC2SHandler(ResetScaleCheckPacket::handle));
     }
 

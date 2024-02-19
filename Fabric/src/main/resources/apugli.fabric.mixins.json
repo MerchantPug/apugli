@@ -12,6 +12,7 @@
     "common.BoneMealItemMixin",
     "common.ConditionFactoryInstanceMixin",
     "common.ConditionFactoryMixin",
+    "common.EnchantmentConditionMixin",
     "common.EnchantmentHelperMixin",
     "common.EntityConditionsMixin",
     "common.EntityMixin",
