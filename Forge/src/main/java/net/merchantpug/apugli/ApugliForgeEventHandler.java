@@ -163,6 +163,10 @@ public class ApugliForgeEventHandler {
             CrawlingPower.tickOnceForge(player);
         }
 
+        Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get()).forEach(p -> {
+            ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().tick(p, event.getEntity());
+        });
+
         if (ModList.get().isLoaded("pehkui") && !Services.POWER.getPowers(event.getEntity(), ApugliPowers.MODIFY_SCALE.get(), true).isEmpty())
             PehkuiUtil.tickScalePowers(event.getEntity());
 

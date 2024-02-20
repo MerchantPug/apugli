@@ -43,7 +43,6 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
 
         public Instance(PowerType<?> type, LivingEntity entity, SerializableData.Instance data) {
             super(type, entity, data);
-            this.setTicking();
         }
 
         @Override
@@ -54,11 +53,6 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower<Mod
         @Override
         public void onRemoved() {
             ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(this, entity);
-        }
-
-        @Override
-        public void tick() {
-            ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().tick(this, entity);
         }
 
     }

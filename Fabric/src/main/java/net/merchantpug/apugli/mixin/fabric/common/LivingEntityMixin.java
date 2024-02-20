@@ -24,6 +24,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,6 +52,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract void push(Entity pEntity);
 
+    @Shadow @Final public static int PLAYER_HURT_EXPERIENCE_TIME;
+
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
@@ -62,6 +65,10 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void apugli$setItemStackEntities(CallbackInfo ci) {
+        Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get()).forEach(p -> {
+            ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().tick(p, (LivingEntity)(Object)this);
+        });
+
         if (!FabricLoader.getInstance().isModLoaded("pehkui") || Services.POWER.getPowers((LivingEntity)(Object)this, ApugliPowers.MODIFY_SCALE.get(), true).isEmpty()) return;
         PehkuiUtil.tickScalePowers((LivingEntity)(Object)this);
     }

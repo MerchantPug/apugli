@@ -22,7 +22,6 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower imp
                 FabricValueModifyingConfiguration::new,
                 FabricValueModifyingConfiguration::data
         ).codec());
-        this.ticking();
     }
 
     @Override
@@ -33,11 +32,6 @@ public class ModifyEnchantmentLevelPower extends AbstractValueModifyingPower imp
     @Override
     public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> configuration, Entity entity) {
         ModifyEnchantmentLevelPowerFactory.super.onRemoved(configuration, entity);
-    }
-
-    @Override
-    public void tick(ConfiguredPower<FabricValueModifyingConfiguration, ?> configuration, Entity entity) {
-        ModifyEnchantmentLevelPowerFactory.super.tick(configuration, entity);
     }
 
     @Override

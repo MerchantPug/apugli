@@ -3,7 +3,6 @@ package net.merchantpug.apugli.power.factory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.SlotArgumentAccessor;
-import net.merchantpug.apugli.network.s2c.EntityLinkedStackPacket;
 import net.merchantpug.apugli.network.s2c.ModifyEnchantmentLevelPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,8 +64,6 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default void tick(P power, Entity entity) {
-        List<Integer> intList = new ArrayList<>();
-
         for (int slot : SlotArgumentAccessor.apugli$getSlots().values()) {
 
             SlotAccess slotAccess = entity.getSlot(slot);
@@ -81,11 +77,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
             } else {
                 Services.PLATFORM.setEntityToItemStack(stack, entity);
             }
-            intList.add(slot);
         }
-
-        if (!intList.isEmpty())
-            Services.PLATFORM.sendS2CTrackingAndSelf(new EntityLinkedStackPacket(entity.getId(), intList), entity);
     }
 
     default void onRemoved(P power, Entity entity) {

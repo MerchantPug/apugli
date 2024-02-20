@@ -56,7 +56,6 @@ public class ApugliPackets {
             ClientPlayNetworking.registerReceiver(ExecuteBiEntityActionClientPacket.ID, createS2CHandler(ExecuteBiEntityActionClientPacket::decode, ExecuteBiEntityActionClientPacket::handle));
             ClientPlayNetworking.registerReceiver(SyncScalePacket.ID, createS2CHandler(SyncScalePacket::decode, SyncScalePacket::handle));
             ClientPlayNetworking.registerReceiver(ModifyEnchantmentLevelPacket.ID, createS2CHandler(ModifyEnchantmentLevelPacket::decode, ModifyEnchantmentLevelPacket::handle));
-            ClientPlayNetworking.registerReceiver(EntityLinkedStackPacket.ID, createS2CHandler(EntityLinkedStackPacket::decode, EntityLinkedStackPacket::handle));
         });
     }
 
