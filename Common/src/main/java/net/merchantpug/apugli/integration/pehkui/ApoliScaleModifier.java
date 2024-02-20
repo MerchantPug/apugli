@@ -449,9 +449,4 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         float diff = Mth.abs(a - b);
         return diff < EPSILON;
     }
-
-    public static boolean compareDoubles(double a, double b) {
-        float diff = Mth.abs((float)(a - b));
-        return diff < EPSILON;
-    }
 }
