@@ -99,16 +99,6 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             }
             baseTag.put("MinScales", listTag);
         }
-        if (!this.cachedMinScales.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.cachedMinScales.entrySet()) {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.putString("Type", entry.getKey().toString());
-                entryTag.putFloat("Value", entry.getValue());
-                listTag.add(entryTag);
-            }
-            baseTag.put("MinScales", listTag);
-        }
         if (!this.cachedPreviousMinScales.isEmpty()) {
             ListTag listTag = new ListTag();
             for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousMinScales.entrySet()) {
