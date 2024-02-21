@@ -39,6 +39,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgePlayer;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
@@ -167,8 +168,9 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public Tuple<Integer, Integer> getHitsOnTarget(Entity actor, LivingEntity target) {
-        if (target.getCapability(HitsOnTargetCapability.INSTANCE).resolve().isPresent()) {
-            return target.getCapability(HitsOnTargetCapability.INSTANCE).resolve().get().getHits().get(actor.getId());
+        LazyOptional<HitsOnTargetCapability> cap = target.getCapability(HitsOnTargetCapability.INSTANCE);
+        if (cap.resolve().isPresent() && cap.resolve().get().getHits().containsKey(actor.getId())) {
+            return cap.resolve().get().getHits().get(actor.getId());
         }
         return new Tuple<>(0, 0);
     }

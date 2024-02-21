@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class HitsOnTargetCapability implements IHitsOnTargetCapability, ICapabilityProvider {
     private Map<Integer, Tuple<Integer, Integer>> previousHits = new HashMap<>();
-    private Map<Integer, Tuple<Integer, Integer>> hits = new HashMap<>();
+    private final Map<Integer, Tuple<Integer, Integer>> hits = new HashMap<>();
 
     private final LivingEntity provider;
 
