@@ -9,7 +9,6 @@ import net.merchantpug.apugli.power.HoverPower;
 import net.merchantpug.apugli.power.StepHeightPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -43,6 +42,8 @@ public abstract class EntityMixin implements EntityAccess {
 
     @Shadow public abstract int getTicksFrozen();
 
+    @Shadow public abstract Level level();
+
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void apugli$modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if(!((Entity)(Object)this instanceof LivingEntity living)) return;
@@ -52,7 +53,6 @@ public abstract class EntityMixin implements EntityAccess {
         powers.forEach(power -> power.playSound(living));
         ci.cancel();
     }
-
 
     @Unique
     private boolean apugli$moving;
@@ -97,7 +97,7 @@ public abstract class EntityMixin implements EntityAccess {
                         }
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.max(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
                             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
                                 ((LivingEntityAccessor) thisAsLiving).apugli$setNoJumpDelay(0);
                             }
@@ -124,7 +124,7 @@ public abstract class EntityMixin implements EntityAccess {
                         }
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.max(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
                             break;
                         }
                         double checkAddition = lowerCorrectionRange % 1.0;
