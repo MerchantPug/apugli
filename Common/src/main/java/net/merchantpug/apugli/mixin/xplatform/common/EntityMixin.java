@@ -51,6 +51,8 @@ public abstract class EntityMixin implements EntityAccess {
 
     @Shadow public abstract Level level();
 
+    @Shadow public abstract Vec3 position();
+
     @Inject(method = "playStepSound", at = @At("HEAD"), cancellable = true)
     private void apugli$modifyStepSound(BlockPos pos, BlockState state, CallbackInfo ci) {
         if(!((Entity)(Object)this instanceof LivingEntity living)) return;
@@ -105,7 +107,7 @@ public abstract class EntityMixin implements EntityAccess {
                         }
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.max(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
                             if (Services.POWER.getPowers(thisAsLiving, ApugliPowers.STEP_HEIGHT.get()).stream().anyMatch(power -> power.canCorrectLowerHeight() && power.shouldAllowJumpAfter())) {
                                 ((LivingEntityAccessor) thisAsLiving).apugli$setNoJumpDelay(0);
                             }
@@ -132,7 +134,7 @@ public abstract class EntityMixin implements EntityAccess {
                         }
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Mth.abs((float) movement.y()), 0.0), box.move(vec3d), this.level, collisionList)));
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.max(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
                             break;
                         }
                         double checkAddition = lowerCorrectionRange % 1.0;

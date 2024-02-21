@@ -1,0 +1,13 @@
+{
+  "type": "apoli:multiple",
+  "step_height": {
+    "type": "apugli:step_height",
+    "lower_height": 1.0,
+    "allow_jump_after": false
+  },
+  "modify_falling": {
+    "type": "apoli:modify_falling",
+    "take_fall_damage": false,
+    "velocity": 0.02
+  }
+}

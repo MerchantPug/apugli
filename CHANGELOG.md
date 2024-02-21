@@ -15,6 +15,7 @@
 - Fixed `compare_scales` crashing when `scale_type` is specified.
 - Fixed `compare_scales`s `scale_types` field not being counted.
 - Fixed crash due to `enchantment` item condition mixin not applying.
+- Fixed `step_height` power types sometimes causing entities to fly way up into the air when falling.
 - [FORGE] Fixed item capabilities being broken.
 - [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
 
