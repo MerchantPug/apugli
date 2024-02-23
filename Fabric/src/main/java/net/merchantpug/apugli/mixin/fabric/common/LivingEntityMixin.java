@@ -1,7 +1,9 @@
 package net.merchantpug.apugli.mixin.fabric.common;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.apace100.apoli.util.InventoryUtil;
 import net.fabricmc.loader.api.FabricLoader;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
@@ -170,7 +172,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void apugli$eatStackFood(Level world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living) {
+        if (((ItemStackAccess)(Object)stack).apugli$getEntity() instanceof LivingEntity living) {
             Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
             power.ifPresent(p -> {
                 world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatingSound(stack), SoundSource.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
@@ -187,6 +189,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "baseTick", at = @At("HEAD"))
     private void apugli$tickLivingEntity(CallbackInfo ci) {
         if (!this.isAlive()) return;
+        InventoryUtil.forEachStack((LivingEntity)(Object)this, stack -> ((ItemStackAccess)(Object)stack).apugli$setEntity((LivingEntity)(Object)this));
         if (Services.POWER.hasPower((LivingEntity) (Object) this, ApugliPowers.HOVER.get())) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.0, 1.0));
             this.fallDistance = 0.0F;

@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -29,7 +30,7 @@ public class EnchantmentMixin {
 
     @ModifyExpressionValue(method = "getSlotItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private boolean apugli$allowEmptySlotItemIfModified(boolean original) {
-        if (this.apugli$capturedItem != null && this.apugli$capturedItem.isEmpty() && Services.PLATFORM.getEntityFromItemStack(apugli$capturedItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+        if (this.apugli$capturedItem != null && this.apugli$capturedItem.isEmpty() && ((ItemStackAccess)(Object)(apugli$capturedItem)).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             original = false;
         }
         this.apugli$capturedItem = null;

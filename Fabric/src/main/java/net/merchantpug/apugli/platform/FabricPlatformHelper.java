@@ -192,16 +192,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Entity getEntityFromItemStack(ItemStack stack) {
-        return stack == null ? null : ((ItemStackAccess)(Object)stack).apugli$getEntity();
-    }
-
-    @Override
-    public void setEntityToItemStack(ItemStack stack, Entity entity) {
-        ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
-    }
-
-    @Override
     public SerializableDataType<?> damageSourceDescriptionDataType() {
         return ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION;
     }

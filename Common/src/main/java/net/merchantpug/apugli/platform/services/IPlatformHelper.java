@@ -112,10 +112,6 @@ public interface IPlatformHelper {
 
     float getEntityEyeHeight(Entity entity);
 
-    Entity getEntityFromItemStack(ItemStack stack);
-
-    void setEntityToItemStack(ItemStack stack, Entity entity);
-
     SerializableDataType<?> damageSourceDescriptionDataType();
 
     DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, String typeFieldName, String descriptionFieldName);

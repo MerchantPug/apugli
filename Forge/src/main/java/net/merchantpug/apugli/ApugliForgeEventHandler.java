@@ -1,6 +1,7 @@
 package net.merchantpug.apugli;
 
 import io.github.apace100.apoli.integration.PowerLoadEvent;
+import io.github.apace100.apoli.util.InventoryUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -8,13 +9,13 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerFactory;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.action.configuration.FabricActionConfiguration;
 import net.merchantpug.apugli.action.factory.entity.CustomProjectileAction;
 import net.merchantpug.apugli.capability.entity.EntitiesHitCapability;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.IEntitiesHitCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
-import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.forge.common.accessor.FabricPowerFactoryAccessor;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
@@ -74,11 +75,6 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void attachItemCapabilities(final AttachCapabilitiesEvent<ItemStack> event) {
-        event.addCapability(EntityLinkCapability.ID, new EntityLinkCapability(event.getObject()));
-    }
-
-    @SubscribeEvent
     public static void onCalioDynamicRegistryLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
         Registry<ConfiguredEntityAction<?, ?>> registry = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY);
         registry.forEach(action -> {
@@ -109,8 +105,7 @@ public class ApugliForgeEventHandler {
     @SubscribeEvent
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem().copy();
-        if (!(Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living)) return;
-        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(event.getEntity(), ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(event.getEntity().level(), stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(event.getEntity(), stack);
             ItemStack newStack = event.getEntity().eat(event.getEntity().level(), stack);
@@ -158,6 +153,8 @@ public class ApugliForgeEventHandler {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
 
         if (event.getEntity().isDeadOrDying()) return;
+
+        InventoryUtil.forEachStack(event.getEntity(), (stackMutable, slotAccess) -> ((ItemStackAccess)(Object)slotAccess.get()).apugli$setEntity(event.getEntity()));
 
         if (event.getEntity() instanceof Player player) {
             CrawlingPower.tickOnceForge(player);

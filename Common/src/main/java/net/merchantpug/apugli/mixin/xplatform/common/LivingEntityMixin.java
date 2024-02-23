@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.CustomDeathSoundPower;
 import net.merchantpug.apugli.power.CustomHurtSoundPower;
+import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
@@ -11,6 +12,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -25,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -180,6 +184,20 @@ public abstract class LivingEntityMixin extends Entity {
         if(Services.POWER.hasPower((LivingEntity)(Object)this, ApugliPowers.FREEZE.get())) {
             this.isInPowderSnow = this.wasInPowderSnow;
         }
+    }
+
+    @Inject(method = "getDrinkingSound", at = @At("HEAD"), cancellable = true)
+    private void apugli$getDrinkSound(ItemStack stack, CallbackInfoReturnable<SoundEvent> cir) {
+        LivingEntity living = (LivingEntity)(Object)this;
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();
+        power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
+    }
+
+    @Inject(method = "getEatingSound", at = @At("HEAD"), cancellable = true)
+    private void apugli$getEatSound(ItemStack stack, CallbackInfoReturnable<SoundEvent> cir) {
+        LivingEntity living = (LivingEntity)(Object)this;
+        Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack) && p.getSound() != null).findFirst();
+        power.ifPresent(edibleItemPower -> cir.setReturnValue(edibleItemPower.getSound()));
     }
 
 }

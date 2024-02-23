@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +26,7 @@ public abstract class EnchantmentHelperMixin {
 
     @ModifyExpressionValue(method = "runIterationOnItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
     private static boolean apugli$forEachIsEmpty(boolean original) {
-        if (apugli$common$runIterationOnItem != null && Services.PLATFORM.getEntityFromItemStack(apugli$common$runIterationOnItem) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+        if (apugli$common$runIterationOnItem != null && ((ItemStackAccess)(Object)(apugli$common$runIterationOnItem)).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             apugli$common$runIterationOnItem = null;
             return false;
         }

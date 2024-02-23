@@ -2,6 +2,7 @@ package net.merchantpug.apugli.action.factory.item;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.action.factory.IActionFactory;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.util.Tuple;
@@ -20,7 +21,7 @@ public class CooldownAction implements IActionFactory<Tuple<Level, Mutable<ItemS
 
     @Override
     public void execute(SerializableData.Instance data, Tuple<Level, Mutable<ItemStack>> levelItemStack) {
-        if (!levelItemStack.getA().isClientSide() && Services.PLATFORM.getEntityFromItemStack(levelItemStack.getB().getValue()) instanceof Player player) {
+        if (!levelItemStack.getA().isClientSide() && ((ItemStackAccess)(Object)levelItemStack.getB().getValue()).apugli$getEntity() instanceof Player player) {
             player.getCooldowns().addCooldown(levelItemStack.getB().getValue().getItem(), data.getInt("ticks"));
         }
     }

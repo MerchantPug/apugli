@@ -4,7 +4,8 @@
 
 ## Optimisation
 - Optimised `modify_enchantment_level` power type for compatibility.
-- 
+- Rewrote entity stack linking entirely, empty stacks do not tick, and Forge no longer uses capabilities for this due to it being totally overkill.
+
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.
 - Fixed a crash upon having an invalid scale type in the `scale_type` or `scale_types` fields in the `modify_scale` power.

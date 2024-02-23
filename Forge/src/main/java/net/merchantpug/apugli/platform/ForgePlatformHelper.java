@@ -17,7 +17,6 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfigurat
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
-import net.merchantpug.apugli.capability.item.EntityLinkCapability;
 import net.merchantpug.apugli.data.ApoliForgeDataTypes;
 import net.merchantpug.apugli.network.ApugliPacketHandler;
 import net.merchantpug.apugli.network.c2s.ApugliPacketC2S;
@@ -197,19 +196,6 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public float getEntityEyeHeight(Entity entity) {
         return entity.getEyeHeightAccess(entity.getPose(), entity.getDimensions(entity.getPose()));
-    }
-
-    @Override
-    public Entity getEntityFromItemStack(ItemStack stack) {
-        if (stack != null && stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
-            return stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get().getEntity();
-        }
-        return null;
-    }
-
-    @Override
-    public void setEntityToItemStack(ItemStack stack, Entity entity) {
-        stack.getCapability(EntityLinkCapability.INSTANCE).resolve().ifPresent(cap -> cap.setEntity(entity));
     }
 
     @Override

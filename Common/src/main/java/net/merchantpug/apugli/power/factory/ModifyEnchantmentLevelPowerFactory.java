@@ -2,6 +2,7 @@ package net.merchantpug.apugli.power.factory;
 
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.SlotArgumentAccessor;
 import net.merchantpug.apugli.network.s2c.ModifyEnchantmentLevelPacket;
 import net.merchantpug.apugli.platform.Services;
@@ -42,7 +43,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
 
         if (!ENTITY_EMPTY_STACK_MAP.containsKey(entity.getUUID())) {
             ItemStack stack = new ItemStack((Void) null);
-            Services.PLATFORM.setEntityToItemStack(stack, entity);
+            ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
             ENTITY_EMPTY_STACK_MAP.put(entity.getUUID(), stack);
         }
         return ENTITY_EMPTY_STACK_MAP.get(entity.getUUID());
@@ -67,15 +68,13 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
         for (int slot : SlotArgumentAccessor.apugli$getSlots().values()) {
 
             SlotAccess slotAccess = entity.getSlot(slot);
-            if (slotAccess == SlotAccess.NULL || Services.PLATFORM.getEntityFromItemStack(slotAccess.get()) != null) {
+            if (slotAccess == SlotAccess.NULL || ((ItemStackAccess)(Object)(slotAccess.get())).apugli$getEntity() != null) {
                 continue;
             }
 
             ItemStack stack = slotAccess.get();
             if (stack.isEmpty() && !isWorkableEmptyStack(entity, slotAccess)) {
                 slotAccess.set(getWorkableEmptyStack(entity));
-            } else {
-                Services.PLATFORM.setEntityToItemStack(stack, entity);
             }
         }
     }
@@ -89,8 +88,6 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
                 SlotAccess slotAccess = entity.getSlot(slot);
                 if (slotAccess != SlotAccess.NULL && isWorkableEmptyStack(entity, slotAccess)) {
                     slotAccess.set(ItemStack.EMPTY);
-                } else {
-                    Services.PLATFORM.setEntityToItemStack(slotAccess.get(), null);
                 }
             }
             getEntityItemEnchants().remove(living.getUUID());
@@ -120,7 +117,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag generateEnchantments(ListTag enchants, ItemStack self) {
-        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
+        Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
 
         if(!(entity instanceof LivingEntity living)) return enchants;
 
@@ -151,7 +148,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
-        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
+        Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
             ComparableItemStack comparableStack = new ComparableItemStack(self.copy());
@@ -165,7 +162,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default Map<Enchantment, Integer> getItemEnchantments(ItemStack self) {
-        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
+        Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
             ComparableItemStack comparableItemStack = new ComparableItemStack(self);
@@ -189,7 +186,7 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
-        Entity entity = Services.PLATFORM.getEntityFromItemStack(self);
+        Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
             ComparableItemStack comparableStack = new ComparableItemStack(self);
