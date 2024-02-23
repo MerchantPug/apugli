@@ -18,7 +18,7 @@
 - Fixed crash due to `enchantment` item condition mixin not applying.
 - Fixed `step_height` power types sometimes causing entities to fly way up into the air when falling.
 - [FORGE] Fixed NPE with hits on target.
-- [FORGE] Fixed item capabilities being broken.
+- [FORGE] Fixed item capabilities being broken in a player's inventory. #67
 - [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
 
 ## Miscellaneous

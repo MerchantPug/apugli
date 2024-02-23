@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.util;
 
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
@@ -19,14 +20,14 @@ import java.util.Optional;
 public class CoreUtil {
 
     public static int getModifiedEnchantmentLevel(int original, ItemStack stack, Enchantment enchantment) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+        if (((ItemStackAccess)(Object)stack).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             return (int) Services.PLATFORM.applyModifiers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get(), original, p -> ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().doesApply(p, enchantment, living.level(), stack));
         }
         return original;
     }
 
     public static Map<Enchantment, Integer> getModifiedEnchantments(Map<Enchantment, Integer> original, ItemStack stack) {
-        if (Services.PLATFORM.getEntityFromItemStack(stack) instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
+        if (((ItemStackAccess)(Object)stack).apugli$getEntity() instanceof LivingEntity living && ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEntityItemEnchants().containsKey(living.getUUID())) {
             ListTag serializedEnchantments = serializeEnchantments(original);
             return EnchantmentHelper.deserializeEnchantments(ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().getEnchantments(stack, serializedEnchantments));
         }

@@ -1,5 +1,6 @@
 package net.merchantpug.apugli.mixin.forge.common;
 
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.mixin.xplatform.common.accessor.ItemAccessor;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
@@ -31,14 +32,14 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "isEdible", at = @At(value = "RETURN"), cancellable = true)
     private void apugli$setEdibleWithPower(CallbackInfoReturnable<Boolean> cir) {
-        if (Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living && CoreUtil.doEdibleItemPowersApply((ItemStack)(Object)this, living))
+        if (((ItemStackAccess)(Object)this).apugli$getEntity() instanceof LivingEntity living && CoreUtil.doEdibleItemPowersApply((ItemStack)(Object)this, living))
             cir.setReturnValue(true);
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void apugli$use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
-        if (!(this.getItem() instanceof BucketItem bucket) || !(Services.PLATFORM.getEntityFromItemStack((ItemStack)(Object)this) instanceof LivingEntity living)) return;
+        if (!(this.getItem() instanceof BucketItem bucket) || !(((ItemStackAccess)(Object)this).apugli$getEntity() instanceof LivingEntity living)) return;
         Optional<EdibleItemPower> power = Services.POWER.getPowers(living, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(living.level(), stack)).findFirst();
         if (power.isPresent()) {
             ItemStack itemStack = user.getItemInHand(hand);
