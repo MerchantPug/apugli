@@ -81,9 +81,8 @@ public interface IPowerHelper<T> {
     boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
 
     Map<ResourceLocation, Double> iterateThroughModifierForResources(LivingEntity entity, List<?> modifiers);
-    Map<Integer, Map<ResourceLocation, Double>> getResourcesForEachTickValue(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources);
-    double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
-
+    Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
+    double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources);
     double applyModifierWithSpecificValueAtIndex(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> resourceMap);
 
     Map<ResourceLocation, Double> getClosestToBaseScale(LivingEntity entity, List<?> modifiers, double base);

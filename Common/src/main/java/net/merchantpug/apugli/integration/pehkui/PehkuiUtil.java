@@ -101,9 +101,15 @@ public class PehkuiUtil {
     @SuppressWarnings("unchecked")
     public static <P> void onAddedOrRespawnedScalePower(P power, LivingEntity entity) {
         if (!(ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity) instanceof ApoliScaleModifier<?> scaleModifier)) return;
-        if (entity != null)
+        if (entity != null) {
             createModifiersInOrder(entity, scaleModifier, false);
-        scaleModifier.initialized = true;
+            SortedSet<ApoliScaleModifier<?>> tailSet = PehkuiUtil.getModifiersInOrder(entity).tailSet(scaleModifier);
+            tailSet.forEach(modifier -> {
+                if (modifier instanceof DelayedApoliScaleModifier<?> delayed) {
+                    delayed.invalidate();
+                }
+            });
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -135,6 +141,12 @@ public class PehkuiUtil {
             scaleData.getBaseValueModifiers().remove(modifier);
             scaleData.onUpdate();
         }
+        SortedSet<ApoliScaleModifier<?>> scaleModifiers = PehkuiUtil.getModifiersInOrder(entity);
+        scaleModifiers.forEach(mod -> {
+            if (mod instanceof DelayedApoliScaleModifier<?> delayed) {
+                delayed.invalidate();
+            }
+        });
         Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), modifier.getCachedScaleIds().stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
     }
 

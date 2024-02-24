@@ -49,7 +49,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     private boolean addedScales = false;
     protected boolean shouldUpdate = false;
     protected boolean shouldUpdatePrevious = false;
-    protected boolean initialized = false;
     protected boolean hasLoggedWarn = false;
 
     public ApoliScaleModifier(P power, LivingEntity entity, List<?> modifiers, Set<ResourceLocation> cachedScaleIds, int powerPriority) {
@@ -132,36 +131,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             }
             tag.put("PreviousMaxScales", cachedPreviousMaxScaleTag);
         }
-        if (!this.checkModifiedScales.isEmpty()) {
-            ListTag cachedPreviousMaxScaleTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.checkModifiedScales.entrySet()) {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.putString("Type", entry.getKey().toString());
-                entryTag.putFloat("Value", entry.getValue());
-                cachedPreviousMaxScaleTag.add(entryTag);
-            }
-            tag.put("CheckModifiedScales", cachedPreviousMaxScaleTag);
-        }
-        if (!this.checkPreviousModifiedScales.isEmpty()) {
-            ListTag cachedPreviousMaxScaleTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.checkPreviousModifiedScales.entrySet()) {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.putString("Type", entry.getKey().toString());
-                entryTag.putFloat("Value", entry.getValue());
-                cachedPreviousMaxScaleTag.add(entryTag);
-            }
-            tag.put("CheckPreviousModifiedScales", cachedPreviousMaxScaleTag);
-        }
-        if (!this.checkScales.isEmpty()) {
-            ListTag cachedPreviousMaxScaleTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.checkScales.entrySet()) {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.putString("Type", entry.getKey().toString());
-                entryTag.putFloat("Value", entry.getValue());
-                cachedPreviousMaxScaleTag.add(entryTag);
-            }
-            tag.put("CheckScales", cachedPreviousMaxScaleTag);
-        }
         if (!this.shouldUpdateModifiers.isEmpty()) {
             ListTag listTag = new ListTag();
             for (ResourceLocation entry : this.shouldUpdateModifiers) {
@@ -222,30 +191,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 this.cachedPreviousMaxScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
             }
         }
-        this.checkModifiedScales.clear();
-        if (tag.contains("CheckModifiedScales", Tag.TAG_LIST)) {
-            ListTag cachedMaxScaleTag = tag.getList("CheckModifiedScales", Tag.TAG_COMPOUND);
-            for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
-                CompoundTag entryTag = cachedMaxScaleTag.getCompound(i);
-                this.checkModifiedScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
-            }
-        }
-        this.checkPreviousModifiedScales.clear();
-        if (tag.contains("CheckPreviousModifiedScales", Tag.TAG_LIST)) {
-            ListTag cachedMaxScaleTag = tag.getList("CheckPreviousModifiedScales", Tag.TAG_COMPOUND);
-            for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
-                CompoundTag entryTag = cachedMaxScaleTag.getCompound(i);
-                this.checkPreviousModifiedScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
-            }
-        }
-        this.checkScales.clear();
-        if (tag.contains("CheckScales", Tag.TAG_LIST)) {
-            ListTag cachedMaxScaleTag = tag.getList("CheckScales", Tag.TAG_COMPOUND);
-            for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
-                CompoundTag entryTag = cachedMaxScaleTag.getCompound(i);
-                this.checkScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
-            }
-        }
         this.shouldUpdateModifiers.clear();
         if (tag.contains("ShouldUpdateModifiers", Tag.TAG_LIST)) {
             ListTag listTag = tag.getList("ShouldUpdateModifiers", Tag.TAG_STRING);
@@ -279,14 +224,12 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
 
         if (tag.contains("ShouldUpdatePrevious", Tag.TAG_BYTE))
             this.shouldUpdatePrevious = tag.getBoolean("ShouldUpdatePrevious");
-        this.initialized = initialize;
     }
 
     protected void reset() {
         this.addedScales = false;
         this.hasLoggedWarn = false;
         this.shouldUpdate = false;
-        this.initialized = false;
         this.cachedMaxScales.clear();
         this.cachedPreviousMaxScales.clear();
         this.checkModifiedScales.clear();
@@ -321,7 +264,7 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
 
             boolean isActive = Services.POWER.isActive(this.power, entity);
             float value = !isActive ? data.getBaseScale() : (float)Services.PLATFORM.applyModifiers(data.getEntity(), this.modifiers, data.getBaseScale());
-            if (this.initialized && (!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value))) {
+            if ((!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value))) {
                 this.checkScales.put(typeId, value);
                 this.shouldUpdate = true;
                 this.shouldUpdatePrevious = true;

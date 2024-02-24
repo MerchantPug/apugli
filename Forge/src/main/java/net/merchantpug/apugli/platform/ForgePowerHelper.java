@@ -226,9 +226,8 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
 
         return returnMap;
     }
-
     @Override
-    public Map<Integer, Map<ResourceLocation, Double>> getResourcesForEachTickValue(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
         Map<Integer, Map<ResourceLocation, Double>> returnMap = new HashMap<>();
         List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
         int previousResourceValue = 0;
@@ -254,12 +253,12 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
                     OptionalDouble doubleValue = getResource(entity, modifier.getData().resource().get()).stream().mapToDouble(i -> i).min();
                     if (doubleValue.isPresent()) {
                         returnMap.get(key).put(modifier.getData().resource().get().unwrapKey().orElseThrow().location(), doubleValue.getAsDouble());
-                        previousResourceValue = (int) applyModifierWithSpecificValueAtIndex(entity, modifiers, base, resources);
+                        previousResourceValue = (int) Services.PLATFORM.applyModifiers(entity, delayModifiers, base);
                     }
                 }
 
                 if (!modifier.getData().modifiers().isEmpty()) {
-                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getResourcesForEachTickValue(entity, modifier.getData().modifiers(), base, startingResources);
+                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getModifiedForEachDelayValue(entity, modifier.getData().modifiers(), delayModifiers, base, startingResources);
                     innerMap.forEach((integer, resourceLocationDoubleMap) -> {
                         returnMap.merge(integer, resourceLocationDoubleMap, (map, map2) -> {
                             map.putAll(map2);
@@ -275,7 +274,7 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
-    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
         List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
         double currentValue = base;
         Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);

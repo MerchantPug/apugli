@@ -216,7 +216,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
-    public Map<Integer, Map<ResourceLocation, Double>> getResourcesForEachTickValue(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
         Map<Integer, Map<ResourceLocation, Double>> returnMap = new HashMap<>();
         List<Modifier> originalMods = (List<Modifier>) modifiers;
         int previousResourceValue = 0;
@@ -242,12 +242,12 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
                     OptionalDouble doubleValue = getResource(entity, modifier.getData().get("resource")).stream().mapToDouble(i -> i).min();
                     if (doubleValue.isPresent()) {
                         returnMap.get(key).put(((PowerTypeReference<?>) modifier.getData().get("resource")).getIdentifier(), doubleValue.getAsDouble());
-                        previousResourceValue = (int) applyModifierWithSpecificValueAtIndex(entity, modifiers, base, resources);
+                        previousResourceValue = (int) Services.PLATFORM.applyModifiers(entity, delayModifiers, base);
                     }
                 }
 
                 if (modifier.getData().isPresent("modifier")) {
-                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getResourcesForEachTickValue(entity, modifier.getData().get("modifier"), base, startingResources);
+                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getModifiedForEachDelayValue(entity, modifier.getData().get("modifier"), delayModifiers, base, startingResources);
                     innerMap.forEach((integer, resourceLocationDoubleMap) -> {
                         returnMap.merge(integer, resourceLocationDoubleMap, (map, map2) -> {
                             map.putAll(map2);
@@ -263,7 +263,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
-    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
         List<Modifier> originalMods = (List<Modifier>) modifiers;
         double currentValue = base;
         Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);
