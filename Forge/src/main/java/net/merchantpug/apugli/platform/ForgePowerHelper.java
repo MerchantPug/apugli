@@ -12,6 +12,7 @@ import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ModifierData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
@@ -32,7 +33,10 @@ import net.merchantpug.apugli.registry.services.RegistryObject;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,11 +125,17 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
 
     @Override
     public void syncPower(LivingEntity entity, PowerType<?> factory) {
+        if (entity instanceof ServerPlayer serverPlayer && serverPlayer.connection == null)
+            return;
+
         ApugliPacketHandler.sendS2CTrackingAndSelf(new SyncSinglePowerPacket(entity.getId(), factory.getIdentifier(), factory.getConfiguredPower().serialize(ApoliAPI.getPowerContainer(entity))), entity);
     }
 
     @Override
     public <P> void syncPower(LivingEntity entity, P power) {
+        if (entity instanceof ServerPlayer serverPlayer && serverPlayer.connection == null)
+            return;
+
         ConfiguredPower<?, ?> p = (ConfiguredPower<?, ?>)power;
         ApugliPacketHandler.sendS2CTrackingAndSelf(new SyncSinglePowerPacket(entity.getId(), p.getRegistryName(), p.serialize(ApoliAPI.getPowerContainer(entity))), entity);
     }
@@ -181,6 +191,15 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
+    public <P> P getPowerFromId(Entity entity, ResourceLocation powerId) {
+        @Nullable Holder<ConfiguredPower<IDynamicFeatureConfiguration, io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory<IDynamicFeatureConfiguration>>> holder = ApoliAPI.getPowerContainer(entity).getPower(powerId);
+        if (holder == null || !holder.isBound()) {
+            return null;
+        }
+        return (P) holder;
+    }
+
+    @Override
     public void grantPower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity) {
         IPowerContainer container = ApoliAPI.getPowerContainer(entity);
         if (container != null) {
@@ -226,8 +245,9 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
 
         return returnMap;
     }
+
     @Override
-    public Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public Map<Integer, Map<ResourceLocation, Double>> getInBetweenResources(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
         Map<Integer, Map<ResourceLocation, Double>> returnMap = new HashMap<>();
         List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
         int previousResourceValue = 0;
@@ -258,7 +278,7 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
                 }
 
                 if (!modifier.getData().modifiers().isEmpty()) {
-                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getModifiedForEachDelayValue(entity, modifier.getData().modifiers(), delayModifiers, base, startingResources);
+                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getInBetweenResources(entity, modifier.getData().modifiers(), delayModifiers, base, startingResources);
                     innerMap.forEach((integer, resourceLocationDoubleMap) -> {
                         returnMap.merge(integer, resourceLocationDoubleMap, (map, map2) -> {
                             map.putAll(map2);
@@ -274,7 +294,11 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
     }
 
     @Override
-    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+        if (startingResources.isEmpty()) {
+            return base;
+        }
+
         List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
         double currentValue = base;
         Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);
@@ -287,9 +311,9 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
             }
         }
 
-        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()), entry.getValue()))) {
-            incrementMods(originalMods, resources, targetResources);
+        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()).intValue(), entry.getValue().intValue()))) {
             currentValue += applyModifierWithSpecificValueAtIndex(entity, modifiers, base, resources);
+            incrementMods(originalMods, resources, targetResources);
         }
 
         return currentValue;
@@ -301,8 +325,12 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
                 incrementMods(modifier.getData().modifiers(), resources, targetResources);
             }
             if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && resources.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location())) {
-                int increment = targetResources.get(modifier.getData().resource().orElseThrow().unwrapKey().orElseThrow().location()) < resources.get(modifier.getData().resource().orElseThrow().unwrapKey().orElseThrow().location()) ? -1 : 1;
-                resources.put(modifier.getData().resource().orElseThrow().unwrapKey().orElseThrow().location(), resources.get(modifier.getData().resource().orElseThrow().unwrapKey().orElseThrow().location()) + increment);
+                ResourceLocation resourceId = modifier.getData().resource().get().unwrapKey().orElseThrow().location();
+                if (Objects.equals(targetResources.get(resourceId).intValue(), resources.get(resourceId).intValue()))
+                    return;
+
+                int increment = targetResources.get(resourceId) < resources.get(resourceId) ? -1 : 1;
+                resources.put(resourceId, resources.get(resourceId) + increment);
             }
         }
     }

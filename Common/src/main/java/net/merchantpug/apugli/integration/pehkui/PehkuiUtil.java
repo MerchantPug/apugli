@@ -81,10 +81,6 @@ public class PehkuiUtil {
         return ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, id);
     }
 
-    public static ResourceLocation getScaleTypeId(ScaleType type) {
-        return ScaleRegistries.getId(ScaleRegistries.SCALE_TYPES, type);
-    }
-
     @SuppressWarnings("unchecked")
     public static void tickScalePowers(LivingEntity entity) {
         if (!MODIFIERS_IN_ORDER.containsKey(entity.getUUID()) || MODIFIERS_IN_ORDER.get(entity.getUUID()).isEmpty() || MODIFIERS_IN_ORDER.get(entity.getUUID()).size() != Services.POWER.getPowers(entity, ApugliPowers.MODIFY_SCALE.get(), true).size()) return;
@@ -103,12 +99,7 @@ public class PehkuiUtil {
         if (!(ApugliPowers.MODIFY_SCALE.get().getApoliScaleModifier(power, entity) instanceof ApoliScaleModifier<?> scaleModifier)) return;
         if (entity != null) {
             createModifiersInOrder(entity, scaleModifier, false);
-            SortedSet<ApoliScaleModifier<?>> tailSet = PehkuiUtil.getModifiersInOrder(entity).tailSet(scaleModifier);
-            tailSet.forEach(modifier -> {
-                if (modifier instanceof DelayedApoliScaleModifier<?> delayed) {
-                    delayed.invalidate();
-                }
-            });
+            scaleModifier.updateOthers(entity);
         }
     }
 
@@ -137,16 +128,11 @@ public class PehkuiUtil {
             ScaleType scaleType = PehkuiUtil.getScaleType(scaleTypeId);
             ScaleData scaleData = scaleType.getScaleData(entity);
 
+            modifier.updateOthers(entity);
             ((ScaleDataAccess) scaleData).apugli$removeFromApoliScaleModifiers(ApugliPowers.MODIFY_SCALE.get().getPowerId(power));
             scaleData.getBaseValueModifiers().remove(modifier);
             scaleData.onUpdate();
         }
-        SortedSet<ApoliScaleModifier<?>> scaleModifiers = PehkuiUtil.getModifiersInOrder(entity);
-        scaleModifiers.forEach(mod -> {
-            if (mod instanceof DelayedApoliScaleModifier<?> delayed) {
-                delayed.invalidate();
-            }
-        });
         Services.PLATFORM.sendS2CTrackingAndSelf(SyncScalePacket.removeScaleFromClient(entity.getId(), modifier.getCachedScaleIds().stream().toList(), ApugliPowers.MODIFY_SCALE.get().getPowerId(power)), entity);
     }
 

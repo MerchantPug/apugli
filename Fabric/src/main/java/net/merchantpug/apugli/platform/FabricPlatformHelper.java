@@ -17,7 +17,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
-import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.HitsOnTargetComponent;
 import net.merchantpug.apugli.component.KeyPressComponent;
@@ -34,10 +33,8 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("unchecked")
 @AutoService(IPlatformHelper.class)
@@ -150,7 +147,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
         Active.Key key = data.get("key");
         if (!component.getKeysToCheck().contains(key)) {
             component.addKeyToCheck(key);
-            if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer && serverPlayer.connection != null) {
                 ApugliPackets.sendS2C(new AddKeyToCheckPacket(serverPlayer.getId(), key), serverPlayer);
             }
         }
@@ -177,7 +174,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
         int timerChange = timerOperation == ResourceOperation.SET ? initialTimerChange : valueTimerResetTimePair.getB() + initialTimerChange;
 
         component.setHits(actor.getId(), change, timerChange);
-        if (!(target instanceof ServerPlayer serverPlayer)) return;
+        if (!(target instanceof ServerPlayer serverPlayer) || serverPlayer.connection == null) return;
         ApugliPackets.sendS2CTrackingAndSelf(new SyncHitsOnTargetLessenedPacket(target.getId(), component.getPreviousHits(), component.getHits()), serverPlayer);
     }
 
@@ -209,16 +206,6 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public DamageSource createDamageSource(DamageSources damageSources, SerializableData.Instance data, Entity source, Entity attacker, String typeFieldName, String descriptionFieldName) {
         return MiscUtil.createDamageSource(damageSources, data.get(descriptionFieldName), data.get(typeFieldName), source, attacker);
-    }
-
-    @Override
-    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
-        List<Modifier> modifierList = (List<Modifier>) modifiers;
-        for (int i = 0; i < modifierList.size(); ++i) {
-            modifierIdMap.put(modifierList.get(i), i);
-            if (modifierList.get(i).getData().isPresent("modifier"))
-                populateModifierIdMap(i + 1, modifierList.get(i).getData().get("modifier"), modifierIdMap);
-        }
     }
 
 }

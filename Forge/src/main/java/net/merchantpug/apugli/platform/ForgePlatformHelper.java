@@ -231,14 +231,4 @@ public class ForgePlatformHelper implements IPlatformHelper {
         }
     }
 
-    @Override
-    public void populateModifierIdMap(int startIndex, List<?> modifiers, Map<Object, Integer> modifierIdMap) {
-        List<ConfiguredModifier<?>> modifierList = (List<ConfiguredModifier<?>>) modifiers;
-        for (int i = 0; i < modifierList.size(); ++i) {
-            modifierIdMap.put(modifierList.get(i), i);
-            if (!modifierList.get(i).getData().modifiers().isEmpty())
-                populateModifierIdMap(i + 1, modifierList.get(i).getData().modifiers(), modifierIdMap);
-        }
-    }
-
 }

@@ -1,6 +1,7 @@
 package net.merchantpug.apugli.integration.pehkui;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.access.ScaleDataAccess;
 import net.merchantpug.apugli.platform.Services;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.stream.Stream;
 
 public class ApoliScaleModifier<P> extends ScaleModifier {
     private static final float EPSILON = 0.0001F;
@@ -36,27 +36,23 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     protected final int powerPriority;
 
     protected final List<?> modifiers;
-    protected final Map<ResourceLocation, Float> cachedMaxScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> cachedPreviousMaxScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> checkModifiedScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> checkPreviousModifiedScales = new HashMap<>();
+    protected final Map<ResourceLocation, Float> cachedTargetScales = new HashMap<>();
+    protected final Map<ResourceLocation, Float> cachedPreviousTargetScales = new HashMap<>();
     protected final Map<ResourceLocation, Float> checkScales = new HashMap<>();
     protected final Set<ResourceLocation> shouldUpdateModifiers = new HashSet<>();
     protected final Set<ResourceLocation> shouldUpdatePreviousModifiers = new HashSet<>();
-    protected HashSet<ResourceLocation> notOriginalCall = new HashSet<>();
-    protected HashSet<ResourceLocation> notOriginalCallPrevious = new HashSet<>();
     protected final Set<ResourceLocation> cachedScaleIds;
     private boolean addedScales = false;
     protected boolean shouldUpdate = false;
     protected boolean shouldUpdatePrevious = false;
-    protected boolean hasLoggedWarn = false;
+    private boolean hasLoggedWarn = false;
 
     public ApoliScaleModifier(P power, LivingEntity entity, List<?> modifiers, Set<ResourceLocation> cachedScaleIds, int powerPriority) {
         super(Float.MIN_VALUE);
         this.power = power;
         this.owner = entity;
         this.modifiers = ImmutableList.copyOf(modifiers);
-        this.cachedScaleIds = cachedScaleIds;
+        this.cachedScaleIds = ImmutableSet.copyOf(cachedScaleIds);
         this.powerPriority = powerPriority;
     }
 
@@ -111,25 +107,35 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     }
 
     public CompoundTag serialize(CompoundTag tag) {
-        if (!this.cachedMaxScales.isEmpty()) {
-            ListTag cachedMaxScaleTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.cachedMaxScales.entrySet()) {
+        if (!this.cachedTargetScales.isEmpty()) {
+            ListTag cachedTargetScalesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Float> entry : this.cachedTargetScales.entrySet()) {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                cachedMaxScaleTag.add(entryTag);
+                cachedTargetScalesTag.add(entryTag);
             }
-            tag.put("MaxScales", cachedMaxScaleTag);
+            tag.put("TargetScales", cachedTargetScalesTag);
         }
-        if (!this.cachedPreviousMaxScales.isEmpty()) {
-            ListTag cachedPreviousMaxScaleTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousMaxScales.entrySet()) {
+        if (!this.cachedPreviousTargetScales.isEmpty()) {
+            ListTag cachedPreviousTargetScalesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousTargetScales.entrySet()) {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                cachedPreviousMaxScaleTag.add(entryTag);
+                cachedPreviousTargetScalesTag.add(entryTag);
             }
-            tag.put("PreviousMaxScales", cachedPreviousMaxScaleTag);
+            tag.put("PreviousTargetScales", cachedPreviousTargetScalesTag);
+        }
+        if (!this.checkScales.isEmpty()) {
+            ListTag checkScalesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Float> entry : this.checkScales.entrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putString("Type", entry.getKey().toString());
+                entryTag.putFloat("Value", entry.getValue());
+                checkScalesTag.add(entryTag);
+            }
+            tag.put("CheckScales", checkScalesTag);
         }
         if (!this.shouldUpdateModifiers.isEmpty()) {
             ListTag listTag = new ListTag();
@@ -145,20 +151,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             }
             tag.put("ShouldUpdatePreviousModifiers", listTag);
         }
-        if (!this.notOriginalCall.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.notOriginalCall) {
-                listTag.add(StringTag.valueOf(entry.toString()));
-            }
-            tag.put("NotOriginalCall", listTag);
-        }
-        if (!this.notOriginalCallPrevious.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.notOriginalCallPrevious) {
-                listTag.add(StringTag.valueOf(entry.toString()));
-            }
-            tag.put("NotOriginalCallPrevious", listTag);
-        }
         if (this.shouldUpdate)
             tag.putBoolean("ShouldUpdate", true);
 
@@ -169,26 +161,34 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
     }
 
     public void deserialize(CompoundTag tag, LivingEntity entity) {
+        this.addScales(entity);
         this.deserialize(tag, true);
-        addScales(entity);
         this.updateAllScales(entity);
     }
 
     public void deserialize(CompoundTag tag, boolean initialize) {
-        this.cachedMaxScales.clear();
-        if (tag.contains("MaxScales", Tag.TAG_LIST)) {
-            ListTag cachedMaxScaleTag = tag.getList("MaxScales", Tag.TAG_COMPOUND);
+        this.cachedTargetScales.clear();
+        if (tag.contains("TargetScales", Tag.TAG_LIST)) {
+            ListTag cachedMaxScaleTag = tag.getList("TargetScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
                 CompoundTag entryTag = cachedMaxScaleTag.getCompound(i);
-                this.cachedMaxScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
+                this.cachedTargetScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
             }
         }
-        this.cachedPreviousMaxScales.clear();
-        if (tag.contains("PreviousMaxScales", Tag.TAG_LIST)) {
-            ListTag cachedMaxScaleTag = tag.getList("PreviousMaxScales", Tag.TAG_COMPOUND);
+        this.cachedPreviousTargetScales.clear();
+        if (tag.contains("PreviousTargetScales", Tag.TAG_LIST)) {
+            ListTag cachedMaxScaleTag = tag.getList("PreviousTargetScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < cachedMaxScaleTag.size(); ++i) {
                 CompoundTag entryTag = cachedMaxScaleTag.getCompound(i);
-                this.cachedPreviousMaxScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
+                this.cachedPreviousTargetScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
+            }
+        }
+        this.checkScales.clear();
+        if (tag.contains("CheckScales", Tag.TAG_LIST)) {
+            ListTag checkScalesTag = tag.getList("CheckScales", Tag.TAG_COMPOUND);
+            for (int i = 0; i < checkScalesTag.size(); ++i) {
+                CompoundTag entryTag = checkScalesTag.getCompound(i);
+                this.cachedPreviousTargetScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
             }
         }
         this.shouldUpdateModifiers.clear();
@@ -205,20 +205,6 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 this.shouldUpdatePreviousModifiers.add(new ResourceLocation(listTag.getString(i)));
             }
         }
-        this.notOriginalCall.clear();
-        if (tag.contains("NotOriginalCall", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("NotOriginalCall", Tag.TAG_STRING);
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.notOriginalCall.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
-        this.notOriginalCallPrevious.clear();
-        if (tag.contains("NotOriginalCallPrevious", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("NotOriginalCallPrevious", Tag.TAG_STRING);
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.notOriginalCallPrevious.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
         if (tag.contains("ShouldUpdate", Tag.TAG_BYTE))
             this.shouldUpdate = tag.getBoolean("ShouldUpdate");
 
@@ -230,14 +216,12 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         this.addedScales = false;
         this.hasLoggedWarn = false;
         this.shouldUpdate = false;
-        this.cachedMaxScales.clear();
-        this.cachedPreviousMaxScales.clear();
-        this.checkModifiedScales.clear();
-        this.checkPreviousModifiedScales.clear();
+        this.shouldUpdatePrevious = false;
+        this.cachedTargetScales.clear();
+        this.cachedPreviousTargetScales.clear();
         this.checkScales.clear();
-        this.notOriginalCall.clear();
-        this.notOriginalCallPrevious.clear();
-        this.checkScales.clear();
+        this.shouldUpdateModifiers.clear();
+        this.shouldUpdatePreviousModifiers.clear();
     }
 
     protected void addScales(LivingEntity entity) {
@@ -252,13 +236,15 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             }
             for (ResourceLocation scaleTypeId : this.getCachedScaleIds()) {
                 ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
-                this.updateScale(entity, scaleType, true);
+                this.updateScale(entity, scaleType);
             }
             this.addedScales = true;
         }
     }
 
     public void tick(LivingEntity entity) {
+        boolean sync = false;
+
         for (ResourceLocation typeId : getCachedScaleIds()) {
             ScaleData data = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, typeId).getScaleData(entity);
 
@@ -266,15 +252,29 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
             float value = !isActive ? data.getBaseScale() : (float)Services.PLATFORM.applyModifiers(data.getEntity(), this.modifiers, data.getBaseScale());
             if ((!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value))) {
                 this.checkScales.put(typeId, value);
-                this.shouldUpdate = true;
-                this.shouldUpdatePrevious = true;
-                this.checkModifiedScales.clear();
-                this.checkPreviousModifiedScales.clear();
+                this.markForUpdating(typeId, false);
+                sync = true;
             }
+        }
+
+        if (sync) {
+            Services.POWER.syncPower(entity, this.power);
+            this.updateOthers(entity);
         }
     }
 
-    public void updateIfShould(LivingEntity entity) {
+    protected void markForUpdating(ResourceLocation typeId, boolean notOriginalCall) {
+        this.shouldUpdateModifiers.add(typeId);
+        this.shouldUpdatePreviousModifiers.add(typeId);
+        this.shouldUpdate = true;
+        this.shouldUpdatePrevious = true;
+        if (notOriginalCall) {
+            this.cachedTargetScales.clear();
+            this.cachedPreviousTargetScales.clear();
+        }
+    }
+
+    protected void updateIfShould(LivingEntity entity) {
         if (this.shouldUpdate || this.shouldUpdatePrevious) {
             updateAllScales(entity);
             this.shouldUpdate = false;
@@ -282,28 +282,22 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
         }
     }
 
-    protected void updateOthers(LivingEntity entity, boolean updateModifiers) {
+    public void updateOthers(LivingEntity entity) {
         SortedSet<ApoliScaleModifier<?>> tailSet = PehkuiUtil.getModifiersInOrder(entity).tailSet(this);
-        boolean skip = true;
         for (ApoliScaleModifier<?> modifier : tailSet) {
-            if (skip) {
-                skip = false;
+            if (modifier.getId().equals(this.getId()))
                 continue;
-            }
-            if (!modifier.notOriginalCall.isEmpty() && !modifier.notOriginalCallPrevious.isEmpty()) continue;
-            modifier.notOriginalCall.addAll(modifier.getCachedScaleIds());
-            modifier.notOriginalCallPrevious.addAll(modifier.getCachedScaleIds());
-            modifier.shouldUpdate = true;
-            modifier.shouldUpdatePrevious = true;
-            modifier.scheduleForUpdate(entity, updateModifiers);
+
+            modifier.getCachedScaleIds().forEach(id -> modifier.markForUpdating(id, true));
+            Services.POWER.syncPower(entity, modifier.power);
         }
     }
 
     public void updateAllScales(LivingEntity entity) {
-        this.getCachedScaleIds().stream().map(PehkuiUtil::getScaleType).forEach(type -> updateScale(entity, type, true));
+        this.getCachedScaleIds().stream().map(PehkuiUtil::getScaleType).forEach(type -> updateScale(entity, type));
     }
 
-    public void updateScale(LivingEntity entity, ScaleType type, boolean updateDependencies) {
+    public void updateScale(LivingEntity entity, ScaleType type) {
         ScaleData data = type.getScaleData(entity);
         data.onUpdate();
         if (this.shouldUpdate)
@@ -311,85 +305,66 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
 
         if (this.shouldUpdatePrevious)
             data.getPrevScale();
-
-        if (updateDependencies) {
-            getScaleDependencies(entity, type).forEach(scaleType -> {
-                updateScale(entity, type, false);
-            });
-        }
-    }
-
-    private static Stream<ScaleType> getScaleDependencies(LivingEntity entity, ScaleType scaleType) {
-        return ScaleRegistries.SCALE_TYPES.values().stream().filter(type -> type.getScaleData(entity).getBaseValueModifiers().stream().anyMatch(mod -> mod instanceof TypedScaleModifier typed && typed.getType() == scaleType));
-    }
-
-    public void scheduleForUpdate(LivingEntity entity, boolean updateModifiers) {
-        if (updateModifiers) {
-            this.shouldUpdateModifiers.addAll(this.getCachedScaleIds());
-            this.shouldUpdatePreviousModifiers.addAll(this.getCachedScaleIds());
-        }
     }
 
     public ResourceLocation getId() {
         return ApugliPowers.MODIFY_SCALE.get().getPowerId(this.power);
     }
 
-    public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
-        if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
-            if (!this.hasLoggedWarn)
-                Apugli.LOG.warn("Attempted to use ApoliScaleModifier on a non-living entity. This should not be possible.");
-            this.hasLoggedWarn = true;
-            return modifiedScale;
-        }
-
-        ResourceLocation id = getResourceLocationFromScaleData(scaleData);
-
-
-        if (!Services.POWER.isActive(power, entity)) {
-            this.notOriginalCall.remove(id);
-            return modifiedScale;
-        }
-
-        if (!this.checkModifiedScales.containsKey(id) || !compareFloats(this.checkModifiedScales.getOrDefault(id, modifiedScale), modifiedScale) || this.shouldUpdateModifiers.contains(id)) {
-            this.checkModifiedScales.put(id, modifiedScale);
-            this.cachedMaxScales.put(id, (float)Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
-            if (!this.notOriginalCall.contains(PehkuiUtil.getScaleTypeId(scaleData.getScaleType())))
-                this.updateOthers(entity, true);
-        }
-
-        this.notOriginalCall.remove(id);
-
-        return this.cachedMaxScales.getOrDefault(id, modifiedScale);
+    public ResourceLocation getPowerId() {
+        return ApugliPowers.MODIFY_SCALE.get().getPowerId(this.power);
     }
 
+
+    @Override
+    public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
+        if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
+            logWarn();
+            return modifiedScale;
+        }
+
+        ResourceLocation id = getResourceLocationFromScaleData(scaleData);
+
+
+        if (!Services.POWER.isActive(power, entity)) {
+            return modifiedScale;
+        }
+
+        if (this.shouldUpdateModifiers.contains(id)) {
+            this.cachedTargetScales.put(id, (float)Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
+        }
+
+        return this.cachedTargetScales.getOrDefault(id, modifiedScale);
+    }
+
+    @Override
     public float modifyPrevScale(final ScaleData scaleData, final float modifiedScale) {
         if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
-            if (!this.hasLoggedWarn)
-                Apugli.LOG.warn("Attempted to use ApoliScaleModifier on a non-living entity. This should not be possible.");
-            this.hasLoggedWarn = true;
+            logWarn();
             return modifiedScale;
         }
 
         ResourceLocation id = getResourceLocationFromScaleData(scaleData);
 
         if (!Services.POWER.isActive(power, entity)) {
-            this.notOriginalCallPrevious.remove(id);
             return modifiedScale;
         }
 
-        if (!this.checkPreviousModifiedScales.containsKey(id) || !compareFloats(this.checkPreviousModifiedScales.getOrDefault(id, modifiedScale), modifiedScale) || this.shouldUpdatePreviousModifiers.contains(id)) {
-            this.checkPreviousModifiedScales.put(id, modifiedScale);
-            this.cachedPreviousMaxScales.put(id, (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale));
-            if (!this.notOriginalCallPrevious.contains(PehkuiUtil.getScaleTypeId(scaleData.getScaleType())))
-                this.updateOthers(entity, true);
+        if (this.shouldUpdatePreviousModifiers.contains(id)) {
+            this.cachedPreviousTargetScales.put(id, (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale));
         }
-        this.notOriginalCallPrevious.remove(id);
 
-        return this.cachedPreviousMaxScales.getOrDefault(id, modifiedScale);
+        return this.cachedPreviousTargetScales.getOrDefault(id, modifiedScale);
     }
 
     protected static boolean compareFloats(float a, float b) {
         float diff = Mth.abs(a - b);
         return diff < EPSILON;
+    }
+
+    protected void logWarn() {
+        if (!this.hasLoggedWarn)
+            Apugli.LOG.warn("Attempted to use ApoliScaleModifier on a non-living entity. This should not be possible.");
+        this.hasLoggedWarn = true;
     }
 }

@@ -8,6 +8,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import net.merchantpug.apugli.power.factory.SimplePowerFactory;
 import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
@@ -63,6 +64,8 @@ public interface IPowerHelper<T> {
 
     <P> ResourceLocation getPowerId(P power);
 
+    <P> P getPowerFromId(Entity entity, ResourceLocation powerId);
+
     default <P extends Power> P getPowerFromId(ResourceLocation powerId, SimplePowerFactory<P> factory, LivingEntity living, boolean includeInactive) {
         Optional<P> optional = getPowers(living, factory, includeInactive).stream().filter(p -> this.getPowerId(p).equals(powerId)).findFirst();
         return optional.orElse(null);
@@ -81,8 +84,8 @@ public interface IPowerHelper<T> {
     boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
 
     Map<ResourceLocation, Double> iterateThroughModifierForResources(LivingEntity entity, List<?> modifiers);
-    Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
-    double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources);
+    Map<Integer, Map<ResourceLocation, Double>> getInBetweenResources(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
+    double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
     double applyModifierWithSpecificValueAtIndex(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> resourceMap);
 
     Map<ResourceLocation, Double> getClosestToBaseScale(LivingEntity entity, List<?> modifiers, double base);

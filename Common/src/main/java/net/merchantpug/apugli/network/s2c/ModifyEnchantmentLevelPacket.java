@@ -41,16 +41,15 @@ public record ModifyEnchantmentLevelPacket(int entityId, ResourceLocation powerI
                     return;
                 }
 
-                Optional<?> power = Services.POWER.getPowers(living, ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get()).stream().filter(p -> Services.POWER.getPowerId(p) == powerId()).findFirst();
+                Object power = Services.POWER.getPowerFromId(entity, powerId());
 
-                if (!power.isPresent()) {
+                if (power == null)
                     return;
-                }
 
                 if (remove()) {
-                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(power.get(), living);
+                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onRemoved(power, living);
                 } else {
-                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(power.get(), living);
+                    ApugliPowers.MODIFY_ENCHANTMENT_LEVEL.get().onAdded(power, living);
                 }
             }
         });

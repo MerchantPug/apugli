@@ -23,3 +23,4 @@
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
+- `texture_url` fields will now tell you whether textures are loaded.

@@ -57,7 +57,7 @@ public class TextureUtilClient {
             try {
                 texture = NativeImage.read(new ByteArrayInputStream(bytes));
             } catch (IOException e) {
-                Apugli.LOG.warn("Could not read texture from input: ", e);
+                Apugli.LOG.warn("Could not read texture '" + url + "' from input: ", e);
                 return;
             }
             TextureManager manager = Minecraft.getInstance().getTextureManager();

@@ -17,16 +17,16 @@ import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.merchantpug.apugli.registry.services.RegistryObject;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
@@ -123,11 +123,17 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
 
     @Override
     public void syncPower(LivingEntity entity, PowerType<?> powerType) {
+        if (entity instanceof ServerPlayer serverPlayer && serverPlayer.connection == null)
+            return;
+
         PowerHolderComponent.syncPower(entity, powerType);
     }
 
     @Override
     public <P> void syncPower(LivingEntity entity, P power) {
+        if (entity instanceof ServerPlayer serverPlayer && serverPlayer.connection == null)
+            return;
+
         PowerHolderComponent.syncPower(entity, ((Power) power).getType());
     }
 
@@ -167,6 +173,11 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public <P> ResourceLocation getPowerId(P power) {
         return ((Power) power).getType().getIdentifier();
+    }
+
+    @Override
+    public <P> P getPowerFromId(Entity entity, ResourceLocation powerId) {
+        return (P) new PowerTypeReference<>(powerId).get(entity);
     }
 
     @Override
@@ -216,7 +227,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
-    public Map<Integer, Map<ResourceLocation, Double>> getModifiedForEachDelayValue(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public Map<Integer, Map<ResourceLocation, Double>> getInBetweenResources(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
         Map<Integer, Map<ResourceLocation, Double>> returnMap = new HashMap<>();
         List<Modifier> originalMods = (List<Modifier>) modifiers;
         int previousResourceValue = 0;
@@ -247,7 +258,7 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
                 }
 
                 if (modifier.getData().isPresent("modifier")) {
-                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getModifiedForEachDelayValue(entity, modifier.getData().get("modifier"), delayModifiers, base, startingResources);
+                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getInBetweenResources(entity, modifier.getData().get("modifier"), delayModifiers, base, startingResources);
                     innerMap.forEach((integer, resourceLocationDoubleMap) -> {
                         returnMap.merge(integer, resourceLocationDoubleMap, (map, map2) -> {
                             map.putAll(map2);
@@ -263,7 +274,11 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     }
 
     @Override
-    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> startingResources) {
+    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+        if (startingResources.isEmpty()) {
+            return base;
+        }
+
         List<Modifier> originalMods = (List<Modifier>) modifiers;
         double currentValue = base;
         Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);
@@ -276,9 +291,9 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
             }
         }
 
-        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()), entry.getValue()))) {
+        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()).intValue(), entry.getValue().intValue()))) {
+            currentValue += applyModifierWithSpecificValueAtIndex(entity, delayModifiers, base, resources);
             incrementMods(originalMods, resources, targetResources);
-            currentValue += applyModifierWithSpecificValueAtIndex(entity, modifiers, base, resources);
         }
 
         return currentValue;
@@ -290,8 +305,12 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
                 incrementMods(modifier.getData().get("modifier"), resources, targetResources);
             }
             if (modifier.getData().isPresent("resource") && resources.containsKey(((PowerTypeReference<?>)modifier.getData().get("resource")).getIdentifier())) {
-                int increment = targetResources.get(((PowerTypeReference<?>)modifier.getData().get("resource")).getIdentifier()) < resources.get(((PowerTypeReference<?>)modifier.getData().get("resource")).getIdentifier()) ? -1 : 1;
-                resources.put(((PowerTypeReference<?>)modifier.getData().get("resource")).getIdentifier(), resources.get(((PowerTypeReference<?>)modifier.getData().get("resource")).getIdentifier()) + increment);
+                ResourceLocation resourceId = ((PowerTypeReference<?>) modifier.getData().get("resource")).getIdentifier();
+                if (Objects.equals(targetResources.get(resourceId).intValue(), resources.get(resourceId).intValue()))
+                    return;
+
+                int increment = targetResources.get(resourceId) < resources.get(resourceId) ? -1 : 1;
+                resources.put(resourceId, resources.get(resourceId) + increment);
             }
         }
     }
@@ -299,6 +318,9 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
     @Override
     public double applyModifierWithSpecificValueAtIndex(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> resourceMap) {
         List<Modifier> modifierList = (List<Modifier>) modifiers;
+        if (iterateThroughModifierForResources(entity, modifiers).keySet().stream().noneMatch(resourceMap::containsKey)) {
+            return Services.PLATFORM.applyModifiers(entity, modifiers, base);
+        }
         return ModifierUtil.applyModifiers(entity, remapModifiers(modifierList, resourceMap), base);
     }
 

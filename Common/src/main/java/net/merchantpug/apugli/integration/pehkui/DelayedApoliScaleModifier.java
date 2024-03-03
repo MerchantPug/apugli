@@ -6,7 +6,6 @@ import net.merchantpug.apugli.Apugli;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -15,8 +14,8 @@ import org.joml.Math;
 import virtuoel.pehkui.api.ScaleData;
 import virtuoel.pehkui.api.ScaleRegistries;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,30 +25,20 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     private int ticks;
     private final int baseMaxTicks;
     private int maxTicks;
-    private boolean previousActiveState;
 
     protected final List<?> delayModifiers;
     private Map<ResourceLocation, Double> previousResourceValues = new HashMap<>();
-    private Map<Integer, Map<ResourceLocation, Double>> inBetweenDelayValues = new HashMap<>();
+    private Map<Integer, Map<ResourceLocation, Double>> inBetweenResourceValues = new HashMap<>();
     private Map<ResourceLocation, Double> targetResourceValues = new HashMap<>();
-    private boolean invalidated;
 
     protected final Optional<ResourceLocation> easing;
-    protected final Map<ResourceLocation, Float> cachedMinScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> cachedPreviousMinScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> checkMaxScales = new HashMap<>();
-    protected final Map<ResourceLocation, Float> checkMinScales = new HashMap<>();
+    protected final Map<ResourceLocation, Float> cachedPreviousScales = new HashMap<>();
+    protected final Map<ResourceLocation, Float> cachedPreviousPreviousScales = new HashMap<>();
     private final Map<ResourceLocation, Map<Integer, Map<Float, Float>>> reachedScales = new HashMap<>();
     private final Map<ResourceLocation, Map<Integer, Float>> reachedPreviousScales = new HashMap<>();
-    private int tickTarget = 0;
-    private final Set<ResourceLocation> minScalesToUpdate = new HashSet<>();
-    private final Set<ResourceLocation> maxScalesToUpdate = new HashSet<>();
-    private final Set<ResourceLocation> previousMinScalesToUpdate = new HashSet<>();
-    private final Set<ResourceLocation> previousMaxScalesToUpdate = new HashSet<>();
-    private final Set<ResourceLocation> tickSettingPrevention = new HashSet<>();
-    private final Set<ResourceLocation> oppositesToUpdate = new HashSet<>();
-    private final Set<ResourceLocation> previousOppositesToUpdate = new HashSet<>();
-    private boolean shouldUpdateOthers = false;
+    private final ResourceLocation tickUpdateScaleTypeId;
+    private float tickUpdatePrevious;
+    private float tickUpdateTarget;
 
     public DelayedApoliScaleModifier(P power, LivingEntity entity, List<?> modifiers, List<?> delayModifiers, int maxTicks, Set<ResourceLocation> cachedScaleIds, int powerPriority, Optional<ResourceLocation> easing) {
         super(power, entity, modifiers, cachedScaleIds, powerPriority);
@@ -58,7 +47,11 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         this.ticks = 0;
         this.maxTicks = maxTicks;
         this.easing = easing;
-        this.previousActiveState = Services.POWER.isActive(power, entity);
+        this.tickUpdateScaleTypeId = this.getCachedScaleIds().stream().findFirst().orElseThrow();
+        if (entity != null) {
+            this.tickUpdateTarget = !Services.POWER.isActive(this.power, entity) ? PehkuiUtil.getScaleType(this.tickUpdateScaleTypeId).getScaleData(entity).getBaseScale() : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, PehkuiUtil.getScaleType(this.tickUpdateScaleTypeId).getScaleData(entity).getBaseScale());
+            this.tickUpdatePrevious = PehkuiUtil.getScaleType(this.tickUpdateScaleTypeId).getScaleData(entity).getBaseScale();
+        }
     }
 
     public int getMaxTicks() {
@@ -81,288 +74,127 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
         return this.ticks <= 0;
     }
 
-    protected void invalidate() {
-        this.invalidated = true;
-    }
-
     @Override
     public CompoundTag serialize(CompoundTag tag) {
-        CompoundTag baseTag = super.serialize(tag);
-        baseTag.putInt("TickTarget", this.tickTarget);
-        baseTag.putInt("MaxTicks", this.getMaxTicks());
-        baseTag.putInt("Ticks", this.getClampedTicks());
-        if (!this.cachedMinScales.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.cachedMinScales.entrySet()) {
+        tag.putInt("MaxTicks", this.getMaxTicks());
+        tag.putInt("Ticks", this.getClampedTicks());
+        super.serialize(tag);
+        if (!this.cachedPreviousScales.isEmpty()) {
+            ListTag cachedPreviousScalesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousScales.entrySet()) {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                listTag.add(entryTag);
+                cachedPreviousScalesTag.add(entryTag);
             }
-            baseTag.put("MinScales", listTag);
+            tag.put("PreviousScales", cachedPreviousScalesTag);
         }
-        if (!this.cachedPreviousMinScales.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousMinScales.entrySet()) {
+        if (!this.cachedPreviousPreviousScales.isEmpty()) {
+            ListTag cachedPreviousPreviousScalesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Float> entry : this.cachedPreviousPreviousScales.entrySet()) {
                 CompoundTag entryTag = new CompoundTag();
                 entryTag.putString("Type", entry.getKey().toString());
                 entryTag.putFloat("Value", entry.getValue());
-                listTag.add(entryTag);
+                cachedPreviousPreviousScalesTag.add(entryTag);
             }
-            baseTag.put("PreviousMinScales", listTag);
+            tag.put("PreviousPreviousScales", cachedPreviousPreviousScalesTag);
         }
-        if (!this.minScalesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.minScalesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
+        if (!this.targetResourceValues.isEmpty()) {
+            ListTag targetResourceValuesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Double> entry : this.targetResourceValues.entrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putString("Resource", entry.getKey().toString());
+                entryTag.putDouble("Value", entry.getValue());
+                targetResourceValuesTag.add(entryTag);
             }
-            tag.put("MinScalesToUpdate", listTag);
+            tag.put("TargetResourceValues", targetResourceValuesTag);
         }
-        if (!this.maxScalesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.maxScalesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
+        if (!this.previousResourceValues.isEmpty()) {
+            ListTag previousResourceValuesTag = new ListTag();
+            for (Map.Entry<ResourceLocation, Double> entry : this.previousResourceValues.entrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putString("Resource", entry.getKey().toString());
+                entryTag.putDouble("Value", entry.getValue());
+                previousResourceValuesTag.add(entryTag);
             }
-            tag.put("MaxScalesToUpdate", listTag);
+            tag.put("PreviousResourceValues", previousResourceValuesTag);
         }
-        if (!this.previousMinScalesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.previousMinScalesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
+        if (!this.inBetweenResourceValues.isEmpty()) {
+            ListTag previousResourceValuesTag = new ListTag();
+            for (Map.Entry<Integer, Map<ResourceLocation, Double>> entry : this.inBetweenResourceValues.entrySet()) {
+                if (entry.getValue().isEmpty()) {
+                    continue;
+                }
+                CompoundTag entryTag = new CompoundTag();
+                ListTag valuesTag = new ListTag();
+
+                for (Map.Entry<ResourceLocation, Double> innerEntry : entry.getValue().entrySet()) {
+                    CompoundTag innerEntryTag = new CompoundTag();
+                    innerEntryTag.putString("Resource", innerEntry.getKey().toString());
+                    innerEntryTag.putDouble("Value", innerEntry.getValue());
+                    valuesTag.add(innerEntryTag);
+                }
+
+                entryTag.putString("Ticks", entry.getKey().toString());
+                entryTag.put("Values", valuesTag);
+                previousResourceValuesTag.add(entryTag);
             }
-            tag.put("PreviousMinScalesToUpdate", listTag);
+            tag.put("InBetweenResourceValues", previousResourceValuesTag);
         }
-        if (!this.previousMaxScalesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.previousMaxScalesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
-            }
-            tag.put("PreviousMaxScalesToUpdate", listTag);
-        }
-        if (!this.oppositesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.oppositesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
-            }
-            tag.put("OppositesToUpdate", listTag);
-        }
-        if (!this.previousOppositesToUpdate.isEmpty()) {
-            ListTag listTag = new ListTag();
-            for (ResourceLocation entry : this.previousOppositesToUpdate) {
-                listTag.add(StringTag.valueOf(entry.toString()));
-            }
-            tag.put("PreviousOppositesToUpdate", listTag);
-        }
-        tag.putBoolean("ShouldUpdateOthers", this.shouldUpdateOthers);
-        return baseTag;
+        return tag;
     }
 
     @Override
     public void deserialize(CompoundTag tag, boolean initialize) {
-        super.deserialize(tag, false);
-        this.tickTarget = tag.getInt("TickTarget");
         this.maxTicks = tag.getInt("MaxTicks");
         this.setTicks(tag.getInt("Ticks"));
-        this.cachedMinScales.clear();
-        if (tag.contains("MinScales", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("MinScales", Tag.TAG_COMPOUND);
+        super.deserialize(tag, false);
+        this.cachedPreviousScales.clear();
+        if (tag.contains("PreviousScales", Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList("PreviousScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag entryTag = listTag.getCompound(i);
-                this.cachedMinScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
+                this.cachedPreviousScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
             }
         }
-        this.cachedPreviousMinScales.clear();
-        if (tag.contains("PreviousMinScales", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("PreviousMinScales", Tag.TAG_COMPOUND);
+        this.cachedPreviousPreviousScales.clear();
+        if (tag.contains("PreviousPreviousScales", Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList("PreviousPreviousScales", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag entryTag = listTag.getCompound(i);
-                this.cachedPreviousMinScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
+                this.cachedPreviousPreviousScales.put(new ResourceLocation(entryTag.getString("Type")), entryTag.getFloat("Value"));
             }
         }
-        this.minScalesToUpdate.clear();
-        if (tag.contains("MinScalesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("MinScalesToUpdate", Tag.TAG_STRING);
+        this.targetResourceValues.clear();
+        if (tag.contains("TargetResourceValues", Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList("TargetResourceValues", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); ++i) {
-                this.minScalesToUpdate.add(new ResourceLocation(listTag.getString(i)));
+                CompoundTag entryTag = listTag.getCompound(i);
+                this.targetResourceValues.put(new ResourceLocation(entryTag.getString("Resource")), entryTag.getDouble("Value"));
             }
         }
-        this.maxScalesToUpdate.clear();
-        if (tag.contains("MaxScalesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("MaxScalesToUpdate", Tag.TAG_STRING);
+        this.previousResourceValues.clear();
+        if (tag.contains("PreviousResourceValues", Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList("PreviousResourceValues", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); ++i) {
-                this.maxScalesToUpdate.add(new ResourceLocation(listTag.getString(i)));
+                CompoundTag entryTag = listTag.getCompound(i);
+                this.previousResourceValues.put(new ResourceLocation(entryTag.getString("Resource")), entryTag.getDouble("Value"));
             }
         }
-        this.previousMinScalesToUpdate.clear();
-        if (tag.contains("PreviousMinScalesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("PreviousMinScalesToUpdate", Tag.TAG_STRING);
+        this.inBetweenResourceValues.clear();
+        if (tag.contains("InBetweenResourceValues", Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList("InBetweenResourceValues", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); ++i) {
-                this.previousMinScalesToUpdate.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
-        this.previousMaxScalesToUpdate.clear();
-        if (tag.contains("PreviousMaxScalesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("PreviousMaxScalesToUpdate", Tag.TAG_STRING);
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.previousMaxScalesToUpdate.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
-        this.oppositesToUpdate.clear();
-        if (tag.contains("OppositesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("OppositesToUpdate", Tag.TAG_STRING);
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.oppositesToUpdate.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
-        this.previousOppositesToUpdate.clear();
-        if (tag.contains("PreviousOppositesToUpdate", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("PreviousOppositesToUpdate", Tag.TAG_STRING);
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.previousOppositesToUpdate.add(new ResourceLocation(listTag.getString(i)));
-            }
-        }
-        this.shouldUpdateOthers = tag.getBoolean("ShouldUpdateOthers");
-    }
+                CompoundTag entryTag = listTag.getCompound(i);
 
-    @Override
-    public void tick(LivingEntity entity) {
-        boolean shouldSync = false;
-        boolean isActive = Services.POWER.isActive(power, entity);
+                Map<ResourceLocation, Double> values = new HashMap<>();
+                ListTag valuesTag = entryTag.getList("Values", Tag.TAG_COMPOUND);
 
-        for (ResourceLocation typeId : this.cachedScaleIds) {
-            ScaleData data = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, typeId).getScaleData(entity);
-
-            float value = !isActive ? data.getBaseScale() : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, data.getBaseScale());
-            float min = !this.checkMinScales.containsKey(typeId) ? Math.min(value, data.getBaseScale()) : value;
-            float max = !this.checkMaxScales.containsKey(typeId) ? Math.max(value, data.getBaseScale()) : value;
-            if (invalidated) {
-                if (min < this.checkMinScales.getOrDefault(typeId, min)) {
-                    this.checkMinScales.put(typeId, min);
-                    this.minScalesToUpdate.remove(typeId);
-                    this.previousMinScalesToUpdate.add(typeId);
-                } else if (max > this.checkMaxScales.getOrDefault(typeId, max)) {
-                    this.checkMaxScales.put(typeId, max);
-                    this.maxScalesToUpdate.add(typeId);
-                    this.previousMaxScalesToUpdate.add(typeId);
+                for (int j = 0; j < valuesTag.size(); ++j) {
+                    CompoundTag innerTag = listTag.getCompound(j);
+                    values.put(new ResourceLocation(entryTag.getString("Resource")), entryTag.getDouble("Value"));
                 }
-                this.oppositesToUpdate.add(typeId);
-                this.previousOppositesToUpdate.add(typeId);
-                this.invalidated = false;
-
-                this.checkScales.put(typeId, value);
-                this.markForUpdating(typeId);
-                shouldSync = true;
-                updateScale(entity, PehkuiUtil.getScaleType(typeId), true);
-            } else if (!this.checkScales.containsKey(typeId) || !compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value)) {
-                if (!this.checkMinScales.containsKey(typeId) || value < this.checkMinScales.getOrDefault(typeId, value)) {
-                    Map<ResourceLocation, Double> newPrevious = this.targetResourceValues.isEmpty() ? Services.POWER.getClosestToBaseScale(entity, this.modifiers, data.getBaseScale()) : this.ticks == this.tickTarget ? this.targetResourceValues : this.inBetweenDelayValues.entrySet().stream().filter(entry -> entry.getKey() <= ticks).map(Map.Entry::getValue).findFirst().orElse(new HashMap<>());
-
-                    this.targetResourceValues = Services.POWER.iterateThroughModifierForResources(entity, this.modifiers);
-                    this.inBetweenDelayValues = Services.POWER.getModifiedForEachDelayValue(entity, this.modifiers, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
-                    this.previousResourceValues = newPrevious;
-
-                    this.maxTicks = (int) Services.POWER.addAllInBetweensOfResourceModifiers(entity, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
-
-                    this.oppositesToUpdate.add(typeId);
-                    this.previousOppositesToUpdate.add(typeId);
-                    this.checkMinScales.put(typeId, min);
-                    this.minScalesToUpdate.add(typeId);
-                    this.previousMinScalesToUpdate.add(typeId);
-                }
-                if (!this.checkMaxScales.containsKey(typeId) || value > this.checkMaxScales.getOrDefault(typeId, value)) {
-                    Map<ResourceLocation, Double> newPrevious = this.targetResourceValues.isEmpty() ? Services.POWER.getClosestToBaseScale(entity, this.modifiers, data.getBaseScale()) : this.ticks == this.tickTarget ? this.targetResourceValues : this.inBetweenDelayValues.entrySet().stream().filter(entry -> entry.getKey() <= ticks).map(Map.Entry::getValue).findFirst().orElse(new HashMap<>());
-
-                    this.targetResourceValues = Services.POWER.iterateThroughModifierForResources(entity, this.modifiers);
-                    this.inBetweenDelayValues = Services.POWER.getModifiedForEachDelayValue(entity, this.modifiers, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
-                    this.previousResourceValues = newPrevious;
-
-                    this.maxTicks = (int) Services.POWER.addAllInBetweensOfResourceModifiers(entity, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
-
-                    this.oppositesToUpdate.add(typeId);
-                    this.previousOppositesToUpdate.add(typeId);
-                    this.checkMaxScales.put(typeId, max);
-                    this.minScalesToUpdate.remove(typeId);
-                    this.maxScalesToUpdate.add(typeId);
-                    this.previousMinScalesToUpdate.remove(typeId);
-                    this.previousMaxScalesToUpdate.add(typeId);
-                }
-                this.checkScales.put(typeId, value);
-                this.markForUpdating(typeId);
-                shouldSync = true;
-                updateScale(entity, PehkuiUtil.getScaleType(typeId), true);
-            }
-
-            int modifiedDelay = (int) Services.POWER.addAllInBetweensOfResourceModifiers(entity, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
-
-            if (this.maxTicks != modifiedDelay) {
-                int inbetween = modifiedDelay - this.maxTicks;
-                this.maxTicks = modifiedDelay;
-                this.ticks += inbetween;
-                this.tickTarget = Math.round(this.tickTarget + inbetween);
-                this.markForUpdating(typeId);
-                shouldSync = true;
-                updateScale(entity, PehkuiUtil.getScaleType(typeId), true);
-            }
-        }
-
-        if (this.previousActiveState != isActive) {
-            if (!isActive) {
-                this.tickTarget = 0;
-            } else {
-                this.tickTarget = this.getMaxTicks();
-            }
-            this.previousActiveState = isActive;
-            shouldSync = true;
-        }
-
-        if (this.getClampedTicks() < this.getMaxTicks() && this.tickTarget > this.getClampedTicks()) {
-            this.setTicks(Mth.clamp(this.getClampedTicks() + 1, 0, this.tickTarget));
-            this.shouldUpdate = true;
-            this.shouldUpdatePrevious = true;
-            this.shouldUpdateOthers = false;
-            shouldSync = true;
-        } else if (this.tickTarget < this.getClampedTicks()) {
-            this.setTicks(Mth.clamp(this.getClampedTicks() - 1, this.tickTarget, this.getMaxTicks()));
-            this.shouldUpdate = true;
-            this.shouldUpdatePrevious = true;
-            this.shouldUpdateOthers = false;
-            shouldSync = true;
-        }
-
-        if (this.getClampedTicks() == this.tickTarget && (!this.targetResourceValues.isEmpty() || !this.inBetweenDelayValues.isEmpty() || !this.previousResourceValues.isEmpty())) {
-            this.targetResourceValues.clear();
-            this.inBetweenDelayValues.clear();
-            this.previousResourceValues.clear();
-        }
-
-        if (shouldSync) {
-            Services.POWER.syncPower(entity, this.power);
-        }
-    }
-
-    public void markForUpdating(ResourceLocation typeId) {
-        this.shouldUpdateModifiers.add(typeId);
-        this.shouldUpdatePreviousModifiers.add(typeId);
-
-        this.tickSettingPrevention.addAll(this.getCachedScaleIds());
-
-        this.shouldUpdate = true;
-        this.shouldUpdatePrevious = true;
-    }
-
-    @Override
-    public void scheduleForUpdate(LivingEntity entity, boolean updateModifiers) {
-        if (updateModifiers) {
-            this.shouldUpdateModifiers.addAll(this.getCachedScaleIds());
-            this.shouldUpdatePreviousModifiers.addAll(this.getCachedScaleIds());
-            this.tickSettingPrevention.addAll(this.getCachedScaleIds());
-            if (this.tickTarget < this.ticks || this.tickTarget == this.ticks && this.isMin()) {
-                minScalesToUpdate.addAll(this.getCachedScaleIds());
-                previousMinScalesToUpdate.addAll(this.getCachedScaleIds());
-            }
-            if (this.tickTarget > this.ticks || this.tickTarget == this.ticks && this.isMax()) {
-                maxScalesToUpdate.addAll(this.getCachedScaleIds());
-                previousMaxScalesToUpdate.addAll(this.getCachedScaleIds());
+                this.inBetweenResourceValues.put(entryTag.getInt("Ticks"), values);
             }
         }
     }
@@ -370,89 +202,130 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
     @Override
     protected void reset() {
         super.reset();
-        this.ticks = 0;
-        this.maxTicks = 0;
-        this.cachedMinScales.clear();
-        this.cachedPreviousMinScales.clear();
+        this.cachedPreviousScales.clear();
+        this.cachedPreviousPreviousScales.clear();
         this.reachedScales.clear();
         this.reachedPreviousScales.clear();
-        this.shouldUpdateModifiers.clear();
-        this.shouldUpdatePreviousModifiers.clear();
-        this.checkMinScales.clear();
-        this.checkMaxScales.clear();
-        this.tickSettingPrevention.clear();
         this.targetResourceValues.clear();
         this.previousResourceValues.clear();
+        this.inBetweenResourceValues.clear();
     }
 
-    public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
-        ResourceLocation scaleTypeId = getResourceLocationFromScaleData(scaleData);
+    @Override
+    public void tick(LivingEntity entity) {
+        boolean updateMaxTicks = false;
+        boolean isActive = Services.POWER.isActive(power, entity);
 
-        if (this.shouldUpdateModifiers.contains(scaleTypeId)) {
-            float currentScale = this.isMin() ? this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) : this.isMax() ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.reachedScales.containsKey(scaleTypeId) && this.reachedScales.get(scaleTypeId).containsKey(this.ticks) && this.reachedScales.get(scaleTypeId).get(this.ticks).keySet().stream().max(Float::compareTo).isPresent() ? this.reachedScales.get(scaleTypeId).get(this.ticks).entrySet().stream().max(Map.Entry.comparingByKey()).map(Map.Entry::getValue).orElse(modifiedScale) : modifiedScale;
-            this.reachedScales.remove(scaleTypeId);
-            boolean isActive = Services.POWER.isActive(power, (LivingEntity) scaleData.getEntity());
-            float appliedScale = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale);
-            float previousOppositeScale =  this.maxScalesToUpdate.contains(scaleTypeId) && !this.minScalesToUpdate.contains(scaleTypeId) || !isActive ? this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale) : !this.maxScalesToUpdate.contains(scaleTypeId) && this.minScalesToUpdate.contains(scaleTypeId) ? this.cachedMaxScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
-            float min = this.minScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
-            float max = this.maxScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
-            if (!this.cachedMinScales.containsKey(scaleTypeId) || this.minScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCall.contains(scaleTypeId)) {
-                    this.tickTarget = 0;
-                }
+        for (ResourceLocation typeId : this.cachedScaleIds) {
+            ScaleData data = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, typeId).getScaleData(entity);
 
-                if (!this.maxScalesToUpdate.contains(scaleTypeId) && this.minScalesToUpdate.contains(scaleTypeId) && this.oppositesToUpdate.contains(scaleTypeId)) {
-                    this.cachedMaxScales.put(scaleTypeId, previousOppositeScale);
-                    this.oppositesToUpdate.remove(scaleTypeId);
-                }
+            float value = !isActive ? data.getBaseScale() : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, data.getBaseScale());
 
-                this.cachedMinScales.put(scaleTypeId, min);
-                this.minScalesToUpdate.remove(scaleTypeId);
+            if (!compareFloats(this.checkScales.getOrDefault(typeId, data.getBaseScale()), value)) {
+                updateMaxTicks = true;
+
+                this.checkScales.put(typeId, value);
+                this.markForUpdating(typeId, false);
             }
-            if (!this.cachedMaxScales.containsKey(scaleTypeId) || this.maxScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCall.contains(scaleTypeId)) {
-                    this.cachedMinScales.put(scaleTypeId, currentScale);
-                    this.tickTarget = this.getMaxTicks();
-                }
-
-                if (this.maxScalesToUpdate.contains(scaleTypeId) && !this.minScalesToUpdate.contains(scaleTypeId) && this.oppositesToUpdate.contains(scaleTypeId)) {
-                    this.cachedMinScales.put(scaleTypeId, previousOppositeScale);
-                    this.oppositesToUpdate.remove(scaleTypeId);
-                }
-
-                this.cachedMaxScales.put(scaleTypeId, max);
-                this.maxScalesToUpdate.remove(scaleTypeId);
-            }
-            this.oppositesToUpdate.remove(scaleTypeId);
-            if (this.tickSettingPrevention.size() == this.getCachedScaleIds().size()) {
-                float slope = ((float)this.getMaxTicks()) / (this.cachedMaxScales.get(scaleTypeId) - this.cachedMinScales.get(scaleTypeId));
-                this.setTicks(Math.round(slope * (currentScale - this.cachedMinScales.get(scaleTypeId))));
-                this.tickSettingPrevention.clear();
-            }
-            this.populateDeltaReachedScale(scaleTypeId, this.tickTarget, 1.0F, appliedScale);
-            this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCall.contains(scaleTypeId));
-            this.shouldUpdateModifiers.remove(scaleTypeId);
         }
 
-        if (shouldUpdate) {
-            this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCall.contains(scaleTypeId));
-            this.shouldUpdate = false;
+        if (updateMaxTicks) {
+            Map<ResourceLocation, Double> newPrevious = this.targetResourceValues.isEmpty() ? Services.POWER.getClosestToBaseScale(entity, this.modifiers, 1.0F) : this.ticks == this.maxTicks ? this.targetResourceValues : this.inBetweenResourceValues.entrySet().stream().filter(entry -> entry.getKey() < this.ticks).max(Comparator.comparing(entry -> Mth.abs(entry.getKey() - this.ticks))).map(Map.Entry::getValue).orElse(new HashMap<>());
+
+            this.targetResourceValues = Services.POWER.iterateThroughModifierForResources(entity, this.modifiers);
+            this.inBetweenResourceValues = Services.POWER.getInBetweenResources(entity, this.modifiers, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
+            this.previousResourceValues = newPrevious;
+
+            this.maxTicks = (int) Services.POWER.addAllInBetweensOfResourceModifiers(entity, this.modifiers, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
+
+            ScaleData data = PehkuiUtil.getScaleType(this.tickUpdateScaleTypeId).getScaleData(entity);
+
+            float currentScale = this.isMin() ? this.tickUpdatePrevious : this.isMax() ? this.tickUpdateTarget : calculateScale(data, this.tickUpdateScaleTypeId, 1.0F, this.tickUpdateTarget, this.tickUpdatePrevious);
+            this.tickUpdatePrevious = this.tickUpdateTarget;
+            this.tickUpdateTarget = !isActive ? data.getBaseScale() : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, data.getBaseScale());
+
+            float slope = ((float) this.getMaxTicks()) / (this.tickUpdateTarget - this.tickUpdatePrevious);
+            this.setTicks(Math.round(slope * (currentScale - this.tickUpdatePrevious)));
+
+            this.shouldUpdate = true;
+            this.shouldUpdatePrevious = true;
+            Services.POWER.syncPower(entity, this.power);
+            this.updateOthers(entity);
+            return;
+        }
+
+        int modifiedDelay = (int) Services.POWER.addAllInBetweensOfResourceModifiers(entity, this.modifiers, this.delayModifiers, this.baseMaxTicks, this.previousResourceValues);
+
+        if (this.maxTicks != modifiedDelay) {
+            int inbetween = modifiedDelay - this.maxTicks;
+            this.ticks += inbetween;
+            this.maxTicks = this.maxTicks + inbetween;
+            Services.POWER.syncPower(entity, this.power);
+        }
+
+        if (this.getClampedTicks() < this.getMaxTicks()) {
+            this.setTicks(this.getClampedTicks() + 1);
+            this.shouldUpdate = true;
+            this.shouldUpdatePrevious = true;
+
+            Services.POWER.syncPower(entity, this.power);
+
+            this.updateOthers(entity);
+        }
+    }
+
+    @Override
+    protected void markForUpdating(ResourceLocation typeId, boolean notOriginalCall) {
+        super.markForUpdating(typeId, notOriginalCall);
+        if (notOriginalCall) {
+            this.cachedPreviousScales.clear();
+            this.cachedPreviousPreviousScales.clear();
+        }
+    }
+
+    @Override
+    public float modifyScale(final ScaleData scaleData, final float modifiedScale, final float delta) {
+        if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
+            logWarn();
+            return modifiedScale;
+        }
+
+        ResourceLocation scaleTypeId = getResourceLocationFromScaleData(scaleData);
+        boolean isActive = Services.POWER.isActive(power, entity);
+
+        if (this.shouldUpdateModifiers.contains(scaleTypeId)) {
+            float target = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale);
+            float previous = this.cachedTargetScales.getOrDefault(scaleTypeId, modifiedScale);
+
+            this.cachedTargetScales.put(scaleTypeId, target);
+            this.cachedPreviousScales.put(scaleTypeId, previous);
+
+            this.shouldUpdateModifiers.remove(scaleTypeId);
+            this.reachedScales.remove(scaleTypeId);
+        }
+
+        // Null-safe return.
+        if (!this.cachedTargetScales.containsKey(scaleTypeId) || !this.cachedPreviousScales.containsKey(scaleTypeId)) {
+            return modifiedScale;
         }
 
         if (this.isMax()) {
-            this.notOriginalCall.remove(scaleTypeId);
-            return this.cachedMaxScales.getOrDefault(scaleTypeId, (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
+            this.reachedScales.remove(scaleTypeId);
+            return this.cachedTargetScales.get(scaleTypeId);
         } else if (this.isMin()) {
-            this.notOriginalCall.remove(scaleTypeId);
-            return this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale);
+            return this.cachedPreviousScales.get(scaleTypeId);
         } else if (this.reachedScales.containsKey(scaleTypeId) && this.reachedScales.get(scaleTypeId).containsKey(this.ticks) && this.reachedScales.get(scaleTypeId).get(this.ticks).keySet().stream().anyMatch(aFloat -> compareFloats(aFloat, 1.0F))) {
-            this.notOriginalCall.remove(scaleTypeId);
-            return this.reachedScales.get(scaleTypeId).get(this.ticks).getOrDefault(1.0F, modifiedScale);
+            return this.reachedScales.get(scaleTypeId).get(this.ticks).entrySet().stream().filter(entry -> compareFloats(entry.getKey(), 1.0F)).findFirst().get().getValue();
         } else if (this.reachedScales.containsKey(scaleTypeId) && this.reachedScales.get(scaleTypeId).containsKey(this.ticks) && this.reachedScales.get(scaleTypeId).get(this.ticks).keySet().stream().anyMatch(aFloat -> compareFloats(aFloat, delta))) {
-            this.notOriginalCall.remove(scaleTypeId);
-            return this.reachedScales.get(scaleTypeId).get(this.ticks).getOrDefault(delta, modifiedScale);
+            return this.reachedScales.get(scaleTypeId).get(this.ticks).entrySet().stream().filter(entry -> compareFloats(entry.getKey(), delta)).findFirst().get().getValue();
         }
 
+        return calculateScale(scaleData, scaleTypeId, delta,
+                this.cachedTargetScales.get(scaleTypeId),
+                this.cachedPreviousScales.get(scaleTypeId));
+    }
+
+    private float calculateScale(ScaleData scaleData, ResourceLocation scaleTypeId, float delta, float targetScale, float previousScale) {
         Float2FloatFunction easing = this.easing.map(location -> {
             if (ScaleRegistries.SCALE_EASINGS.containsKey(location)) {
                 return ScaleRegistries.getEntry(ScaleRegistries.SCALE_EASINGS, location);
@@ -461,20 +334,14 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             return null;
         }).orElse(Optional.ofNullable(scaleData.getEasing()).orElseGet(scaleData.getScaleType()::getDefaultEasing));
 
-        float maxScale = this.cachedMaxScales.getOrDefault(scaleTypeId, (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
-        float minScale = this.cachedMinScales.getOrDefault(scaleTypeId, modifiedScale);
-
         float progress = (float) this.getClampedTicks() + delta;
         int total = this.getMaxTicks();
-        float range = maxScale - minScale;
+        float range = targetScale - previousScale;
         float perTick = total == 0 ? 1.0F : (easing.apply(progress / total));
 
-        float modified = (minScale + (perTick * range));
+        float modified = (previousScale + (perTick * range));
 
         this.populateDeltaReachedScale(scaleTypeId, this.getClampedTicks(), delta, modified);
-        this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCall.contains(scaleTypeId));
-
-        this.notOriginalCall.remove(scaleTypeId);
 
         return modified;
     }
@@ -490,72 +357,51 @@ public class DelayedApoliScaleModifier<P> extends ApoliScaleModifier<P> {
             this.reachedScales.get(scaleTypeId).get(ticks).put(delta, modified);
     }
 
+    @Override
     public float modifyPrevScale(final ScaleData scaleData, final float modifiedScale) {
+        if (!(scaleData.getEntity() instanceof LivingEntity entity)) {
+            logWarn();
+            return modifiedScale;
+        }
+
         ResourceLocation scaleTypeId = getResourceLocationFromScaleData(scaleData);
+        boolean isActive = Services.POWER.isActive(power, entity);
 
         if (this.shouldUpdatePreviousModifiers.contains(scaleTypeId)) {
-            float currentScale = this.isMin() ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : this.isMax() ? this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale) : this.reachedPreviousScales.containsKey(scaleTypeId) && this.reachedPreviousScales.get(scaleTypeId).containsKey(this.ticks) ? this.reachedPreviousScales.get(scaleTypeId).get(ticks) : modifiedScale;
-            this.reachedPreviousScales.remove(scaleTypeId);
-            boolean isActive = Services.POWER.isActive(power, (LivingEntity) scaleData.getEntity());
-            float previousOppositeScale =  this.previousMaxScalesToUpdate.contains(scaleTypeId) && !this.previousMinScalesToUpdate.contains(scaleTypeId) || !isActive ? this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale) : !this.previousMaxScalesToUpdate.contains(scaleTypeId) && this.previousMinScalesToUpdate.contains(scaleTypeId) ? this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, modifiedScale) : modifiedScale;
-            float appliedScale = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale);
-            float min = this.previousMinScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
-            float max = this.previousMaxScalesToUpdate.contains(scaleTypeId) ? appliedScale : previousOppositeScale;
-            if (!this.cachedPreviousMinScales.containsKey(scaleTypeId) || this.previousMinScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCallPrevious.contains(scaleTypeId)) {
-                    this.tickTarget = 0;
-                }
+            float target = !isActive ? modifiedScale : (float) Services.PLATFORM.applyModifiers(entity, this.modifiers, modifiedScale);
+            float previous = this.cachedPreviousTargetScales.getOrDefault(scaleTypeId, modifiedScale);
 
-                if (!this.previousMaxScalesToUpdate.contains(scaleTypeId) && this.previousMinScalesToUpdate.contains(scaleTypeId) && this.previousOppositesToUpdate.contains(scaleTypeId)) {
-                    this.cachedPreviousMaxScales.put(scaleTypeId, previousOppositeScale);
-                    this.previousOppositesToUpdate.remove(scaleTypeId);
-                }
-                this.cachedPreviousMinScales.put(scaleTypeId, min);
-                this.previousMinScalesToUpdate.remove(scaleTypeId);
-            }
-            if (!this.cachedPreviousMaxScales.containsKey(scaleTypeId) || this.previousMaxScalesToUpdate.contains(scaleTypeId)) {
-                if (this.notOriginalCallPrevious.contains(scaleTypeId)) {
-                    this.tickTarget = this.getMaxTicks();
-                }
+            this.cachedPreviousTargetScales.put(scaleTypeId, target);
+            this.cachedPreviousPreviousScales.put(scaleTypeId, previous);
 
-                if (this.previousMaxScalesToUpdate.contains(scaleTypeId) && !this.previousMinScalesToUpdate.contains(scaleTypeId) && this.previousOppositesToUpdate.contains(scaleTypeId)) {
-                    this.cachedPreviousMinScales.put(scaleTypeId, previousOppositeScale);
-                    this.previousOppositesToUpdate.remove(scaleTypeId);
-                }
-                this.cachedPreviousMaxScales.put(scaleTypeId, max);
-                this.previousMaxScalesToUpdate.remove(scaleTypeId);
-            }
-            this.previousOppositesToUpdate.remove(scaleTypeId);
-            if (this.tickSettingPrevention.size() == this.getCachedScaleIds().size()) {
-                float slope = this.getMaxTicks() / (this.cachedPreviousMaxScales.get(scaleTypeId) - this.cachedPreviousMinScales.get(scaleTypeId));
-                this.setTicks(Math.round(slope * (currentScale - this.cachedPreviousMinScales.get(scaleTypeId))));
-                this.tickSettingPrevention.clear();
-            }
-            this.populateReachedPreviousScale(scaleTypeId, this.tickTarget, appliedScale);
-            this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCallPrevious.contains(scaleTypeId));
             this.shouldUpdatePreviousModifiers.remove(scaleTypeId);
+            this.reachedPreviousScales.remove(scaleTypeId);
+        }
+
+        // Null-safe return.
+        if (!this.cachedPreviousTargetScales.containsKey(scaleTypeId) || !this.cachedPreviousPreviousScales.containsKey(scaleTypeId)) {
+            return modifiedScale;
         }
 
         if (this.isMax()) {
-            this.notOriginalCallPrevious.remove(scaleTypeId);
-            return this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
+            return this.cachedPreviousTargetScales.get(scaleTypeId);
         } else if (this.isMin()) {
-            this.notOriginalCallPrevious.remove(scaleTypeId);
-            return this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale);
+            return this.cachedPreviousPreviousScales.get(scaleTypeId);
         } else if (this.reachedPreviousScales.containsKey(scaleTypeId) && this.reachedPreviousScales.getOrDefault(scaleTypeId, new HashMap<>()).containsKey(this.ticks)) {
-            this.notOriginalCallPrevious.remove(scaleTypeId);
-            return this.reachedPreviousScales.getOrDefault(scaleTypeId, new HashMap<>()).getOrDefault(this.ticks, modifiedScale);
+            return this.reachedPreviousScales.get(scaleTypeId).get(this.ticks);
         }
 
-        float maxScale = this.cachedPreviousMaxScales.getOrDefault(scaleTypeId, (float) Services.PLATFORM.applyModifiers(scaleData.getEntity(), this.modifiers, modifiedScale));
-        float minScale = this.cachedPreviousMinScales.getOrDefault(scaleTypeId, modifiedScale);
+        return calculatePreviousScale(scaleTypeId);
+    }
 
-        float modified = Mth.lerp((float) this.getClampedTicks() / this.getMaxTicks(), minScale, maxScale);
+    private float calculatePreviousScale(ResourceLocation scaleTypeId) {
+        float targetScale = this.cachedPreviousTargetScales.get(scaleTypeId);
+        float previousScale = this.cachedPreviousPreviousScales.get(scaleTypeId);
+
+        float modified = Mth.lerp((float) this.getClampedTicks() / this.getMaxTicks(), previousScale, targetScale);
 
         this.populateReachedPreviousScale(scaleTypeId, this.ticks, modified);
-        this.updateOthers((LivingEntity) scaleData.getEntity(), !this.notOriginalCallPrevious.contains(scaleTypeId));
 
-        this.notOriginalCallPrevious.remove(scaleTypeId);
         return modified;
     }
 
