@@ -17,6 +17,7 @@
 - Fixed `compare_scales`s `scale_types` field not being counted.
 - Fixed crash due to `enchantment` item condition mixin not applying.
 - Fixed `step_height` power types sometimes causing entities to fly way up into the air when falling.
+- Fixed `edible_item` not depleting the food item when a return stack is specified. #64
 - [FORGE] Fixed NPE with hits on target.
 - [FORGE] Fixed item capabilities being broken in a player's inventory. #67
 - [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
