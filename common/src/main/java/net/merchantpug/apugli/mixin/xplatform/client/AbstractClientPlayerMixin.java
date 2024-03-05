@@ -24,6 +24,7 @@ public abstract class AbstractClientPlayerMixin extends Player {
 
     @Inject(method = "getPlayerInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;getPlayerInfo(Ljava/util/UUID;)Lnet/minecraft/client/multiplayer/PlayerInfo;", shift = At.Shift.BY, by = 2))
     private void apugli$setPlayerToSkin(CallbackInfoReturnable<PlayerInfo> cir) {
+        if (this.playerInfo == null) return;
         ((PlayerSkinAccess)(Object)this.playerInfo.getSkin()).apugli$setPlayer(this);
     }
 }
