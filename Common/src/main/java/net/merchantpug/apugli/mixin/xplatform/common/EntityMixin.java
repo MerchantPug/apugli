@@ -134,7 +134,7 @@ public abstract class EntityMixin implements EntityAccess {
                         }
 
                         if (vec3d.horizontalDistanceSqr() > vec3d4.horizontalDistanceSqr()) {
-                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.max(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
+                            cir.setReturnValue(vec3d.add(Entity.collideBoundingBox(thisAsLiving, new Vec3(0.0, -vec3d.y() + Math.min(0.0, (float) movement.y), 0.0), box.move(vec3d), this.level, collisionList)));
                             break;
                         }
                         double checkAddition = lowerCorrectionRange % 1.0;
