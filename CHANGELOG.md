@@ -1,10 +1,6 @@
 ## Power Types
 - Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
-- `modify_scale`s with `delay` and resource based `modifier` fields will now dynamically shift between scales
-
-## Optimisation
-- Optimised `modify_enchantment_level` power type for compatibility.
-- Rewrote entity stack linking entirely, empty stacks do not tick, and Forge no longer uses capabilities for this due to it being totally overkill.
+- `modify_scale`s with `delay` and resource based `modifier` fields will now dynamically shift between scales.
 
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.
@@ -15,12 +11,7 @@
 - Fixed `modify_scale` unintentionally resetting when swapping dimensions.
 - Fixed `compare_scales` crashing when `scale_type` is specified.
 - Fixed `compare_scales`s `scale_types` field not being counted.
-- Fixed crash due to `enchantment` item condition mixin not applying.
 - Fixed `step_height` power types sometimes causing entities to fly way up into the air when falling.
-- Fixed `edible_item` not depleting the food item when a return stack is specified. #64
-- [FORGE] Fixed NPE with hits on target.
-- [FORGE] Fixed item capabilities being broken in a player's inventory. #67
-- [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
