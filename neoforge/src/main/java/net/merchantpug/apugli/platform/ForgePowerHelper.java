@@ -188,4 +188,176 @@ public class ForgePowerHelper implements IPowerHelper<Holder<ConfiguredPower<?, 
         return false;
     }
 
+    @Override
+    public Map<ResourceLocation, Double> iterateThroughModifierForResources(LivingEntity entity, List<?> modifiers) {
+        Map<ResourceLocation, Double> returnMap = new HashMap<>();
+        List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
+
+        for (ConfiguredModifier<?> modifier : originalMods) {
+            if (modifier.getData().resource().isPresent()) {
+                OptionalDouble doubleValue = getResource(entity, modifier.getData().resource().get()).stream().mapToDouble(i -> i).min();
+                if (doubleValue.isPresent())
+                    returnMap.put(modifier.getData().resource().get().unwrapKey().orElseThrow().location(), doubleValue.getAsDouble());
+            }
+
+            if (!modifier.getData().modifiers().isEmpty()) {
+                returnMap.putAll(iterateThroughModifierForResources(entity, modifier.getData().modifiers()));
+            }
+        }
+
+        return returnMap;
+    }
+
+    @Override
+    public Map<Integer, Map<ResourceLocation, Double>> getInBetweenResources(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+        Map<Integer, Map<ResourceLocation, Double>> returnMap = new HashMap<>();
+        List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
+        int previousResourceValue = 0;
+        Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);
+        Map<ResourceLocation, Double> targetResources = new HashMap<>();
+
+        for (Map.Entry<ResourceLocation, Double> entry : resources.entrySet()) {
+            OptionalInt resourceValue = getResource(entity, ApoliAPI.getPowers().getHolderOrThrow(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, entry.getKey())));
+            if (resourceValue.isPresent()) {
+                targetResources.put(entry.getKey(), (double)resourceValue.getAsInt());
+            }
+        }
+
+        if (originalMods.stream().noneMatch(modifier -> modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && startingResources.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location()))) {
+            return returnMap;
+        }
+
+        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()), entry.getValue()))) {
+            for (ConfiguredModifier<?> modifier : originalMods) {
+                if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && startingResources.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location())) {
+                    int key = returnMap.keySet().isEmpty() ? 0 : returnMap.keySet().stream().max(Integer::compareTo).orElseThrow() + previousResourceValue;
+                    returnMap.computeIfAbsent(key, k -> new HashMap<>());
+                    OptionalDouble doubleValue = getResource(entity, modifier.getData().resource().get()).stream().mapToDouble(i -> i).min();
+                    if (doubleValue.isPresent()) {
+                        returnMap.get(key).put(modifier.getData().resource().get().unwrapKey().orElseThrow().location(), doubleValue.getAsDouble());
+                        previousResourceValue = (int) Services.PLATFORM.applyModifiers(entity, delayModifiers, base);
+                    }
+                }
+
+                if (!modifier.getData().modifiers().isEmpty()) {
+                    Map<Integer, Map<ResourceLocation, Double>> innerMap = getInBetweenResources(entity, modifier.getData().modifiers(), delayModifiers, base, startingResources);
+                    innerMap.forEach((integer, resourceLocationDoubleMap) -> {
+                        returnMap.merge(integer, resourceLocationDoubleMap, (map, map2) -> {
+                            map.putAll(map2);
+                            return map;
+                        });
+                    });
+                }
+            }
+            incrementMods(originalMods, resources, targetResources);
+        }
+
+        return returnMap;
+    }
+
+    @Override
+    public double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources) {
+        if (startingResources.isEmpty()) {
+            return base;
+        }
+
+        List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
+        double currentValue = base;
+        Map<ResourceLocation, Double> resources = new HashMap<>(startingResources);
+        Map<ResourceLocation, Double> targetResources = new HashMap<>();
+
+        for (Map.Entry<ResourceLocation, Double> entry : resources.entrySet()) {
+            OptionalInt resourceValue = getResource(entity, ApoliAPI.getPowers().getHolderOrThrow(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, entry.getKey())));
+            if (resourceValue.isPresent()) {
+                targetResources.put(entry.getKey(), (double)resourceValue.getAsInt());
+            }
+        }
+
+        while(resources.entrySet().stream().anyMatch(entry -> !Objects.equals(targetResources.get(entry.getKey()).intValue(), entry.getValue().intValue()))) {
+            currentValue += applyModifierWithSpecificValueAtIndex(entity, modifiers, base, resources);
+            incrementMods(originalMods, resources, targetResources);
+        }
+
+        return currentValue;
+    }
+
+    private static void incrementMods(List<ConfiguredModifier<?>> modifiers, Map<ResourceLocation, Double> resources, Map<ResourceLocation, Double> targetResources) {
+        for (ConfiguredModifier<?> modifier : modifiers) {
+            if (!modifier.getData().modifiers().isEmpty()) {
+                incrementMods(modifier.getData().modifiers(), resources, targetResources);
+            }
+            if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && resources.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location())) {
+                ResourceLocation resourceId = modifier.getData().resource().get().unwrapKey().orElseThrow().location();
+                if (Objects.equals(targetResources.get(resourceId).intValue(), resources.get(resourceId).intValue()))
+                    return;
+
+                int increment = targetResources.get(resourceId) < resources.get(resourceId) ? -1 : 1;
+                resources.put(resourceId, resources.get(resourceId) + increment);
+            }
+        }
+    }
+
+    @Override
+    public double applyModifierWithSpecificValueAtIndex(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> resourceMap) {
+        List<ConfiguredModifier<?>> modifierList = (List<ConfiguredModifier<?>>) modifiers;
+        return ModifierUtil.applyModifiers(entity, remapModifiers(modifierList, resourceMap), base);
+    }
+
+    private Map<ModifierOperation, List<ConfiguredModifier<?>>> remapModifiers(List<ConfiguredModifier<?>> modifiers, Map<ResourceLocation, Double> resourceMap) {
+        Map<ModifierOperation, List<ConfiguredModifier<?>>> map = new HashMap<>();
+        for (ConfiguredModifier<?> modifier : modifiers) {
+            List<ConfiguredModifier<?>> list = map.computeIfAbsent(modifier.getFactory(), (op) -> new LinkedList<>());
+            ConfiguredModifier<?> instance = modifier;
+            if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && resourceMap.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location())) {
+                instance = new ConfiguredModifier<>(modifier::getFactory, new ModifierData(resourceMap.get(modifier.getData().resource().get().unwrapKey().orElseThrow().location()), Optional.empty(), remapModifiersInner(modifier.getData().modifiers(), resourceMap)));;
+            }
+            list.add(instance);
+        }
+        return map;
+    }
+
+    private List<ConfiguredModifier<?>> remapModifiersInner(List<ConfiguredModifier<?>> modifiers, Map<ResourceLocation, Double> resourceMap) {
+        List<ConfiguredModifier<?>> list = new ArrayList<>();
+        for (ConfiguredModifier<?> modifier : modifiers) {
+            if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && resourceMap.containsKey(modifier.getData().resource().get().unwrapKey().orElseThrow().location())) {
+                modifier = new ConfiguredModifier<>(modifier::getFactory, new ModifierData(resourceMap.get(modifier.getData().resource().get().unwrapKey().orElseThrow().location()), Optional.empty(), remapModifiersInner(modifier.getData().modifiers(), resourceMap)));
+            }
+            list.add(modifier);
+        }
+        return list;
+    }
+
+    @Override
+    public Map<ResourceLocation, Double> getClosestToBaseScale(LivingEntity entity, List<?> modifiers, double base) {
+        Map<ResourceLocation, Double> returnMap = new HashMap<>();
+        List<ConfiguredModifier<?>> originalMods = (List<ConfiguredModifier<?>>) modifiers;
+
+        for (ConfiguredModifier<?> modifier : originalMods) {
+            if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound() && (entity != null &&
+                    ApoliAPI.getPowerContainer(entity).hasPower(modifier.getData().resource().get().unwrapKey().orElseThrow())) &&
+                    modifier.getData().resource().get().value().asVariableIntPower().isPresent()) {
+                returnMap.putAll(handleAdditionToReturnMap(entity, modifier, base, modifier.getData().resource().get().get().getMinimum(entity).orElse(0), modifier.getData().resource().get().get().getMaximum(entity).orElse(0)));
+            }
+        }
+
+        return returnMap;
+    }
+
+    private Map<ResourceLocation, Double> handleAdditionToReturnMap(LivingEntity entity, ConfiguredModifier<?> modifier, double base, int min, int max) {
+        Map<ResourceLocation, Double> currentResourceMap = new HashMap<>();
+        if (modifier.getData().resource().isPresent() && modifier.getData().resource().get().isBound()) {
+            for (int i = min; i < max; ++i) {
+                for (ConfiguredModifier<?> modifier1 : modifier.getData().modifiers()) {
+                    currentResourceMap.putAll(handleAdditionToReturnMap(entity, modifier1, base, min, max));
+                }
+
+                double distance = Math.abs(applyModifierWithSpecificValueAtIndex(entity, List.of(modifier), base, currentResourceMap) - base);
+                ResourceLocation thisIndex = modifier.getData().resource().get().unwrapKey().orElseThrow().location();
+                if (!currentResourceMap.containsKey(thisIndex) || distance < Math.abs(currentResourceMap.get(thisIndex) - base)) {
+                    currentResourceMap.put(thisIndex, (double) i);
+                }
+            }
+        }
+        return currentResourceMap;
+    }
 }

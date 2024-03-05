@@ -32,7 +32,6 @@ import java.util.Set;
 
 @AutoService(ModifyScalePowerFactory.class)
 public class ModifyScalePower extends AbstractValueModifyingPower implements ModifyScalePowerFactory<ConfiguredPower<FabricValueModifyingConfiguration, ?>> {
-    public static final Map<Entity, Integer> SCALE_NUMERICAL_ID_MAP = Maps.newHashMap();
 
     public ModifyScalePower() {
         super(ModifyScalePowerFactory.getSerializableData().xmap(
@@ -47,9 +46,27 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     @Override
-    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+    public void onAdded(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
         if (entity instanceof LivingEntity living)
+            PehkuiUtil.onAddedOrRespawnedScalePower(power, living);
+    }
+
+    @Override
+    public void onRespawn(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living)
+            PehkuiUtil.onAddedOrRespawnedScalePower(power, living);
+    }
+
+    @Override
+    public void onRemoved(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        if (entity instanceof LivingEntity living) {
             PehkuiUtil.onRemovedScalePower(power, living);
+        }
+    }
+
+    @Override
+    public void onLost(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        PehkuiUtil.resetScalePower(access(power, ApoliAPI.getPowerContainer(entity)).apoliScaleModifier);
     }
 
     @Override
@@ -75,31 +92,29 @@ public class ModifyScalePower extends AbstractValueModifyingPower implements Mod
     }
 
     @Override
+    public List<?> getDelayModifiers(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
+        List<ConfiguredModifier<?>> modifiers = new ArrayList<>();
+        this.getDataFromPower(power).<List<ConfiguredModifier<?>>>ifPresent("delay_modifiers", modifiers::addAll);
+        this.getDataFromPower(power).<ConfiguredModifier<?>>ifPresent("delay_modifier", modifiers::add);
+        return modifiers;
+    }
+
+    @Override
     public Set<ResourceLocation> getCachedScaleIds(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
         return this.access(power, ApoliAPI.getPowerContainer(entity)).cachedScaleIds;
     }
 
-    @Override
-    public int getLatestNumericalId(Entity entity) {
-        return SCALE_NUMERICAL_ID_MAP.compute(entity, (entity1, integer) -> integer != null ? integer + 1 : 0);
-    }
-
-    @Override
-    public void resetNumericalId(Entity entity) {
-        SCALE_NUMERICAL_ID_MAP.remove(entity);
-    }
-
     public static class PowerData {
-        private Object apoliScaleModifier;
+        private final Object apoliScaleModifier;
         private final Set<ResourceLocation> cachedScaleIds;
 
         public PowerData(ConfiguredPower<FabricValueModifyingConfiguration, ?> power, Entity entity) {
             if (ModList.get().isLoaded("pehkui") && entity instanceof LivingEntity living) {
-                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(power, living, power.getConfiguration().data());
                 this.cachedScaleIds = PehkuiUtil.getTypesFromCache(power.getConfiguration().data());
+                this.apoliScaleModifier = PehkuiUtil.createApoliScaleModifier(power, living, power.getConfiguration().data());
             } else {
-                this.apoliScaleModifier = null;
                 this.cachedScaleIds = Set.of();
+                this.apoliScaleModifier = null;
             }
         }
     }

@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -78,5 +79,12 @@ public interface IPowerHelper<T> {
     void revokePower(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
 
     boolean hasPowerType(ResourceLocation powerId, ResourceLocation source, LivingEntity entity);
+
+    Map<ResourceLocation, Double> iterateThroughModifierForResources(LivingEntity entity, List<?> modifiers);
+    Map<Integer, Map<ResourceLocation, Double>> getInBetweenResources(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
+    double addAllInBetweensOfResourceModifiers(LivingEntity entity, List<?> modifiers, List<?> delayModifiers, double base, Map<ResourceLocation, Double> startingResources);
+    double applyModifierWithSpecificValueAtIndex(LivingEntity entity, List<?> modifiers, double base, Map<ResourceLocation, Double> resourceMap);
+
+    Map<ResourceLocation, Double> getClosestToBaseScale(LivingEntity entity, List<?> modifiers, double base);
 
 }

@@ -60,7 +60,6 @@ public class ApugliPacketHandler {
         INSTANCE.registerMessage(i++, ForcePlayerPosePacket.class, ForcePlayerPosePacket::encode, ForcePlayerPosePacket::decode, ApugliPacketHandler.createS2CHandler(ForcePlayerPosePacket::handle));
         INSTANCE.registerMessage(i++, SyncScalePacket.class, SyncScalePacket::encode, SyncScalePacket::decode, ApugliPacketHandler.createS2CHandler(SyncScalePacket::handle));
         INSTANCE.registerMessage(i++, ModifyEnchantmentLevelPacket.class, ModifyEnchantmentLevelPacket::encode, ModifyEnchantmentLevelPacket::decode, ApugliPacketHandler.createS2CHandler(ModifyEnchantmentLevelPacket::handle));
-        INSTANCE.registerMessage(i++, ResetScaleCheckPacket.class, ResetScaleCheckPacket::encode, ResetScaleCheckPacket::decode, ApugliPacketHandler.createC2SHandler(ResetScaleCheckPacket::handle));
     }
 
     public static void sendC2S(ApugliPacketC2S packet) {

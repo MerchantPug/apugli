@@ -96,6 +96,8 @@ public interface IPlatformHelper {
 
     void sendC2S(ApugliPacketC2S packet);
 
+    int compareModifiers(Object modifier, Object otherModifier);
+
     float[] getColorPowerRgba(LivingEntity entity);
 
     void updateKeys(SerializableData.Instance data, Player player);
