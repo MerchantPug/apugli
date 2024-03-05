@@ -34,6 +34,8 @@ public abstract class ItemStackMixin implements ItemStackAccess {
 
     @Shadow public abstract ItemStack copy();
 
+    @Shadow public abstract boolean isEmpty();
+
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void apugliuseEdibleItem(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;
@@ -58,15 +60,14 @@ public abstract class ItemStackMixin implements ItemStackAccess {
         Optional<EdibleItemPower> power = Services.POWER.getPowers(user, ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(world, stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(user, stack);
-            ItemStack newStack = this.copy();
-            newStack = user.eat(world, newStack);
+            user.eat(world, stack);
             if (!(user instanceof Player player) || !player.getAbilities().instabuild) {
-                newStack.shrink(1);
+                stack.shrink(1);
             }
             if (user instanceof Player player && !player.getAbilities().instabuild) {
                 if (power.get().getReturnStack() != null) {
                     ItemStack returnStack = power.get().getReturnStack().copy();
-                    if (newStack.isEmpty()) {
+                    if (stack.isEmpty()) {
                         cir.setReturnValue(EdibleItemPower.executeItemActions(user, returnStack, stack));
                     } else {
                         ItemStack stack2 = EdibleItemPower.executeItemActions(user, returnStack, stack);
@@ -75,7 +76,7 @@ public abstract class ItemStackMixin implements ItemStackAccess {
                         }
                     }
                 } else {
-                    cir.setReturnValue(EdibleItemPower.executeItemActions(user, newStack, stack));
+                    cir.setReturnValue(EdibleItemPower.executeItemActions(user, stack, stack));
                 }
             }
         }

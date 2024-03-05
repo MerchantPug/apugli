@@ -104,7 +104,7 @@ public class ApugliForgeEventHandler {
 
     @SubscribeEvent
     public static void onFinishUsing(LivingEntityUseItemEvent.Finish event) {
-        ItemStack stack = event.getItem().copy();
+        ItemStack stack = event.getItem();
         Optional<EdibleItemPower> power = Services.POWER.getPowers(event.getEntity(), ApugliPowers.EDIBLE_ITEM.get()).stream().filter(p -> p.doesApply(event.getEntity().level(), stack)).findFirst();
         if (power.isPresent()) {
             EdibleItemPower.executeEntityActions(event.getEntity(), stack);
