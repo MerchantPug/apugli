@@ -115,7 +115,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public int compareModifiers(Object modifier, Object otherModifier) {
-        return 0;
+        return Integer.compare(compareModifiersInternal((ConfiguredModifier<?>) modifier, (ConfiguredModifier<?>) otherModifier), compareModifiersInternal((ConfiguredModifier<?>) otherModifier, (ConfiguredModifier<?>) modifier));
     }
 
     private int compareModifiersInternal(ConfiguredModifier<?> modifier, ConfiguredModifier<?> otherModifier) {
