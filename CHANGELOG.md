@@ -4,7 +4,8 @@
 
 ## Optimisation
 - Optimised `modify_enchantment_level` power type for compatibility.
-- 
+- Rewrote entity stack linking entirely, empty stacks do not tick, and Forge no longer uses capabilities for this due to it being totally overkill.
+
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.
 - Fixed a crash upon having an invalid scale type in the `scale_type` or `scale_types` fields in the `modify_scale` power.
@@ -16,8 +17,11 @@
 - Fixed `compare_scales`s `scale_types` field not being counted.
 - Fixed crash due to `enchantment` item condition mixin not applying.
 - Fixed `step_height` power types sometimes causing entities to fly way up into the air when falling.
-- [FORGE] Fixed item capabilities being broken.
+- Fixed `edible_item` not depleting the food item when a return stack is specified. #64
+- [FORGE] Fixed NPE with hits on target.
+- [FORGE] Fixed item capabilities being broken in a player's inventory. #67
 - [FORGE] Fixed `modify_scale` with modifiers with `resource` fields not functioning.
 
 ## Miscellaneous
 - Rewrote `modify_scale`'s scale modifiers.
+- `texture_url` fields will now tell you whether textures are loaded.
