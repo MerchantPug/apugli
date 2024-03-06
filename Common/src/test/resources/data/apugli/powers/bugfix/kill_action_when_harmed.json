@@ -7,12 +7,12 @@
     "should_render": false
   },
   "bientity_action": {
-    "type": "origins:target_action",
+    "type": "apoli:target_action",
     "action": {
-      "type": "origins:and",
+      "type": "apoli:and",
       "actions": [
         {
-          "type": "origins:spawn_particles",
+          "type": "apoli:spawn_particles",
           "particle": {
             "type": "minecraft:falling_dripstone_water"
           },
@@ -27,15 +27,15 @@
           }
         },
         {
-          "type": "origins:delay",
+          "type": "apoli:delay",
           "ticks": 2,
           "action": {
-            "type": "origins:if_else",
+            "type": "apoli:if_else",
             "condition": {
-              "type": "origins:exists"
+              "type": "apoli:exists"
             },
             "if_action": {
-              "type": "origins:spawn_particles",
+              "type": "apoli:spawn_particles",
               "particle": {
                 "type": "minecraft:falling_dripstone_water"
               },
