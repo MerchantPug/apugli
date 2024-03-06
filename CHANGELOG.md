@@ -1,6 +1,7 @@
 ## Power Types
 - Added `easing`, `priority`, `delay_modifier`, and `delay_modifiers` fields to `modify_scale`.
 - `modify_scale`s with `delay` and resource based `modifier` fields will now dynamically shift between scales.
+- Added `limit` field to `action_on_harm` and `action_when_harmed`. if not set, this is equal to the entity's max health * 4.
 
 ## Bugfixes
 - Fixed `modify_scale` not forcing an update for scales that don't update frequently.

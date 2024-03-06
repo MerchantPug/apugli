@@ -1,0 +1,57 @@
+{
+  "type": "apugli:action_when_harmed",
+  "cooldown": 10,
+  "amount_to_trigger": 2.0,
+  "overflow": true,
+  "hud_render": {
+    "should_render": false
+  },
+  "bientity_action": {
+    "type": "apoli:target_action",
+    "action": {
+      "type": "apoli:and",
+      "actions": [
+        {
+          "type": "apoli:spawn_particles",
+          "particle": {
+            "type": "minecraft:falling_dripstone_water"
+          },
+          "count": 2,
+          "speed": 1.0,
+          "force": false,
+          "offset_y": 1.0,
+          "spread": {
+            "x": 0.4,
+            "y": 0.2,
+            "z": 0.4
+          }
+        },
+        {
+          "type": "apoli:delay",
+          "ticks": 2,
+          "action": {
+            "type": "apoli:if_else",
+            "condition": {
+              "type": "apoli:exists"
+            },
+            "if_action": {
+              "type": "apoli:spawn_particles",
+              "particle": {
+                "type": "minecraft:falling_dripstone_water"
+              },
+              "count": 2,
+              "speed": 1.0,
+              "force": false,
+              "offset_y": 1.0,
+              "spread": {
+                "x": 0.4,
+                "y": 0.2,
+                "z": 0.4
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
