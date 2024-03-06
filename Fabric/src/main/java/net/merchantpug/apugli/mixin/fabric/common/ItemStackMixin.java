@@ -32,10 +32,6 @@ public abstract class ItemStackMixin implements ItemStackAccess {
 
     @Shadow public abstract Item getItem();
 
-    @Shadow public abstract ItemStack copy();
-
-    @Shadow public abstract boolean isEmpty();
-
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void apugliuseEdibleItem(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack stack = (ItemStack)(Object)this;

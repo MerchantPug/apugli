@@ -1,0 +1,33 @@
+{
+    "type": "apugli:edible_item",
+    "condition": {
+        "type": "apoli:gamemode",
+        "gamemode": "creative",
+        "inverted": true
+    },
+    "item_condition": {
+        "type": "apoli:or",
+        "conditions": [
+            {
+                "type": "apoli:ingredient",
+                "ingredient": {
+                    "item": "minecraft:paper"
+                }
+            },
+            {
+                "type": "apoli:meat"
+            },
+            {
+                "type": "apoli:nbt",
+                "nbt": "{test: 1b}"
+            }
+        ]
+    },
+    "food_component": {
+        "hunger": 0,
+        "saturation": 0.0,
+        "meat": false,
+        "snack": false,
+        "always_edible": true
+    }
+}

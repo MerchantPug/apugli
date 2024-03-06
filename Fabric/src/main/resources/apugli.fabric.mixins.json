@@ -17,7 +17,6 @@
     "common.EntityConditionsMixin",
     "common.EntityMixin",
     "common.HungerManagerMixin",
-    "common.ItemConditionsMixin",
     "common.ItemPredicateMixin",
     "common.ItemStackMixin",
     "common.LightningBoltMixin",
