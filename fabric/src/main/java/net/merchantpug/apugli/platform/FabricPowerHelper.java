@@ -17,6 +17,7 @@ import net.merchantpug.apugli.power.factory.SpecialPowerFactory;
 import net.merchantpug.apugli.registry.ApugliRegisters;
 import net.merchantpug.apugli.registry.services.RegistryObject;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -121,11 +122,13 @@ public class FabricPowerHelper implements IPowerHelper<PowerTypeReference> {
 
     @Override
     public void syncPower(LivingEntity entity, PowerType<?> powerType) {
+        if (entity instanceof ServerPlayer player && player.connection == null) return;
         PowerHolderComponent.syncPower(entity, powerType);
     }
 
     @Override
     public <P> void syncPower(LivingEntity entity, P power) {
+        if (entity instanceof ServerPlayer player && player.connection == null) return;
         PowerHolderComponent.syncPower(entity, ((Power)power).getType());
     }
 
