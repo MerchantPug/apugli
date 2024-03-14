@@ -117,6 +117,9 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag generateEnchantments(ListTag enchants, ItemStack self) {
+        if (self == null)
+            return enchants;
+
         Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
 
         if(!(entity instanceof LivingEntity living)) return enchants;
@@ -148,15 +151,17 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default ListTag getEnchantments(ItemStack self, ListTag originalTag) {
-        Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
-        if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
-            ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
-            ComparableItemStack comparableStack = new ComparableItemStack(self.copy());
-            if (shouldReapplyEnchantments(living, comparableStack)) {
-                itemEnchants.computeIfAbsent(comparableStack, tag -> originalTag);
-                return itemEnchants.compute(comparableStack, (tagEnchants, tag) -> generateEnchantments(originalTag, self));
+        if (self != null) {
+            Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
+            if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
+                ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
+                ComparableItemStack comparableStack = new ComparableItemStack(self);
+                if (shouldReapplyEnchantments(living, comparableStack)) {
+                    itemEnchants.computeIfAbsent(comparableStack, tag -> originalTag);
+                    return itemEnchants.compute(comparableStack, (tagEnchants, tag) -> generateEnchantments(originalTag, self));
+                }
+                return itemEnchants.getOrDefault(comparableStack, originalTag);
             }
-            return itemEnchants.getOrDefault(comparableStack, originalTag);
         }
         return originalTag;
     }
@@ -186,6 +191,9 @@ public interface ModifyEnchantmentLevelPowerFactory<P> extends ValueModifyingPow
     }
 
     default int getItemEnchantmentLevel(Enchantment enchantment, ItemStack self) {
+        if (self == null) {
+            return 0;
+        }
         Entity entity = ((ItemStackAccess)(Object)(self)).apugli$getEntity();
         if (entity instanceof LivingEntity living && getEntityItemEnchants().containsKey(living.getUUID())) {
             ConcurrentHashMap<ComparableItemStack, ListTag> itemEnchants = getEntityItemEnchants().get(living.getUUID());
