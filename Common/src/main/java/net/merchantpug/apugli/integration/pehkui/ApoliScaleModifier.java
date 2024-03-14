@@ -238,6 +238,9 @@ public class ApoliScaleModifier<P> extends ScaleModifier {
                 ScaleType scaleType = ScaleRegistries.getEntry(ScaleRegistries.SCALE_TYPES, scaleTypeId);
                 this.updateScale(entity, scaleType);
             }
+            if (!entity.level().isClientSide()) {
+                Services.POWER.syncPower(entity, this.power);
+            }
             this.addedScales = true;
         }
     }
