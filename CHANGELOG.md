@@ -1,4 +1,15 @@
-## Bugfixes
-- Fixed `damage_nearby_x_hit` power type running attacker, target bientity conditions without an attacker. ([toomanyorigins#87](https://github.com/MerchantPug/toomanyorigins/issues/87))
-- Fixed Explosion Sync packet desync. Which should affect the `apugli:explode` and `explosion_raycast` entity action types, and the `rocket_jump` power type.
-- Fixed `key_pressed` entity condition type not functioning properly with `continuous` keys.
+## Depending on alpha versions of Apugli
+For the time being, to depend on these alphas while Origins itself is being released as alphas, you will have to use the snapshot branch of the Greenhouse maven.
+
+To do so, swap out `releases` in the link with `snapshots`.
+
+```diff
+maven {
+    name = "Greenhouse"
+-    url = "https://maven.greenhouseteam.dev/releases/"
++    url = "https://maven.greenhouseteam.dev/snapshots/"
+}
+```
+
+### Changes
+- Barebones port to 1.20.4
