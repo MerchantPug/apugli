@@ -1,0 +1,54 @@
+{
+  "type": "apoli:action_over_time",
+  "interval": 1,
+  "entity_action": {
+    "type": "apugli:explode",
+    "power": 5,
+    "damage_self": false
+  },
+  "condition": {
+    "type": "apoli:and",
+    "conditions": [
+      {
+        "type": "apoli:or",
+        "conditions": [
+          {
+            "type": "apoli:block_collision",
+            "offset_x": 1.5
+          },
+          {
+            "type": "apoli:block_collision",
+            "offset_x": -1.5
+          },
+          {
+            "type": "apoli:block_collision",
+            "offset_y": 1.5
+          },
+          {
+            "type": "apoli:block_collision",
+            "offset_y": -1.5
+          },
+          {
+            "type": "apoli:block_collision",
+            "offset_z": 1.5
+          },
+          {
+            "type": "apoli:block_collision",
+            "offset_z": -1.5
+          }
+        ]
+      },
+      {
+        "type": "apoli:fall_flying"
+      },
+      {
+        "type": "apugli:key_pressed",
+        "key": {
+          "key": "key.use",
+          "continous": true
+        }
+      }
+    ]
+  },
+  "hidden": true
+}
