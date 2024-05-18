@@ -181,7 +181,7 @@ publishing {
 
     repositories {
         maven {
-            name = "merchantpug"
+            name = "greenhouse"
             url = "https://maven.greenhouseteam.dev/releases"
             credentials {
                 username System.getenv('MAVEN_USERNAME')
