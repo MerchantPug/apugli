@@ -24,8 +24,8 @@ Versions 1.9.2+1.19 and later have/will be uploaded to the MerchantPug maven.
 repositories {
     ...
     maven {
-        name = "Pug's Maven"
-        url = 'https://maven.merchantpug.net/releases/'
+        name = "Greenhouse"
+        url = 'https://maven.greenhouseteam.dev/releases/'
     }
     maven {
         name = "JitPack"
@@ -49,8 +49,8 @@ dependencies {
 repositories {
     ...
     maven {
-        name = "Pug's Maven"
-        url = 'https://maven.merchantpug.net/releases/'
+        name = "Greenhouse"
+        url = 'https://maven.greenhouseteam.dev/releases/'
     }
     maven {
         name = "Ladysnake Libs"
@@ -100,8 +100,8 @@ You are able to remove the `include` block if you don't wish to include Apugli i
 repositories {
     ...
     maven {
-        name = "Pug's Maven"
-        url = 'https://maven.merchantpug.net/releases/'
+        name = "Greenhouse"
+        url = 'https://maven.greenhouseteam.dev/releases/'
     }
     maven {
         name = "JitPack"
@@ -119,7 +119,7 @@ dependencies {
 You are able to remove the `jarJar` blocks if you don't wish to include Apugli inside your jar.
 </details>
 
-You can find your correct versions by looking [here](https://maven.merchantpug.net/#/releases/net/merchantpug/Apugli).
+You can find your correct versions by looking [here](https://maven.greenhouseteam.dev/#/releases/net/merchantpug/Apugli).
 
 ## JitPack (Old Builds and Commit Hashes Only) (Backup)
 

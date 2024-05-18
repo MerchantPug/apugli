@@ -162,7 +162,7 @@ publishing {
     repositories {
         maven {
             name = "merchantpug"
-            url = "https://maven.merchantpug.net/releases"
+            url = "https://maven.greenhouseteam.dev/releases"
             credentials {
                 username System.getenv('MAVEN_USERNAME')
                 password System.getenv('MAVEN_PASSWORD')

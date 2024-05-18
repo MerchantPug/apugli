@@ -30,7 +30,7 @@ jarJar.enable()
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
 
-    maven { url 'https://maven.merchantpug.net/releases' }
+    maven { url 'https://maven.greenhouseteam.dev/releases' }
 
     maven { url 'https://maven.ladysnake.org/releases' }
 
@@ -182,7 +182,7 @@ publishing {
     repositories {
         maven {
             name = "merchantpug"
-            url = "https://maven.merchantpug.net/releases"
+            url = "https://maven.greenhouseteam.dev/releases"
             credentials {
                 username System.getenv('MAVEN_USERNAME')
                 password System.getenv('MAVEN_PASSWORD')
