@@ -128,8 +128,8 @@ public class FabricActionHelper implements IActionHelper {
     public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
         if (object == null) return;
 
-        ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
-        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
+        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+        Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION);
 
         Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode block action to tag: {}", s));
