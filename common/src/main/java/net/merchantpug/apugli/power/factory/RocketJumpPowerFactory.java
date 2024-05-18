@@ -149,9 +149,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
                 false,
                 null,
                 false,
-                false,
-                radius,
-                Explosion.BlockInteraction.KEEP);
+                radius);
         if (entity instanceof ServerPlayer serverPlayer)
             Services.PLATFORM.sendS2CTrackingAndSelf(packet, serverPlayer);
     }

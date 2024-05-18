@@ -126,9 +126,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
                     true,
                     data.get(blockConditionFieldKey),
                     indestructible,
-                    createFire,
-                    power,
-                    data.get("destruction_type")
+                    power
                     ), entity);
         } else {
             Explosion explosion = new Explosion(entity.level(), entity,
@@ -154,9 +152,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
                     false,
                     null,
                     false,
-                    createFire,
-                    power,
-                    data.get("destruction_type")
+                    power
             ), entity);
         }
     }

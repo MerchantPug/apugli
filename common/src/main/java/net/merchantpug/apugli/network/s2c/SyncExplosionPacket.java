@@ -33,9 +33,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
                                          boolean hasCalculator,
                                          @Nullable B blockConditions,
                                          boolean indestructible,
-                                         boolean causesFire,
-                                         float power,
-                                         Explosion.BlockInteraction interaction) implements ApugliPacketS2C {
+                                         float power) implements ApugliPacketS2C {
     public static final ResourceLocation ID = Apugli.asResource("sync_explosion");
 
     @Override
@@ -62,9 +60,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
         }
 
         buf.writeBoolean(indestructible());
-        buf.writeBoolean(causesFire());
         buf.writeFloat(power());
-        SerializableDataTypes.DESTRUCTION_TYPE.send(buf, interaction());
     }
 
     public static <BI, B> SyncExplosionPacket<BI, B> decode(FriendlyByteBuf buf) {
@@ -89,12 +85,9 @@ public record SyncExplosionPacket<BI, B>(int userId,
             blockDataCondition = (B) Services.CONDITION.blockDataType().receive(buf);
         }
         boolean indestructible = buf.readBoolean();
-        boolean causesFire = buf.readBoolean();
         float radius = buf.readFloat();
 
-        Explosion.BlockInteraction interaction = SerializableDataTypes.DESTRUCTION_TYPE.receive(buf);
-
-        return new SyncExplosionPacket<>(userId, x, y, z, damageModifiers, knockbackModifiers, volumeModifiers, pitchModifiers, biEntityCondition, hasCalculator, blockDataCondition, indestructible, causesFire, radius, interaction);
+        return new SyncExplosionPacket<>(userId, x, y, z, damageModifiers, knockbackModifiers, volumeModifiers, pitchModifiers, biEntityCondition, hasCalculator, blockDataCondition, indestructible, radius);
     }
 
     @Override
@@ -110,13 +103,12 @@ public record SyncExplosionPacket<BI, B>(int userId,
                 Level level = Minecraft.getInstance().level;
                 Entity entity = level.getEntity(userId);
                 Explosion explosion = new Explosion(level, entity,
-                        null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, causesFire, interaction);
+                        null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, false, Explosion.BlockInteraction.KEEP);
                 ((ExplosionAccess) explosion).apugli$setExplosionDamageModifiers(damageModifiers());
                 ((ExplosionAccess) explosion).apugli$setExplosionKnockbackModifiers(knockbackModifiers());
                 ((ExplosionAccess) explosion).apugli$setExplosionVolumeModifiers(volumeModifiers());
                 ((ExplosionAccess) explosion).apugli$setExplosionPitchModifiers(pitchModifiers());
                 ((ExplosionAccess) explosion).apugli$setBiEntityPredicate(biEntityConditions());
-                explosion.explode();
                 explosion.finalizeExplosion(true);
             }
         });
