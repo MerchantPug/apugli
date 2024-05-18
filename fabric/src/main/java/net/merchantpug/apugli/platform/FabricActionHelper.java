@@ -150,10 +150,10 @@ public class FabricActionHelper implements IActionHelper {
 
         Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION, BiEntityActions.ALIASES);
         Optional<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
-                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity action from tag: {}", s)).map(Pair::getFirst);
+                .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode block action from tag: {}", s)).map(Pair::getFirst);
 
         if (instanceOptional.isEmpty()) {
-            Apugli.LOG.error("Failed to deserialize bi-entity action from tag.");
+            Apugli.LOG.error("Failed to deserialize block action from tag.");
             return null;
         }
 
