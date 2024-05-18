@@ -169,9 +169,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                     true,
                     data.get(blockConditionFieldKey),
                     indestructible,
-                    createFire,
-                    power,
-                    data.get("destruction_type")), entity);
+                    power), entity);
         } else {
             Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
                     null, null,
@@ -194,9 +192,7 @@ public class ExplosionRaycastAction implements IActionFactory<Entity> {
                     false,
                     null,
                     false,
-                    createFire,
-                    power,
-                    data.get("destruction_type")), entity);
+                    power), entity);
         }
     }
 
