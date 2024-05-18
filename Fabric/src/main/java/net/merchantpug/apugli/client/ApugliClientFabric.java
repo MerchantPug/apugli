@@ -4,17 +4,14 @@ import io.github.apace100.apoli.power.Active;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.merchantpug.apugli.client.renderer.CustomProjectileRenderer;
 import net.merchantpug.apugli.client.util.TextureUtilClient;
 import net.merchantpug.apugli.component.ApugliEntityComponents;
 import net.merchantpug.apugli.component.KeyPressComponent;
 import net.merchantpug.apugli.condition.factory.entity.CachedBlockInRadiusCondition;
-import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.fabric.client.accessor.ApoliClientAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.c2s.UpdateKeysPressedPacket;
@@ -70,12 +67,12 @@ public class ApugliClientFabric implements ClientModInitializer {
 					if (!currentKeyBindingStates.containsKey(key.key)) {
 						currentKeyBindingStates.put(key.key, keyBinding.isDown());
 					}
-					if (currentKeyBindingStates.get(key.key) && (key.continuous || !lastKeyBindingStates.getOrDefault(key.key, false))) {
+					if (currentKeyBindingStates.getOrDefault(key.key, false) && (key.continuous || !lastKeyBindingStates.getOrDefault(key.key, false))) {
 						component.addKey(key);
 						if (!lastKeyBindingStates.getOrDefault(key.key, false)) {
 							addedKeys.add(key);
 						}
-					} else if ((!currentKeyBindingStates.get(key.key) || !key.continuous) && lastKeyBindingStates.getOrDefault(key.key, false)) {
+					} else if (!currentKeyBindingStates.getOrDefault(key.key, false) && lastKeyBindingStates.getOrDefault(key.key, false)) {
 						component.removeKey(key);
 						removedKeys.add(key);
 					}

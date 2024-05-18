@@ -73,12 +73,12 @@ public class ApugliForgeClientEventHandler {
                             if (!currentKeyBindingStates.containsKey(key.key())) {
                                 currentKeyBindingStates.put(key.key(), keyBinding.isDown());
                             }
-                            if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false))) {
+                            if (currentKeyBindingStates.getOrDefault(key.key(), false) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false))) {
                                 capability.addKey(key);
                                 if (!lastKeyBindingStates.getOrDefault(key.key(), false)) {
                                     addedKeys.add(key);
                                 }
-                            } else if ((!currentKeyBindingStates.get(key.key()) || !key.continuous()) && lastKeyBindingStates.getOrDefault(key.key(), false)) {
+                            } else if (!currentKeyBindingStates.getOrDefault(key.key(), false) && lastKeyBindingStates.getOrDefault(key.key(), false)) {
                                 capability.removeKey(key);
                                 removedKeys.add(key);
                             }
