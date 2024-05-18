@@ -1,3 +1,2 @@
 ## Bugfixes
-- Fixed `modify_scale` sometimes not syncing when scales are applied. (#70)
-- Fixed a `modify_enchantment_level` related NullPointerException crash. (#73)
+- Fixed `damage_nearby_x_hit` power type running attacker, target bientity conditions without an attacker. ([toomanyorigins#87](https://github.com/MerchantPug/toomanyorigins/issues/87))

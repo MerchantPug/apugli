@@ -27,7 +27,7 @@ public interface DamageNearbyPowerFactory<P> extends CooldownPowerFactory<P> {
     default void execute(P power, LivingEntity powerHolder, DamageSource damageSource, float damageAmount, @Nullable Entity attacker, LivingEntity target,
                          String attackerName, String targetName, boolean damagerIsAttacker) {
         SerializableData.Instance data = getDataFromPower(power);
-        if (canUse(power, powerHolder) && (!data.isPresent("damage_condition") || Services.CONDITION.checkDamage(data, "damage_condition", damageSource, damageAmount)) && (attacker == null && !data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || Services.CONDITION.checkBiEntity(data, attackerName + "_" + targetName + "_bientity_condition", attacker, target))) {
+        if (canUse(power, powerHolder) && (!data.isPresent("damage_condition") || Services.CONDITION.checkDamage(data, "damage_condition", damageSource, damageAmount)) && (!data.isPresent(attackerName + "_" + targetName + "_bientity_condition") || attacker != null && Services.CONDITION.checkBiEntity(data, attackerName + "_" + targetName + "_bientity_condition", attacker, target))) {
             float radius = data.getFloat("radius");
             List<?> modifiers = new ArrayList<>();
             if (data.isPresent("modifiers"))
