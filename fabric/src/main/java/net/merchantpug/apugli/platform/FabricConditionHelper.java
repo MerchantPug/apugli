@@ -4,6 +4,8 @@ import com.google.auto.service.AutoService;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.factory.condition.BiEntityConditions;
+import io.github.apace100.apoli.power.factory.condition.BlockConditions;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
@@ -68,7 +70,7 @@ public class FabricConditionHelper implements IConditionHelper {
         if (object ==  null) return;
 
         ConditionFactory<Tuple<Entity, Entity>>.Instance instance = (ConditionFactory<Tuple<Entity, Entity>>.Instance) object;
-        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION);
+        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION, BiEntityConditions.ALIASES);
 
         Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode bi-entity condition to tag: {}", s));
@@ -85,7 +87,7 @@ public class FabricConditionHelper implements IConditionHelper {
             return null;
         }
 
-        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION);
+        Codec<ConditionFactory<Tuple<Entity, Entity>>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_CONDITION, BiEntityConditions.ALIASES);
         Optional<ConditionFactory<Tuple<Entity, Entity>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity condition from tag: {}", s)).map(Pair::getFirst);
 
@@ -151,7 +153,7 @@ public class FabricConditionHelper implements IConditionHelper {
         if (object == null) return;
 
         ConditionFactory<BlockInWorld>.Instance instance = (ConditionFactory<BlockInWorld>.Instance) object;
-        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION);
+        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION, BlockConditions.ALIASES);
 
         Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode block condition to tag: {}", s));
@@ -168,7 +170,7 @@ public class FabricConditionHelper implements IConditionHelper {
             return null;
         }
 
-        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION);
+        Codec<ConditionFactory<BlockInWorld>.Instance> codec = new ConditionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_CONDITION, BlockConditions.ALIASES);
         Optional<ConditionFactory<BlockInWorld>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode block condition from tag: {}", s)).map(Pair::getFirst);
 

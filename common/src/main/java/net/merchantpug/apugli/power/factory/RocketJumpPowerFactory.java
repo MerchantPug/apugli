@@ -7,8 +7,10 @@ import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.network.s2c.SyncExplosionPacket;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.registry.ApugliTags;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -109,7 +111,7 @@ public interface RocketJumpPowerFactory<P> extends ActiveCooldownPowerFactory<P>
         float g = Mth.sin(entity.getXRot() * 0.017453292F);
         float h = -Mth.cos(entity.getYRot() * 0.017453292F) * Mth.cos(entity.getXRot() * 0.017453292F);
 
-        Explosion explosion = new Explosion(entity.level(), entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP);
+        Explosion explosion = new Explosion(entity.level(), entity, null, null, hitResult.getLocation().x(), hitResult.getLocation().y(), hitResult.getLocation().z(), e, false, Explosion.BlockInteraction.KEEP, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
         ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(damageModifiers(power, entity));
         ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(knockbackModifiers());
         ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(volumeModifiers());

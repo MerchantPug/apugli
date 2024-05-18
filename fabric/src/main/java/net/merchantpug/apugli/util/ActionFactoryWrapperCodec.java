@@ -8,13 +8,12 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.util.IdentifierAlias;
-import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.apace100.calio.util.IdentifierAlias;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-public record ActionFactoryWrapperCodec<T>(Registry<ActionFactory<T>> registry) implements Codec<ActionFactory<T>.Instance> {
+public record ActionFactoryWrapperCodec<T>(Registry<ActionFactory<T>> registry, IdentifierAlias alias) implements Codec<ActionFactory<T>.Instance> {
 
     @Override
     public <A> DataResult<Pair<ActionFactory<T>.Instance, A>> decode(DynamicOps<A> ops, A input) {
@@ -24,8 +23,8 @@ public record ActionFactoryWrapperCodec<T>(Registry<ActionFactory<T>> registry) 
         }
         ResourceLocation factoryLocation = ResourceLocation.tryParse(GsonHelper.getAsString(jsonObject, "type"));
 
-        if (factoryLocation != null && IdentifierAlias.hasAlias(factoryLocation)) {
-            factoryLocation = IdentifierAlias.resolveAlias(factoryLocation);
+        if (factoryLocation != null && alias.hasAlias(factoryLocation)) {
+            factoryLocation = alias.resolveAlias(factoryLocation, registry::containsKey);
         }
 
         ActionFactory<T> factory = registry.get(factoryLocation);

@@ -72,8 +72,8 @@ public class SpawnItemAction implements IActionFactory<Entity> {
     private ItemEntity createItemEntity(Entity entity, ItemStack stack, int pickupDelay, boolean retainOwnership, Vec3 velocity) {
         ItemEntity itemEntity = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack);
         itemEntity.setPickUpDelay(pickupDelay);
-        itemEntity.setThrower(entity.getUUID());
-        if(retainOwnership) itemEntity.setThrower(entity.getUUID());
+        itemEntity.setThrower(entity);
+        if(retainOwnership) itemEntity.setThrower(entity);
         itemEntity.setDeltaMovement(velocity);
         return itemEntity;
     }

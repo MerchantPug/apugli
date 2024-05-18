@@ -6,8 +6,10 @@ import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -103,7 +105,7 @@ public record SyncExplosionPacket<BI, B>(int userId,
                 Level level = Minecraft.getInstance().level;
                 Entity entity = level.getEntity(userId);
                 Explosion explosion = new Explosion(level, entity,
-                        null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, false, Explosion.BlockInteraction.KEEP);
+                        null, createBlockConditionedExplosionDamageCalculator(blockConditions(), level, indestructible), x, y, z, power, false, Explosion.BlockInteraction.KEEP, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
                 ((ExplosionAccess) explosion).apugli$setExplosionDamageModifiers(damageModifiers());
                 ((ExplosionAccess) explosion).apugli$setExplosionKnockbackModifiers(knockbackModifiers());
                 ((ExplosionAccess) explosion).apugli$setExplosionVolumeModifiers(volumeModifiers());

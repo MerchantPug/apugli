@@ -4,15 +4,11 @@ import eu.midnightdust.lib.config.MidnightConfig;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.util.IdentifierAlias;
-import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.apace100.apoli.power.factory.PowerFactories;
+import io.github.apace100.calio.util.IdentifierAlias;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.merchantpug.apugli.integration.pehkui.PehkuiUtil;
 import net.merchantpug.apugli.mixin.fabric.common.accessor.PowerTypeRegistryAccessor;
 import net.merchantpug.apugli.network.ApugliPackets;
 import net.merchantpug.apugli.network.s2c.UpdateUrlTexturesPacket;
@@ -21,9 +17,6 @@ import net.merchantpug.apugli.power.TextureOrUrlPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.merchantpug.apugli.util.ApugliConfig;
 import net.merchantpug.apugli.util.TextureUtil;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 public class ApugliFabric implements ModInitializer {
 
@@ -44,9 +37,9 @@ public class ApugliFabric implements ModInitializer {
         ApugliPackets.registerC2S();
         registerEvents();
 
-        IdentifierAlias.addNamespaceAlias("ope", Apugli.ID);
-        IdentifierAlias.addAlias(Apugli.asResource("edible_item"), Apoli.identifier("edible_item"));
-        IdentifierAlias.addAlias(Apugli.asResource("modify_enchantment_level"), Apoli.identifier("modify_enchantment_level"));
+        IdentifierAlias.GLOBAL.addNamespaceAlias("ope", Apugli.ID);
+        PowerFactories.ALIASES.addAlias(Apugli.asResource("edible_item"), Apoli.identifier("edible_item"));
+        PowerFactories.ALIASES.addAlias(Apugli.asResource("modify_enchantment_level"), Apoli.identifier("modify_enchantment_level"));
 
         MidnightConfig.init(Apugli.ID, ApugliConfig.class);
     }

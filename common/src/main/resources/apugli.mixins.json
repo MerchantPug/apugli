@@ -30,7 +30,7 @@
     "common.accessor.LivingEntityAccessor",
     "common.accessor.ProjectileEntityAccessor",
     "common.accessor.ServerPlayerEntityAccessor",
-    "common.accessor.TridentEntityAccessor"
+    "common.accessor.AbstractArrowAccessor"
   ],
   "client": [
     "client.AbstractSoundInstanceMixin",

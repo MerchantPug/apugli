@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
+import io.github.apace100.apoli.power.factory.action.BiEntityActions;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Triple;
@@ -68,7 +70,7 @@ public class FabricActionHelper implements IActionHelper {
         if (object == null) return;
 
         ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
-        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
+        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION, BiEntityActions.ALIASES);
 
         Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode bi-entity action to tag: {}", s));
@@ -85,7 +87,7 @@ public class FabricActionHelper implements IActionHelper {
             return null;
         }
 
-        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
+        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION, BiEntityActions.ALIASES);
         Optional<ActionFactory<Tuple<Entity, Entity>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity action from tag: {}", s)).map(Pair::getFirst);
 
@@ -128,8 +130,8 @@ public class FabricActionHelper implements IActionHelper {
     public <T> void writeBlockActionToNbt(CompoundTag tag, String path, T object) {
         if (object == null) return;
 
-        ActionFactory<Tuple<Entity, Entity>>.Instance instance = (ActionFactory<Tuple<Entity, Entity>>.Instance) object;
-        Codec<ActionFactory<Tuple<Entity, Entity>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BIENTITY_ACTION);
+        ActionFactory<Triple<Level, BlockPos, Direction>>.Instance instance = (ActionFactory<Triple<Level, BlockPos, Direction>>.Instance) object;
+        Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION, BiEntityActions.ALIASES);
 
         Optional<Tag> tagOptional = codec.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially encode block action to tag: {}", s));
@@ -146,7 +148,7 @@ public class FabricActionHelper implements IActionHelper {
             return null;
         }
 
-        Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION);
+        Codec<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> codec = new ActionFactoryWrapperCodec<>(ApoliRegistries.BLOCK_ACTION, BiEntityActions.ALIASES);
         Optional<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> instanceOptional = codec.decode(NbtOps.INSTANCE, tag.getCompound(path))
                 .resultOrPartial(s -> Apugli.LOG.warn("Could only partially decode bi-entity action from tag: {}", s)).map(Pair::getFirst);
 

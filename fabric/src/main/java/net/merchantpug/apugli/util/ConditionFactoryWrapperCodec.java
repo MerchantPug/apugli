@@ -8,12 +8,12 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.util.IdentifierAlias;
+import io.github.apace100.calio.util.IdentifierAlias;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> registry) implements Codec<ConditionFactory<T>.Instance> {
+public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> registry, IdentifierAlias alias) implements Codec<ConditionFactory<T>.Instance> {
 
     @Override
     public <A> DataResult<Pair<ConditionFactory<T>.Instance, A>> decode(DynamicOps<A> ops, A input) {
@@ -23,8 +23,8 @@ public record ConditionFactoryWrapperCodec<T>(Registry<ConditionFactory<T>> regi
         }
         ResourceLocation factoryLocation = ResourceLocation.tryParse(GsonHelper.getAsString(jsonObject, "type"));
 
-        if (factoryLocation != null && IdentifierAlias.hasAlias(factoryLocation)) {
-            factoryLocation = IdentifierAlias.resolveAlias(factoryLocation);
+        if (factoryLocation != null && alias.hasAlias(factoryLocation)) {
+            factoryLocation = alias.resolveAlias(factoryLocation, registry::containsKey);
         }
 
         ConditionFactory<T> factory = registry.get(factoryLocation);

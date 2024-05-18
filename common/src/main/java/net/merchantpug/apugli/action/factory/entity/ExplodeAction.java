@@ -11,7 +11,9 @@ import net.merchantpug.apugli.registry.ApugliTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -105,7 +107,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
         }
         if(calculator != null) {
             Explosion explosion = new Explosion(entity.level(), damageSelf ? null : entity,
-                    null, calculator, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
+                    null, calculator, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
             ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
             ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
@@ -130,7 +132,7 @@ public class ExplodeAction implements IActionFactory<Entity> {
                     ), entity);
         } else {
             Explosion explosion = new Explosion(entity.level(), entity,
-                    null, null, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType);
+                    null, null, entity.getX(), entity.getY(), entity.getZ(), power, createFire, destructionType, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
             ((ExplosionAccess)explosion).apugli$setExplosionDamageModifiers(getModifiers(data, "damage_modifier", "damage_modifiers"));
             ((ExplosionAccess)explosion).apugli$setExplosionKnockbackModifiers(getModifiers(data, "knockback_modifier", "knockback_modifiers"));
             ((ExplosionAccess)explosion).apugli$setExplosionVolumeModifiers(getModifiers(data, "volume_modifier", "volume_modifiers"));
