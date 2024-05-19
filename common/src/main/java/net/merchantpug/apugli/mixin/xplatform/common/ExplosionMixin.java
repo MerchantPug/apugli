@@ -79,7 +79,7 @@ public abstract class ExplosionMixin implements ExplosionAccess {
     }
 
 
-    @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
+    @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion(Lnet/minecraft/world/level/Explosion;)Z"))
     private boolean apugli$cancelDamagedEntity(boolean original, @Local(index = 13) Entity entity) {
         if (this.getDirectSourceEntity() != null && ((ExplosionAccess) this).apugli$getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).apugli$getBiEntityPredicate(), this.getDirectSourceEntity(), entity))  {
             return true;
