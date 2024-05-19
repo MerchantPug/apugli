@@ -48,7 +48,7 @@ public class ApugliClientFabric implements ClientModInitializer {
 
 	public static void handleActiveKeys(Minecraft minecraft) {
 		Player player = Minecraft.getInstance().player;
-		if (player == null) return;
+		if (player == null || !player.isAlive()) return;
 		Set<Active.Key> addedKeys = new HashSet<>();
 		Set<Active.Key> removedKeys = new HashSet<>();
 		HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
