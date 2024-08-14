@@ -5,6 +5,7 @@
   "plugin": "net.merchantpug.apugli.ApugliMixinConfigPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.AnimalEntityMixin",
     "common.EnchantmentConfigurationMixin",
     "common.EntityMixin",
     "common.FoodDataMixin",

@@ -327,13 +327,6 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void onBabySpawn(BabyEntitySpawnEvent event) {
-        if (!(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) return;
-        parentA.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
-        parentB.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
-    }
-
-    @SubscribeEvent
     public static void prePowerLoad(AddReloadListenerEvent event) {
         TextureUtil.getCache().clear();
     }
