@@ -30,7 +30,7 @@ jarJar.enable()
 repositories {
     maven { url 'https://maven.theillusivec4.top' }
 
-    maven { url 'https://maven.merchantpug.net/releases' }
+    maven { url 'https://repo.greenhouse.house/releases' }
 
     maven {
         name = "JitPack"
@@ -173,8 +173,8 @@ publishing {
 
     repositories {
         maven {
-            name = "merchantpug"
-            url = "https://maven.merchantpug.net/releases"
+            name = "greenhouse"
+            url = "https://repo.greenhouse.house/releases"
             credentials(PasswordCredentials)
             authentication {
                 create("basic", BasicAuthentication)

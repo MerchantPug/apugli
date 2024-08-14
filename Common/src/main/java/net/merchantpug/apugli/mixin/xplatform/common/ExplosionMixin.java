@@ -1,22 +1,18 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.merchantpug.apugli.access.ExplosionAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
-import java.util.Set;
 
 @Mixin(Explosion.class)
 @Implements(@Interface(iface = ExplosionAccess.class, prefix = "apugli$"))
@@ -86,17 +82,9 @@ public abstract class ExplosionMixin {
         return pitch;
     }
 
-    @Unique
-    private Entity apugli$affectedEntity;
-
-    @Inject(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void collectAffectedEntity(CallbackInfo ci, Set set, int i, float f2, int k1, int l1, int i2, int i1, int j2, int j1, List list, Vec3 vec3, int k2, Entity entity) {
-        this.apugli$affectedEntity = entity;
-    }
-
     @ModifyExpressionValue(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"))
-    private boolean cancelDamagedEntity(boolean original) {
-        return original || this.getSourceMob() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getSourceMob(), this.apugli$affectedEntity);
+    private boolean cancelDamagedEntity(boolean original, @Local Entity entity) {
+        return original || this.getSourceMob() != null && ((ExplosionAccess) this).getBiEntityPredicate() != null && !Services.CONDITION.checkBiEntity(((ExplosionAccess) this).getBiEntityPredicate(), this.getSourceMob(), entity);
     }
 
     public void apugli$setExplosionDamageModifiers(List<?> value) {
