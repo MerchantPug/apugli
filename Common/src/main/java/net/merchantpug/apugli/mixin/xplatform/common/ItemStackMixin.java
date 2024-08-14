@@ -1,11 +1,13 @@
 package net.merchantpug.apugli.mixin.xplatform.common;
 
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.platform.Services;
 import net.merchantpug.apugli.power.EdibleItemPower;
 import net.merchantpug.apugli.registry.power.ApugliPowers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Optional;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin {
+public abstract class ItemStackMixin implements ItemStackAccess {
     @Shadow public abstract Item getItem();
 
     @Shadow public abstract CompoundTag getOrCreateTag();
@@ -32,6 +34,15 @@ public abstract class ItemStackMixin {
 
     @Unique
     private int apugli$previousDamage;
+
+    @Unique
+    public Entity apugli$entity;
+
+    public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
+
+    public Entity apugli$getEntity() {
+        return this.apugli$entity;
+    }
 
     @Inject(method = "copy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setPopTime(I)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     private void copyNewParams(CallbackInfoReturnable<ItemStack> cir, ItemStack itemStack) {

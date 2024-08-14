@@ -30,20 +30,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements ItemStackAccess {
+public abstract class ItemStackMixin {
 
     @Shadow public abstract Item getItem();
 
     @Shadow public abstract ItemStack copy();
-
-    @Unique
-    public Entity apugli$entity;
-
-    public void apugli$setEntity(Entity entity) { this.apugli$entity = entity; }
-
-    public Entity apugli$getEntity() {
-        return this.apugli$entity;
-    }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {

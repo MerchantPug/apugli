@@ -68,11 +68,6 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
-    public static void attachItemCapabilities(final AttachCapabilitiesEvent<ItemStack> event) {
-        event.addCapability(EntityLinkCapability.ID, new EntityLinkCapability(event.getObject()));
-    }
-
-    @SubscribeEvent
     public static void onCalioDynamicRegistryLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
         Registry<ConfiguredEntityAction<?, ?>> registry = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY);
         registry.forEach(action -> {
@@ -297,13 +292,6 @@ public class ApugliForgeEventHandler {
                 }
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void onBabySpawn(BabyEntitySpawnEvent event) {
-        if (!(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) return;
-        parentA.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
-        parentB.setInLoveTime((int)Services.PLATFORM.applyModifiers(event.getCausedByPlayer(), ApugliPowers.MODIFY_BREEDING_COOLDOWN.get(), 6000));
     }
 
     @SubscribeEvent

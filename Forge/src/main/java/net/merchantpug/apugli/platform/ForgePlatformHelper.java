@@ -13,6 +13,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModelColorPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.merchantpug.apugli.access.ItemStackAccess;
 import net.merchantpug.apugli.capability.entity.HitsOnTargetCapability;
 import net.merchantpug.apugli.capability.entity.KeyPressCapability;
 import net.merchantpug.apugli.capability.item.EntityLinkCapability;
@@ -177,15 +178,12 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public Entity getEntityFromItemStack(ItemStack stack) {
-        if (stack.getCapability(EntityLinkCapability.INSTANCE).resolve().isPresent()) {
-            return stack.getCapability(EntityLinkCapability.INSTANCE).resolve().get().getEntity();
-        }
-        return null;
+        return ((ItemStackAccess)(Object)stack).apugli$getEntity();
     }
 
     @Override
     public void setEntityToItemStack(ItemStack stack, Entity entity) {
-        stack.getCapability(EntityLinkCapability.INSTANCE).resolve().ifPresent(cap -> cap.setEntity(entity));
+        ((ItemStackAccess)(Object)stack).apugli$setEntity(entity);
     }
 
 }

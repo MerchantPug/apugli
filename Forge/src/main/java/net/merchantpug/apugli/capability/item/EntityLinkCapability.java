@@ -11,6 +11,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Use {@link net.merchantpug.apugli.access.ItemStackAccess} instead.
+ */
+@Deprecated
 public class EntityLinkCapability implements IEntityLinkCapability, ICapabilityProvider {
 
     ItemStack provider;
