@@ -87,9 +87,9 @@ public class CustomProjectileAction implements IActionFactory<Entity> {
         }
 
         if (data.get("tag") != null) {
-            CompoundTag mergedTag = actor.saveWithoutId(new CompoundTag());
+            CompoundTag mergedTag = projectile.saveWithoutId(new CompoundTag());
             mergedTag.merge(data.get("tag"));
-            actor.load(mergedTag);
+            projectile.load(mergedTag);
         }
 
         return projectile;
