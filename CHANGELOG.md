@@ -5,3 +5,4 @@
 ## Miscellaneous
 - Updated Mixin Extras to 0.2.1.
 - Updated Calio and Apoli artifacts to use Ladysnake Maven instead of JitPack.
+- Can now run on 1.19-1.19.2.
