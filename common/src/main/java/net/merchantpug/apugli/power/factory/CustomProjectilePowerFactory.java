@@ -155,9 +155,9 @@ public interface CustomProjectilePowerFactory<P> extends ActiveCooldownPowerFact
         projectile.setTickBiEntityAction(data, "tick_bientity_action");
 
         if (data.get("tag") != null) {
-            CompoundTag mergedTag = entity.saveWithoutId(new CompoundTag());
+            CompoundTag mergedTag = projectile.saveWithoutId(new CompoundTag());
             mergedTag.merge(data.get("tag"));
-            entity.load(mergedTag);
+            projectile.load(mergedTag);
         }
 
         entity.level().addFreshEntity(projectile);
