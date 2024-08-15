@@ -28,6 +28,11 @@ version = "${rootProject.version}+${minecraft_version}-forge"
 jarJar.enable()
 
 repositories {
+    maven {
+        name = "Ladysnake Libs"
+        url = 'https://maven.ladysnake.org/releases'
+    }
+
     maven { url 'https://maven.theillusivec4.top' }
 
     maven { url 'https://maven.greenhouseteam.dev/releases' }
