@@ -150,9 +150,12 @@ publishing {
 
     repositories {
         maven {
-            name = "merchantpug"
-            url = "https://maven.merchantpug.net/releases"
-            credentials(PasswordCredentials)
+            name = "greenhouse"
+            url = "https://repo.greenhouse.house/releases"
+            credentials {
+                username System.getenv('MAVEN_USERNAME')
+                password System.getenv('MAVEN_PASSWORD')
+            }
             authentication {
                 create("basic", BasicAuthentication)
             }
