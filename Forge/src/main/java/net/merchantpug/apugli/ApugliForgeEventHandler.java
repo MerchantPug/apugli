@@ -327,6 +327,12 @@ public class ApugliForgeEventHandler {
     }
 
     @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(cap -> event.getOriginal().getCapability(KeyPressCapability.INSTANCE).ifPresent(cap::setFrom));
+        event.getEntity().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(cap -> event.getOriginal().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(cap::setFrom));
+    }
+
+    @SubscribeEvent
     public static void prePowerLoad(AddReloadListenerEvent event) {
         TextureUtil.getCache().clear();
     }

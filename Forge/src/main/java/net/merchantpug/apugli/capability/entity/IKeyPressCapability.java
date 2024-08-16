@@ -19,4 +19,6 @@ public interface IKeyPressCapability {
     void addKey(IActivePower.Key key);
     void addPreviousKey(IActivePower.Key key);
     void removeKey(IActivePower.Key key);
+
+    void setFrom(IKeyPressCapability cap);
 }
