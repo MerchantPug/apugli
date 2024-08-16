@@ -73,6 +73,14 @@ public class HitsOnTargetCapability implements IHitsOnTargetCapability, ICapabil
         previousHits = hits;
     }
 
+    @Override
+    public void setFrom(IHitsOnTargetCapability cap) {
+        previousHits.clear();
+        previousHits.putAll(cap.getPreviousHits());
+        hits.clear();
+        hits.putAll(cap.getHits());
+    }
+
     public void sync() {
         if (provider.level.isClientSide) return;
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> provider), new SyncHitsOnTargetCapabilityPacket(provider.getId(), hits));

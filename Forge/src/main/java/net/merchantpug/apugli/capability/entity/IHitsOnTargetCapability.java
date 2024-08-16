@@ -16,4 +16,5 @@ public interface IHitsOnTargetCapability {
     void removeHits(int entityId);
 
     void serverTick();
+    void setFrom(IHitsOnTargetCapability cap);
 }

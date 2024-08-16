@@ -86,6 +86,20 @@ public class KeyPressCapability implements IKeyPressCapability, ICapabilityProvi
         this.previousPowerSize = powerSize;
     }
 
+    @Override
+    public void setFrom(IKeyPressCapability cap) {
+        if (!(cap instanceof KeyPressCapability classCap))
+            return;
+        previousPowerSize = classCap.previousPowerSize;
+
+        keysToCheck.clear();
+        keysToCheck.addAll(classCap.keysToCheck);
+        previouslyUsedKeys.clear();
+        previouslyUsedKeys.addAll(classCap.previouslyUsedKeys);
+        currentlyUsedKeys.clear();
+        currentlyUsedKeys.addAll(classCap.currentlyUsedKeys);
+    }
+
     public void sync() {
         if (provider.level.isClientSide) return;
         ApugliPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> provider), new SyncKeyPressCapabilityPacket(provider.getId(), previouslyUsedKeys, currentlyUsedKeys));

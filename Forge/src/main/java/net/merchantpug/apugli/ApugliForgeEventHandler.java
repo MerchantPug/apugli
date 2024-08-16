@@ -145,6 +145,8 @@ public class ApugliForgeEventHandler {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(KeyPressCapability::tick);
+        if (!event.getEntity().level.isClientSide)
+            event.getEntity().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(HitsOnTargetCapability::serverTick);
 
         if (event.getEntity().isDeadOrDying()) return;
 
@@ -292,6 +294,12 @@ public class ApugliForgeEventHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        event.getEntity().getCapability(KeyPressCapability.INSTANCE).ifPresent(cap -> event.getOriginal().getCapability(KeyPressCapability.INSTANCE).ifPresent(cap::setFrom));
+        event.getEntity().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(cap -> event.getOriginal().getCapability(HitsOnTargetCapability.INSTANCE).ifPresent(cap::setFrom));
     }
 
     @SubscribeEvent

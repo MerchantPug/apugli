@@ -6,6 +6,10 @@ import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
+/**
+ * Use {@link net.merchantpug.apugli.access.ItemStackAccess} instead.
+ */
+@Deprecated
 public interface IEntityLinkCapability {
     ResourceLocation ID = Apugli.asResource("entity_link");
 
