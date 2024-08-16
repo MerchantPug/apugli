@@ -24,12 +24,8 @@ Versions 1.9.2+1.19 and later have/will be uploaded to the MerchantPug maven.
 repositories {
     ...
     maven {
-        name = "Greenhouse"
-        url = 'https://maven.greenhouseteam.dev/releases/'
-    }
-    maven {
-        name = "JitPack"
-        url = 'https://jitpack.io'
+        name = "Greenhouse Team Maven"
+        url = 'https://repo.greenhouse.house/releases/'
     }
 }
 
@@ -49,37 +45,8 @@ dependencies {
 repositories {
     ...
     maven {
-        name = "Greenhouse"
-        url = 'https://maven.greenhouseteam.dev/releases/'
-    }
-    maven {
-        name = "Ladysnake Libs"
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-    }
-    maven {
-        name = "JitPack"
-        url = 'https://jitpack.io'
-    }
-    maven {
-        url = 'https://maven.cafeteria.dev'
-        content {
-            includeGroup 'net.adriantodt.fabricmc'
-        }
-    }
-    maven {
-        name = "Shedaniel"
-        url "https://maven.shedaniel.me/"
-    }
-    maven {
-        name = "TerraformersMC"
-        url "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
+        name = "Greenhouse Team Maven"
+        url = "https://repo.greenhouse.house/releases/"
     }
 }
 
@@ -100,12 +67,8 @@ You are able to remove the `include` block if you don't wish to include Apugli i
 repositories {
     ...
     maven {
-        name = "Greenhouse"
-        url = 'https://maven.greenhouseteam.dev/releases/'
-    }
-    maven {
-        name = "JitPack"
-        url = 'https://jitpack.io'
+        name = "Greenhouse Team Maven"
+        url = "https://repo.greenhouse.house/releases/"
     }
 }
 
