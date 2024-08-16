@@ -11,7 +11,6 @@ plugins {
 archivesBaseName = "${mod_name}"
 version = "${rootProject.version}+${minecraft_version}-fabric"
 
-
 loom {
     accessWidenerPath.set(file("src/main/resources/apugli.accesswidener"))
     mixin {
@@ -169,7 +168,7 @@ publishing {
     repositories {
         maven {
             name = "greenhouse"
-            url = "https://repo.greenhouse.house/snapshots"
+            url = "https://repo.greenhouse.house/releases"
             credentials {
                 username System.getenv('MAVEN_USERNAME')
                 password System.getenv('MAVEN_PASSWORD')
@@ -188,7 +187,7 @@ tasks.register('curseforge', TaskPublishCurseForge) {
 
     def mainFile = upload(cf_project_id, remapJar)
     mainFile.displayName = "Fabric v${rootProject.version}+${minecraft_version}"
-    mainFile.releaseType = "alpha"
+    mainFile.releaseType = "release"
     mainFile.changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     mainFile.changelogType = "markdown"
     fabric_mod_loaders.split(", ").each {
@@ -212,7 +211,7 @@ modrinth {
     token = System.getenv("MODRINTH_TOKEN")
     projectId = mr_project_id
     versionNumber = "${version}"
-    versionType = "alpha"
+    versionType = "release"
     versionName = "Fabric/Quilt v${rootProject.version}+${minecraft_version}"
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = remapJar
