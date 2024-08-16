@@ -298,7 +298,7 @@ public class FabricConditionHelper implements IConditionHelper {
         if (!data.isPresent(fieldName)) {
             return null;
         }
-        return levelAndStack -> ((Predicate<ItemStack>)data.get(fieldName)).test(levelAndStack.getB());
+        return levelAndStack -> ((Predicate<Tuple<Level, ItemStack>>)data.get(fieldName)).test(levelAndStack);
     }
 
 }

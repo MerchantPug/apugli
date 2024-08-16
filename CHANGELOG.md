@@ -1,5 +1,3 @@
-## Bugfixes
-- Fixed `damage_nearby_x_hit` power type running attacker, target bientity conditions without an attacker. ([toomanyorigins#87](https://github.com/MerchantPug/toomanyorigins/issues/87))
-- Fixed Explosion Sync packet desync. Which should affect the `apugli:explode` and `explosion_raycast` entity action types, and the `rocket_jump` power type.
-- Fixed `key_pressed` entity condition type not functioning properly with `continuous` keys.
-- Fixed `custom_projectile` block actions not writing to NBT.
+### Bugfixes
+- Fixed the custom projectile power/action modifying the shooter's tag instead of the projectile's tag with the `tag` field.
+- Fixed Apugli power specific item conditions crashing the game.
