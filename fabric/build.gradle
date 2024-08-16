@@ -212,7 +212,7 @@ modrinth {
     projectId = mr_project_id
     versionNumber = "${version}"
     versionType = "release"
-    versionName = "Fabric/Quilt v${rootProject.version}+${minecraft_version}"
+    versionName = "Fabric v${rootProject.version}+${minecraft_version}"
     changelog = new File("$project.rootDir/CHANGELOG.md").getText('UTF-8')
     uploadFile = remapJar
     gameVersions = fabric_game_versions.split(", ").toList()
