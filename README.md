@@ -9,11 +9,11 @@ It's recommended to have some knowledge about either mod before doing so.
 
 # Implementing the library into your project
 
-## MerchantPug's Maven
+## Greenhouse Team Maven
 
 Depending on Apugli has changed ever since v2.0.0, as the mod is now built very differently to what it was prior to this update.
 
-Versions 1.9.2+1.19 and later have/will be uploaded to the MerchantPug maven.
+Versions 1.9.2+1.19 and later have/will be uploaded to the Greenhouse Team maven.
 
 ### Common Sourcesets 1.19.x+
 <details>
@@ -82,7 +82,7 @@ dependencies {
 You are able to remove the `jarJar` blocks if you don't wish to include Apugli inside your jar.
 </details>
 
-You can find your correct versions by looking [here](https://maven.greenhouseteam.dev/#/releases/net/merchantpug/Apugli).
+You can find your correct versions by looking [here](https://repo.greenhouse.house/#/releases/net/merchantpug/Apugli).
 
 ## JitPack (Old Builds and Commit Hashes Only) (Backup)
 
